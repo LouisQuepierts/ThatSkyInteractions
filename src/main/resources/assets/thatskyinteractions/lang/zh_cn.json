@@ -1,0 +1,18 @@
+{
+  "key.thatskyinteractions.interact_menu": "打开交互菜单",
+
+  "key.categories.thatskyinteractions": "光遇交互",
+
+  "gui.message.unlock.friend.request.left": "是否送一支",
+  "gui.message.unlock.friend.request.right": "和这个玩家成为朋友？",
+  "gui.message.unlock.interaction.request.left": "赠送",
+  "gui.message.unlock.interaction.request.right": "给好友解锁%s吗?",
+  "gui.message.unlock.lock.request.left": "赠送",
+  "gui.message.unlock.lock.request.right": "给这位朋友提高%s吗?",
+  "gui.message.unlock.lock.intimacy": "亲密度",
+
+  "gui.tree.node.interaction.level": "%s等级",
+
+  "interaction.thatskyinteractions.high_five": "击掌",
+  "interaction.thatskyinteractions.hug": "拥抱"
+}

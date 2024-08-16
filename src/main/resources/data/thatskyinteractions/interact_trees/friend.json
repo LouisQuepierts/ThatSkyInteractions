@@ -1,0 +1,79 @@
+{
+  "root": "root",
+  "nodes": [
+    {
+      "id": "root",
+      "type": "friend",
+      "left": "like",
+      "price": 3,
+      "middle": "high_five_1",
+      "right": "block"
+    },
+    {
+      "id": "like",
+      "type": "like"
+    },
+    {
+      "id": "block",
+      "type": "block"
+    },
+    {
+      "id": "high_five_1",
+      "type": "interaction",
+      "price": 1,
+      "interact": "thatskyinteractions:high_five",
+      "left": "high_five_2",
+      "middle": "hug_1"
+    },
+    {
+      "id": "high_five_2",
+      "type": "interaction",
+      "price": 4,
+      "interact": "thatskyinteractions:high_five",
+      "level": 2
+    },
+    {
+      "id": "hug_1",
+      "type": "interaction",
+      "price": 2,
+      "interact": "thatskyinteractions:hug",
+      "left": "hug_2",
+      "middle": "lock_1"
+    },
+    {
+      "id": "hug_2",
+      "type": "interaction",
+      "price": 4,
+      "interact": "thatskyinteractions:hug",
+      "level": 2
+    },
+    {
+      "id": "lock_1",
+      "type": "lock",
+      "price": 1,
+      "middle": "fist_pound_1"
+    },
+    {
+      "id": "fist_pound_1",
+      "type": "interaction",
+      "price": 3,
+      "interact": "thatskyinteractions:fist_pound",
+      "left": "fist_pound_2",
+      "middle": "double_high_five_1",
+      "height": 24
+    },
+    {
+      "id": "fist_pound_2",
+      "type": "interaction",
+      "price": 4,
+      "interact": "thatskyinteractions:fist_pound",
+      "level": 2
+    },
+    {
+      "id": "double_high_five_1",
+      "type": "interaction",
+      "price": 3,
+      "interact": "thatskyinteractions:double_high_five"
+    }
+  ]
+}
