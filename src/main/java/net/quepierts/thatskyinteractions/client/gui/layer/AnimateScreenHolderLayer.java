@@ -24,8 +24,7 @@ public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        int height = Minecraft.getInstance().getWindow().getScreenHeight();
-        guiGraphics.drawString(Minecraft.getInstance().font, "thatskyinteraction-dev-1.1.0 Teacon 2024", 1, 1, 0xffffffff);
+        //guiGraphics.drawString(Minecraft.getInstance().font, "thatskyinteraction-dev-1.1.0 Teacon 2024", 1, 1, 0xffffffff);
 
         if (this.screens.isEmpty())
             return;
