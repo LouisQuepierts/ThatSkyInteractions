@@ -13,6 +13,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
+import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmMessageUtils;
 import net.quepierts.thatskyinteractions.data.Currency;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
 
@@ -20,6 +21,7 @@ import net.quepierts.thatskyinteractions.data.tree.NodeState;
 public class LockButton extends TreeNodeButton {
     private static final Component MESSAGE_LEFT = Component.translatable("gui.message.unlock.lock.request.left").withColor(Palette.NORMAL_TEXT_COLOR);
     private static final Component MESSAGE_RIGHT = Component.translatable("gui.message.unlock.lock.request.right", Component.translatable("gui.message.unlock.lock.intimacy").withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD)).withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_ACCEPT = Component.translatable("gui.message.unlock.lock.accept", Component.translatable("gui.message.unlock.lock.intimacy").withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD)).withColor(Palette.NORMAL_TEXT_COLOR);
     public static final ResourceLocation ICON_LOCK = ThatSkyInteractions.getLocation("textures/gui/lock.png");
     public LockButton(String id, int x, int y, int price, Component message, ScreenAnimator animator, NodeState state) {
         super(id, x, y, price, animator, ICON_LOCK, message, Currency.RED_CANDLE, state);
@@ -41,6 +43,7 @@ public class LockButton extends TreeNodeButton {
 
     @Override
     public void renderUnlockMessageAccept(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
-        super.renderUnlockMessageAccept(guiGraphics, pose, width, height);
+        ConfirmMessageUtils.renderUnlockAcceptMessage(guiGraphics, pose, -12, this.getCurrency().icon);
+        guiGraphics.drawCenteredString(Minecraft.getInstance().font, MESSAGE_ACCEPT, 0, 0, 0xffffffff);
     }
 }
