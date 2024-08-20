@@ -7,6 +7,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -218,16 +219,16 @@ public class ClientProxy extends CommonProxy {
         if (!this.options.keyEnabledInteract.get().isDown())
             return;
 
-        if (event.getTarget() instanceof Player player) {
-            this.logger.info("Interact: {}", player);
-        }
-
-        InteractTree tree = this.dataCache.getTree();
-        if (tree != null) {
-            InteractTreeInstance instance = this.dataCache.get(event.getTarget().getUUID());
-            Minecraft.getInstance().setScreen(new PlayerInteractScreen(event.getTarget(), tree, instance));
-            this.setTarget(event.getTarget().getUUID());
-            event.setCanceled(true);
+        Entity target = event.getTarget();
+        if (target instanceof Player) {
+            InteractTree tree = this.dataCache.getTree();
+            if (tree != null) {
+                UUID uuid = target.getUUID();
+                InteractTreeInstance instance = this.dataCache.get(uuid);
+                Minecraft.getInstance().setScreen(new PlayerInteractScreen(target, tree, instance));
+                this.setTarget(uuid);
+                event.setCanceled(true);
+            }
         }
     }
 

@@ -189,8 +189,8 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
 //    }
 
     public void addWorldPositionObject(UUID uuid, World2ScreenButton button) {
-        if (ThatSkyInteractions.getInstance().getClient().blocked(uuid))
-            return;
+        /*if (ThatSkyInteractions.getInstance().getClient().blocked(uuid))
+            return;*/
         this.objects.put(uuid, button);
     }
 

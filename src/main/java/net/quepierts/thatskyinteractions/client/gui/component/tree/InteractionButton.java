@@ -68,6 +68,11 @@ public class InteractionButton extends TreeNodeButton {
 
     @Override
     public void onClickUnlocked() {
+        if (SimpleAnimator.getProxy().getAnimationManager().getInteraction(this.leveledInteraction) == null) {
+            super.onClickLocked();
+            return;
+        }
+
         super.onClickUnlocked();
         Minecraft minecraft = Minecraft.getInstance();
         UUID target = ThatSkyInteractions.getInstance().getClient().getTarget();
