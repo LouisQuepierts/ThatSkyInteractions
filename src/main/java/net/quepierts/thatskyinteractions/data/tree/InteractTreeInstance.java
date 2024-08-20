@@ -1,7 +1,9 @@
 package net.quepierts.thatskyinteractions.data.tree;
 
 import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.Object2ByteMap;
+import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

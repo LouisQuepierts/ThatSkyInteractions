@@ -20,10 +20,11 @@ import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.interact.World2ScreenButton;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-import java.lang.Math;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;

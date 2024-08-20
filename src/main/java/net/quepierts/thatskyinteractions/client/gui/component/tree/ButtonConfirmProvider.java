@@ -3,8 +3,8 @@ package net.quepierts.thatskyinteractions.client.gui.component.tree;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
-import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
+import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;
 

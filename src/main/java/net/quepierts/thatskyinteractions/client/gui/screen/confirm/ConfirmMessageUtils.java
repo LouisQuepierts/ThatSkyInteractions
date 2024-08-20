@@ -6,8 +6,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
+import net.quepierts.thatskyinteractions.client.gui.Palette;
 
 public class ConfirmMessageUtils {
     private static final Component MESSAGE_UNLOCK_ACCEPT_LEFT = Component.translatable("gui.message.unlock.accept.left").withColor(Palette.NORMAL_TEXT_COLOR);

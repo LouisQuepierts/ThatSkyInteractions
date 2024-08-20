@@ -1,6 +1,9 @@
 package net.quepierts.thatskyinteractions.data;
 
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,7 +19,8 @@ import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.BatchRelationshipPacket;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
 
 public class RelationshipSavedData extends SavedData {
     public static final String ID = "relationship";

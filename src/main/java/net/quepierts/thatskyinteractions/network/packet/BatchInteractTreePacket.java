@@ -11,7 +11,6 @@ import net.quepierts.simpleanimator.core.network.ISync;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
-import net.quepierts.thatskyinteractions.network.Packets;
 import org.jetbrains.annotations.NotNull;
 
 public class BatchInteractTreePacket implements ISync {

@@ -10,7 +10,6 @@ import net.quepierts.simpleanimator.core.network.ISync;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
-import net.quepierts.thatskyinteractions.network.Packets;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
