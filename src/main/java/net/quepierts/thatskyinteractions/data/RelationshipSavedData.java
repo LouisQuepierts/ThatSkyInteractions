@@ -110,13 +110,13 @@ public class RelationshipSavedData extends SavedData {
 
     private void loadEntry(CompoundTag tag) {
         PlayerPair pair = PlayerPair.deserializeNBT(tag);
-        InteractTreeInstance instance = new InteractTreeInstance(this.tree, tag);
+        InteractTreeInstance instance = new InteractTreeInstance(pair, this.tree, tag);
         this.relationship.put(pair, instance);
         this.refPari(pair);
     }
 
     private InteractTreeInstance create(PlayerPair pair) {
-        InteractTreeInstance put = this.relationship.put(pair, new InteractTreeInstance(tree, FRIEND_INTERACT_TREE));
+        InteractTreeInstance put = this.relationship.put(pair, new InteractTreeInstance(pair, tree, FRIEND_INTERACT_TREE));
         this.refPari(pair);
         return put;
     }
@@ -127,6 +127,7 @@ public class RelationshipSavedData extends SavedData {
     }
 
     public InteractTreeInstance get(PlayerPair pair) {
+        this.setDirty();
         return this.relationship.computeIfAbsent(pair, this::create);
     }
 

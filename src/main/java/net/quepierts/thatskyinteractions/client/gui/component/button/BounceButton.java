@@ -8,13 +8,14 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.thatskyinteractions.client.gui.RenderUtils;
+import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.client.gui.holder.DoubleHolder;
+import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
@@ -22,7 +23,7 @@ public abstract class BounceButton extends AbstractButton {
     protected final ScreenAnimator animator;
     protected final ResourceLocation icon;
     protected final LerpNumberAnimation clickAnimation;
-    private final DoubleHolder click = new DoubleHolder(0.0f);
+    private final FloatHolder click = new FloatHolder(0.0f);
 
     public BounceButton(int x, int y, int scale, Component message, ScreenAnimator animator, ResourceLocation icon) {
         super(x, y, scale, scale, message);
@@ -67,13 +68,12 @@ public abstract class BounceButton extends AbstractButton {
         final int half = width / 2;
         pose.translate(this.getX() + half, this.getY() + half, 0.0f);
         this.renderBg(guiGraphics, -half);
-        float scale = 1.0f - (AnimateUtils.Time.bounce((float) click.get()) * 0.3f);
-        float rot = (float) (click.get() * 2 * Math.PI);
+        float scale = 1.0f - AnimateUtils.Time.bounce(click.getValue()) * 0.3f;
+        float rot = click.getValue() * Mth.TWO_PI;
         pose.scale(scale, scale, 1.0f);
         pose.translate(0.0f, 0.0f, 100.0f);
         pose.mulPose(Axis.YP.rotation(rot));
         this.renderIcon(guiGraphics, -half);
-        //guiGraphics.blit(icon, -half, -half, this.getWidth(), this.getHeight(), 0, 0, size, size, size, size);
         pose.popPose();
 
         RenderSystem.enableCull();

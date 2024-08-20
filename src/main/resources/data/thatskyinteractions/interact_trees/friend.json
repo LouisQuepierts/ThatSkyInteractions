@@ -73,7 +73,30 @@
       "id": "double_high_five_1",
       "type": "interaction",
       "price": 3,
-      "interact": "thatskyinteractions:double_high_five"
+      "interact": "thatskyinteractions:double_high_five",
+      "left": "double_high_five_2",
+      "middle": "pat_head_1"
+    },
+    {
+      "id": "double_high_five_2",
+      "type": "interaction",
+      "price": 4,
+      "interact": "thatskyinteractions:double_high_five",
+      "level": 2
+    },
+    {
+      "id": "pat_head_1",
+      "type": "interaction",
+      "price": 6,
+      "interact": "thatskyinteractions:pat_head",
+      "left": "pat_head_2"
+    },
+    {
+      "id": "pat_head_2",
+      "type": "interaction",
+      "price": 8,
+      "interact": "thatskyinteractions:pat_head",
+      "level": 2
     }
   ]
 }

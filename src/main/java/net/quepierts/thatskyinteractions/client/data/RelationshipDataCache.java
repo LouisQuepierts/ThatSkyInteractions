@@ -1,10 +1,12 @@
-package net.quepierts.thatskyinteractions.client;
+package net.quepierts.thatskyinteractions.client.data;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
@@ -35,7 +37,8 @@ public class RelationshipDataCache {
     }
 
     public InteractTreeInstance get(UUID other) {
-        return relationship.computeIfAbsent(other, key -> new InteractTreeInstance(tree, RelationshipSavedData.FRIEND_INTERACT_TREE));
+        PlayerPair pair = new PlayerPair(other, Minecraft.getInstance().player.getUUID());
+        return relationship.computeIfAbsent(other, key -> new InteractTreeInstance(pair, tree, RelationshipSavedData.FRIEND_INTERACT_TREE));
     }
 
     public InteractTree getTree() {
@@ -44,5 +47,9 @@ public class RelationshipDataCache {
 
     public Object2ObjectMap<UUID, InteractTreeInstance> relationships() {
         return this.relationship;
+    }
+
+    public boolean isFriend(UUID player) {
+        return this.relationship.containsKey(player);
     }
 }

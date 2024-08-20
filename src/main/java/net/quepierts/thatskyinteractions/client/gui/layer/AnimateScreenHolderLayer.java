@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.client.gui.layer;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -48,6 +49,9 @@ public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
             if (!screen.getAnimator().isRunning())
                 iterator.remove();
         }
+
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.disableBlend();
     }
     
     public void open(AnimatableScreen screen) {

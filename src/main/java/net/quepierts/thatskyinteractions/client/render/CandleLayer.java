@@ -1,34 +1,49 @@
 package net.quepierts.thatskyinteractions.client.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import net.quepierts.simpleanimator.api.IAnimateHandler;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.quepierts.thatskyinteractions.client.Particles;
+import net.quepierts.thatskyinteractions.client.RenderUtils;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 public class CandleLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-    private static final Object2ObjectMap<ResourceLocation, Vector3f> ANIMATIONS_WITH_CANDLE = new Object2ObjectOpenHashMap<>();
+    private static final ResourceLocation TEXTURE_FLAME = ResourceLocation.withDefaultNamespace("textures/particle/flame.png");
+    private static final Set<UUID> ENABLED = new HashSet<>();
 
     private static final BlockState CANDLE = Blocks.CANDLE.defaultBlockState().setValue(CandleBlock.LIT, true);
     private final BlockRenderDispatcher blockRenderer;
@@ -39,11 +54,12 @@ public class CandleLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
 
     @Override
     public void render(@NotNull PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int packedLight, AbstractClientPlayer player, float v, float v1, float v2, float v3, float v4, float v5) {
-        ResourceLocation location = ((IAnimateHandler) player).simpleanimator$getAnimator().getAnimationLocation();
-        if (ANIMATIONS_WITH_CANDLE.containsKey(location)) {
+        if (ENABLED.contains(player.getUUID())) {
             int overlayCoords = LivingEntityRenderer.getOverlayCoords(player, 0.0F);
             poseStack.pushPose();
-            this.getParentModel().translateToHand(HumanoidArm.RIGHT, poseStack);
+            PlayerModel<AbstractClientPlayer> parent = this.getParentModel();
+            parent.translateToHand(HumanoidArm.RIGHT, poseStack);
+
             poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
             poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
             poseStack.translate(-0.4375F, 0.125F, -1.0F);
@@ -56,11 +72,54 @@ public class CandleLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
                     ModelData.EMPTY,
                     null
             );
+
             poseStack.popPose();
+            //addParticlesAndSound(player.level(), this.getPlayerHandPos(player, v5), player.getRandom());
         }
     }
 
-    static {
-        ANIMATIONS_WITH_CANDLE.put(ThatSkyInteractions.getLocation("simple/held_candle"), new Vector3f());
+    private Vector3f getPlayerHandPos(Player player, float partialTick) {
+        ModelPart rightArm = this.getParentModel().rightArm;
+        Matrix4f mat = new Matrix4f()
+                .translate(player.getEyePosition().toVector3f())
+                .rotateY(Mth.lerp(partialTick, player.yBodyRotO, player.yBodyRot) * -Mth.DEG_TO_RAD)
+                .translate(rightArm.x / 16f, rightArm.y / 16f, rightArm.z / 16f)
+                .rotateXYZ(rightArm.xRot, rightArm.yRot, rightArm.zRot);
+
+        Vector3f position = mat.getTranslation(new Vector3f());
+        return position;
+    }
+
+    private static void addParticlesAndSound(Level level, Vector3f offset, RandomSource random) {
+        float f = random.nextFloat();
+        if (f < 0.3F) {
+            //level.addParticle(ParticleTypes.SMOKE, offset.x, offset.y, offset.z, 0.0, 0.0, 0.0);
+            if (f < 0.17F) {
+                level.playLocalSound(
+                        offset.x + 0.5,
+                        offset.y + 0.5,
+                        offset.z + 0.5,
+                        SoundEvents.CANDLE_AMBIENT,
+                        SoundSource.PLAYERS,
+                        1.0F + random.nextFloat(),
+                        random.nextFloat() * 0.7F + 0.3F,
+                        false
+                );
+            }
+        }
+
+        level.addParticle(Particles.SHORTER_FLAME.get(), offset.x, offset.y, offset.z, 0.0, 0.0, 0.0);
+    }
+
+    public static void enable(UUID uuid) {
+        ENABLED.add(uuid);
+    }
+
+    public static void disable(UUID uuid) {
+        ENABLED.remove(uuid);
+    }
+
+    public static void reset() {
+        ENABLED.clear();
     }
 }

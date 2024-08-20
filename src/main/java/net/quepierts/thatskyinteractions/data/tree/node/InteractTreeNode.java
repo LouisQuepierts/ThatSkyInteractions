@@ -10,7 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.thatskyinteractions.client.gui.RenderUtils;
+import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.component.tree.LockedButton;
 import net.quepierts.thatskyinteractions.client.gui.component.tree.TreeNodeButton;
@@ -181,6 +181,7 @@ public class InteractTreeNode {
         FACTORIES.put(RootNode.TYPE, new Factory(RootNode::new, RootNode::new));
         FACTORIES.put(LikeNode.TYPE, new Factory(LikeNode::new, LikeNode::new));
         FACTORIES.put(LockNode.TYPE, new Factory(LockNode::new, LockNode::new));
+        FACTORIES.put(BlockNode.TYPE, new Factory(BlockNode::new, BlockNode::new));
         FACTORIES.put(FriendNode.TYPE, new Factory(FriendNode::new, FriendNode::new));
         FACTORIES.put(InteractionNode.TYPE, new Factory(InteractionNode::new, InteractionNode::new));
     }

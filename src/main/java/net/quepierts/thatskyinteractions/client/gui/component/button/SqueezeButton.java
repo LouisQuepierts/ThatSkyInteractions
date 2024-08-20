@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
-import net.quepierts.thatskyinteractions.client.gui.RenderUtils;
+import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -78,7 +78,8 @@ public abstract class SqueezeButton extends AbstractButton {
         float alpha = Palette.getShaderAlpha();
 
         RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, alpha * 0.5f);
-        RenderUtils.blitIcon(guiGraphics, TEXTURE_ROUND_RECT, begin, begin, width, width);
+        RenderUtils.fillRoundRect(guiGraphics, begin, begin, width, width, 0.16f, 0xc0101010);
+        //RenderUtils.blitIcon(guiGraphics, TEXTURE_ROUND_RECT, begin, begin, width, width);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
 
         RenderUtils.blit(guiGraphics, this.getIcon(), begin, begin, width, width);

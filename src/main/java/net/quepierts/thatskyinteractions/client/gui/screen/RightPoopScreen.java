@@ -38,12 +38,21 @@ public class RightPoopScreen extends Screen implements AnimatableScreen {
 
     @Override
     public void enter() {
-        this.animator.play(new LerpNumberAnimation(this.enter, AnimateUtils.Lerp::smooth, 0.0, 1.0, 0.5f));
+        this.animator.play(new LerpNumberAnimation(
+                this.enter,
+                AnimateUtils.Lerp::smooth,
+                0.0, 1.0, 0.5f
+        ));
     }
 
     @Override
     public void hide() {
-        this.animator.play(new LerpNumberAnimation(this.enter, AnimateUtils.Lerp::smooth, 1.0, 0.0, 0.5f, false));
+        this.animator.play(new LerpNumberAnimation(
+                this.enter,
+                AnimateUtils.Lerp::smooth,
+                1.0, 0.0, 0.5f,
+                false
+        ));
     }
 
     @Override

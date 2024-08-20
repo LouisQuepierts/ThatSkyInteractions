@@ -7,12 +7,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
-import net.quepierts.thatskyinteractions.client.gui.RenderUtils;
+import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.data.Currency;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
@@ -27,7 +26,7 @@ public class LockButton extends TreeNodeButton {
     }
 
     @Override
-    public void renderUnlockMessage(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
+    public void renderUnlockMessageInvite(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
         Font font = Minecraft.getInstance().font;
         int leftWidth = font.width(MESSAGE_LEFT);
         int rightWidth = font.width(MESSAGE_RIGHT);
@@ -38,5 +37,10 @@ public class LockButton extends TreeNodeButton {
         RenderUtils.blitIcon(guiGraphics, Currency.RED_CANDLE.icon, leftWidth + 1, 0, 8, 8);
         guiGraphics.drawString(font, MESSAGE_LEFT, 0, 0, 0xffffffff);
         guiGraphics.drawString(font, MESSAGE_RIGHT, leftWidth + 12, 0, 0xffffffff);
+    }
+
+    @Override
+    public void renderUnlockMessageAccept(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
+        super.renderUnlockMessageAccept(guiGraphics, pose, width, height);
     }
 }

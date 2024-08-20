@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -45,7 +46,7 @@ public class ConfirmScreen extends Screen implements AnimatableScreen {
 
     @Override
     public void hide() {
-        this.animator.play(new LerpNumberAnimation(this.enter, AnimateUtils.Lerp::smooth, 1.0, 0.0, 0.5f, false));
+        this.animator.play(new LerpNumberAnimation(this.enter, AnimateUtils.Lerp::smooth, 1.0, 0.05, 0.5f, false));
     }
 
     @Override
@@ -92,7 +93,8 @@ public class ConfirmScreen extends Screen implements AnimatableScreen {
 
         int hWidth = this.boxWidth / 2;
         int hHeight = this.boxHeight / 2;
-        guiGraphics.fill(-hWidth, -hHeight, hWidth, hHeight, 0xc0101010);
+        RenderUtils.fillRoundRect(guiGraphics, -hWidth, -hHeight, this.boxWidth, this.boxHeight, 0.05f, 0xc0101010);
+        //guiGraphics.fill(-hWidth, -hHeight, hWidth, hHeight, 0xc0101010);
 
         mouseX -= xMid;
         mouseY -= yMid;

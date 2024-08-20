@@ -1,15 +1,20 @@
 package net.quepierts.thatskyinteractions.client.gui.screen;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.quepierts.simpleanimator.api.IAnimateHandler;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.tree.InteractTreeWidget;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
+import net.quepierts.thatskyinteractions.proxy.Animations;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
@@ -36,9 +41,24 @@ public class PlayerInteractScreen extends RightPoopScreen {
     }
 
     @Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        if (ThatSkyInteractions.getInstance().getClient().getTarget() == null) {
+            Minecraft.getInstance().popGuiLayer();
+        }
+    }
+
+    @Override
     public void onClose() {
         super.onClose();
+        ThatSkyInteractions.getInstance().getClient().setTarget(null);
         CandleInfoLayer.INSTANCE.show(false);
+
+        IAnimateHandler handler = ((IAnimateHandler) Minecraft.getInstance().player);
+        if (handler.simpleanimator$isRunning() && handler.simpleanimator$getAnimator().getAnimationLocation().equals(Animations.HELD_CANDLE)) {
+            handler.simpleanimator$stopAnimate(true);
+        }
     }
 
     @Override

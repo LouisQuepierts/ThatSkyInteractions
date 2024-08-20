@@ -11,7 +11,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
-import net.quepierts.thatskyinteractions.client.gui.RenderUtils;
+import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -125,7 +125,7 @@ public class TreeNodeButton extends BounceButton implements CulledRenderable {
         Minecraft.getInstance().getSoundManager().play(
                 SimpleSoundInstance.forUI(
                         SoundEvents.EXPERIENCE_ORB_PICKUP,
-                        0.1F + 0.6F
+                        (ThatSkyInteractions.RANDOM.nextFloat() - ThatSkyInteractions.RANDOM.nextFloat()) * 0.35F + 0.9F
                 )
         );
     }
@@ -135,7 +135,11 @@ public class TreeNodeButton extends BounceButton implements CulledRenderable {
         return CulledRenderable.intersects(region, this.getX(), this.getY(), this.getWidth(), this.getHeight() + 48);
     }
 
-    public void renderUnlockMessage(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
+    public void renderUnlockMessageInvite(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
+    }
+
+    public void renderUnlockMessageAccept(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
+
     }
 
     public NodeState getNodeState() {

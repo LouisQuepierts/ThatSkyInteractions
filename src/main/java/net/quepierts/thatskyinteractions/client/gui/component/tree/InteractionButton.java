@@ -6,14 +6,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.quepierts.simpleanimator.api.IInteractHandler;
+import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
-import net.quepierts.thatskyinteractions.client.gui.RenderUtils;
+import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
+import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmMessageUtils;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
+
+import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 public class InteractionButton extends TreeNodeButton {
@@ -23,6 +31,7 @@ public class InteractionButton extends TreeNodeButton {
     private final Component levelComponent;
     private final Component left;
     private final Component right;
+    private final Component accept;
     public InteractionButton(String id, int x, int y, int price, Component message, ScreenAnimator animator, ResourceLocation interaction, int level, NodeState state) {
         super(id, x, price, message, y, RenderUtils.getInteractionIcon(interaction), animator, state);
         this.interaction = interaction;
@@ -31,11 +40,13 @@ public class InteractionButton extends TreeNodeButton {
 
         this.levelComponent = level > 1 ? Component.translatable("gui.tree.node.interaction.level", level) : Component.empty();
         this.left = Component.translatable("gui.message.unlock.interaction.request.left", this.getPrice()).withColor(Palette.NORMAL_TEXT_COLOR);
-        this.right = Component.translatable("gui.message.unlock.interaction.request.right", Component.translatable(ThatSkyInteractions.getInteractionTranslateKey(interaction)).withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD)).withColor(Palette.NORMAL_TEXT_COLOR);
+        MutableComponent name = Component.translatable(ThatSkyInteractions.getInteractionTranslateKey(interaction)).withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD);
+        this.right = Component.translatable("gui.message.unlock.interaction.request.right", name).withColor(Palette.NORMAL_TEXT_COLOR);
+        this.accept = Component.translatable("gui.message.unlock.friend.accept", name).withColor(Palette.NORMAL_TEXT_COLOR);
     }
 
     @Override
-    public void renderUnlockMessage(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
+    public void renderUnlockMessageInvite(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
         Font font = Minecraft.getInstance().font;
 
         int leftWidth = font.width(this.left);
@@ -47,6 +58,31 @@ public class InteractionButton extends TreeNodeButton {
         RenderUtils.blitIcon(guiGraphics, this.getCurrency().icon, leftWidth + 1, 0, 8, 8);
         guiGraphics.drawString(font, this.left, 0, 0, 0xffffffff);
         guiGraphics.drawString(font, this.right, leftWidth + 12, 0, 0xffffffff);
+    }
+
+    @Override
+    public void renderUnlockMessageAccept(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
+        ConfirmMessageUtils.renderUnlockAcceptMessage(guiGraphics, pose, -12, this.getCurrency().icon);
+        guiGraphics.drawCenteredString(Minecraft.getInstance().font, this.accept, 0, 0, 0xffffffff);
+    }
+
+    @Override
+    public void onClickUnlocked() {
+        super.onClickUnlocked();
+        Minecraft minecraft = Minecraft.getInstance();
+        UUID target = ThatSkyInteractions.getInstance().getClient().getTarget();
+
+        if (target == null)
+            return;
+
+        Player player = minecraft.level.getPlayerByUUID(target);
+
+        if (player == null)
+            return;
+
+        if (((IInteractHandler) minecraft.player).simpleanimator$inviteInteract(player, this.leveledInteraction, true)) {
+            SimpleAnimator.getNetwork().update(new InteractButtonPacket.Invite(target, this.interaction));
+        }
     }
 
     @Override

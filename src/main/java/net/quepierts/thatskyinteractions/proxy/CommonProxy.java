@@ -50,7 +50,6 @@ public class CommonProxy {
 
         this.interactTreeManager.sync(event);
         data.sync(event);
-
     }
 
     public InteractTreeManager getInteractTreeManager() {

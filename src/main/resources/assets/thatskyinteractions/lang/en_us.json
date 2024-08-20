@@ -1,15 +1,22 @@
 {
-  "key.thatskyinteractions.interact_menu": "Open Interact Menu",
+  "key.thatskyinteractions.enable_interact": "Enable TSI Interactions",
 
   "key.categories.thatskyinteractions": "That Sky Interactions",
 
+  "gui.message.unlock.accept.left": "Receive",
+  "gui.message.unlock.accept.right": "gifts",
   "gui.message.unlock.friend.request.left": "Send an",
   "gui.message.unlock.friend.request.right": "to befriend this player?",
+  "gui.message.unlock.friend.accept": "Become friends with this player?",
   "gui.message.unlock.interaction.request.left": "Give",
   "gui.message.unlock.interaction.request.right": "to this friend to unlock %s?",
+  "gui.message.unlock.interaction.accept": "Unlock %s?",
   "gui.message.unlock.lock.request.left": "Give",
   "gui.message.unlock.lock.request.right": "to this friend to increase %s?",
+  "gui.message.unlock.lock.accept": "Increase %s with this friend?",
   "gui.message.unlock.lock.intimacy": "intimacy",
+  "gui.message.block.line1": "Block this player?",
+  "gui.message.block.line2": "You won't get that player any invitation!",
 
   "gui.tree.node.interaction.level": "Level %s",
 

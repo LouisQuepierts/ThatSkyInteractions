@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.client.gui.component.tree;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
@@ -15,34 +14,35 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.thatskyinteractions.PlayerUtils;
-import net.quepierts.thatskyinteractions.client.gui.Palette;
-import net.quepierts.thatskyinteractions.client.gui.RenderUtils;
+import net.quepierts.simpleanimator.api.IAnimateHandler;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.client.gui.component.Resizable;
-import net.quepierts.thatskyinteractions.client.gui.holder.DoubleHolder;
 import net.quepierts.thatskyinteractions.client.gui.component.CulledRenderable;
 import net.quepierts.thatskyinteractions.client.gui.component.GlowingLine;
+import net.quepierts.thatskyinteractions.client.gui.component.Resizable;
+import net.quepierts.thatskyinteractions.client.gui.holder.DoubleHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
-import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;
-import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
-import net.quepierts.thatskyinteractions.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmScreen;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
+import net.quepierts.thatskyinteractions.data.tree.NodeState;
 import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
+import net.quepierts.thatskyinteractions.proxy.Animations;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 public class InteractTreeWidget extends AbstractWidget implements Resizable {
     private static final float SQRT2 = 1.414213562373095f;
+    private final Minecraft minecraft = Minecraft.getInstance();
     private final AnimatableScreen parent;
     private final InteractTreeInstance treeInstance;
     private final ScreenAnimator animator;
@@ -169,12 +169,16 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
                     btn.onClickLocked();
                     break;
                 case UNLOCKABLE:
-                    int counted = Minecraft.getInstance().player.getInventory().countItem(btn.currency.item);
+                    int counted = minecraft.player.getInventory().countItem(btn.currency.item);
 
                     if (counted < btn.getPrice()) {
                         btn.onClickLocked();
                         break;
                     }
+
+                    IAnimateHandler handler = (IAnimateHandler) minecraft.player;
+                    if (!handler.simpleanimator$isRunning() && !handler.simpleanimator$getAnimator().getAnimationLocation().equals(Animations.HELD_CANDLE))
+                        handler.simpleanimator$playAnimate(Animations.HELD_CANDLE, true);
 
                     if (btn == this.clickUnlockable) {
                         this.clickUnlockableTimes ++;
@@ -189,10 +193,10 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
                         CandleInfoLayer.INSTANCE.setShrink(btn.currency, btn.price);
                         CandleInfoLayer.INSTANCE.freeze(btn.currency);
                         this.parent.hide();
-                        Minecraft.getInstance().pushGuiLayer(
+                        minecraft.pushGuiLayer(
                                 new ConfirmScreen(
-                                        Component.literal(this.getClass().getSimpleName()),
-                                        new UnlockNodeConfirmProvider(btn),
+                                        Component.empty(),
+                                        new UnlockNodeInviteConfirmProvider(parent, btn),
                                         264, 176));
                     } else {
                         CandleInfoLayer.INSTANCE.shrink(btn.currency, 1);
@@ -245,50 +249,46 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
         this.clickUnlockable = null;
     }
 
-    private class UnlockNodeConfirmProvider implements ConfirmProvider {
-        private final TreeNodeButton button;
-
-        protected UnlockNodeConfirmProvider(TreeNodeButton button) {
-            this.button = button;
-        }
-
-        @Override
-        public void render(GuiGraphics guiGraphics, int width, int height) {
-            RenderSystem.enableBlend();
-            Palette.useUnlockedIconColor();
-            RenderUtils.blitIcon(guiGraphics, this.button.getIcon(), -20, 20 - height / 2, 40, 40);
-            Palette.reset();
-
-            PoseStack pose = guiGraphics.pose();
-            pose.pushPose();
-            pose.scale(1.25f, 1.25f, 1.25f);
-            this.button.renderUnlockMessage(guiGraphics, pose, width, height);
-            pose.popPose();
-
-            Palette.reset();
+    private class UnlockNodeInviteConfirmProvider extends ButtonConfirmProvider {
+        protected UnlockNodeInviteConfirmProvider(AnimatableScreen screen, TreeNodeButton button) {
+            super(screen, button);
         }
 
         @Override
         public void confirm() {
-            treeInstance.unlock(button.id);
-            parent.enter();
-            Minecraft.getInstance().getSoundManager().play(
-                    SimpleSoundInstance.forUI(
-                            SoundEvents.PLAYER_LEVELUP,
-                            1.0f
-                    )
+            UUID other = treeInstance.getPair().getOther(minecraft.player.getUUID());
+            ThatSkyInteractions.getInstance().getClient().getUnlockRelationshipHandler().invite(
+                    other,
+                    button.id,
+                    this::onAccepted,
+                    this::onCanceled
             );
-            reset(treeInstance.getTree(), treeInstance);
-            CandleInfoLayer.INSTANCE.unfreeze(button.currency);
-            CandleInfoLayer.INSTANCE.refund(button.currency);
-            PlayerUtils.costItems(Minecraft.getInstance().player, button.currency.item, button.price);
         }
 
         @Override
         public void cancel() {
             CandleInfoLayer.INSTANCE.unfreeze(button.currency);
             clearClickCounter();
-            parent.enter();
+            screen.enter();
+        }
+
+        private void onAccepted() {
+            CandleInfoLayer.INSTANCE.unfreeze(button.currency);
+            CandleInfoLayer.INSTANCE.refund(button.currency);
+            screen.enter();
+            reset(treeInstance.getTree(), treeInstance);
+            minecraft.getSoundManager().play(
+                    SimpleSoundInstance.forUI(
+                            SoundEvents.PLAYER_LEVELUP,
+                            1.0f
+                    )
+            );
+        }
+
+        private void onCanceled() {
+            CandleInfoLayer.INSTANCE.unfreeze(button.currency);
+            CandleInfoLayer.INSTANCE.refund(button.currency);
+            screen.enter();
         }
     }
 }

@@ -11,6 +11,7 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.GameType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
@@ -32,7 +33,6 @@ public class CandleInfoLayer implements LayeredDraw.Layer {
     public static final CandleInfoLayer INSTANCE = new CandleInfoLayer();
     public static final int OBJECT_POOL_SIZE = 64;
     private final Minecraft minecraft = Minecraft.getInstance();
-    private final ScreenAnimator animator = new ScreenAnimator();
 
     private final EnumMap<Currency, Entry> map;
     private final ObjectList<Entry> entries;
@@ -59,7 +59,8 @@ public class CandleInfoLayer implements LayeredDraw.Layer {
     @SuppressWarnings("all")
     @Override
     public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
-        animator.tick();
+        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
+            return;
 
         Inventory inventory = this.minecraft.player.getInventory();
 
@@ -82,6 +83,7 @@ public class CandleInfoLayer implements LayeredDraw.Layer {
         }
 
         pose.popPose();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
     }
 
@@ -165,9 +167,9 @@ public class CandleInfoLayer implements LayeredDraw.Layer {
                     entry.currency.icon, backward);
 
             if (i > 1) {
-                this.animator.play(object, ThatSkyInteractions.RANDOM.nextFloat() * 0.25f);
+                ScreenAnimator.GLOBAL.play(object, ThatSkyInteractions.RANDOM.nextFloat() * 0.25f);
             } else {
-                this.animator.play(object);
+                ScreenAnimator.GLOBAL.play(object);
             }
 
             i --;
@@ -212,7 +214,7 @@ public class CandleInfoLayer implements LayeredDraw.Layer {
                     this.show();
                 } else {
                     this.amountAnimation.reset(value, count);
-                    animator.play(this.amountAnimation);
+                    ScreenAnimator.GLOBAL.play(this.amountAnimation);
                     this.counter = 40;
                 }
             }
@@ -250,12 +252,12 @@ public class CandleInfoLayer implements LayeredDraw.Layer {
 
         private void show() {
             this.enterAnimation.reset(this.enterHolder.get(), 1f);
-            animator.play(this.enterAnimation);
+            ScreenAnimator.GLOBAL.play(this.enterAnimation);
         }
 
         private void hide() {
             this.enterAnimation.reset(this.enterHolder.get(), 0f);
-            animator.play(this.enterAnimation);
+            ScreenAnimator.GLOBAL.play(this.enterAnimation);
         }
 
         public boolean isHidden() {

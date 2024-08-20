@@ -11,10 +11,11 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+
     maven {
-        url "https://cursemaven.com"
+        url = "https://api.modrinth.com/maven"
         content {
-            includeGroup "curse.maven"
+            includeGroup "maven.modrinth"
         }
     }
 }
@@ -44,6 +45,12 @@ neoForge {
             client()
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        client_b {
+            client()
+            programArguments.addAll "--username", "Dev1"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
@@ -103,7 +110,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 dependencies {
-    api "curse.maven:simpleanimator-1075493:${simpleanimator_file}"
+    api "maven.modrinth:simpleanimator:$simpleanimator_maven_version"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

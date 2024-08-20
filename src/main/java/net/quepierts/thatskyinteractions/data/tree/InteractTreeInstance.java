@@ -6,22 +6,26 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
 
 public class InteractTreeInstance {
     private static final String KEY_UNLOCKED = "nodes";
     private static final String KEY_TREE_ID = "id";
+    private final PlayerPair pair;
     private final ResourceLocation tree;
     private final Object2ByteMap<String> states;
 
-    public InteractTreeInstance(InteractTree tree, ResourceLocation location) {
+    public InteractTreeInstance(PlayerPair pair, InteractTree tree, ResourceLocation location) {
+        this.pair = pair;
         this.tree = location;
         this.states = new Object2ByteOpenHashMap<>(tree.size());
 
         this.states.put(tree.getRootID(), (byte) NodeState.UNLOCKABLE.ordinal());
     }
 
-    public InteractTreeInstance(InteractTree tree, CompoundTag tag) {
+    public InteractTreeInstance(PlayerPair pair, InteractTree tree, CompoundTag tag) {
+        this.pair = pair;
         this.states = new Object2ByteOpenHashMap<>(tree.size());
         this.tree = ResourceLocation.parse(tag.getString(KEY_TREE_ID));
         CompoundTag map = tag.getCompound(KEY_UNLOCKED);
@@ -46,7 +50,7 @@ public class InteractTreeInstance {
             final NodeState state = NodeState.byUnlocked(this.isUnlocked(first), pair.getSecond());
             final InteractTreeNode node = tree.get(first);
 
-            final NodeState nextState = NodeState.getNextState(pair.getSecond());
+            final NodeState nextState = NodeState.getNextState(state);
 
             if (state == NodeState.LOCKED) {
                 this.states.removeByte(first);
@@ -73,12 +77,11 @@ public class InteractTreeInstance {
         }
     }
 
-    private InteractTreeInstance(ResourceLocation tree, ObjectSet<String> strings) {
+    private InteractTreeInstance(PlayerPair pair, ResourceLocation tree, Object2ByteMap<String> map) {
+        this.pair = pair;
         this.tree = tree;
-        this.states = new Object2ByteOpenHashMap<>();
-        for (String s : strings) {
-            this.states.put(s, (byte) NodeState.UNLOCKED.ordinal());
-        }
+        this.states = map;
+        //this.update(getTree().getRootID());
     }
 
     public CompoundTag serializeNBT(CompoundTag tag) {
@@ -112,17 +115,23 @@ public class InteractTreeInstance {
     }
 
     public static InteractTreeInstance fromNetwork(FriendlyByteBuf byteBuf) {
+        PlayerPair pair = PlayerPair.fromNetwork(byteBuf);
         ResourceLocation tree = byteBuf.readResourceLocation();
-        ObjectOpenHashSet<String> strings = byteBuf.readCollection(ObjectOpenHashSet::new, FriendlyByteBuf::readUtf);
-        return new InteractTreeInstance(tree, strings);
+        Object2ByteOpenHashMap<String> map = byteBuf.readMap(Object2ByteOpenHashMap::new, FriendlyByteBuf::readUtf, FriendlyByteBuf::readByte);
+        return new InteractTreeInstance(pair, tree, map);
     }
 
     public void toNetwork(FriendlyByteBuf friendlyByteBuf) {
+        this.pair.toNetwork(friendlyByteBuf);
         friendlyByteBuf.writeResourceLocation(this.tree);
-        friendlyByteBuf.writeCollection(this.states.keySet(), FriendlyByteBuf::writeUtf);
+        friendlyByteBuf.writeMap(this.states, FriendlyByteBuf::writeUtf, FriendlyByteBuf::writeByte);
     }
 
     public InteractTree getTree() {
         return ThatSkyInteractions.getInstance().getProxy().getInteractTreeManager().get(this.tree);
+    }
+
+    public PlayerPair getPair() {
+        return this.pair;
     }
 }

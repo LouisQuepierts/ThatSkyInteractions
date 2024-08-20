@@ -1,17 +1,24 @@
-package net.quepierts.thatskyinteractions.client.gui;
+package net.quepierts.thatskyinteractions.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.Shaders;
 import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
@@ -20,6 +27,41 @@ public class RenderUtils {
 
     public static ResourceLocation getInteractionIcon(ResourceLocation interaction) {
         return ResourceLocation.fromNamespaceAndPath(interaction.getNamespace(), "textures/icon/interaction/" + interaction.getPath() + ".png");
+    }
+
+    public static void fillRoundRect(GuiGraphics guiGraphics, int x, int y, int width, int height, float radius, int color) {
+        int x2 = x + width;
+        int y2 = y + height;
+
+        final float ratio = (float) height / (float) width;
+
+        RenderSystem.setShader(Shaders::getPositionColorRoundRectShader);
+        ShaderInstance shader = Shaders.getPositionColorRoundRectShader();
+        shader.getUniform("Ratio").set(ratio);
+        shader.getUniform("Radius").set(radius);
+
+        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix4f, (float)x, (float)y, 0).setUv(0, 0).setColor(color);
+        bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y2, 0).setUv(1, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y, 0).setUv(1, 0).setColor(color);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+    }
+
+    public static void blit(PoseStack poseStack, ResourceLocation location, int x, int y, int width, int height) {
+        int x2 = x + width;
+        int y2 = y + height;
+
+        Matrix4f matrix4f = poseStack.last().pose();
+        RenderSystem.setShaderTexture(0, location);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.addVertex(matrix4f, (float)x, (float)y, 0).setUv(0, 0);
+        bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1);
+        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y2, 0).setUv(1, 1);
+        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y, 0).setUv(1, 0);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
     public static void blit(GuiGraphics guiGraphics, ResourceLocation atlasLocation, int x, int y, int width, int height) {

@@ -10,6 +10,7 @@ import java.util.Set;
 
 @OnlyIn(Dist.CLIENT)
 public class ScreenAnimator {
+    public static final ScreenAnimator GLOBAL = new Global();
     private final Set<AbstractScreenAnimation> animations;
     private float timer;
 
@@ -70,4 +71,9 @@ public class ScreenAnimator {
     }
 
     private static void placeholder() {}
+
+    private static class Global extends ScreenAnimator {
+        @Override
+        public void stop(Runnable runnable) {}
+    }
 }

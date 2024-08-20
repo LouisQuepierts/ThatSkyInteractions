@@ -1,0 +1,92 @@
+{
+	"format_version": "1.8.0",
+	"useVanillaRig": false,
+	"movable": true,
+	"unlock": ["HEAD", "BODY", "LEFT_LEG", "RIGHT_LEG"],
+	"animations": {
+		"main": {
+			"loop": true,
+			"anim_time_update": "fade_in = 0.5, fade_out = 0.5",
+			"animation_length": 1,
+			"bones": {
+				"left_arm": {
+					"rotation": {
+						"0.0": [-86.89305, 23.60136, -5.22801],
+						"1.0": [-86.89305, 23.60136, -5.22801]
+					}
+				},
+				"right_arm": {
+					"rotation": {
+						"0.0": [-64.40248, -30.74726, -7.70369],
+						"1.0": [-64.40248, -30.74726, -7.70369]
+					}
+				}
+			}
+		},
+		"exit": {
+			"animation_length": 0.6667,
+			"bones": {
+				"body": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.3333": {
+							"pre": [0, 0, 0],
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.5": {
+							"post": [0, 0, 2.5],
+							"lerp_mode": "catmullrom"
+						},
+						"0.6667": [0, 0, 0]
+					}
+				},
+				"head": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.3333": {
+							"pre": [0, 0, 0],
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.5": {
+							"post": [0, 0, 5],
+							"lerp_mode": "catmullrom"
+						},
+						"0.6667": [0, 0, 0]
+					}
+				},
+				"left_arm": {
+					"rotation": {
+						"0.0": [-86.89305, 23.60136, -5.22801],
+						"0.25": {
+							"pre": [-57.93886, 54.65065, -15.46685],
+							"post": [-57.93886, 54.65065, -15.46685],
+							"lerp_mode": "catmullrom"
+						},
+						"0.3333": {
+							"post": [-57.93886, 54.65065, -27.96685],
+							"lerp_mode": "catmullrom"
+						},
+						"0.6667": [0, 0, 0]
+					}
+				},
+				"right_arm": {
+					"rotation": {
+						"0.0": [-64.40248, -30.74726, -7.70369],
+						"0.1667": {
+							"pre": [-37.24617, -6.54876, 16.02296],
+							"post": [-37.24617, -6.54876, 16.02296],
+							"lerp_mode": "catmullrom"
+						},
+						"0.25": {
+							"post": [-18.62308, -3.27438, 15.51148],
+							"lerp_mode": "catmullrom"
+						},
+						"0.6667": [0, 0, 0]
+					}
+				}
+			}
+		}
+	}
+}
