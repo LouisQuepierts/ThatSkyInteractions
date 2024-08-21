@@ -79,8 +79,7 @@ public class CandleLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
                 .translate(rightArm.x / 16f, rightArm.y / 16f, rightArm.z / 16f)
                 .rotateXYZ(rightArm.xRot, rightArm.yRot, rightArm.zRot);
 
-        Vector3f position = mat.getTranslation(new Vector3f());
-        return position;
+        return mat.getTranslation(new Vector3f());
     }
 
     private static void addParticlesAndSound(Level level, Vector3f offset, RandomSource random) {
