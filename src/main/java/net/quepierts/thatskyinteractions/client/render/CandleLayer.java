@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -24,6 +23,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.quepierts.simpleanimator.api.IAnimateHandler;
+import net.quepierts.simpleanimator.core.client.ClientAnimator;
 import net.quepierts.thatskyinteractions.client.Particles;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -35,7 +36,6 @@ import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 public class CandleLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-    private static final ResourceLocation TEXTURE_FLAME = ResourceLocation.withDefaultNamespace("textures/particle/flame.png");
     private static final Set<UUID> ENABLED = new HashSet<>();
 
     private static final BlockState CANDLE = Blocks.CANDLE.defaultBlockState().setValue(CandleBlock.LIT, true);
@@ -47,7 +47,7 @@ public class CandleLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
 
     @Override
     public void render(@NotNull PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int packedLight, AbstractClientPlayer player, float v, float v1, float v2, float v3, float v4, float v5) {
-        if (ENABLED.contains(player.getUUID())) {
+        if (((ClientAnimator) ((IAnimateHandler) player).simpleanimator$getAnimator()).getVariable("heldCandle").getAsBoolean()) {
             int overlayCoords = LivingEntityRenderer.getOverlayCoords(player, 0.0F);
             poseStack.pushPose();
             PlayerModel<AbstractClientPlayer> parent = this.getParentModel();

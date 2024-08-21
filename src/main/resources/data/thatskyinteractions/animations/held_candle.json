@@ -6,7 +6,6 @@
 	"animations": {
 		"main": {
 			"loop": true,
-			"anim_time_update": "fade_in = 0.5, fade_out = 0.5",
 			"animation_length": 1,
 			"bones": {
 				"left_arm": {
@@ -19,6 +18,12 @@
 					"rotation": {
 						"0.0": [-64.40248, -30.74726, -7.70369],
 						"1.0": [-64.40248, -30.74726, -7.70369]
+					}
+				},
+				"var_heldCandle": {
+					"position": {
+						"0.0": [1, 0, 0],
+						"1.0": [1, 0, 0]
 					}
 				}
 			}
@@ -83,6 +88,13 @@
 							"post": [-18.62308, -3.27438, 15.51148],
 							"lerp_mode": "catmullrom"
 						},
+						"0.6667": [0, 0, 0]
+					}
+				},
+				"var_heldCandle": {
+					"position": {
+						"0.0": [1, 0, 0],
+						"0.2083": [0, 0, 0],
 						"0.6667": [0, 0, 0]
 					}
 				}

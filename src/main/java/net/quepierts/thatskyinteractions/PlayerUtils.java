@@ -11,8 +11,9 @@ public class PlayerUtils {
 
         int remain = amount;
         for (ItemStack stack : inventory.items) {
-            if (!stack.is(item))
+            if (!stack.is(item)) {
                 continue;
+            }
 
             int count = stack.getCount();
             if (count > remain) {
@@ -23,8 +24,9 @@ public class PlayerUtils {
                 stack.shrink(count);
             }
 
-            if (remain < 1)
+            if (remain < 1) {
                 break;
+            }
         }
     }
 }

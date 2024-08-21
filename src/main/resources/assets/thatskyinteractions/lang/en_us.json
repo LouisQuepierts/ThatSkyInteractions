@@ -21,5 +21,7 @@
   "gui.tree.node.interaction.level": "Level %s",
 
   "interaction.thatskyinteractions.high_five": "High Five",
-  "interaction.thatskyinteractions.hug": "Hug"
+  "interaction.thatskyinteractions.hug": "Hug",
+  "interaction.thatskyinteractions.double_high_five": "Double High Five",
+  "interaction.thatskyinteractions.pat_head": "Pat Head"
 }

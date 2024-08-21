@@ -21,5 +21,7 @@
   "gui.tree.node.interaction.level": "%s级",
 
   "interaction.thatskyinteractions.high_five": "击掌",
-  "interaction.thatskyinteractions.hug": "拥抱"
+  "interaction.thatskyinteractions.hug": "拥抱",
+  "interaction.thatskyinteractions.double_high_five": "双击掌",
+  "interaction.thatskyinteractions.pat_head": "摸头"
 }

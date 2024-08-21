@@ -4,8 +4,8 @@
         "srcrgb": "srcalpha",
         "dstrgb": "1-srcalpha"
     },
-    "vertex": "round_rect",
-    "fragment": "round_rect",
+    "vertex": "thatskyinteractions:round_rect",
+    "fragment": "thatskyinteractions:round_rect",
     "attributes": [
         "Color",
         "UV0"

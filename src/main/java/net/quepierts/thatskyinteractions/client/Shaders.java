@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.client;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,7 +28,7 @@ public class Shaders {
         event.registerShader(
                 new ShaderInstance(
                         event.getResourceProvider(),
-                        ResourceLocation.withDefaultNamespace("round_rect"), // why I cannot use my MODID?
+                        ThatSkyInteractions.getLocation("round_rect"),
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
                 (shader) -> positionColorRoundRect = shader

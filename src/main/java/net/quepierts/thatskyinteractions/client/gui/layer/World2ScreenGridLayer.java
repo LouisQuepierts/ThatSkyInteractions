@@ -20,6 +20,7 @@ import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.interact.World2ScreenButton;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -52,15 +53,17 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         objects.clear();
         inRange.clear();
         highlight = null;
-        objects.put(UUID.randomUUID(), new Position(new Vector3f(0, 70, 0)));
-        objects.put(UUID.randomUUID(), new Position(new Vector3f(20, 96, 0)));
-        objects.put(UUID.randomUUID(), new Position(new Vector3f(0, 64, 30)));
+//        objects.put(UUID.randomUUID(), new Position(new Vector3f(0, 70, 0)));
+//        objects.put(UUID.randomUUID(), new Position(new Vector3f(20, 96, 0)));
+//        objects.put(UUID.randomUUID(), new Position(new Vector3f(0, 64, 30)));
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public void render(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
             return;
+
+        update();
 
         float deltaTicks = deltaTracker.getGameTimeDeltaTicks();
 
@@ -84,11 +87,8 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         RenderSystem.disableBlend();
     }
 
-    public void tick() {
+    public void update() {
         if (this.minecraft.level == null)
-            return;
-
-        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
             return;
 
         final Camera camera = this.minecraft.gameRenderer.getMainCamera();

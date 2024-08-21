@@ -8,6 +8,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeManager;
@@ -22,7 +23,7 @@ public class CommonProxy {
         NeoForge.EVENT_BUS.addListener(OnDatapackSyncEvent.class, this::onDatapackSync);
 
         InteractTreeNode.register();
-        bus.addListener(Packets::onRegisterPayloadHandlers);
+        bus.addListener(RegisterPayloadHandlersEvent.class, Packets::onRegisterPayloadHandlers);
         interactTreeManager = new InteractTreeManager();
 
     }

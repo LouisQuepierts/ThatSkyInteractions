@@ -8,7 +8,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 import net.quepierts.thatskyinteractions.proxy.CommonProxy;
@@ -30,7 +29,7 @@ public class ThatSkyInteractions {
     public ThatSkyInteractions(IEventBus modBus, ModContainer modContainer) {
         instance = this;
         this.proxy = FMLEnvironment.dist.isClient() ? new ClientProxy(modBus, modContainer) : new CommonProxy(modBus, modContainer);
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        //modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     public static ThatSkyInteractions getInstance() {

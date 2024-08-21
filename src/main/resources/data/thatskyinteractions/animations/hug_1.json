@@ -1,5 +1,6 @@
 {
 	"format_version": "1.8.0",
+	"abortable": false,
 	"animations": {
 		"invite": {
 			"animation_length": 1,

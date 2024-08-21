@@ -51,23 +51,7 @@
       "id": "lock_1",
       "type": "lock",
       "price": 1,
-      "middle": "fist_pound_1"
-    },
-    {
-      "id": "fist_pound_1",
-      "type": "interaction",
-      "price": 3,
-      "interact": "thatskyinteractions:fist_pound",
-      "left": "fist_pound_2",
-      "middle": "double_high_five_1",
-      "height": 24
-    },
-    {
-      "id": "fist_pound_2",
-      "type": "interaction",
-      "price": 4,
-      "interact": "thatskyinteractions:fist_pound",
-      "level": 2
+      "middle": "double_high_five_1"
     },
     {
       "id": "double_high_five_1",

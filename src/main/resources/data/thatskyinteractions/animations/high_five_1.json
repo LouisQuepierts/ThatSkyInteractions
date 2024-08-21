@@ -164,7 +164,7 @@
 		},
 		"main": {
 			"animation_length": 2.625,
-			"anim_time_update": "fadeOut = 0.3f",
+			"anim_time_update": "fadeOut = 0.3",
 			"bones": {
 				"requester_root": {
 					"rotation": {

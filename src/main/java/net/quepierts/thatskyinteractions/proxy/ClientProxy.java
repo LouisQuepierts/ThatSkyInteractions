@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.proxy;
 
-import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -19,6 +18,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.quepierts.simpleanimator.api.IInteractHandler;
+import net.quepierts.simpleanimator.api.animation.AnimationState;
 import net.quepierts.simpleanimator.api.event.client.ClientAnimatorStateEvent;
 import net.quepierts.simpleanimator.api.event.common.*;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
@@ -39,8 +39,8 @@ import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -49,7 +49,6 @@ public class ClientProxy extends CommonProxy {
     public final Options options;
     private final RelationshipDataCache dataCache;
     private final UnlockRelationshipHandler unlockRelationshipHandler;
-    private final Logger logger = LogUtils.getLogger();
 
 
     @Nullable private UUID target;
@@ -67,7 +66,6 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(InputEvent.Key.class, this::onKey);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingIn.class, this::onLoggingIn);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, this::onLoggingOut);
-        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, this::onClientTick);
         NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedOutEvent.class, this::onPlayerLoggedOut);
         NeoForge.EVENT_BUS.addListener(LevelEvent.Load.class, this::onWorldLoad);
         NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Pre.class, this::onRenderGUI);
@@ -114,15 +112,14 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onClientAnimatorExit(final ClientAnimatorStateEvent.Exit event) {
-        if (!event.getOwner().equals(Minecraft.getInstance().player.getUUID()))
+        if (!event.getOwner().equals(Minecraft.getInstance().player.getUUID())) {
             return;
+        }
 
-        switch (event.getCurState()) {
-            case LOOP:
-                if (event.getAnimationID().equals(Animations.UNLOCK_ACCEPT)) {
-                    this.unlockRelationshipHandler.accepted();
-                }
-                break;
+        if (Objects.requireNonNull(event.getCurState()) == AnimationState.LOOP) {
+            if (event.getAnimationID().equals(Animations.UNLOCK_ACCEPT)) {
+                this.unlockRelationshipHandler.accepted();
+            }
         }
     }
 
@@ -141,35 +138,34 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onInteractInvite(final InteractInviteEvent.Pre event) {
-        if (!event.getTarget().isLocalPlayer())
+        if (!event.getTarget().isLocalPlayer()) {
             return;
+        }
 
-        if (!event.getInteractionID().getNamespace().equals(ThatSkyInteractions.MODID))
+        if (!event.getInteractionID().getNamespace().equals(ThatSkyInteractions.MODID)) {
             return;
+        }
 
     }
 
     private void onInteractAccepted(final InteractAcceptEvent.Post event) {
-        if (!event.getAcceptor().isLocalPlayer())
+        if (!event.getAcceptor().isLocalPlayer()) {
             return;
+        }
 
         World2ScreenGridLayer.INSTANCE.remove(event.getInviter().getUUID());
     }
 
     private void onCancelInteract(final CancelInteractEvent event) {
-        if (!event.getPlayer().isLocalPlayer())
+        if (!event.getPlayer().isLocalPlayer()) {
             return;
+        }
 
-        if (!event.getInteractionID().getNamespace().equals(ThatSkyInteractions.MODID))
+        if (!event.getInteractionID().getNamespace().equals(ThatSkyInteractions.MODID)) {
             return;
+        }
 
         SimpleAnimator.getNetwork().update(new InteractButtonPacket.Cancel(((IInteractHandler) event.getPlayer()).simpleanimator$getRequest().getTarget(), EMPTY_LOCATION));
-    }
-
-    private void onClientTick(final ClientTickEvent.Post event) {
-        if (Minecraft.getInstance().level != null) {
-            World2ScreenGridLayer.INSTANCE.tick();
-        }
     }
 
     private void onWorldLoad(final LevelEvent.Load event) {
@@ -213,11 +209,13 @@ public class ClientProxy extends CommonProxy {
     }
 
     public void onEntityInteract(final PlayerInteractEvent.EntityInteract event) {
-        if (!event.getEntity().isLocalPlayer())
+        if (!event.getEntity().isLocalPlayer()) {
             return;
+        }
 
-        if (!this.options.keyEnabledInteract.get().isDown())
+        if (!this.options.keyEnabledInteract.get().isDown()) {
             return;
+        }
 
         Entity target = event.getTarget();
         if (target instanceof Player) {
@@ -230,14 +228,24 @@ public class ClientProxy extends CommonProxy {
                 event.setCanceled(true);
             }
         }
+        /*InteractTree tree = this.dataCache.getTree();
+        if (tree != null) {
+            UUID uuid = target.getUUID();
+            InteractTreeInstance instance = this.dataCache.get(uuid);
+            Minecraft.getInstance().setScreen(new PlayerInteractScreen(target, tree, instance));
+            this.setTarget(uuid);
+            event.setCanceled(true);
+        }*/
     }
 
     private void onMouseScrolling(final InputEvent.MouseScrollingEvent event) {
-        if (Minecraft.getInstance().level == null)
+        if (Minecraft.getInstance().level == null) {
             return;
+        }
 
-        if (!this.options.keyEnabledInteract.get().isDown())
+        if (!this.options.keyEnabledInteract.get().isDown()) {
             return;
+        }
 
         World2ScreenGridLayer.INSTANCE.scroll(event.getMouseY());
         event.setCanceled(true);
