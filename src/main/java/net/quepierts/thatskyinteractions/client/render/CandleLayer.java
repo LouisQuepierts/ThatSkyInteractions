@@ -24,22 +24,18 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.quepierts.simpleanimator.api.IAnimateHandler;
+import net.quepierts.simpleanimator.core.animation.Animator;
 import net.quepierts.simpleanimator.core.client.ClientAnimator;
 import net.quepierts.thatskyinteractions.client.Particles;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 @OnlyIn(Dist.CLIENT)
 public class CandleLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-    private static final Set<UUID> ENABLED = new HashSet<>();
-
     private static final BlockState CANDLE = Blocks.CANDLE.defaultBlockState().setValue(CandleBlock.LIT, true);
     private final BlockRenderDispatcher blockRenderer;
+
     public CandleLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer, BlockRenderDispatcher blockRenderer) {
         super(renderer);
         this.blockRenderer = blockRenderer;
@@ -47,7 +43,14 @@ public class CandleLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
 
     @Override
     public void render(@NotNull PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int packedLight, AbstractClientPlayer player, float v, float v1, float v2, float v3, float v4, float v5) {
-        if (((ClientAnimator) ((IAnimateHandler) player).simpleanimator$getAnimator()).getVariable("heldCandle").getAsBoolean()) {
+        Animator animator = ((IAnimateHandler) player).simpleanimator$getAnimator();
+
+        if (!animator.isRunning()) {
+            return;
+        }
+
+        ClientAnimator clientAnimator = (ClientAnimator) animator;
+        if (clientAnimator.getVariable("heldCandle").getAsBoolean()) {
             int overlayCoords = LivingEntityRenderer.getOverlayCoords(player, 0.0F);
             poseStack.pushPose();
             PlayerModel<AbstractClientPlayer> parent = this.getParentModel();
@@ -101,17 +104,5 @@ public class CandleLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<A
         }
 
         level.addParticle(Particles.SHORTER_FLAME.get(), offset.x, offset.y, offset.z, 0.0, 0.0, 0.0);
-    }
-
-    public static void enable(UUID uuid) {
-        ENABLED.add(uuid);
-    }
-
-    public static void disable(UUID uuid) {
-        ENABLED.remove(uuid);
-    }
-
-    public static void reset() {
-        ENABLED.clear();
     }
 }

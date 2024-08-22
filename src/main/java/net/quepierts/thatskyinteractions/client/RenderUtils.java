@@ -15,6 +15,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import org.joml.Matrix4f;
 
+import java.util.Objects;
+
 @OnlyIn(Dist.CLIENT)
 public class RenderUtils {
     public static final ResourceLocation DEFAULT_ICON = ThatSkyInteractions.getLocation("textures/icon/none.png");
@@ -31,8 +33,8 @@ public class RenderUtils {
 
         RenderSystem.setShader(Shaders::getPositionColorRoundRectShader);
         ShaderInstance shader = Shaders.getPositionColorRoundRectShader();
-        shader.getUniform("Ratio").set(ratio);
-        shader.getUniform("Radius").set(radius);
+        Objects.requireNonNull(shader.getUniform("Ratio")).set(ratio);
+        Objects.requireNonNull(shader.getUniform("Radius")).set(radius);
 
         Matrix4f matrix4f = guiGraphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);

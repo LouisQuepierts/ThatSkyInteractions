@@ -41,15 +41,19 @@ neoForge {
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
     runs {
+        configureEach {
+            jvmArguments.addAll "-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition", "-XX:ReservedCodeCacheSize=484M", "-XX:NonNMethodCodeHeapSize=4M", "-XX:NonProfiledCodeHeapSize=240M", "-XX:ProfiledCodeHeapSize=240M"
+        }
+
         client {
             client()
-
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         client_b {
             client()
+            jvmArguments.addAll "-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition", "-XX:NonProfiledCodeHeapSize=240M", "-XX:ProfiledCodeHeapSize=240M"
             programArguments.addAll "--username", "Dev1"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
@@ -117,6 +121,9 @@ dependencies {
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
 // When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
 // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+tasks.withType(JavaCompile).configureEach {
+    options.incremental = true;
+}
 tasks.withType(ProcessResources).configureEach {
     var replaceProperties = [
             minecraft_version           : minecraft_version,

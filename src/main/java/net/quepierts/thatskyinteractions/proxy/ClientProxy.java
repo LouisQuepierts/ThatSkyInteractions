@@ -4,6 +4,10 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -23,6 +27,7 @@ import net.quepierts.simpleanimator.api.event.client.ClientAnimatorStateEvent;
 import net.quepierts.simpleanimator.api.event.common.*;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.CameraHandler;
 import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.Particles;
 import net.quepierts.thatskyinteractions.client.UnlockRelationshipHandler;
@@ -35,6 +40,7 @@ import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.PlayerInteractScreen;
 import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
 import net.quepierts.thatskyinteractions.client.render.CandleLayer;
+import net.quepierts.thatskyinteractions.client.render.EffectDistributeLayer;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
@@ -49,6 +55,7 @@ public class ClientProxy extends CommonProxy {
     public final Options options;
     private final RelationshipDataCache dataCache;
     private final UnlockRelationshipHandler unlockRelationshipHandler;
+    private final CameraHandler cameraHandler = new CameraHandler();
 
 
     @Nullable private UUID target;
@@ -69,6 +76,7 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedOutEvent.class, this::onPlayerLoggedOut);
         NeoForge.EVENT_BUS.addListener(LevelEvent.Load.class, this::onWorldLoad);
         NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Pre.class, this::onRenderGUI);
+        NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, cameraHandler::onComputeCameraAngles);
 
         SimpleAnimator.EVENT_BUS.addListener(AnimatorEvent.Play.class, this::onAnimatorPlay);
         SimpleAnimator.EVENT_BUS.addListener(AnimatorEvent.Stop.class, this::onAnimatorStop);
@@ -85,10 +93,15 @@ public class ClientProxy extends CommonProxy {
         modBus.addListener(RegisterGuiLayersEvent.class, this::onRegisterGuiLayers);
         modBus.addListener(RegisterParticleProvidersEvent.class, this::onRegisterParticleProviders);
         modBus.addListener(RegisterKeyMappingsEvent.class, options::register);
+        modBus.addListener(EntityRenderersEvent.AddLayers.class, this::onAddLayers);
 
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         Particles.REGISTER.register(modBus);
+    }
+
+    private void onComputeCameraAngles(final ViewportEvent.ComputeCameraAngles event) {
+
     }
 
     private void onRenderGUI(RenderGuiEvent.Pre event) {
@@ -124,17 +137,11 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onAnimatorPlay(final AnimatorEvent.Play event) {
-        if (HELD_ANIMATIONS.contains(event.getAnimationID())) {
-            CandleLayer.enable(event.getOwner());
-        } else {
-            CandleLayer.disable(event.getOwner());
-        }
+
     }
 
     private void onAnimatorStop(final AnimatorEvent.Stop event) {
-        if (HELD_ANIMATIONS.contains(event.getAnimationID())) {
-            CandleLayer.disable(event.getOwner());
-        }
+
     }
 
     private void onInteractInvite(final InteractInviteEvent.Pre event) {
@@ -190,7 +197,6 @@ public class ClientProxy extends CommonProxy {
         this.dataCache.clear();
         this.unlockRelationshipHandler.reset();
         World2ScreenGridLayer.INSTANCE.reset();
-        CandleLayer.reset();
 
         if (this.blockedPlayerList != null) {
             this.blockedPlayerList.save();
@@ -236,6 +242,18 @@ public class ClientProxy extends CommonProxy {
             this.setTarget(uuid);
             event.setCanceled(true);
         }*/
+    }
+
+    private void onAddLayers(EntityRenderersEvent.AddLayers event) {
+        this.addLayers(event.getSkin(PlayerSkin.Model.WIDE), event.getContext().getBlockRenderDispatcher());
+        this.addLayers(event.getSkin(PlayerSkin.Model.SLIM), event.getContext().getBlockRenderDispatcher());
+    }
+
+    private void addLayers(EntityRenderer<? extends Player> renderer, BlockRenderDispatcher dispatcher) {
+        if (renderer instanceof PlayerRenderer playerRenderer) {
+            //playerRenderer.addLayer(new EffectDistributeLayer(playerRenderer));
+            playerRenderer.addLayer(new CandleLayer(playerRenderer, dispatcher));
+        }
     }
 
     private void onMouseScrolling(final InputEvent.MouseScrollingEvent event) {
