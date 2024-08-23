@@ -11,7 +11,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
-import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
 
 @OnlyIn(Dist.CLIENT)
 public class AnimateScreenHolderLayer implements LayeredDraw.Layer {

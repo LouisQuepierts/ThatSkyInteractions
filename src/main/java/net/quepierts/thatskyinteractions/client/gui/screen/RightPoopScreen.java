@@ -2,21 +2,12 @@ package net.quepierts.thatskyinteractions.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
-import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
-import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
-import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.client.gui.component.Resizable;
-import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
-import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
