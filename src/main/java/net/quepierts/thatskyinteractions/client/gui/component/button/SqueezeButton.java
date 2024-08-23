@@ -14,6 +14,7 @@ import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.DoubleHolder;
+import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class SqueezeButton extends AbstractButton {
@@ -21,7 +22,7 @@ public abstract class SqueezeButton extends AbstractButton {
     protected final ScreenAnimator animator;
     protected final ResourceLocation icon;
     protected final LerpNumberAnimation clickAnimation;
-    private final DoubleHolder click = new DoubleHolder(0.0f);
+    private final FloatHolder click = new FloatHolder(0.0f);
 
     public SqueezeButton(int x, int y, int scale, Component message, ScreenAnimator animator, ResourceLocation icon) {
         super(x, y, scale, scale, message);
@@ -66,7 +67,6 @@ public abstract class SqueezeButton extends AbstractButton {
         pose.translate(this.getX() + half, this.getY() + half, 0.0f);
         float scale = 1.0f - (AnimateUtils.Time.bounce((float) click.get()) * 0.3f);
         pose.scale(scale, scale, 1.0f);
-        pose.translate(0.0f, 0.0f, 100.0f);
         this.renderIcon(guiGraphics, -half);
         //guiGraphics.blit(icon, -half, -half, this.getWidth(), this.getHeight(), 0, 0, size, size, size, size);
         pose.popPose();
@@ -79,9 +79,7 @@ public abstract class SqueezeButton extends AbstractButton {
 
         RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, alpha * 0.5f);
         RenderUtils.fillRoundRect(guiGraphics, begin, begin, width, width, 0.16f, 0xc0101010);
-        //RenderUtils.blitIcon(guiGraphics, TEXTURE_ROUND_RECT, begin, begin, width, width);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
-
         RenderUtils.blit(guiGraphics, this.getIcon(), begin, begin, width, width);
     }
 

@@ -30,6 +30,10 @@ public class ScreenAnimator {
         this.animations.add(animation);
     }
 
+    public void remove(@NotNull AbstractScreenAnimation animation) {
+        this.animations.remove(animation);
+    }
+
     public void tick() {
         this.timer += Minecraft.getInstance().getTimer().getRealtimeDeltaTicks() / 20.0f;
 

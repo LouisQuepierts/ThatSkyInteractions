@@ -37,13 +37,14 @@ import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
+import net.quepierts.thatskyinteractions.client.gui.screen.FriendAstrolabeScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.PlayerInteractScreen;
 import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
 import net.quepierts.thatskyinteractions.client.render.CandleLayer;
-import net.quepierts.thatskyinteractions.client.render.EffectDistributeLayer;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -55,8 +56,7 @@ public class ClientProxy extends CommonProxy {
     public final Options options;
     private final RelationshipDataCache dataCache;
     private final UnlockRelationshipHandler unlockRelationshipHandler;
-    private final CameraHandler cameraHandler = new CameraHandler();
-
+    @NotNull private final CameraHandler cameraHandler = new CameraHandler();
 
     @Nullable private UUID target;
     private BlockedPlayerList blockedPlayerList;
@@ -196,6 +196,7 @@ public class ClientProxy extends CommonProxy {
     private void onLoggingOut(final ClientPlayerNetworkEvent.LoggingOut event) {
         this.dataCache.clear();
         this.unlockRelationshipHandler.reset();
+        this.cameraHandler.cleanup();
         World2ScreenGridLayer.INSTANCE.reset();
 
         if (this.blockedPlayerList != null) {
@@ -273,6 +274,13 @@ public class ClientProxy extends CommonProxy {
         if (options.keyEnabledInteract.get().isDown()) {
             if (options.keyClickButton.get().isDown()) {
                 World2ScreenGridLayer.INSTANCE.click();
+                return;
+            }
+
+            if (Minecraft.getInstance().screen == null) {
+                if (options.keyOpenFriendAstrolabe.get().isDown()) {
+                    Minecraft.getInstance().setScreen(new FriendAstrolabeScreen());
+                }
             }
         }
     }
@@ -308,4 +316,7 @@ public class ClientProxy extends CommonProxy {
         return this.unlockRelationshipHandler;
     }
 
+    public CameraHandler getCameraHandler() {
+        return this.cameraHandler;
+    }
 }

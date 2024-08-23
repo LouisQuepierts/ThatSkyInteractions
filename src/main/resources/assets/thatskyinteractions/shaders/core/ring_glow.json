@@ -5,7 +5,7 @@
         "dstrgb": "1-srcalpha"
     },
     "vertex": "thatskyinteractions:uv_color",
-    "fragment": "thatskyinteractions:round_rect",
+    "fragment": "thatskyinteractions:ring_glow",
     "attributes": [
         "Color",
         "UV0"
@@ -32,16 +32,10 @@
             "values": [ 1.0, 1.0, 1.0, 1.0 ]
         },
         {
-            "name": "Ratio",
+            "name": "Width",
             "type": "float",
             "count": 1,
             "values": [ 1.0 ]
-        },
-        {
-            "name": "Radius",
-            "type": "float",
-            "count": 1,
-            "values": [ 0.0 ]
         }
     ]
 }

@@ -14,6 +14,7 @@ public class Options {
     private final String CATEGORY = "key.categories.thatskyinteractions";
     public final Lazy<KeyMapping> keyEnabledInteract;
     public final Lazy<KeyMapping> keyClickButton;
+    public final Lazy<KeyMapping> keyOpenFriendAstrolabe;
 
     public Options() {
         this.keyEnabledInteract = Lazy.of(
@@ -32,6 +33,16 @@ public class Options {
                         KeyConflictContext.IN_GAME,
                         InputConstants.Type.KEYSYM,
                         GLFW.GLFW_KEY_R,
+                        CATEGORY
+                )
+        );
+
+        this.keyOpenFriendAstrolabe = Lazy.of(
+                () -> new KeyMapping(
+                        "key.thatskyinteractions.friend_astrolabe",
+                        KeyConflictContext.IN_GAME,
+                        InputConstants.Type.KEYSYM,
+                        GLFW.GLFW_KEY_T,
                         CATEGORY
                 )
         );

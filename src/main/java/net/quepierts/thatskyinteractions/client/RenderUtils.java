@@ -31,8 +31,8 @@ public class RenderUtils {
 
         final float ratio = (float) height / (float) width;
 
-        RenderSystem.setShader(Shaders::getPositionColorRoundRectShader);
-        ShaderInstance shader = Shaders.getPositionColorRoundRectShader();
+        RenderSystem.setShader(Shaders::getRoundRectShader);
+        ShaderInstance shader = Shaders.getRoundRectShader();
         Objects.requireNonNull(shader.getUniform("Ratio")).set(ratio);
         Objects.requireNonNull(shader.getUniform("Radius")).set(radius);
 
@@ -43,6 +43,80 @@ public class RenderUtils {
         bufferbuilder.addVertex(matrix4f, (float)x2, (float)y2, 0).setUv(1, 1).setColor(color);
         bufferbuilder.addVertex(matrix4f, (float)x2, (float)y, 0).setUv(1, 0).setColor(color);
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+    }
+
+    public static void drawRing(GuiGraphics guiGraphics, int x, int y, int radius, float width, int color) {
+        int x2 = x + radius * 2;
+        int y2 = y + radius * 2;
+
+        RenderSystem.setShader(Shaders::getRingShader);
+        ShaderInstance shader = Shaders.getRingShader();
+        Objects.requireNonNull(shader.getUniform("Width")).set(width);
+
+        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix4f, (float)x, (float)y, 0).setUv(0, 0).setColor(color);
+        bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y2, 0).setUv(1, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y, 0).setUv(1, 0).setColor(color);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+    }
+
+    public static void drawGlowingRing(GuiGraphics guiGraphics, int x, int y, int radius, float width, int color) {
+        float x1 = x - radius * 0.5f;
+        float y1 = y - radius * 0.5f;
+        float x2 = x1 + radius * 3;
+        float y2 = y1 + radius * 3;
+
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(Shaders::getGlowingRingShader);
+        ShaderInstance shader = Shaders.getGlowingRingShader();
+        Objects.requireNonNull(shader.getUniform("Width")).set(width);
+
+        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix4f, x1, y1, 0).setUv(0, 0).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x1, y2, 0).setUv(0, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y1, 0).setUv(1, 0).setColor(color);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        RenderSystem.disableBlend();
+    }
+
+    public static void drawCrossHalo(GuiGraphics guiGraphics, int x, int y, int size, float intensity, int color) {
+        int x2 = x + size;
+        int y2 = y + size;
+
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(Shaders::getCrossHaloShader);
+        Objects.requireNonNull(Shaders.getCrossHaloShader().getUniform("Intensity")).set(intensity);
+
+        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(color);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        RenderSystem.disableBlend();
+    }
+
+    public static void drawDoubleCrossHalo(GuiGraphics guiGraphics, int x, int y, int size, float intensity, int color) {
+        int x2 = x + size;
+        int y2 = y + size;
+
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(Shaders::getDoubleCrossHaloShader);
+        Objects.requireNonNull(Shaders.getDoubleCrossHaloShader().getUniform("Intensity")).set(intensity);
+
+        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(color);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        RenderSystem.disableBlend();
     }
 
     public static void blit(PoseStack poseStack, ResourceLocation location, int x, int y, int width, int height) {

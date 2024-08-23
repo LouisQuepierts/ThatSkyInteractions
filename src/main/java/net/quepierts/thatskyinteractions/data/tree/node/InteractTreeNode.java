@@ -22,8 +22,8 @@ import java.util.function.Function;
 public class InteractTreeNode {
     public static final int DEFAULT_HEIGHT = 40;
     public static final int NODE_SIZE = 32;
-    protected static final Factory DEFAULT_FACTORY = new Factory(InteractTreeNode::new, InteractTreeNode::new);
-    protected static final Object2ObjectMap<String, Factory> FACTORIES = new Object2ObjectOpenHashMap<>();
+    private static final Factory DEFAULT_FACTORY = new Factory(InteractTreeNode::new, InteractTreeNode::new);
+    private static final Object2ObjectMap<String, Factory> FACTORIES = new Object2ObjectOpenHashMap<>();
     @NotNull protected final String id;
     @NotNull protected final String left;
     @NotNull protected final String middle;

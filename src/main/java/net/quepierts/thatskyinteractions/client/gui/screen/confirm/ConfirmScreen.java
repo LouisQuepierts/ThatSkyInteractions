@@ -18,12 +18,12 @@ import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButt
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
+import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
+import org.jetbrains.annotations.NotNull;
 
-public class ConfirmScreen extends Screen implements AnimatableScreen {
+public class ConfirmScreen extends AnimatedScreen {
     public static final ResourceLocation ICON_CONFIRM = ThatSkyInteractions.getLocation("textures/gui/confirm.png");
     public static final ResourceLocation ICON_CANCEL = ThatSkyInteractions.getLocation("textures/gui/cancel.png");
-    private final ScreenAnimator animator;
-    private final FloatHolder enter;
     private final ConfirmProvider provider;
 
     private final int boxWidth;
@@ -33,20 +33,8 @@ public class ConfirmScreen extends Screen implements AnimatableScreen {
         this.provider = provider;
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
-        this.animator = new ScreenAnimator();
-        enter = new FloatHolder(0.0f);
 
         AnimateScreenHolderLayer.INSTANCE.open(this);
-    }
-
-    @Override
-    public void enter() {
-        this.animator.play(new LerpNumberAnimation(this.enter, AnimateUtils.Lerp::smooth, 0.0, 1.0, 0.5f));
-    }
-
-    @Override
-    public void hide() {
-        this.animator.play(new LerpNumberAnimation(this.enter, AnimateUtils.Lerp::smooth, 1.0, 0.05, 0.5f, false));
     }
 
     @Override
@@ -71,15 +59,10 @@ public class ConfirmScreen extends Screen implements AnimatableScreen {
     }
 
     @Override
-    public ScreenAnimator getAnimator() {
-        return this.animator;
-    }
-
-    @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {}
-
-    @Override
     public void irender(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+        if (this.enter.getValue() < 0.02f)
+            return;
+
         int xMid = this.width / 2;
         int yMid = this.height / 2;
 
@@ -127,12 +110,7 @@ public class ConfirmScreen extends Screen implements AnimatableScreen {
     }
 
     @Override
-    public void removed() {
-        AnimateScreenHolderLayer.INSTANCE.close(this);
-    }
-
-    @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(@NotNull Minecraft minecraft, int width, int height) {
         this.width = width;
         this.height = height;
     }

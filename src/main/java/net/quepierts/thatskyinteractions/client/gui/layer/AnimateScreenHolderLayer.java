@@ -1,9 +1,7 @@
 package net.quepierts.thatskyinteractions.client.gui.layer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,18 +11,28 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
+import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
 
 @OnlyIn(Dist.CLIENT)
 public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
     public static final ResourceLocation LOCATION = ThatSkyInteractions.getLocation("animate_screens_holder");
     public static final AnimateScreenHolderLayer INSTANCE = new AnimateScreenHolderLayer();
     private final ObjectSet<AnimatableScreen> screens = new ObjectOpenHashSet<>();
+    private final ObjectList<AnimatableScreen> open = new ObjectArrayList<>();
 
     AnimateScreenHolderLayer() {}
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         //guiGraphics.drawString(Minecraft.getInstance().font, "thatskyinteraction-dev-1.1.0 Teacon 2024", 1, 1, 0xffffffff);
+
+        if (!open.isEmpty()) {
+            for (AnimatableScreen screen : open) {
+                screen.enter();
+                this.screens.add(screen);
+            }
+            open.clear();
+        }
 
         if (this.screens.isEmpty())
             return;
@@ -57,8 +65,7 @@ public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
     }
     
     public void open(AnimatableScreen screen) {
-        screens.add(screen);
-        screen.enter();
+        this.open.add(screen);
     }
 
     public void remove(AnimatableScreen screen) {

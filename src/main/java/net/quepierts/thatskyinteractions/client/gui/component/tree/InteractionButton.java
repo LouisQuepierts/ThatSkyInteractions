@@ -27,7 +27,6 @@ import java.util.UUID;
 public class InteractionButton extends TreeNodeButton {
     private final ResourceLocation interaction;
     private final ResourceLocation leveledInteraction;
-    private final int level;
     private final Component levelComponent;
     private final Component left;
     private final Component right;
@@ -36,13 +35,12 @@ public class InteractionButton extends TreeNodeButton {
         super(id, x, price, message, y, RenderUtils.getInteractionIcon(interaction), animator, state);
         this.interaction = interaction;
         this.leveledInteraction = interaction.withSuffix("_" + level);
-        this.level = level;
 
         this.levelComponent = level > 1 ? Component.translatable("gui.tree.node.interaction.level", level) : Component.empty();
         this.left = Component.translatable("gui.message.unlock.interaction.request.left", this.getPrice()).withColor(Palette.NORMAL_TEXT_COLOR);
         MutableComponent name = Component.translatable(ThatSkyInteractions.getInteractionTranslateKey(interaction)).withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD);
         this.right = Component.translatable("gui.message.unlock.interaction.request.right", name).withColor(Palette.NORMAL_TEXT_COLOR);
-        this.accept = Component.translatable("gui.message.unlock.friend.accept", name).withColor(Palette.NORMAL_TEXT_COLOR);
+        this.accept = Component.translatable("gui.message.unlock.interaction.accept", name).withColor(Palette.NORMAL_TEXT_COLOR);
     }
 
     @Override

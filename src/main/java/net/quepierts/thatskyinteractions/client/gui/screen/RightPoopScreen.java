@@ -20,52 +20,19 @@ import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLay
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
-public class RightPoopScreen extends Screen implements AnimatableScreen {
+public class RightPoopScreen extends AnimatedScreen {
     public static final int BG_COLOR = 0xc0101010;
-    protected final ScreenAnimator animator;
-    private final FloatHolder enter;
 
     protected final int size;
 
     protected RightPoopScreen(Component title, int size) {
         super(title);
-        this.animator = new ScreenAnimator();
-        this.enter = new FloatHolder(0);
         this.size = size;
-
-        AnimateScreenHolderLayer.INSTANCE.open(this);
     }
-
-    @Override
-    public void enter() {
-        this.animator.play(new LerpNumberAnimation(
-                this.enter,
-                AnimateUtils.Lerp::smooth,
-                0.0, 1.0, 0.5f
-        ));
-    }
-
-    @Override
-    public void hide() {
-        this.animator.play(new LerpNumberAnimation(
-                this.enter,
-                AnimateUtils.Lerp::smooth,
-                1.0, 0.0, 0.5f,
-                false
-        ));
-    }
-
-    @Override
-    public ScreenAnimator getAnimator() {
-        return this.animator;
-    }
-
-    @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {}
 
     @Override
     public final void irender(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (this.enter.getValue() == 0.0f)
+        if (this.enter.getValue() < 0.02f)
             return;
 
         PoseStack pose = guiGraphics.pose();
@@ -101,28 +68,6 @@ public class RightPoopScreen extends Screen implements AnimatableScreen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return super.mouseClicked(mouseX - this.width + this.size, mouseY, button);
-    }
-
-    @Override
-    public void resize(@NotNull Minecraft minecraft, int width, int height) {
-        this.width = width;
-        this.height = height;
-
-        for (GuiEventListener child : this.children()) {
-            if (child instanceof Resizable resizable)
-                resizable.resize(minecraft, width, height);
-        }
-    }
-
-
-    @Override
-    public void onClose() {
-        super.onClose();
-    }
-
-    @Override
-    public void removed() {
-        AnimateScreenHolderLayer.INSTANCE.close(this);
     }
 
     @Override

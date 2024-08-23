@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.data.tree;
+package net.quepierts.thatskyinteractions.data.astrolabe;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
@@ -16,8 +16,9 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.simpleanimator.core.network.packet.batch.PacketCache;
-import net.quepierts.thatskyinteractions.network.packet.BatchInteractTreePacket;
+import net.quepierts.thatskyinteractions.network.packet.BatchAstrolabePacket;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -30,44 +31,45 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
-public class InteractTreeManager implements PreparableReloadListener {
-    public static final FileToIdConverter INTERACT_TREE_LISTER = FileToIdConverter.json("interact_trees");
+public class AstrolabeManager implements PreparableReloadListener {
+    public static final FileToIdConverter ASTROLABE_LISTER = FileToIdConverter.json("astrolabes");
     private static final Logger LOGGER = LogUtils.getLogger();
     private final PacketCache cache = new PacketCache();
-    private Object2ObjectMap<ResourceLocation, InteractTree> byPath;
+    private Object2ObjectMap<ResourceLocation, Astrolabe> byPath;
 
-    public InteractTree get(ResourceLocation location) {
-        return byPath.get(location);
+    @Nullable
+    public Astrolabe get(ResourceLocation location) {
+        return this.byPath.get(location);
     }
 
     @Override
-    public @NotNull CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller profilerFiller, ProfilerFiller profilerFiller1, Executor executor, Executor executor1) {
-        CompletableFuture<List<Pair<ResourceLocation, InteractTree>>> load = this.load(resourceManager, executor);
-        LOGGER.info("Reload Interact Tree Data...");
+    public @NotNull CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager, ProfilerFiller profilerFiller, ProfilerFiller profilerFiller1, Executor executor, Executor executor1) {
+        CompletableFuture<List<Pair<ResourceLocation, Astrolabe>>> load = this.load(resourceManager, executor);
+        LOGGER.info("Reload Astrolabes Data...");
         return CompletableFuture.allOf(load)
                 .thenCompose(preparationBarrier::wait)
                 .thenAcceptAsync((v) -> {
                     this.byPath = new Object2ObjectOpenHashMap<>();
                     load.join().forEach(pair -> byPath.put(pair.getFirst(), pair.getSecond()));
 
-                    this.cache.reset(new BatchInteractTreePacket(Object2ObjectMaps.unmodifiable(this.byPath)));
+                    this.cache.reset(new BatchAstrolabePacket(Object2ObjectMaps.unmodifiable(this.byPath)));
                 });
     }
 
-    private CompletableFuture<List<Pair<ResourceLocation, InteractTree>>> load(ResourceManager pResourceManager, Executor pBackgroundExecutor) {
-        return CompletableFuture.supplyAsync(() -> INTERACT_TREE_LISTER.listMatchingResourceStacks(pResourceManager), pBackgroundExecutor).thenCompose(map -> {
-            List<CompletableFuture<Pair<ResourceLocation, InteractTree>>> list = new ArrayList<>(map.size());
+    private CompletableFuture<List<Pair<ResourceLocation, Astrolabe>>> load(ResourceManager pResourceManager, Executor pBackgroundExecutor) {
+        return CompletableFuture.supplyAsync(() -> ASTROLABE_LISTER.listMatchingResourceStacks(pResourceManager), pBackgroundExecutor).thenCompose(map -> {
+            List<CompletableFuture<Pair<ResourceLocation, Astrolabe>>> list = new ArrayList<>(map.size());
 
             for (Map.Entry<ResourceLocation, List<Resource>> entry : map.entrySet()) {
                 ResourceLocation location = entry.getKey();
-                ResourceLocation resourceLocation = INTERACT_TREE_LISTER.fileToId(location);
+                ResourceLocation resourceLocation = ASTROLABE_LISTER.fileToId(location);
 
                 for (Resource resource : entry.getValue()) {
                     list.add(CompletableFuture.supplyAsync(() -> {
                         try (Reader reader = resource.openAsReader()) {
-                            return Pair.of(resourceLocation, InteractTree.fromStream(reader));
+                            return Pair.of(resourceLocation, Astrolabe.fromStream(reader));
                         } catch (IOException e) {
-                            LOGGER.warn("Couldn't read interact tree {} from {} in data pack {}", resourceLocation, location, resource.sourcePackId());
+                            LOGGER.warn("Couldn't read astrolabe {} from {} in data pack {}", resourceLocation, location, resource.sourcePackId());
                             return null;
                         }
                     }));
@@ -95,7 +97,8 @@ public class InteractTreeManager implements PreparableReloadListener {
         }
     }
 
-    public void handleUpdateInteractTree(final BatchInteractTreePacket batchInteractTreePacket) {
-        this.byPath = batchInteractTreePacket.getInteractTrees();
+    public void handleUpdateAstrolabe(BatchAstrolabePacket packet) {
+        this.byPath = packet.getAstrolabes();
     }
+
 }

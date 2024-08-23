@@ -7,15 +7,13 @@ import net.quepierts.simpleanimator.core.network.INetwork;
 import net.quepierts.simpleanimator.core.network.IPacket;
 import net.quepierts.simpleanimator.core.network.NetworkDirection;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
-import net.quepierts.thatskyinteractions.network.packet.BatchInteractTreePacket;
-import net.quepierts.thatskyinteractions.network.packet.BatchRelationshipPacket;
-import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
-import net.quepierts.thatskyinteractions.network.packet.UnlockRelationshipPacket;
+import net.quepierts.thatskyinteractions.network.packet.*;
 
 import java.util.function.Function;
 
 public enum Packets {
     BATCH_INTERACT_TREE(BatchInteractTreePacket.class, BatchInteractTreePacket::new, NetworkDirection.PLAY_TO_CLIENT),
+    BATCH_ASTROLABE(BatchAstrolabePacket.class, BatchAstrolabePacket::new, NetworkDirection.PLAY_TO_CLIENT),
     BATCH_RELATIONSHIP(BatchRelationshipPacket.class, BatchRelationshipPacket::new, NetworkDirection.PLAY_TO_CLIENT),
     UNLOCK_RELATIONSHIP(UnlockRelationshipPacket.class, UnlockRelationshipPacket::decode, NetworkDirection.ALL),
     INTERACT_BUTTON(InteractButtonPacket.class, InteractButtonPacket::decode, NetworkDirection.ALL)

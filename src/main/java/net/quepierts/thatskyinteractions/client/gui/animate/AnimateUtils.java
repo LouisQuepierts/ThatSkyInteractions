@@ -22,7 +22,7 @@ public class AnimateUtils {
         }
 
         public static double bounce(double src, double dest, float time) {
-            time = 4 * (time - time * time);
+            time = 2 * (time - time * time);
             return src * (1.0F - time) + dest * time;
         }
     }

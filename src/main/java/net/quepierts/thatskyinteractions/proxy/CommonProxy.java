@@ -11,25 +11,30 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
+import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
+import net.quepierts.thatskyinteractions.data.astrolabe.node.AstrolabeNode;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeManager;
 import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
 import net.quepierts.thatskyinteractions.network.Packets;
 
 public class CommonProxy {
     private final InteractTreeManager interactTreeManager;
+    private final AstrolabeManager astrolabeManager;
     public CommonProxy(IEventBus bus, ModContainer modContainer) {
         NeoForge.EVENT_BUS.addListener(LevelEvent.Load.class, this::onLevelLoad);
         NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, this::onReload);
         NeoForge.EVENT_BUS.addListener(OnDatapackSyncEvent.class, this::onDatapackSync);
 
         InteractTreeNode.register();
+        AstrolabeNode.register();
         bus.addListener(RegisterPayloadHandlersEvent.class, Packets::onRegisterPayloadHandlers);
         interactTreeManager = new InteractTreeManager();
-
+        astrolabeManager = new AstrolabeManager();
     }
 
     public void onReload(final AddReloadListenerEvent event) {
         event.addListener(this.interactTreeManager);
+        event.addListener(this.astrolabeManager);
     }
 
     public void onLevelLoad(final LevelEvent.Load event) {
@@ -50,10 +55,15 @@ public class CommonProxy {
         }
 
         this.interactTreeManager.sync(event);
+        this.astrolabeManager.sync(event);
         data.sync(event);
     }
 
     public InteractTreeManager getInteractTreeManager() {
         return interactTreeManager;
+    }
+
+    public AstrolabeManager getAstrolabeManager() {
+        return astrolabeManager;
     }
 }
