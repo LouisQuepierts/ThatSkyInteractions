@@ -8,6 +8,8 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.CameraHandler;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
@@ -20,6 +22,7 @@ import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+@OnlyIn(Dist.CLIENT)
 public class FriendAstrolabeScreen extends AnimatedScreen {
     private static final ResourceLocation ASTROLABE_BESTIES = ThatSkyInteractions.getLocation("besties");
     private static final ResourceLocation ASTROLABE_BESTIES_2 = ThatSkyInteractions.getLocation("besties_2");

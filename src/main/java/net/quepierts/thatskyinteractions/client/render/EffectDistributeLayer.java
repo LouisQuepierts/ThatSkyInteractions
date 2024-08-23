@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.api.IAnimateHandler;
 import net.quepierts.simpleanimator.api.animation.ModelBone;
 import net.quepierts.simpleanimator.api.animation.keyframe.VariableHolder;
@@ -22,6 +24,7 @@ import org.joml.Vector3f;
 
 import java.util.EnumMap;
 
+@OnlyIn(Dist.CLIENT)
 public class EffectDistributeLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     private static final EnumMap<ModelBone, ImmutableList<IEffectDistributor>> PARTICLE_DISTRIBUTORS;
     public EffectDistributeLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer) {

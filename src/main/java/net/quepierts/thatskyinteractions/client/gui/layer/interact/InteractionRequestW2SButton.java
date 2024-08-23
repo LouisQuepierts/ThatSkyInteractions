@@ -3,10 +3,13 @@ package net.quepierts.thatskyinteractions.client.gui.layer.interact;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.api.IInteractHandler;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
 import org.joml.Vector3f;
 
+@OnlyIn(Dist.CLIENT)
 public class InteractionRequestW2SButton extends World2ScreenButton {
     private final Vector3f position;
     private final Player other;

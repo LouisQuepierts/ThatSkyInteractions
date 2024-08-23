@@ -7,6 +7,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
@@ -14,6 +16,7 @@ import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmMessageUtils;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
 
+@OnlyIn(Dist.CLIENT)
 public class FriendButton extends TreeNodeButton {
     public static final ResourceLocation ICON_FRIEND = ThatSkyInteractions.getLocation("textures/gui/be_friend.png");
     private static final FormattedCharSequence INVITE_MESSAGE_LEFT = Component.translatable("gui.message.unlock.friend.request.left").withColor(Palette.NORMAL_TEXT_COLOR).getVisualOrderText();

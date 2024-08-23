@@ -6,6 +6,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -16,6 +18,7 @@ import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 
 import java.util.UUID;
 
+@OnlyIn(Dist.CLIENT)
 public class BlockButton extends TreeNodeButton {
     private static final ResourceLocation ICON_BLOCK = ThatSkyInteractions.getLocation("textures/gui/block.png");
     private static final Component MESSAGE_BLOCK_1 = Component.translatable("gui.message.block.line1").withColor(Palette.NORMAL_TEXT_COLOR);

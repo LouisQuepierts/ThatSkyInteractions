@@ -7,6 +7,8 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
@@ -17,8 +19,8 @@ import net.quepierts.thatskyinteractions.client.gui.holder.DoubleHolder;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import org.jetbrains.annotations.NotNull;
 
+@OnlyIn(Dist.CLIENT)
 public abstract class SqueezeButton extends AbstractButton {
-    public static final ResourceLocation TEXTURE_ROUND_RECT = ThatSkyInteractions.getLocation("textures/gui/round_rect.png");
     protected final ScreenAnimator animator;
     protected final ResourceLocation icon;
     protected final LerpNumberAnimation clickAnimation;

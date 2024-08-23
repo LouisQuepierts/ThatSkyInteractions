@@ -5,6 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -12,6 +14,7 @@ import net.quepierts.thatskyinteractions.client.gui.component.CulledRenderable;
 import net.quepierts.thatskyinteractions.client.gui.component.LayoutObject;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 
+@OnlyIn(Dist.CLIENT)
 public class StarLight extends LayoutObject implements CulledRenderable {
     private final AstrolabeWidget parent;
     private final FloatHolder intensity;

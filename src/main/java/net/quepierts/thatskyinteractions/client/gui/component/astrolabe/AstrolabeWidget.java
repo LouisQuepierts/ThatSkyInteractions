@@ -6,6 +6,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.component.CulledRenderable;
@@ -21,6 +23,7 @@ import org.joml.Vector2f;
 
 import java.util.List;
 
+@OnlyIn(Dist.CLIENT)
 public class AstrolabeWidget extends AbstractWidget implements Resizable {
     private final AnimatableScreen parent;
     private final List<CulledRenderable> renderables = Lists.newArrayList();

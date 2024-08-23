@@ -8,6 +8,8 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
@@ -21,6 +23,7 @@ import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
 import org.jetbrains.annotations.NotNull;
 
+@OnlyIn(Dist.CLIENT)
 public class ConfirmScreen extends AnimatedScreen {
     public static final ResourceLocation ICON_CONFIRM = ThatSkyInteractions.getLocation("textures/gui/confirm.png");
     public static final ResourceLocation ICON_CANCEL = ThatSkyInteractions.getLocation("textures/gui/cancel.png");

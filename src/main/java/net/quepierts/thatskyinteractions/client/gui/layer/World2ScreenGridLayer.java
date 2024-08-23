@@ -14,6 +14,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@OnlyIn(Dist.CLIENT)
 public class World2ScreenGridLayer implements LayeredDraw.Layer {
     public static final World2ScreenGridLayer INSTANCE = new World2ScreenGridLayer();
     public static final ResourceLocation LOCATION = ThatSkyInteractions.getLocation("world_screen_grid");

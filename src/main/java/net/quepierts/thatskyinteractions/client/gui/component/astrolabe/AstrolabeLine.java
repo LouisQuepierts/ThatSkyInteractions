@@ -6,6 +6,8 @@ import com.mojang.math.Axis;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.CulledRenderable;
@@ -14,6 +16,7 @@ import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+@OnlyIn(Dist.CLIENT)
 public class AstrolabeLine extends LayoutObject implements CulledRenderable {
     public static final ResourceLocation TEXTURE = ThatSkyInteractions.getLocation("textures/gui/glowing_line.png");
 

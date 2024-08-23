@@ -6,9 +6,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 
+@OnlyIn(Dist.CLIENT)
 public class ConfirmMessageUtils {
     private static final Component MESSAGE_UNLOCK_ACCEPT_LEFT = Component.translatable("gui.message.unlock.accept.left").withColor(Palette.NORMAL_TEXT_COLOR);
     private static final Component MESSAGE_UNLOCK_ACCEPT_RIGHT = Component.translatable("gui.message.unlock.accept.right").withColor(Palette.NORMAL_TEXT_COLOR);

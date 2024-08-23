@@ -6,6 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
@@ -15,6 +17,7 @@ import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmScreen
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import org.joml.Vector3f;
 
+@OnlyIn(Dist.CLIENT)
 public class UnlockRequestW2SButton extends World2ScreenButton {
     private final PlayerPair pair;
     private final String node;

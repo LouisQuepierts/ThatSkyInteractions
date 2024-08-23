@@ -1,11 +1,14 @@
 package net.quepierts.thatskyinteractions.client;
 
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.quepierts.thatskyinteractions.client.gui.animate.AbstractScreenAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import org.joml.Vector3f;
 
+@OnlyIn(Dist.CLIENT)
 public class CameraHandler {
     private final Entry rotation = Entry.create();
     private final Entry dayTime = Entry.create();

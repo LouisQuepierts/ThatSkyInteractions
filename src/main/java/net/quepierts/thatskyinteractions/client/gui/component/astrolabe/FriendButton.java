@@ -2,11 +2,14 @@ package net.quepierts.thatskyinteractions.client.gui.component.astrolabe;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 
+@OnlyIn(Dist.CLIENT)
 public class FriendButton extends AstrolabeButton {
     private final FloatHolder alpha;
     public FriendButton(int x, int y, Component message, ScreenAnimator animator, FloatHolder alpha) {

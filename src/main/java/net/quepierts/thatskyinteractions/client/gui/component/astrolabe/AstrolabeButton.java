@@ -7,6 +7,8 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
@@ -16,6 +18,7 @@ import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 
+@OnlyIn(Dist.CLIENT)
 public abstract class AstrolabeButton extends AbstractButton implements CulledRenderable {
     private final ScreenAnimator animator;
     protected final LerpNumberAnimation clickAnimation;
