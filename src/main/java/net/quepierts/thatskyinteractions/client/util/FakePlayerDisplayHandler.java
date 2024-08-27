@@ -2,32 +2,42 @@ package net.quepierts.thatskyinteractions.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerIgniteW2SButton;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerLightW2SWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
-import org.joml.Vector3f;
+import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 
 import java.util.UUID;
 
 public class FakePlayerDisplayHandler {
+    private final ClientProxy client;
     private final FloatHolder enterHolder = new FloatHolder(0.0f);
     private final LerpNumberAnimation enterAnimation = new LerpNumberAnimation(this.enterHolder, AnimateUtils.Lerp::smooth, 0, 1, 1.0f);
     private FakeClientPlayer player;
-    private FakePlayerLightW2SWidget widget;
+    private FakePlayerLightW2SWidget light;
+    private FakePlayerIgniteW2SButton ignite;
     private boolean pushed = false;
+    private boolean canRepos = false;
+    private boolean canIgnite = false;
+
+    public FakePlayerDisplayHandler(ClientProxy clientProxy) {
+        this.client = clientProxy;
+    }
 
     public void init(ClientLevel level) {
         this.player = new FakeClientPlayer(level, this);
-        this.widget = new FakePlayerLightW2SWidget(this.player, this.enterHolder);
+        this.light = new FakePlayerLightW2SWidget(this.player, this.enterHolder);
+        this.ignite = new FakePlayerIgniteW2SButton(this.player, this.enterHolder);
     }
 
     public void reset() {
@@ -35,7 +45,8 @@ public class FakePlayerDisplayHandler {
             World2ScreenGridLayer.INSTANCE.remove(this.player.getUUID());
         }
         this.player = null;
-        this.widget = null;
+        this.light = null;
+        this.ignite = null;
     }
 
     public void show(Vec3 pos, float yRot) {
@@ -45,19 +56,25 @@ public class FakePlayerDisplayHandler {
         this.player.setYHeadRot(yRot);
         this.enterAnimation.reset(0, 1);
         ScreenAnimator.GLOBAL.play(this.enterAnimation);
-        World2ScreenGridLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), widget);
+        World2ScreenGridLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), light);
+
+        UUID uuid = this.player.getDisplayUUID();
+        FriendAstrolabeInstance.NodeData data = client.getCache().getUserData().getNodeData(uuid);
+        this.canIgnite = (data != null && !data.hasFlag(FriendAstrolabeInstance.Flag.SENT));
     }
 
     public void hide() {
         this.enterAnimation.reset(1, 0);
+        this.canRepos = true;
         ScreenAnimator.GLOBAL.play(this.enterAnimation);
+        World2ScreenGridLayer.INSTANCE.lock(null);
     }
 
     public boolean isVisible() {
         return this.enterHolder.getValue() != 0.0f;
     }
 
-    public void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
+    public void onRenderPlayerPre(final RenderPlayerEvent.Pre event) {
         if (!event.getEntity().equals(this.player))
             return;
 
@@ -71,7 +88,7 @@ public class FakePlayerDisplayHandler {
         pushed = true;
     }
 
-    public void onRenderPlayerPost(RenderPlayerEvent.Post event) {
+    public void onRenderPlayerPost(final RenderPlayerEvent.Post event) {
         if (!pushed)
             return;
 
@@ -80,50 +97,27 @@ public class FakePlayerDisplayHandler {
         pushed = false;
     }
 
+    public void onClientTick(final ClientTickEvent.Post event) {
+        if (!this.enterAnimation.isRunning()) {
+            if (this.canRepos) {
+                this.player.setPos(0, -128, 0);
+                this.canRepos = false;
+            }
+
+            if (this.canIgnite) {
+                World2ScreenGridLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
+                World2ScreenGridLayer.INSTANCE.lock(this.ignite);
+                this.canIgnite = false;
+            }
+        }
+    }
+
     public void setPlayerSkin(UUID uuid) {
         this.player.setPlayerSkin(uuid);
     }
 
-    private static final class FakePlayerLightW2SWidget extends World2ScreenWidget {
-        private final LivingEntity bound;
-        private final FloatHolder enterHolder;
-        public FakePlayerLightW2SWidget(LivingEntity bound, FloatHolder enterHolder) {
-            this.bound = bound;
-            this.enterHolder = enterHolder;
-        }
-
-        @Override
-        public void render(GuiGraphics guiGraphics, boolean highlight, float value) {
-            float enter = this.enterHolder.getValue();
-
-            PoseStack pose = guiGraphics.pose();
-            pose.pushPose();
-
-
-            RenderUtils.drawCrossLightSpot(
-                    guiGraphics,
-                    this.x - 16, this.y - 16,
-                    32,
-                    (0.95f + Mth.sin((ScreenAnimator.GLOBAL.time()) * 12) * 0.02f) * (1.2f - enter),
-                    2.0f, 0xffa4e5f7
-            );
-
-            pose.popPose();
-        }
-
-        @Override
-        public boolean shouldRemove() {
-            return this.enterHolder.getValue() > 0.95f;
-        }
-
-        @Override
-        public void getWorldPos(Vector3f out) {
-            Vec3 position = this.bound.position();
-            out.set(
-                    position.x(),
-                    position.y() + 6f - enterHolder.getValue() * 5f,
-                    position.z()
-            );
-        }
+    public float enterValue() {
+        return this.enterHolder.getValue();
     }
+
 }

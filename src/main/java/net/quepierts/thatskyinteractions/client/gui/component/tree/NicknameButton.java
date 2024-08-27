@@ -7,6 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
+import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
+import net.quepierts.thatskyinteractions.client.gui.screen.InputScreen;
 import net.quepierts.thatskyinteractions.data.FriendData;
 import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
@@ -29,6 +31,18 @@ public class NicknameButton extends TreeNodeButton {
         } else {
             this.friendData = nodeData.getFriendData();
         }
+    }
+
+    @Override
+    public void onClickUnlocked() {
+        super.onClickUnlocked();
+        AnimateScreenHolderLayer.INSTANCE.push(
+            new InputScreen(
+                    icon, 264, 176,
+                    Component.translatable("gui.message.nickname.change").withColor(Palette.NORMAL_TEXT_COLOR),
+                    friendData::updateNickname
+            )
+        );
     }
 
     @Override

@@ -14,9 +14,11 @@ import java.util.List;
 import java.util.UUID;
 
 public class FriendAstrolabeInstance {
+    private static final String INDEX_PREFIX = "i";
     private final NodeData[] data;
     private int count = 0;
     private int next = -1;
+    private boolean dirty = false;
 
     public FriendAstrolabeInstance(ResourceLocation first) {
         Astrolabe astrolabe = ThatSkyInteractions.getInstance().getProxy().getAstrolabeManager().get(first);
@@ -55,7 +57,7 @@ public class FriendAstrolabeInstance {
         int length = tag.getInt("length");
         NodeData[] array = new NodeData[length];
         for (int i = 0; i < length; i++) {
-            String key = String.valueOf(i);
+            String key = INDEX_PREFIX + i;
             if (!tag.contains(key))
                 continue;
             CompoundTag dataTag = tag.getCompound(key);
@@ -72,7 +74,7 @@ public class FriendAstrolabeInstance {
                 continue;
             CompoundTag dataTag = new CompoundTag();
             NodeData.serializeNBT(dataTag, array[i]);
-            tag.put(String.valueOf(i), dataTag);
+            tag.put(INDEX_PREFIX + i, dataTag);
         }
     }
 
@@ -135,19 +137,41 @@ public class FriendAstrolabeInstance {
     public NodeData peek(int index) {
         NodeData temp = this.data[index];
         this.data[index] = null;
+        this.count --;
+        if (this.count != 0) {
+            for (int i = 0; i < this.data.length; i++) {
+                if (this.data[i] == null) {
+                    this.next = i;
+                    break;
+                }
+            }
+        }
+        this.dirty = true;
         return temp;
     }
 
     public void peek(NodeData first) {
         int i = this.indexOf(first);
-        if (i != -1)
+        if (i != -1) {
             this.data[i] = null;
+            this.count--;
+            if (this.count != 0) {
+                for (int j = 0; j < this.data.length; j++) {
+                    if (this.data[j] == null) {
+                        this.next = j;
+                        break;
+                    }
+                }
+            }
+        }
+        this.dirty = true;
     }
 
     public void swap(int a, int b) {
         NodeData temp = this.data[a];
         this.data[a] = this.data[b];
         this.data[b] = temp;
+        this.dirty = true;
     }
 
     public boolean occupied(int index) {
@@ -159,6 +183,7 @@ public class FriendAstrolabeInstance {
             return;
 
         this.data[next] = data;
+        this.dirty = true;
 
         if (this.isFulled())
             return;
@@ -175,6 +200,15 @@ public class FriendAstrolabeInstance {
             return;
 
         this.data[index] = data;
+        this.dirty = true;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
+    }
+
+    public boolean isDirty() {
+        return dirty;
     }
 
     public static class NodeData {

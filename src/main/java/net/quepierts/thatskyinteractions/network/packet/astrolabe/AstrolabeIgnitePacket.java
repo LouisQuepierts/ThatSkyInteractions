@@ -15,21 +15,23 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
+import net.quepierts.thatskyinteractions.data.TSIUserData;
 import net.quepierts.thatskyinteractions.data.TSIUserDataStorage;
+import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public class AstrolabeLitPacket extends BiPacket {
-    public static final Type<AstrolabeLitPacket> TYPE = NetworkPackets.createType(AstrolabeLitPacket.class);
+public class AstrolabeIgnitePacket extends BiPacket {
+    public static final Type<AstrolabeIgnitePacket> TYPE = NetworkPackets.createType(AstrolabeIgnitePacket.class);
     private final UUID target;
 
-    public AstrolabeLitPacket(FriendlyByteBuf byteBuf) {
+    public AstrolabeIgnitePacket(FriendlyByteBuf byteBuf) {
         this.target = byteBuf.readUUID();
     }
 
-    public AstrolabeLitPacket(UUID target) {
+    public AstrolabeIgnitePacket(UUID target) {
         this.target = target;
     }
 
@@ -39,24 +41,25 @@ public class AstrolabeLitPacket extends BiPacket {
         if (server == null)
             return;
 
-        final ServerLevel level = server.getLevel(Level.OVERWORLD);
-
-        ServerPlayer other = server.getPlayerList().getPlayer(this.target);
-        if (other == null)
-            return;
-
         UUID sender = serverPlayer.getUUID();
 
-        RelationshipSavedData savedData = RelationshipSavedData.getRelationTree(level);
-        InteractTreeInstance treeInstance = savedData.getRelationTree(new PlayerPair(sender, this.target));
-
-        if (treeInstance == null)
-            return;
-
         TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
+        TSIUserData data = manager.getUserData(sender);
+        if (!data.isFriend(this.target)) {
+            return;
+        }
+
+        if (data.getNodeData(this.target).hasFlag(FriendAstrolabeInstance.Flag.SENT)) {
+            return;
+        }
+
         manager.litLight(sender, target);
 
-        SimpleAnimator.getNetwork().sendToPlayer(new AstrolabeLitPacket(sender), other);
+        ServerPlayer other = server.getPlayerList().getPlayer(this.target);
+        if (other == null) {
+            return;
+        }
+        SimpleAnimator.getNetwork().sendToPlayer(new AstrolabeIgnitePacket(sender), other);
     }
 
     @OnlyIn(Dist.CLIENT)

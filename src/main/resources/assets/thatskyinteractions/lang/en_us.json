@@ -17,6 +17,7 @@
   "gui.message.unlock.lock.intimacy": "intimacy",
   "gui.message.block.line1": "Block this player?",
   "gui.message.block.line2": "You won't get that player any invitation!",
+  "gui.message.nickname.change": "Change this friend's nickname?",
 
   "gui.tree.node.interaction.level": "Level %s",
 

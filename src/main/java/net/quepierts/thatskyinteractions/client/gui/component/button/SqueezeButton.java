@@ -77,9 +77,11 @@ public abstract class SqueezeButton extends AbstractButton {
     protected void renderIcon(GuiGraphics guiGraphics, int begin) {
         float alpha = Palette.getShaderAlpha();
 
-        RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, alpha * 0.5f);
-        RenderUtils.fillRoundRect(guiGraphics, begin, begin, width, width, 0.16f, 0xc0101010);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
+        RenderUtils.fillRoundRect(guiGraphics, begin, begin, width, width, 0.16f, 0x80101010);
+        if (!this.active) {
+            RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, alpha);
+        }
         RenderUtils.blit(guiGraphics, this.getIcon(), begin, begin, width, width);
     }
 

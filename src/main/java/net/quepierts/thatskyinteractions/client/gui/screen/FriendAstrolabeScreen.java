@@ -15,7 +15,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
-import net.quepierts.thatskyinteractions.client.gui.component.astrolabe.AstrolabeWidget;
+import net.quepierts.thatskyinteractions.client.gui.component.astrolabe.FriendAstrolabeWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.data.astrolabe.Astrolabe;
@@ -31,7 +31,7 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
     private static final int MAX_ASTROLABE_AMOUNT = 16;
     private int index;
     private final CameraHandler cameraHandler;
-    private final AstrolabeWidget[] astrolabes = new AstrolabeWidget[MAX_ASTROLABE_AMOUNT];
+    private final FriendAstrolabeWidget[] astrolabes = new FriendAstrolabeWidget[MAX_ASTROLABE_AMOUNT];
     private final FloatHolder closerHolder = new FloatHolder(0.7f);
     private final LerpNumberAnimation closeAnimation = new LerpNumberAnimation(closerHolder, AnimateUtils.Lerp::smooth, 0, 0, 1.0f);
 
@@ -61,8 +61,8 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
             if (instance == null)
                 continue;
 
-            this.astrolabes[i] = new AstrolabeWidget(this, location);
-            this.astrolabes[i].reset(astrolabe, instance);
+            this.astrolabes[i] = new FriendAstrolabeWidget(this, location, instance);
+            this.astrolabes[i].init(astrolabe);
 
             if (++i == MAX_ASTROLABE_AMOUNT)
                 break;
@@ -163,7 +163,7 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
         pose.scale(scale, scale, 1.0f);
 
         for (int i = 0; i < this.astrolabes.length; i++) {
-            AstrolabeWidget astrolabe = this.astrolabes[i];
+            FriendAstrolabeWidget astrolabe = this.astrolabes[i];
             if (astrolabe == null)
                 continue;
 
@@ -198,7 +198,7 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         Vector3f target = this.cameraHandler.get(CameraHandler.Property.ROTATION).getDest(new Vector3f());
-        AstrolabeWidget astrolabe = this.astrolabes[this.index];
+        FriendAstrolabeWidget astrolabe = this.astrolabes[this.index];
         boolean rotated = false;
         switch (keyCode) {
             case GLFW.GLFW_KEY_A:
@@ -225,7 +225,7 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
             target.y = (this.index - this.astrolabeAmountHalf) * 45;
             if (this.minecraft.options.getCameraType().isMirrored())
                 target.y += 180;
-            this.cameraHandler.get(CameraHandler.Property.ROTATION).toTarget(target);
+            this.cameraHandler.get(CameraHandler.Property.ROTATION).toTarget(target, 0.75f, 0.0f);
             return true;
         }
 
@@ -236,7 +236,7 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        AstrolabeWidget astrolabe = this.astrolabes[this.index];
+        FriendAstrolabeWidget astrolabe = this.astrolabes[this.index];
         double localMouseX = mouseX - this.width / 2.0;
         double localMouseY = mouseY - this.height / 2.0;
 

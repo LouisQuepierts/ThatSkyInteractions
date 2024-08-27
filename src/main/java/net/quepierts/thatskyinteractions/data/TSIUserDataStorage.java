@@ -26,56 +26,59 @@ import java.util.UUID;
 public class TSIUserDataStorage {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Object2ObjectMap<UUID, TSIUserData> dataMap = new Object2ObjectOpenHashMap<>();
+    private Path root;
 
-    private boolean mkdir = true;
+    public void saveAndClear() {
+        this.dataMap.forEach(this::save);
+        this.dataMap.clear();
+    }
 
-    public void onSaveToFile(final PlayerEvent.SaveToFile event) {
-        Player player = event.getEntity();
+    private void save(UUID uuid, TSIUserData data) {
+        if (data == null)
+            return;
+
         try {
-            Path directory = this.getDirectoryPath(event.getPlayerDirectory());
+            Path directory = this.root;
+            File directoryFile = directory.toFile();
 
-            if (this.mkdir) {
-                directory.toFile().mkdirs();
-                this.mkdir = false;
+            if (!directoryFile.exists()) {
+                directoryFile.mkdirs();
             }
 
-            String uuid = event.getPlayerUUID();
             Path temp = Files.createTempFile(directory, uuid + "-", ".dat");
             Path path = directory.resolve(uuid + ".dat");
             Path old = directory.resolve(uuid + "_old.dat");
 
             CompoundTag tag = new CompoundTag();
-            TSIUserData userData = this.getUserData(player.getUUID());
-            TSIUserData.toNBT(tag, userData);
+            TSIUserData.toNBT(tag, data);
 
             NbtIo.writeCompressed(tag, temp);
             Util.safeReplaceFile(path, temp, old);
-            ThatSkyInteractions.LOGGER.info(event.getPlayerDirectory().getPath());
         } catch (IOException e) {
-            LOGGER.warn("Fail to save player tsi data for {}", player.getName().getString());
+            LOGGER.warn("Fail to save player tsi data for {}", uuid, e);
         }
+    }
+
+    public void onSaveToFile(final PlayerEvent.SaveToFile event) {
+        Player player = event.getEntity();
+        UUID uuid = player.getUUID();
+        TSIUserData data = this.dataMap.get(uuid);
+        this.save(uuid, data);
     }
 
     public void onLoadFromFile(final PlayerEvent.LoadFromFile event) {
         Player player = event.getEntity();
-        Path directory = getDirectoryPath(event.getPlayerDirectory());
-
         UUID uuid = player.getUUID();
-        if (this.mkdir) {
-            directory.toFile().mkdirs();
-            this.mkdir = false;
-            this.getUserData(uuid);
+
+
+        if (this.dataMap.containsKey(uuid))
             return;
-        }
 
-        Optional<CompoundTag> optional = this.load(directory, player, ".dat");
-
-       optional.or(() -> load(directory, player, "_old.dat"))
-               .map(TSIUserData::fromNBT)
-               .ifPresentOrElse(
-                       (data -> this.dataMap.put(uuid, data)),
-                       () -> this.getUserData(uuid)
-               );
+        Optional<TSIUserData> load = this.load(uuid);
+        load.ifPresentOrElse(
+                (data -> this.dataMap.put(uuid, data)),
+                () -> this.getUserData(uuid)
+        );
     }
 
     public void sync(OnDatapackSyncEvent event) {
@@ -95,14 +98,28 @@ public class TSIUserDataStorage {
         }
     }
 
-    private Optional<CompoundTag> load(Path directory, Player player, String subfix) {
-        File file = directory.resolve(player.getStringUUID() + subfix).toFile();
+    private Optional<TSIUserData> load(UUID uuid) {
+        File directoryFile = this.root.toFile();
+        if (!directoryFile.exists()) {
+            directoryFile.mkdirs();
+            this.getUserData(uuid);
+            return Optional.empty();
+        }
+
+        Optional<CompoundTag> optional = this.load(this.root, uuid, ".dat");
+
+        return optional.or(() -> load(this.root, uuid, "_old.dat"))
+                .map(TSIUserData::fromNBT);
+    }
+
+    private Optional<CompoundTag> load(Path directory, UUID player, String subfix) {
+        File file = directory.resolve(player + subfix).toFile();
 
         if (file.exists() && file.isFile()) {
             try {
                 return Optional.of(NbtIo.readCompressed(file.toPath(), NbtAccounter.unlimitedHeap()));
             } catch (IOException e) {
-                LOGGER.warn("Fail to load player tsi data for{}", player.getName().getString(), e);
+                LOGGER.warn("Fail to load player tsi data for{}", player, e);
             }
         }
 
@@ -110,16 +127,20 @@ public class TSIUserDataStorage {
     }
 
     public TSIUserData getUserData(UUID uuid) {
-        return this.dataMap.computeIfAbsent(uuid, TSIUserData::create);
+        return this.dataMap.computeIfAbsent(uuid, this::loadOrCreate);
     }
 
-    private Path getDirectoryPath(File directory) {
-        File parent = directory.getParentFile();
-        return new File(parent, ThatSkyInteractions.MODID + "/userdata").toPath();
+    private TSIUserData loadOrCreate(UUID uuid) {
+        Optional<TSIUserData> load = this.load(uuid);
+        return load.orElse(TSIUserData.create(uuid));
     }
 
     public void litLight(UUID sender, UUID target) {
         this.getUserData(sender).sendLight(target);
         this.getUserData(target).awardLight(sender);
+    }
+
+    public void setRootPath(Path root) {
+        this.root = root.getParent().resolve(ThatSkyInteractions.MODID + "/userdata");
     }
 }

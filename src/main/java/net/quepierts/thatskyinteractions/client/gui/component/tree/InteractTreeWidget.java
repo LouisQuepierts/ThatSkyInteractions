@@ -26,7 +26,7 @@ import net.quepierts.thatskyinteractions.client.gui.holder.DoubleHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
-import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmScreen;
+import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;

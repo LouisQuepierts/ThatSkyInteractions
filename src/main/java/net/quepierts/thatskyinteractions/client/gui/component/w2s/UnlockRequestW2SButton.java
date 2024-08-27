@@ -12,7 +12,7 @@ import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.tree.TreeNodeButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;
-import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmScreen;
+import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import org.joml.Vector3f;

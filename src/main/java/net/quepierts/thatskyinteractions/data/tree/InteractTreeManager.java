@@ -98,4 +98,8 @@ public class InteractTreeManager implements PreparableReloadListener {
     public void handleUpdateInteractTree(final BatchInteractTreePacket batchInteractTreePacket) {
         this.byPath = batchInteractTreePacket.getInteractTrees();
     }
+
+    public void clear() {
+        this.byPath = null;
+    }
 }

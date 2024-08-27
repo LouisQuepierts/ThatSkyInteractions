@@ -18,7 +18,8 @@ import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.BatchRelationshipPacket;
-import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeModifyPacket;
+import net.quepierts.thatskyinteractions.network.packet.UserDataModifyPacket;
+import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeIgnitePacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,8 +85,19 @@ public class ClientTSIDataCache {
         return this.relationship;
     }
 
+    public boolean unlocked(UUID player, String node) {
+        InteractTreeInstance instance = this.relationship.get(player);
+        if (instance == null)
+            return false;
+        return instance.isUnlocked(node);
+    }
+
     public boolean isFriend(UUID player) {
         return this.getUserData().isFriend(player);
+    }
+
+    public boolean isLikedFriend(UUID player) {
+        return this.getUserData().isLiked(player);
     }
 
     public void setOnline(Player player, boolean online) {
@@ -104,13 +116,19 @@ public class ClientTSIDataCache {
 
     public void likeFriend(UUID uuid, boolean update) {
         if (this.getUserData().likeFriend(uuid) && update) {
-            SimpleAnimator.getNetwork().update(new AstrolabeModifyPacket.Like(uuid));
+            SimpleAnimator.getNetwork().update(new UserDataModifyPacket.Like(uuid));
         }
     }
 
     public void unlikeFriend(UUID uuid, boolean update) {
         if (this.getUserData().unlikeFriend(uuid) && update) {
-            SimpleAnimator.getNetwork().update(new AstrolabeModifyPacket.Unlike(uuid));
+            SimpleAnimator.getNetwork().update(new UserDataModifyPacket.Unlike(uuid));
+        }
+    }
+
+    public void sendLight(UUID target, boolean update) {
+        if (this.getUserData().sendLight(target) && update) {
+            SimpleAnimator.getNetwork().update(new AstrolabeIgnitePacket(target));
         }
     }
 

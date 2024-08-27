@@ -20,6 +20,7 @@ void main() {
     float core =  (Intensity + 0.35) / (1.2 + 94.3 * max(0, 0.38 - edist)) - 0.3;
     float expand = (Intensity + 0.35) / (1.2 + 94.3 * max(0, 0.25 - edist)) - 0.3;
     vec4 color = vertexColor;
+
     color.a *= max(innerEdge * expand, core);
     if (color.a == 0.0) {
         discard;

@@ -17,19 +17,18 @@ import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class TSIUserData {
     @NotNull private final AstrolabeMap astrolabes;
     @NotNull private final Set<UUID> blackList;
     @NotNull private final Map<UUID, Pair<FriendAstrolabeInstance.NodeData, ResourceLocation>> cache;
+    private long savedTime;
 
-    public TSIUserData(@NotNull AstrolabeMap astrolabes, @NotNull Set<UUID> blackList) {
+    public TSIUserData(@NotNull AstrolabeMap astrolabes, @NotNull Set<UUID> blackList, long savedTime) {
         this.astrolabes = astrolabes;
         this.blackList = blackList;
+        this.savedTime = savedTime;
 
         this.cache = new Object2ObjectOpenHashMap<>();
         for (Map.Entry<ResourceLocation, FriendAstrolabeInstance> entry : this.astrolabes.entrySet()) {
@@ -50,26 +49,30 @@ public class TSIUserData {
         astrolabeMap.put(first, new FriendAstrolabeInstance(first));
         astrolabeMap.put(generated, new FriendAstrolabeInstance(generated));
 
-        return new TSIUserData(astrolabeMap, new HashSet<>());
+        return new TSIUserData(astrolabeMap, new HashSet<>(), System.currentTimeMillis());
     }
     public static void toNetwork(FriendlyByteBuf byteBuf, TSIUserData data) {
         AstrolabeMap.toNetwork(byteBuf, data.astrolabes);
         byteBuf.writeCollection(data.blackList, (o, uuid) -> o.writeUUID(uuid));
+        byteBuf.writeLong(data.savedTime);
     }
 
     public static TSIUserData fromNetwork(FriendlyByteBuf byteBuf) {
         AstrolabeMap astrolabes = AstrolabeMap.fromNetwork(byteBuf);
         Set<UUID> blackList = byteBuf.readCollection(ObjectOpenHashSet::new, (o) -> o.readUUID());
-        return new TSIUserData(astrolabes, blackList);
+        long l = byteBuf.readLong();
+        return new TSIUserData(astrolabes, blackList, l);
     }
 
     public static CompoundTag toNBT(CompoundTag tag, TSIUserData data) {
+        data.savedTime = System.currentTimeMillis();
         tag.put("astrolabe", AstrolabeMap.toNBT(new CompoundTag(), data.astrolabes));
         ListTag list = new ListTag();
         for (UUID uuid : data.blackList) {
             list.add(NbtUtils.createUUID(uuid));
         }
         tag.put("blackList", list);
+        tag.putLong("lastUpdateTime", data.savedTime);
         return tag;
     }
 
@@ -80,11 +83,15 @@ public class TSIUserData {
         for (Tag uuid : list) {
             blackList.add(NbtUtils.loadUUID(uuid));
         }
-        return new TSIUserData(astrolabes, blackList);
+        long savedTime = tag.getLong("lastUpdateTime");
+        return new TSIUserData(astrolabes, blackList, savedTime);
     }
 
     public @Nullable Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> addFriend(Player player) {
         if (player == null)
+            return null;
+
+        if (this.isFriend(player.getUUID()))
             return null;
 
         @Nullable Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> data = this.astrolabes.addFriend(player);
@@ -157,11 +164,17 @@ public class TSIUserData {
         }
     }
 
-    public void sendLight(UUID player) {
-        FriendAstrolabeInstance.NodeData data = this.cache.get(player).getFirst();
-        if (data != null) {
-            data.setFlag(FriendAstrolabeInstance.Flag.SENT, true);
-        }
+    public boolean sendLight(UUID player) {
+        Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> pair = this.cache.get(player);
+        FriendAstrolabeInstance.NodeData data = pair.getFirst();
+
+        if (data == null)
+            return false;
+
+        if (data.hasFlag(FriendAstrolabeInstance.Flag.SENT))
+            return false;
+        data.setFlag(FriendAstrolabeInstance.Flag.SENT, true);
+        return true;
     }
 
     public void awardLight(UUID player) {
@@ -204,5 +217,10 @@ public class TSIUserData {
         if (cache == null)
             return null;
         return cache.getFirst();
+    }
+
+    public boolean isLiked(UUID player) {
+        Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> pair = this.cache.get(player);
+        return pair != null && !pair.getSecond().getPath().startsWith(AstrolabeManager.GENERATED_PREFIX);
     }
 }

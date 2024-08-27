@@ -50,7 +50,6 @@ public class AstrolabeManager implements PreparableReloadListener {
 
     private static final String FRIEND_ASTROLABES_PATH = "friend_astrolabes.json";
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final Random random = new Random(42L);
     private final PacketCache cache = new PacketCache();
     private ObjectList<ResourceLocation> bestFriendAstrolabes;
     private ObjectList<ResourceLocation> friendAstrolabes;
@@ -112,17 +111,18 @@ public class AstrolabeManager implements PreparableReloadListener {
 
     private Map<ResourceLocation, Astrolabe> generate() {
         Map<ResourceLocation, Astrolabe> generated = new Object2ObjectOpenHashMap<>(GENERATED_ASTROLABES_AMOUNT);
+        final Random random = new Random(42L);
         boolean[] grid = new boolean[GRID_WIDTH * GRID_HEIGHT];
 
         for (int i = 0; i < GENERATED_ASTROLABES_AMOUNT; i++) {
-            Astrolabe generate = this.generate(grid);
+            Astrolabe generate = this.generate(grid, random);
             generated.put(this.getGeneratedLocation(i), generate);
         }
 
         return generated;
     }
 
-    private Astrolabe generate(boolean[] grid) {
+    private Astrolabe generate(boolean[] grid, Random random) {
         Arrays.fill(grid, false);
         List<AstrolabeNode> nodes = new ArrayList<>(GENERATED_SIZE);
 
@@ -235,5 +235,11 @@ public class AstrolabeManager implements PreparableReloadListener {
 
     public boolean contains(ResourceLocation location) {
         return this.byPath.containsKey(location);
+    }
+
+    public void clear() {
+        this.byPath = null;
+        this.bestFriendAstrolabes = null;
+        this.friendAstrolabes = null;
     }
 }

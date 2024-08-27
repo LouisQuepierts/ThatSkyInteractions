@@ -23,6 +23,7 @@ public abstract class AstrolabeButton extends AbstractButton implements CulledRe
     protected final LerpNumberAnimation clickAnimation;
     protected final FloatHolder alpha;
     private final FloatHolder click = new FloatHolder(0.0f);
+    private boolean linked = false;
     protected AstrolabeButton(int x, int y, int scale, Component message, ScreenAnimator animator, FloatHolder alpha) {
         super(x, y, scale, scale, message);
         this.animator = animator;
@@ -47,7 +48,7 @@ public abstract class AstrolabeButton extends AbstractButton implements CulledRe
         float scale = 1.0f - (AnimateUtils.Time.bounce((float) click.get()) * 0.2f);
         pose.scale(scale, scale, 1.0f);
         pose.translate(-half, -half, 0.0f);
-        this.render(guiGraphics);
+        this.render(guiGraphics, mouseX, mouseY);
         pose.popPose();
 
         RenderSystem.disableBlend();
@@ -64,5 +65,13 @@ public abstract class AstrolabeButton extends AbstractButton implements CulledRe
         this.defaultButtonNarrationText(narrationElementOutput);
     }
 
-    protected abstract void render(GuiGraphics guiGraphics);
+    protected abstract void render(GuiGraphics guiGraphics, int mouseX, int mouseY);
+
+    public void setLinked(boolean linked) {
+        this.linked = linked;
+    }
+
+    public boolean hasLinked() {
+        return this.linked;
+    }
 }

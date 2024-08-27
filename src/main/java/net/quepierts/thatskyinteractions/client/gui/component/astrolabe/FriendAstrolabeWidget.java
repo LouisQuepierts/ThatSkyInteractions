@@ -23,54 +23,56 @@ import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @OnlyIn(Dist.CLIENT)
-public class AstrolabeWidget extends AbstractWidget implements Resizable {
+public class FriendAstrolabeWidget extends AbstractWidget implements Resizable {
     private final AnimatableScreen parent;
     private final List<CulledRenderable> renderables = Lists.newArrayList();
-    private final List<AstrolabeButton> buttons = Lists.newArrayList();
+    private final List<FriendAstrolabeButton> buttons = Lists.newArrayList();
     private final ResourceLocation locationID;
 
     private final FloatHolder alpha = new FloatHolder(0.0f);
     private final LerpNumberAnimation alphaAnimation = new LerpNumberAnimation(this.alpha, AnimateUtils.Lerp::smooth, 0,1, 1);
+    private final FriendAstrolabeInstance instance;
 
     private float rotate = 0f;
     private int selected = 0;
 
 
-    public AstrolabeWidget(AnimatedScreen parent, ResourceLocation locationID) {
+    public FriendAstrolabeWidget(AnimatedScreen parent, ResourceLocation locationID, FriendAstrolabeInstance instance) {
         super(0, 0, parent.width, parent.height, Component.empty());
         this.parent = parent;
         this.locationID = locationID;
+        this.instance = instance;
     }
 
-    public void reset(Astrolabe astrolabe, FriendAstrolabeInstance instance) {
+    public void update() {
+        List<FriendAstrolabeInstance.NodeData> nodeData = this.instance.getNodes();
+        for (int i = 0; i < this.buttons.size(); i++) {
+            this.buttons.get(i).setData(nodeData.get(i));
+        }
+    }
+
+    public void init(Astrolabe astrolabe) {
         this.renderables.clear();
         this.buttons.clear();
 
-        List<FriendAstrolabeInstance.NodeData> nodeData = instance.getNodes();
+        List<FriendAstrolabeInstance.NodeData> nodeData = this.instance.getNodes();
         ObjectList<AstrolabeNode> nodes = astrolabe.getNodes();
-        Set<AstrolabeButton> shouldAdd = new HashSet<>(nodes.size());
 
         int i = 0;
         for (AstrolabeNode node : nodes) {
             FriendAstrolabeInstance.NodeData data = nodeData.get(i);
-            AstrolabeButton button = data == null ? new EmptyButton(node.x, node.y, this.parent.getAnimator(), this.alpha)
-                    : new FriendButton(node.x, node.y, Component.empty(), this.parent.getAnimator(), this, this.alpha, data);
+            FriendAstrolabeButton button = new FriendAstrolabeButton(node.x, node.y, Component.empty(), this.parent.getAnimator(), this, this.alpha, data);
             this.buttons.add(button);
-            if (data != null) {
-                shouldAdd.add(button);
-            }
             i++;
         }
 
         Vector2f yAxis = new Vector2f(0.0f, 1.0f);
         for (Astrolabe.Connection connection : astrolabe.getConnections()) {
-            AstrolabeButton a = this.buttons.get(connection.a());
-            AstrolabeButton b = this.buttons.get(connection.b());
+            FriendAstrolabeButton a = this.buttons.get(connection.a());
+            FriendAstrolabeButton b = this.buttons.get(connection.b());
 
             Vector2f ab = new Vector2f(b.getX() - a.getX(), b.getY() - a.getY());
             float length = ab.length();
@@ -90,17 +92,11 @@ public class AstrolabeWidget extends AbstractWidget implements Resizable {
                     ab.add(a.getX(), a.getY()), length - hWidth - hHeight + 2, angle, this.alpha
             ));
 
-            shouldAdd.add(a);
-            shouldAdd.add(b);
+            a.setLinked(true);
+            b.setLinked(true);
         }
 
-        for (AstrolabeButton button : this.buttons) {
-            if (shouldAdd.contains(button)) {
-                this.renderables.add(button);
-            } else {
-                button.visible = false;
-            }
-        }
+        this.renderables.addAll(this.buttons);
     }
 
     public void renderAstrolabe(GuiGraphics guiGraphics, int mouseX, int mouseY, float pTick, float rotate) {
@@ -109,7 +105,7 @@ public class AstrolabeWidget extends AbstractWidget implements Resizable {
             renderable.render(guiGraphics, mouseX, mouseY, pTick);
         }
 
-        /*AstrolabeButton selected = this.buttons.get(this.selected);
+        /*FriendButton selected = this.buttons.get(this.selected);
         guiGraphics.drawString(
                 Minecraft.getInstance().font,
                 selected.getX() + "," + selected.getY(),
@@ -123,7 +119,7 @@ public class AstrolabeWidget extends AbstractWidget implements Resizable {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for (AstrolabeButton btn : this.buttons) {
+        for (FriendAstrolabeButton btn : this.buttons) {
             if (btn.mouseClicked(mouseX, mouseY, button)) {
                 return true;
             }
@@ -133,6 +129,7 @@ public class AstrolabeWidget extends AbstractWidget implements Resizable {
     }
 
     public void enter() {
+        this.update();
         this.alphaAnimation.reset(this.alpha.get(), 1);
         this.parent.getAnimator().play(this.alphaAnimation);
     }
@@ -144,7 +141,7 @@ public class AstrolabeWidget extends AbstractWidget implements Resizable {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        /*AstrolabeButton selected = this.buttons.get(this.selected);
+        /*FriendButton selected = this.buttons.get(this.selected);
         switch (keyCode) {
             case GLFW.GLFW_KEY_TAB:
                 this.selected ++;

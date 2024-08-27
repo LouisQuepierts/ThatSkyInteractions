@@ -20,6 +20,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerIgniteW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +49,7 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
     private final LerpNumberAnimation animation = new LerpNumberAnimation(this.click, AnimateUtils.Lerp::smooth, 0, 1, 0.5f);
 
     private World2ScreenWidget highlight;
+    private World2ScreenWidget locked;
     private double scroll = 0;
     World2ScreenGridLayer() {
         reset();
@@ -76,7 +78,11 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
             if (!object.isComputed())
                 continue;
 
-            if (object.shouldRemove()) {
+            boolean highlight1 = locked != null ? object == locked : object == highlight;
+            if (object.shouldRemove() && (!highlight1 || !this.animation.isRunning())) {
+                if (object == locked) {
+                    locked = null;
+                }
                 iterator.remove();
                 continue;
             }
@@ -86,7 +92,6 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
             object.xO = d0;
             object.yO = d1;
 
-            boolean highlight1 = object == this.highlight;
             if (highlight1) {
                 object.render(guiGraphics, true, this.click.getValue());
             } else {
@@ -146,7 +151,7 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
             if (distance > FADE_DISTANCE + FADE_BEGIN_DISTANCE)
                 continue;
 
-            if (object.x > left && object.x < right && object.selectable) {
+            if (locked == null && object.x > left && object.x < right && object.selectable) {
                 inRange.add(object);
             }
         }
@@ -223,7 +228,16 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
             return;
 
-        if (this.highlight != null) {
+        if (this.locked != null) {
+            this.minecraft.getSoundManager().play(
+                    SimpleSoundInstance.forUI(
+                            SoundEvents.EXPERIENCE_ORB_PICKUP,
+                            (ThatSkyInteractions.RANDOM.nextFloat() - ThatSkyInteractions.RANDOM.nextFloat()) * 0.35F + 0.9F
+                    )
+            );
+            ScreenAnimator.GLOBAL.play(this.animation);
+            this.locked.invoke();
+        } else if (this.highlight != null) {
             this.minecraft.getSoundManager().play(
                     SimpleSoundInstance.forUI(
                             SoundEvents.EXPERIENCE_ORB_PICKUP,
@@ -235,4 +249,7 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         }
     }
 
+    public void lock(World2ScreenWidget locked) {
+        this.locked = locked;
+    }
 }

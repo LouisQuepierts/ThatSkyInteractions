@@ -2,6 +2,10 @@ package net.quepierts.thatskyinteractions.data;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.quepierts.simpleanimator.core.SimpleAnimator;
+import net.quepierts.thatskyinteractions.network.packet.UserDataModifyPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -25,8 +29,18 @@ public class FriendData {
         this.nickname = nickname;
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public void updateNickname(@NotNull String nickname) {
+        this.nickname = nickname;
+        SimpleAnimator.getNetwork().update(new UserDataModifyPacket.Nickname(this.uuid, this.nickname));
+    }
+
     public @NotNull String getNickname() {
         return nickname;
+    }
+
+    public @NotNull String getUsername() {
+        return this.username;
     }
 
     public static void toNetwork(FriendlyByteBuf byteBuf, FriendData data) {

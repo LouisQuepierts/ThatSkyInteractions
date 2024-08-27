@@ -8,10 +8,12 @@ import net.minecraft.world.entity.Entity;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 
 public class WingOfLightBlockEntityRenderer implements BlockEntityRenderer<WingOfLightBlockEntity> {
+    public WingOfLightBlockEntityRenderer() {
+
+    }
+
     @Override
     public void render(WingOfLightBlockEntity wingOfLightBlockEntity, float v, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int i1) {
-
-
         Entity camera = Minecraft.getInstance().getCameraEntity();
 
 

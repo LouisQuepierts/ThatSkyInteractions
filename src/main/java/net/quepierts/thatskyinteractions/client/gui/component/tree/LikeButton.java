@@ -22,6 +22,8 @@ public class LikeButton extends TreeNodeButton {
     private boolean on = false;
     public LikeButton(String id, int x, int y, ScreenAnimator animator, NodeState state) {
         super(id, x, 0, Component.literal("like"), y, ICON_LIKE_OFF, animator, state);
+        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
+        this.on = client.getCache().isLikedFriend(client.getTarget());
     }
 
     @Override

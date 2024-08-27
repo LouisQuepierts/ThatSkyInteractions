@@ -13,7 +13,7 @@ import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
-import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmScreen;
+import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
 import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 

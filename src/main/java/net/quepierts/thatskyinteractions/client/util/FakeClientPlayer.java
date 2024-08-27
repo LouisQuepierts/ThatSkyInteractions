@@ -5,14 +5,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.client.resources.PlayerSkin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class FakeClientPlayer extends AbstractClientPlayer {
-    private static final String PLACEHOLDER_NAME = "";
-    private static final UUID PLACEHOLDER_UUID = new UUID(42, -42);
+    public static final String PLACEHOLDER_NAME = "";
+    public static final UUID PLACEHOLDER_UUID = new UUID(42, -42);
     private final FakePlayerDisplayHandler handler;
     private PlayerInfo displayPlayerInfo;
     private UUID displayUUID;
@@ -36,7 +38,7 @@ public class FakeClientPlayer extends AbstractClientPlayer {
             return;
 
         this.displayUUID = uuid;
-        this.getPlayerInfo();
+        this.getDisplayPlayerInfo();
     }
 
     @Override
@@ -54,9 +56,23 @@ public class FakeClientPlayer extends AbstractClientPlayer {
         return false;
     }
 
-    @Nullable
     @Override
-    protected PlayerInfo getPlayerInfo() {
+    public void aiStep() {
+
+    }
+
+    @Override
+    public PlayerSkin getSkin() {
+        PlayerInfo playerinfo = this.getDisplayPlayerInfo();
+        return playerinfo == null ? DefaultPlayerSkin.get(this.getUUID()) : playerinfo.getSkin();
+    }
+
+    public UUID getDisplayUUID() {
+        return displayUUID;
+    }
+
+    @Nullable
+    protected PlayerInfo getDisplayPlayerInfo() {
         if (this.displayPlayerInfo == null) {
             this.displayPlayerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(this.displayUUID);
         }

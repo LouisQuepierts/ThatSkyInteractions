@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.proxy;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
@@ -9,6 +10,9 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
@@ -19,14 +23,13 @@ import net.quepierts.thatskyinteractions.data.tree.InteractTreeManager;
 import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
 import net.quepierts.thatskyinteractions.network.Packets;
 
+import java.nio.file.Path;
+
 public class CommonProxy {
     private final InteractTreeManager interactTreeManager;
     private final AstrolabeManager astrolabeManager;
     private final TSIUserDataStorage userDataManager;
     public CommonProxy(IEventBus bus, ModContainer modContainer) {
-        NeoForge.EVENT_BUS.addListener(LevelEvent.Load.class, this::onLevelLoad);
-        NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, this::onReload);
-        NeoForge.EVENT_BUS.addListener(OnDatapackSyncEvent.class, this::onDatapackSync);
 
         InteractTreeNode.register();
         AstrolabeNode.register();
@@ -35,8 +38,29 @@ public class CommonProxy {
         astrolabeManager = new AstrolabeManager();
         userDataManager = new TSIUserDataStorage();
 
+        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, this::onServerTick);
+        NeoForge.EVENT_BUS.addListener(LevelEvent.Load.class, this::onLevelLoad);
+        NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, this::onReload);
+        NeoForge.EVENT_BUS.addListener(OnDatapackSyncEvent.class, this::onDatapackSync);
+        NeoForge.EVENT_BUS.addListener(ServerStartedEvent.class, this::onServerStarted);
+        NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, this::onServerStopping);
         NeoForge.EVENT_BUS.addListener(PlayerEvent.LoadFromFile.class, this.userDataManager::onLoadFromFile);
         NeoForge.EVENT_BUS.addListener(PlayerEvent.SaveToFile.class, this.userDataManager::onSaveToFile);
+    }
+
+    private void onServerTick(final ServerTickEvent.Post event) {
+
+    }
+
+    private void onServerStarted(final ServerStartedEvent event) {
+        Path root = event.getServer().getWorldPath(LevelResource.ROOT);
+        this.userDataManager.setRootPath(root);
+    }
+
+    private void onServerStopping(final ServerStoppingEvent event) {
+        this.interactTreeManager.clear();
+        this.astrolabeManager.clear();
+        this.userDataManager.saveAndClear();
     }
 
     public void onReload(final AddReloadListenerEvent event) {

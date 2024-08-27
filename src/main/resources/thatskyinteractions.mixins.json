@@ -7,10 +7,10 @@
   "mixins": [
   ],
   "client": [
+    "CameraMixin",
     "ClientLevelMixin",
     "FogRendererMixin",
     "LevelRendererMixin",
-    "CameraMixin",
     "PlayerRendererMixin"
   ],
   "injectors": {

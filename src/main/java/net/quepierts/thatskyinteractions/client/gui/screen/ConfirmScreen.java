@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.client.gui.screen.confirm;
+package net.quepierts.thatskyinteractions.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -13,7 +13,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
-import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
+import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.jetbrains.annotations.NotNull;
 

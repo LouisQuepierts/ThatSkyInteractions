@@ -1,12 +1,16 @@
 package net.quepierts.thatskyinteractions.proxy;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.ChatTypeDecoration;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -38,8 +42,10 @@ import net.quepierts.thatskyinteractions.client.gui.screen.PlayerInteractScreen;
 import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
 import net.quepierts.thatskyinteractions.client.render.CandleLayer;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
+import net.quepierts.thatskyinteractions.client.util.FakeClientPlayer;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
 import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
+import net.quepierts.thatskyinteractions.data.FriendData;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
@@ -70,12 +76,13 @@ public class ClientProxy extends CommonProxy {
         options = new Options();
         dataCache = new ClientTSIDataCache();
         unlockRelationshipHandler = new UnlockRelationshipHandler();
-        fakePlayerDisplayHandler = new FakePlayerDisplayHandler();
+        fakePlayerDisplayHandler = new FakePlayerDisplayHandler(this);
         cameraHandler = new CameraHandler();
 
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(InputEvent.MouseScrollingEvent.class, this::onMouseScrolling);
         NeoForge.EVENT_BUS.addListener(InputEvent.Key.class, this::onKey);
+        NeoForge.EVENT_BUS.addListener(InputEvent.MouseButton.Post.class, this::onMouseButton);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingIn.class, this::onLoggingIn);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, this::onLoggingOut);
         NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedInEvent.class, this::onPlayerLoggedIn);
@@ -83,9 +90,11 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(LevelEvent.Load.class, this::onWorldLoad);
         NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Pre.class, this::onRenderGUI);
         NeoForge.EVENT_BUS.addListener(RenderNameTagEvent.class, this::onRenderNameTag);
+        NeoForge.EVENT_BUS.addListener(ClientChatReceivedEvent.Player.class, this::onChatReceivedPlayer);
         NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, cameraHandler::onComputeCameraAngles);
         NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Pre.class, fakePlayerDisplayHandler::onRenderPlayerPre);
         NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Post.class, fakePlayerDisplayHandler::onRenderPlayerPost);
+        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, fakePlayerDisplayHandler::onClientTick);
 
         SimpleAnimator.EVENT_BUS.addListener(AnimatorEvent.Play.class, this::onAnimatorPlay);
         SimpleAnimator.EVENT_BUS.addListener(AnimatorEvent.Stop.class, this::onAnimatorStop);
@@ -105,12 +114,26 @@ public class ClientProxy extends CommonProxy {
         Particles.REGISTER.register(modBus);
     }
 
+    private void onChatReceivedPlayer(final ClientChatReceivedEvent.Player event) {
+        UUID sender = event.getSender();
+        if (this.dataCache.isFriend(sender)) {
+            FriendData friendData = this.dataCache.getUserData().getNodeData(sender).getFriendData();
+            Component decorated = event.getPlayerChatMessage().decoratedContent();
+            event.setMessage(Component.translatable(ChatType.DEFAULT_CHAT_DECORATION.translationKey(), friendData.getNickname(), decorated));
+        }
+    }
+
     private void onRenderNameTag(final RenderNameTagEvent event) {
-        UUID uuid = event.getEntity().getUUID();
+        Entity entity = event.getEntity();
+        UUID uuid = entity.getUUID();
+
         if (this.blocked(uuid)) {
             event.setCanRender(TriState.FALSE);
         } else if (this.dataCache.isFriend(uuid)) {
-            MultiBufferSource source = event.getMultiBufferSource();
+            FriendData friendData = this.dataCache.getUserData().getNodeData(uuid).getFriendData();
+            if (friendData.getUsername().equals(friendData.getNickname()))
+                return;
+            event.setContent(Component.literal(friendData.getNickname()));
         }
     }
 
@@ -220,7 +243,8 @@ public class ClientProxy extends CommonProxy {
     }
 
     public void onEntityInteract(final PlayerInteractEvent.EntityInteract event) {
-        if (!event.getEntity().isLocalPlayer()) {
+        Player player = event.getEntity();
+        if (!player.isLocalPlayer()) {
             return;
         }
 
@@ -285,6 +309,10 @@ public class ClientProxy extends CommonProxy {
                 }
             }
         }
+    }
+
+    private void onMouseButton(final InputEvent.MouseButton.Post event) {
+
     }
 
     public boolean blocked(UUID player) {
