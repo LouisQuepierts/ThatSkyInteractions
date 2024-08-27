@@ -10,10 +10,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.thatskyinteractions.client.RenderUtils;
+import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.component.tree.LockedButton;
 import net.quepierts.thatskyinteractions.client.gui.component.tree.TreeNodeButton;
+import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
 import org.jetbrains.annotations.NotNull;
 
@@ -168,6 +169,10 @@ public class InteractTreeNode {
 
     public void asRoot() {
         this.y = 0;
+    }
+
+    public void onUnlock(PlayerPair pair, boolean onServer) {
+
     }
 
     public enum Branch {

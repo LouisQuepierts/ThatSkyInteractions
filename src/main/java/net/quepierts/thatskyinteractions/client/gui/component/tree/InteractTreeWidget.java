@@ -23,6 +23,7 @@ import net.quepierts.thatskyinteractions.client.gui.component.CulledRenderable;
 import net.quepierts.thatskyinteractions.client.gui.component.GlowingLine;
 import net.quepierts.thatskyinteractions.client.gui.component.Resizable;
 import net.quepierts.thatskyinteractions.client.gui.holder.DoubleHolder;
+import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmScreen;
@@ -192,13 +193,14 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
                     if (this.clickUnlockableTimes > 2 || this.clickUnlockableTimes == btn.price) {
                         CandleInfoLayer.INSTANCE.setShrink(btn.currency, btn.price);
                         CandleInfoLayer.INSTANCE.freeze(btn.currency);
-                        this.parent.hide();
-                        minecraft.pushGuiLayer(
-                                new ConfirmScreen(
-                                        Component.empty(),
-                                        new UnlockNodeInviteConfirmProvider(parent, btn),
-                                        264, 176));
-                    } else {
+
+                        AnimateScreenHolderLayer.INSTANCE.push(
+                            new ConfirmScreen(
+                                    Component.empty(),
+                                    new UnlockNodeInviteConfirmProvider(parent, btn),
+                                    264, 176
+                            )
+                        );
                         CandleInfoLayer.INSTANCE.shrink(btn.currency, 1);
                     }
                     btn.onClickUnlockable(this.clickUnlockableTimes);
@@ -269,13 +271,13 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
         public void cancel() {
             CandleInfoLayer.INSTANCE.unfreeze(button.currency);
             clearClickCounter();
-            screen.enter();
+            //screen.enter();
         }
 
         private void onAccepted() {
             CandleInfoLayer.INSTANCE.unfreeze(button.currency);
             CandleInfoLayer.INSTANCE.refund(button.currency);
-            screen.enter();
+            //screen.enter();
             reset(treeInstance.getTree(), treeInstance);
             minecraft.getSoundManager().play(
                     SimpleSoundInstance.forUI(
@@ -288,7 +290,7 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
         private void onCanceled() {
             CandleInfoLayer.INSTANCE.unfreeze(button.currency);
             CandleInfoLayer.INSTANCE.refund(button.currency);
-            screen.enter();
+            //screen.enter();
         }
     }
 }

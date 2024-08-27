@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.thatskyinteractions.client.RenderUtils;
+import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;

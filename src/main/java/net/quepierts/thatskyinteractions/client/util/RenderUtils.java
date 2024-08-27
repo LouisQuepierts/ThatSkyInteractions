@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.client;
+package net.quepierts.thatskyinteractions.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -13,7 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.Shaders;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 
 import java.util.Objects;
 
@@ -83,13 +85,32 @@ public class RenderUtils {
         RenderSystem.disableBlend();
     }
 
-    public static void drawCrossHalo(GuiGraphics guiGraphics, int x, int y, int size, float intensity, int color) {
-        int x2 = x + size;
-        int y2 = y + size;
+    public static void drawHalo(GuiGraphics guiGraphics, float x, float y, int size) {
+        float x2 = x + size;
+        float y2 = y + size;
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(Shaders::getCrossHaloShader);
-        Objects.requireNonNull(Shaders.getCrossHaloShader().getUniform("Intensity")).set(intensity);
+        RenderSystem.setShader(Shaders::getHalo);
+
+        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(0xffffffff);
+        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(0xffffffff);
+        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(0xffffffff);
+        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(0xffffffff);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        RenderSystem.disableBlend();
+    }
+
+    public static void drawCrossLightSpot(GuiGraphics guiGraphics, float x, float y, int size, float intensity, float width, int color) {
+        float x2 = x + size;
+        float y2 = y + size;
+
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(Shaders::getCrossLightSpotShader);
+        ShaderInstance shader = Shaders.getCrossLightSpotShader();
+        Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
+        Objects.requireNonNull(shader.getUniform("Width")).set(width / size);
 
         Matrix4f matrix4f = guiGraphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
@@ -101,13 +122,15 @@ public class RenderUtils {
         RenderSystem.disableBlend();
     }
 
-    public static void drawDoubleCrossHalo(GuiGraphics guiGraphics, int x, int y, int size, float intensity, int color) {
-        int x2 = x + size;
-        int y2 = y + size;
+    public static void drawDoubleCrossHalo(GuiGraphics guiGraphics, float x, float y, int size, float intensity, float width, int color) {
+        float x2 = x + size;
+        float y2 = y + size;
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(Shaders::getDoubleCrossHaloShader);
-        Objects.requireNonNull(Shaders.getDoubleCrossHaloShader().getUniform("Intensity")).set(intensity);
+        RenderSystem.setShader(Shaders::getDoubleCrossLightSpotShader);
+        ShaderInstance shader = Shaders.getDoubleCrossLightSpotShader();
+        Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
+        Objects.requireNonNull(shader.getUniform("Width")).set(width / size);
 
         Matrix4f matrix4f = guiGraphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);

@@ -5,7 +5,7 @@
         "dstrgb": "1-srcalpha"
     },
     "vertex": "thatskyinteractions:uv_color",
-    "fragment": "thatskyinteractions:double_cross_halo",
+    "fragment": "thatskyinteractions:double_cross_light_spot",
     "attributes": [
         "Color",
         "UV0"
@@ -33,6 +33,12 @@
         },
         {
             "name": "Intensity",
+            "type": "float",
+            "count": 1,
+            "values": [ 1.0 ]
+        },
+        {
+            "name": "Width",
             "type": "float",
             "count": 1,
             "values": [ 1.0 ]

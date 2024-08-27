@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.client.gui.layer.interact;
+package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.api.IInteractHandler;
-import net.quepierts.thatskyinteractions.client.RenderUtils;
+import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
@@ -25,7 +25,7 @@ public class InteractionRequestW2SButton extends World2ScreenButton {
     }
 
     @Override
-    public Vector3f getWorldPos() {
-        return this.position;
+    public void getWorldPos(Vector3f out) {
+        out.set(this.position);
     }
 }

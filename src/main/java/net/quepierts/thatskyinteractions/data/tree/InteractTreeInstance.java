@@ -7,6 +7,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
@@ -102,12 +104,15 @@ public class InteractTreeInstance {
         return this.states.containsKey(node) && this.states.getByte(node) == NodeState.UNLOCKABLE.ordinal();
     }
 
-    public boolean unlock(String node) {
+    public boolean unlock(String node, boolean onServer) {
         if (!this.isUnlockable(node))
             return false;
 
         this.states.put(node, (byte) NodeState.UNLOCKED.ordinal());
         this.update(node);
+
+        InteractTreeNode tNode = this.getTree().get(node);
+        tNode.onUnlock(this.pair, onServer);
 
         return true;
     }

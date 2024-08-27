@@ -8,8 +8,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
@@ -23,15 +25,23 @@ public class LikeButton extends TreeNodeButton {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClickUnlocked() {
         this.animator.play(this.clickAnimation);
-        this.on = !this.on;
         Minecraft.getInstance().getSoundManager().play(
                 SimpleSoundInstance.forUI(
                         SoundEvents.PLAYER_LEVELUP,
                         1.0f
                 )
         );
+
+        this.on = !this.on;
+        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
+        ClientTSIDataCache cache = client.getCache();
+        if (this.on) {
+            cache.likeFriend(client.getTarget(), true);
+        } else {
+            cache.unlikeFriend(client.getTarget(), true);
+        }
     }
 
     @Override

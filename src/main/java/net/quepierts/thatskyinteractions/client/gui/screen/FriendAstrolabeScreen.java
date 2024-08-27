@@ -3,6 +3,8 @@ package net.quepierts.thatskyinteractions.client.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
@@ -11,7 +13,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.CameraHandler;
+import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
@@ -19,18 +21,24 @@ import net.quepierts.thatskyinteractions.client.gui.component.astrolabe.Astrolab
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.data.astrolabe.Astrolabe;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
+import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeMap;
+import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
 public class FriendAstrolabeScreen extends AnimatedScreen {
-    private static final ResourceLocation ASTROLABE_BESTIES = ThatSkyInteractions.getLocation("besties");
-    private static final ResourceLocation ASTROLABE_BESTIES_2 = ThatSkyInteractions.getLocation("besties_2");
-    private int index = 2;
+    private static final int MAX_ASTROLABE_AMOUNT = 16;
+    private int index;
     private final CameraHandler cameraHandler;
-    private final AstrolabeWidget[] astrolabes = new AstrolabeWidget[5];
+    private final AstrolabeWidget[] astrolabes = new AstrolabeWidget[MAX_ASTROLABE_AMOUNT];
     private final FloatHolder closerHolder = new FloatHolder(0.7f);
-    private final LerpNumberAnimation closerAnimation = new LerpNumberAnimation(closerHolder, AnimateUtils.Lerp::smooth, 0, 0, 1.0f);
+    private final LerpNumberAnimation closeAnimation = new LerpNumberAnimation(closerHolder, AnimateUtils.Lerp::smooth, 0, 0, 1.0f);
+
+    private int astrolabeAmount;
+    private int astrolabeAmountHalf;
+
     public FriendAstrolabeScreen() {
         super(Component.empty());
         this.cameraHandler = ThatSkyInteractions.getInstance().getClient().getCameraHandler();
@@ -38,41 +46,84 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
 
     @Override
     protected void init() {
-        this.astrolabes[2] = new AstrolabeWidget(this, 0, 0);
-        this.astrolabes[3] = new AstrolabeWidget(this, 0, 0);
-        AstrolabeManager astrolabeManager = ThatSkyInteractions.getInstance().getProxy().getAstrolabeManager();
-        Astrolabe besties1 = astrolabeManager.get(ASTROLABE_BESTIES);
-        if (besties1 != null) {
-            this.astrolabes[2].reset(besties1);
-            this.astrolabes[2].enter();
+        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
+        AstrolabeManager astrolabeManager = client.getAstrolabeManager();
+        AstrolabeMap astrolabes = client.getCache().getUserData().astrolabes();
+
+        ObjectList<ResourceLocation> friendAstrolabes = astrolabeManager.getFriendAstrolabes();
+        int i = 0;
+
+        for (ResourceLocation location : friendAstrolabes) {
+            Astrolabe astrolabe = astrolabeManager.get(location);
+            if (astrolabe == null)
+                continue;
+
+            FriendAstrolabeInstance instance = astrolabes.get(location);
+            if (instance == null)
+                continue;
+
+            this.astrolabes[i] = new AstrolabeWidget(this, location);
+            this.astrolabes[i].reset(astrolabe, instance);
+
+            if (++i == MAX_ASTROLABE_AMOUNT)
+                break;
         }
 
-        Astrolabe besties2 = astrolabeManager.get(ASTROLABE_BESTIES_2);
-        if (besties2 != null) {
-            this.astrolabes[3].reset(besties2);
-        }
+        this.astrolabeAmount = i;
+        this.astrolabeAmountHalf = i / 2;
+        /*for (ResourceLocation location : friendAstrolabes) {
+            Astrolabe astrolabe = astrolabeManager.get(location);
+            if (astrolabe == null)
+                continue;
+
+            this.astrolabes[i] = new AstrolabeWidget(this, 0, 0, location);
+            FriendAstrolabeInstance instance = astrolabes.computeIfAbsent(location, (l) -> new FriendAstrolabeInstance());
+            this.astrolabes[i].reset(astrolabe, instance);
+
+            if (++i == MAX_ASTROLABE_AMOUNT)
+                break;
+        }*/
     }
 
     @Override
     public void enter() {
         super.enter();
-        Vector3f unmodifiedRotation = cameraHandler.getUnmodifiedRotation();
-        //Vector3f unmodifiedSkyColor = cameraHandler.getUnmodifiedSkyColor();
-        float unmodifiedDayTime = cameraHandler.getUnmodifiedDayTime();
+        CameraHandler.Entry rotation = this.cameraHandler.get(CameraHandler.Property.ROTATION);
+        Vector3f unmodified = new Vector3f();
+        Vector3f unmodifiedRotation = rotation.getUnmodified(unmodified);
+        final float yRot = (this.index - this.astrolabeAmountHalf) * 45;
+        if (this.minecraft.options.getCameraType().isMirrored()) {
+            rotation.toTarget(new Vector3f(45 - unmodifiedRotation.x, yRot + 180, 0), 1.0f);
+        } else {
+            rotation.toTarget(new Vector3f(-45 - unmodifiedRotation.x, yRot, 0), 1.0f);
+        }
 
-        cameraHandler.rotateTo(new Vector3f(-45 - unmodifiedRotation.x, 0, 0));
-        cameraHandler.dayTimeTo(0.5f - unmodifiedDayTime);
-        this.closerAnimation.reset(0.7f, 1.0f);
-        this.animator.play(this.closerAnimation, 0.2f);
+        CameraHandler.Entry position = this.cameraHandler.get(CameraHandler.Property.POSITION);
+        position.toTarget(new Vector3f(0, 2, 0), 0.5f, 0.2f);
+
+        CameraHandler.Entry dayTime = this.cameraHandler.get(CameraHandler.Property.DAY_TIME);
+        float unmodifiedDayTime = dayTime.getUnmodified(unmodified).x;
+        dayTime.toTarget(new Vector3f(0.5f - unmodifiedDayTime));
+
+        this.closeAnimation.reset(0.7f, 1.0f);
+        this.animator.play(this.closeAnimation, 0.5f);
+
+        this.astrolabes[this.index].enter();
     }
 
     @Override
     public void hide() {
         super.hide();
-        cameraHandler.resetRotation();
-        cameraHandler.resetDayTime();
-        this.closerAnimation.reset(1.0f, 0.5f);
-        this.animator.play(this.closerAnimation, 0.2f);
+        this.closeAnimation.reset(1.0f, 0.5f);
+        this.animator.play(this.closeAnimation);
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        this.cameraHandler.get(CameraHandler.Property.ROTATION).toDefault(0.75f, 0.2f);
+        this.cameraHandler.get(CameraHandler.Property.DAY_TIME).toDefault(0.5f, 0.2f);
+        this.cameraHandler.get(CameraHandler.Property.POSITION).toDefault(0.75f, 0.4f);
     }
 
     @Override
@@ -80,8 +131,9 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
         RenderSystem.enableBlend();
         RenderSystem.disableCull();
         RenderSystem.enableDepthTest();
-        Vector3f cameraRotation = this.cameraHandler.getRotation();
-        float destRotX = this.cameraHandler.getDestRotation().x;
+        CameraHandler.Entry rotation = this.cameraHandler.get(CameraHandler.Property.ROTATION);
+        Vector3f cameraRotation = rotation.getModified(new Vector3f());
+        float destRotX = rotation.getDest(new Vector3f()).x;
 
         float xHalf = this.width / 2.0f;
         float yHalf = this.height / 2.0f;
@@ -105,20 +157,23 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
         pose.translate(0, -yHalf, 0);
 
         float yRot = cameraRotation.y;
+        if (minecraft.options.getCameraType().isMirrored()) {
+            yRot -= 180;
+        }
         float scale = this.closerHolder.getValue();
         pose.scale(scale, scale, 1.0f);
 
         for (int i = 0; i < this.astrolabes.length; i++) {
-            int diff = i - 2;
-
-            if (Mth.abs(diff) > 1)
-                continue;
-
             AstrolabeWidget astrolabe = this.astrolabes[i];
             if (astrolabe == null)
                 continue;
 
+            final int diff = i - this.astrolabeAmountHalf;
             float rot = yRot - diff * 45;
+
+            if (Mth.abs(rot) > 60.0f)
+                continue;
+
             pose.pushPose();
             pose.translate(0, -this.height, 300);
             pose.mulPose(Axis.ZP.rotationDegrees(rot));
@@ -143,19 +198,19 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        Vector3f target = this.cameraHandler.getDestRotation();
+        Vector3f target = this.cameraHandler.get(CameraHandler.Property.ROTATION).getDest(new Vector3f());
         AstrolabeWidget astrolabe = this.astrolabes[this.index];
         boolean rotated = false;
         switch (keyCode) {
             case GLFW.GLFW_KEY_A:
                 if (--this.index < 0) {
-                    this.index = 4;
+                    this.index = this.astrolabeAmount - 1;
                 }
                 rotated = true;
                 break;
             case GLFW.GLFW_KEY_D:
                 this.index++;
-                this.index %= 5;
+                this.index %= this.astrolabeAmount;
                 rotated = true;
                 break;
         }
@@ -168,13 +223,15 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
             if (astrolabe != null) {
                 astrolabe.enter();
             }
-            target.y = (this.index - 2) * 45;
-            this.cameraHandler.rotateTo(target);
+            target.y = (this.index - this.astrolabeAmountHalf) * 45;
+            if (this.minecraft.options.getCameraType().isMirrored())
+                target.y += 180;
+            this.cameraHandler.get(CameraHandler.Property.ROTATION).toTarget(target);
             return true;
         }
 
-        /*if (this.astrolabeWidget.keyPressed(keyCode, scanCode, modifiers))
-            return true;*/
+        if (astrolabe != null && astrolabe.keyPressed(keyCode, scanCode, modifiers))
+            return true;
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 

@@ -2,13 +2,11 @@ package net.quepierts.thatskyinteractions.proxy;
 
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
-import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +16,7 @@ import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -27,12 +26,12 @@ import net.quepierts.simpleanimator.api.event.client.ClientAnimatorStateEvent;
 import net.quepierts.simpleanimator.api.event.common.*;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.CameraHandler;
+import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
+import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.Particles;
-import net.quepierts.thatskyinteractions.client.UnlockRelationshipHandler;
-import net.quepierts.thatskyinteractions.client.data.BlockedPlayerList;
-import net.quepierts.thatskyinteractions.client.data.RelationshipDataCache;
+import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
+import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
@@ -54,12 +53,12 @@ import java.util.UUID;
 public class ClientProxy extends CommonProxy {
     private static final ResourceLocation EMPTY_LOCATION = ResourceLocation.withDefaultNamespace("empty");
     public final Options options;
-    private final RelationshipDataCache dataCache;
-    private final UnlockRelationshipHandler unlockRelationshipHandler;
-    @NotNull private final CameraHandler cameraHandler = new CameraHandler();
+    @NotNull private final ClientTSIDataCache dataCache;
+    @NotNull private final UnlockRelationshipHandler unlockRelationshipHandler;
+    @NotNull private final FakePlayerDisplayHandler fakePlayerDisplayHandler;
+    @NotNull private final CameraHandler cameraHandler;
 
     @Nullable private UUID target;
-    private BlockedPlayerList blockedPlayerList;
     private static final Set<ResourceLocation> HELD_ANIMATIONS = ObjectSet.of(
             Animations.HELD_CANDLE,
             Animations.UNLOCK_INVITE
@@ -68,15 +67,25 @@ public class ClientProxy extends CommonProxy {
     public ClientProxy(IEventBus modBus, ModContainer modContainer) {
         super(modBus, modContainer);
 
+        options = new Options();
+        dataCache = new ClientTSIDataCache();
+        unlockRelationshipHandler = new UnlockRelationshipHandler();
+        fakePlayerDisplayHandler = new FakePlayerDisplayHandler();
+        cameraHandler = new CameraHandler();
+
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(InputEvent.MouseScrollingEvent.class, this::onMouseScrolling);
         NeoForge.EVENT_BUS.addListener(InputEvent.Key.class, this::onKey);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingIn.class, this::onLoggingIn);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, this::onLoggingOut);
+        NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedInEvent.class, this::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedOutEvent.class, this::onPlayerLoggedOut);
         NeoForge.EVENT_BUS.addListener(LevelEvent.Load.class, this::onWorldLoad);
         NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Pre.class, this::onRenderGUI);
+        NeoForge.EVENT_BUS.addListener(RenderNameTagEvent.class, this::onRenderNameTag);
         NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, cameraHandler::onComputeCameraAngles);
+        NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Pre.class, fakePlayerDisplayHandler::onRenderPlayerPre);
+        NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Post.class, fakePlayerDisplayHandler::onRenderPlayerPost);
 
         SimpleAnimator.EVENT_BUS.addListener(AnimatorEvent.Play.class, this::onAnimatorPlay);
         SimpleAnimator.EVENT_BUS.addListener(AnimatorEvent.Stop.class, this::onAnimatorStop);
@@ -85,10 +94,6 @@ public class ClientProxy extends CommonProxy {
         SimpleAnimator.EVENT_BUS.addListener(CancelInteractEvent.class, this::onCancelInteract);
         SimpleAnimator.EVENT_BUS.addListener(InteractInviteEvent.Pre.class, this::onInteractInvite);
         SimpleAnimator.EVENT_BUS.addListener(InteractAcceptEvent.Post.class, this::onInteractAccepted);
-
-        options = new Options();
-        dataCache = new RelationshipDataCache();
-        unlockRelationshipHandler = new UnlockRelationshipHandler();
 
         modBus.addListener(RegisterGuiLayersEvent.class, this::onRegisterGuiLayers);
         modBus.addListener(RegisterParticleProvidersEvent.class, this::onRegisterParticleProviders);
@@ -100,18 +105,30 @@ public class ClientProxy extends CommonProxy {
         Particles.REGISTER.register(modBus);
     }
 
-    private void onComputeCameraAngles(final ViewportEvent.ComputeCameraAngles event) {
-
+    private void onRenderNameTag(final RenderNameTagEvent event) {
+        UUID uuid = event.getEntity().getUUID();
+        if (this.blocked(uuid)) {
+            event.setCanRender(TriState.FALSE);
+        } else if (this.dataCache.isFriend(uuid)) {
+            MultiBufferSource source = event.getMultiBufferSource();
+        }
     }
 
     private void onRenderGUI(RenderGuiEvent.Pre event) {
         ScreenAnimator.GLOBAL.tick();
     }
 
+
+    private void onPlayerLoggedIn(final PlayerEvent.PlayerLoggedInEvent event) {
+        //this.dataCache.setOnline(event.getEntity(), true);
+    }
+
     private void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
-        UUID uuid = event.getEntity().getUUID();
+        Player player = event.getEntity();
+        UUID uuid = player.getUUID();
         World2ScreenGridLayer.INSTANCE.remove(uuid);
 
+        //this.dataCache.setOnline(player, false);
         Minecraft minecraft = Minecraft.getInstance();
         if (this.target != null && this.target.equals(uuid) && minecraft.screen instanceof PlayerInteractScreen) {
             this.target = null;
@@ -180,29 +197,16 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onLoggingIn(final ClientPlayerNetworkEvent.LoggingIn event) {
-        Minecraft minecraft = Minecraft.getInstance();
-        ServerData server = minecraft.getCurrentServer();
-
-        if (server != null) {
-            this.blockedPlayerList = BlockedPlayerList.loadLocal(BlockedPlayerList.Type.SERVER, server.name);
-        } else {
-            ClientLevel level = minecraft.level;
-            if (level != null && level.getServer() instanceof IntegratedServer integratedServer) {
-                this.blockedPlayerList = BlockedPlayerList.loadLocal(BlockedPlayerList.Type.LOCAL, integratedServer.getWorldData().getLevelName());
-            }
-        }
+        this.fakePlayerDisplayHandler.init(event.getPlayer().clientLevel);
     }
 
     private void onLoggingOut(final ClientPlayerNetworkEvent.LoggingOut event) {
         this.dataCache.clear();
         this.unlockRelationshipHandler.reset();
         this.cameraHandler.cleanup();
+        this.fakePlayerDisplayHandler.reset();
+        AnimateScreenHolderLayer.INSTANCE.reset();
         World2ScreenGridLayer.INSTANCE.reset();
-
-        if (this.blockedPlayerList != null) {
-            this.blockedPlayerList.save();
-            this.blockedPlayerList = null;
-        }
     }
 
     private void onRegisterGuiLayers(final RegisterGuiLayersEvent event) {
@@ -227,13 +231,11 @@ public class ClientProxy extends CommonProxy {
         Entity target = event.getTarget();
         if (target instanceof Player) {
             InteractTree tree = this.dataCache.getTree();
-            if (tree != null) {
-                UUID uuid = target.getUUID();
-                InteractTreeInstance instance = this.dataCache.get(uuid);
-                Minecraft.getInstance().setScreen(new PlayerInteractScreen(target, tree, instance));
-                this.setTarget(uuid);
-                event.setCanceled(true);
-            }
+            UUID uuid = target.getUUID();
+            this.setTarget(uuid);
+            InteractTreeInstance instance = this.dataCache.get(uuid);
+            AnimateScreenHolderLayer.INSTANCE.push(new PlayerInteractScreen(target, tree, instance));
+            event.setCanceled(true);
         }
         /*InteractTree tree = this.dataCache.getTree();
         if (tree != null) {
@@ -279,23 +281,23 @@ public class ClientProxy extends CommonProxy {
 
             if (Minecraft.getInstance().screen == null) {
                 if (options.keyOpenFriendAstrolabe.get().isDown()) {
-                    Minecraft.getInstance().setScreen(new FriendAstrolabeScreen());
+                    AnimateScreenHolderLayer.INSTANCE.push(new FriendAstrolabeScreen());
                 }
             }
         }
     }
 
     public boolean blocked(UUID player) {
-        return this.blockedPlayerList.contains(player);
+        return this.dataCache.getUserData().isBlocked(player);
     }
 
     public void block(UUID player) {
-        this.blockedPlayerList.add(player);
+        this.dataCache.getUserData().block(player);
         World2ScreenGridLayer.INSTANCE.remove(player);
     }
 
     public void unblock(UUID player) {
-        this.blockedPlayerList.remove(player);
+        this.dataCache.getUserData().unblock(player);
     }
 
 
@@ -308,15 +310,19 @@ public class ClientProxy extends CommonProxy {
         return this.target;
     }
 
-    public RelationshipDataCache getCache() {
+    public ClientTSIDataCache getCache() {
         return this.dataCache;
     }
 
-    public UnlockRelationshipHandler getUnlockRelationshipHandler() {
+    public @NotNull UnlockRelationshipHandler getUnlockRelationshipHandler() {
         return this.unlockRelationshipHandler;
     }
 
-    public CameraHandler getCameraHandler() {
+    public @NotNull CameraHandler getCameraHandler() {
         return this.cameraHandler;
+    }
+
+    public @NotNull FakePlayerDisplayHandler getFakePlayerDisplayHandler() {
+        return this.fakePlayerDisplayHandler;
     }
 }

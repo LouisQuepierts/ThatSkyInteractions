@@ -19,7 +19,7 @@ public class ThatSkyInteractions {
     public static final String MODID = "thatskyinteractions";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static final RandomSource RANDOM = RandomSource.create();
+    public static final RandomSource RANDOM = RandomSource.create(42L);
 
     private static ThatSkyInteractions instance;
 

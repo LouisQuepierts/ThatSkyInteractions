@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.RenderUtils;
+import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
@@ -30,8 +30,6 @@ public class ConfirmScreen extends AnimatedScreen {
         this.provider = provider;
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
-
-        AnimateScreenHolderLayer.INSTANCE.open(this);
     }
 
     @Override
@@ -42,7 +40,7 @@ public class ConfirmScreen extends AnimatedScreen {
             @Override
             public void onPress() {
                 provider.confirm();
-                Minecraft.getInstance().popGuiLayer();
+                AnimateScreenHolderLayer.INSTANCE.pop(ConfirmScreen.this);
             }
         });
 
@@ -50,7 +48,7 @@ public class ConfirmScreen extends AnimatedScreen {
             @Override
             public void onPress() {
                 provider.cancel();
-                Minecraft.getInstance().popGuiLayer();
+                AnimateScreenHolderLayer.INSTANCE.pop(ConfirmScreen.this);
             }
         });
     }

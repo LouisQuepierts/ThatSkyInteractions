@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.network.FriendlyByteBuf;
 
 public class FriendNode extends AstrolabeNode {
-    protected FriendNode(int x, int y) {
+    public FriendNode(int x, int y) {
         super(x, y);
     }
 

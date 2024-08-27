@@ -14,7 +14,7 @@ import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.simpleanimator.core.network.BiPacket;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
-import net.quepierts.thatskyinteractions.client.gui.layer.interact.InteractionRequestW2SButton;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.InteractionRequestW2SButton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;

@@ -1,7 +1,6 @@
 package net.quepierts.thatskyinteractions.network.packet;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +14,9 @@ public class BatchAstrolabePacket implements ISync {
     public static final Type<BatchAstrolabePacket> TYPE = NetworkPackets.createType(BatchAstrolabePacket.class);
 
     private final Object2ObjectMap<ResourceLocation, Astrolabe> map;
+    private final ObjectList<ResourceLocation> bestFriendAstrolabes;
+    private final ObjectList<ResourceLocation> friendAstrolabes;
+
 
     public BatchAstrolabePacket(FriendlyByteBuf byteBuf) {
         this.map = byteBuf.readMap(
@@ -22,11 +24,21 @@ public class BatchAstrolabePacket implements ISync {
                 FriendlyByteBuf::readResourceLocation,
                 Astrolabe::fromNetwork
         );
+        this.bestFriendAstrolabes = byteBuf.readCollection(
+                ObjectArrayList::new,
+                FriendlyByteBuf::readResourceLocation
+        );
+        this.friendAstrolabes = byteBuf.readCollection(
+                ObjectArrayList::new,
+                FriendlyByteBuf::readResourceLocation
+        );
     }
 
-    public BatchAstrolabePacket(Object2ObjectMap<ResourceLocation, Astrolabe> map) {
+    public BatchAstrolabePacket(Object2ObjectMap<ResourceLocation, Astrolabe> map, ObjectList<ResourceLocation> bestFriendAstrolabes, ObjectList<ResourceLocation> friendAstrolabes) {
         ThatSkyInteractions.LOGGER.info("Update Astrolabes");
         this.map = map;
+        this.bestFriendAstrolabes = bestFriendAstrolabes;
+        this.friendAstrolabes = friendAstrolabes;
     }
 
     @Override
@@ -41,10 +53,26 @@ public class BatchAstrolabePacket implements ISync {
                 FriendlyByteBuf::writeResourceLocation,
                 Astrolabe::toNetwork
         );
+        friendlyByteBuf.writeCollection(
+                this.bestFriendAstrolabes,
+                FriendlyByteBuf::writeResourceLocation
+        );
+        friendlyByteBuf.writeCollection(
+                this.friendAstrolabes,
+                FriendlyByteBuf::writeResourceLocation
+        );
     }
 
     public Object2ObjectMap<ResourceLocation, Astrolabe> getAstrolabes() {
         return map;
+    }
+
+    public ObjectList<ResourceLocation> getBestFriendAstrolabes() {
+        return bestFriendAstrolabes;
+    }
+
+    public ObjectList<ResourceLocation> getFriendAstrolabes() {
+        return friendAstrolabes;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class Astrolabe {
     private final ObjectList<AstrolabeNode> nodes;
     private final ObjectList<Connection> connections;
 
-    private Astrolabe(List<AstrolabeNode> nodes, List<Connection> connections) {
+    public Astrolabe(List<AstrolabeNode> nodes, List<Connection> connections) {
         this.nodes = ObjectLists.unmodifiable(new ObjectArrayList<>(nodes));
         this.connections = ObjectLists.unmodifiable(new ObjectArrayList<>(connections));
     }
@@ -62,6 +62,10 @@ public class Astrolabe {
         List<AstrolabeNode> nodes = byteBuf.readList(AstrolabeNode::fromNetwork);
         List<Connection> connections = byteBuf.readList(Connection::fromNetwork);
         return new Astrolabe(nodes, connections);
+    }
+
+    public int size() {
+        return this.nodes.size();
     }
 
     public record Connection(int a, int b) {

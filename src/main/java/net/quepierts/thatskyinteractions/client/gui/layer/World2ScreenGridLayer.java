@@ -21,13 +21,14 @@ import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
-import net.quepierts.thatskyinteractions.client.gui.layer.interact.World2ScreenButton;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,13 +41,13 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
     protected static final int FADE_DISTANCE = 8;
 
     private final Minecraft minecraft = Minecraft.getInstance();
-    private final Map<UUID, World2ScreenButton> objects = new Object2ObjectOpenHashMap<>();
-    private final List<World2ScreenButton> inRange = new ObjectArrayList<>();
+    private final Map<UUID, World2ScreenWidget> objects = new Object2ObjectOpenHashMap<>();
+    private final List<World2ScreenWidget> inRange = new ObjectArrayList<>();
     //private final World2ScreenButton[] grid = new World2ScreenButton[64 * 64];
     private final FloatHolder click = new FloatHolder(0.0f);
     private final LerpNumberAnimation animation = new LerpNumberAnimation(this.click, AnimateUtils.Lerp::smooth, 0, 1, 0.5f);
 
-    private World2ScreenButton highlight;
+    private World2ScreenWidget highlight;
     private double scroll = 0;
     World2ScreenGridLayer() {
         reset();
@@ -56,9 +57,6 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         objects.clear();
         inRange.clear();
         highlight = null;
-//        objects.put(UUID.randomUUID(), new Position(new Vector3f(0, 70, 0)));
-//        objects.put(UUID.randomUUID(), new Position(new Vector3f(20, 96, 0)));
-//        objects.put(UUID.randomUUID(), new Position(new Vector3f(0, 64, 30)));
     }
 
     @Override
@@ -66,12 +64,22 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
             return;
 
+        //RenderUtils.drawHalo(guiGraphics, 10, 10, 200);
+
         update();
 
         float deltaTicks = deltaTracker.getGameTimeDeltaTicks();
 
         //Arrays.fill(grid, null);
-        for (World2ScreenButton object : objects.values()) {
+        for (Iterator<World2ScreenWidget> iterator = objects.values().iterator(); iterator.hasNext(); ) {
+            World2ScreenWidget object = iterator.next();
+            if (!object.isComputed())
+                continue;
+
+            if (object.shouldRemove()) {
+                iterator.remove();
+                continue;
+            }
             float d0 = Mth.lerp(deltaTicks, object.xO, object.x);
             float d1 = Mth.lerp(deltaTicks, object.yO, object.y);
 
@@ -114,8 +122,10 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         inRange.clear();
         //Arrays.fill(grid, null);
 
-        for (World2ScreenButton object : objects.values()) {
-            Vector3f pos = object.getWorldPos();
+        final Vector3f pos = new Vector3f();
+        for (World2ScreenWidget object : objects.values()) {
+            object.setComputed();
+            object.getWorldPos(pos);
 
             Vector4f cameraSpacePos = new Vector4f(pos, 1.0f)
                     .mul(mat);
@@ -136,7 +146,7 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
             if (distance > FADE_DISTANCE + FADE_BEGIN_DISTANCE)
                 continue;
 
-            if (object.x > left && object.x < right) {
+            if (object.x > left && object.x < right && object.selectable) {
                 inRange.add(object);
             }
         }
@@ -191,9 +201,9 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
 //        grid[x + y * 64] = button;
 //    }
 
-    public void addWorldPositionObject(UUID uuid, World2ScreenButton button) {
-        /*if (ThatSkyInteractions.getInstance().getClient().blocked(uuid))
-            return;*/
+    public void addWorldPositionObject(UUID uuid, World2ScreenWidget button) {
+        if (ThatSkyInteractions.getInstance().getClient().blocked(uuid))
+            return;
         this.objects.put(uuid, button);
     }
 
@@ -225,21 +235,4 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         }
     }
 
-    private static class Position extends World2ScreenButton {
-        private final Vector3f pos;
-        public Position(Vector3f pos) {
-            super(ThatSkyInteractions.getLocation("textures/icon/none.png"));
-            this.pos = pos;
-        }
-
-        @Override
-        public void invoke() {
-            ThatSkyInteractions.LOGGER.info("{}", pos);
-        }
-
-        @Override
-        public Vector3f getWorldPos() {
-            return pos;
-        }
-    }
 }

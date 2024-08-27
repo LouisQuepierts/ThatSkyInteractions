@@ -10,11 +10,12 @@ import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.RenderUtils;
+import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmMessageUtils;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class FriendButton extends TreeNodeButton {
@@ -25,6 +26,11 @@ public class FriendButton extends TreeNodeButton {
 
     public FriendButton(String id, int x, int y, ScreenAnimator animator, NodeState state) {
         super(id, x, 1, Component.literal("friend"), y, ICON_FRIEND, animator, state);
+    }
+
+    @Override
+    protected void renderIcon(GuiGraphics guiGraphics, int begin) {
+        super.renderIcon(guiGraphics, begin);
     }
 
     @Override
@@ -46,5 +52,15 @@ public class FriendButton extends TreeNodeButton {
     public void renderUnlockMessageAccept(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
         ConfirmMessageUtils.renderUnlockAcceptMessage(guiGraphics, pose, -12, this.getCurrency().icon);
         guiGraphics.drawCenteredString(Minecraft.getInstance().font, ACCEPT_MESSAGE, 0, 0, 0xffffffff);
+    }
+
+    @Override
+    public void onClickUnlocked() {
+        super.onClickUnlocked();
+    }
+
+    @Override
+    public @NotNull ResourceLocation getIcon() {
+        return ICON_FRIEND;
     }
 }

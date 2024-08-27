@@ -6,11 +6,13 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
+import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
 
 @OnlyIn(Dist.CLIENT)
 public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
@@ -24,7 +26,6 @@ public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         //guiGraphics.drawString(Minecraft.getInstance().font, "thatskyinteraction-dev-1.1.0 Teacon 2024", 1, 1, 0xffffffff);
-
         if (!open.isEmpty()) {
             for (AnimatableScreen screen : open) {
                 screen.enter();
@@ -76,5 +77,37 @@ public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
             screen.hide();
             screen.getAnimator().stop();
         }
+    }
+
+    public void push(AnimatableScreen screen) {
+        if (this.screens.contains(screen))
+            return;
+
+        if (screen instanceof Screen) {
+            Screen current = Minecraft.getInstance().screen;
+            if (current == null) {
+                Minecraft.getInstance().setScreen((Screen) screen);
+            } else if (current instanceof AnimatableScreen animatableScreen) {
+                animatableScreen.hide();
+                Minecraft.getInstance().pushGuiLayer((Screen) screen);
+            }
+
+            this.open.add(screen);
+        }
+    }
+
+    public void pop(AnimatedScreen screen) {
+        if (Minecraft.getInstance().screen == screen) {
+            this.close(screen);
+        }
+        Minecraft.getInstance().popGuiLayer();
+        if (Minecraft.getInstance().screen instanceof AnimatableScreen last) {
+            last.enter();
+        }
+    }
+
+    public void reset() {
+        this.screens.clear();
+        this.open.clear();
     }
 }

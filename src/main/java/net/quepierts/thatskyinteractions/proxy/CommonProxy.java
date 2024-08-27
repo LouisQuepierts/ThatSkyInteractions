@@ -7,10 +7,12 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
+import net.quepierts.thatskyinteractions.data.TSIUserDataStorage;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
 import net.quepierts.thatskyinteractions.data.astrolabe.node.AstrolabeNode;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeManager;
@@ -20,6 +22,7 @@ import net.quepierts.thatskyinteractions.network.Packets;
 public class CommonProxy {
     private final InteractTreeManager interactTreeManager;
     private final AstrolabeManager astrolabeManager;
+    private final TSIUserDataStorage userDataManager;
     public CommonProxy(IEventBus bus, ModContainer modContainer) {
         NeoForge.EVENT_BUS.addListener(LevelEvent.Load.class, this::onLevelLoad);
         NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, this::onReload);
@@ -30,6 +33,10 @@ public class CommonProxy {
         bus.addListener(RegisterPayloadHandlersEvent.class, Packets::onRegisterPayloadHandlers);
         interactTreeManager = new InteractTreeManager();
         astrolabeManager = new AstrolabeManager();
+        userDataManager = new TSIUserDataStorage();
+
+        NeoForge.EVENT_BUS.addListener(PlayerEvent.LoadFromFile.class, this.userDataManager::onLoadFromFile);
+        NeoForge.EVENT_BUS.addListener(PlayerEvent.SaveToFile.class, this.userDataManager::onSaveToFile);
     }
 
     public void onReload(final AddReloadListenerEvent event) {
@@ -48,7 +55,7 @@ public class CommonProxy {
         if (level == null)
             return;
 
-        RelationshipSavedData data = RelationshipSavedData.get(level);
+        RelationshipSavedData data = RelationshipSavedData.getRelationTree(level);
         if (data == null) {
             ThatSkyInteractions.LOGGER.warn("TSI Data Error");
             return;
@@ -56,6 +63,7 @@ public class CommonProxy {
 
         this.interactTreeManager.sync(event);
         this.astrolabeManager.sync(event);
+        this.userDataManager.sync(event);
         data.sync(event);
     }
 
@@ -65,5 +73,9 @@ public class CommonProxy {
 
     public AstrolabeManager getAstrolabeManager() {
         return astrolabeManager;
+    }
+
+    public TSIUserDataStorage getUserDataManager() {
+        return userDataManager;
     }
 }

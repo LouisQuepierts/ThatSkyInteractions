@@ -25,8 +25,6 @@ public abstract class AnimatedScreen extends Screen implements AnimatableScreen 
 
         this.enter = new FloatHolder(0);
         this.animator = new ScreenAnimator();
-
-        AnimateScreenHolderLayer.INSTANCE.open(this);
     }
 
     @Override
@@ -55,12 +53,7 @@ public abstract class AnimatedScreen extends Screen implements AnimatableScreen 
 
     @Override
     public void onClose() {
-        super.onClose();
-    }
-
-    @Override
-    public void removed() {
-        AnimateScreenHolderLayer.INSTANCE.close(this);
+        AnimateScreenHolderLayer.INSTANCE.pop(this);
     }
 
     @Override

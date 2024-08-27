@@ -21,10 +21,12 @@ import org.joml.Vector2f;
 public abstract class AstrolabeButton extends AbstractButton implements CulledRenderable {
     private final ScreenAnimator animator;
     protected final LerpNumberAnimation clickAnimation;
+    protected final FloatHolder alpha;
     private final FloatHolder click = new FloatHolder(0.0f);
-    protected AstrolabeButton(int x, int y, int scale, Component message, ScreenAnimator animator) {
+    protected AstrolabeButton(int x, int y, int scale, Component message, ScreenAnimator animator, FloatHolder alpha) {
         super(x, y, scale, scale, message);
         this.animator = animator;
+        this.alpha = alpha;
         this.clickAnimation = new LerpNumberAnimation(this.click, AnimateUtils.Lerp::bounce, 0.0, 1.0f, 0.15f);
     }
 

@@ -26,10 +26,13 @@ public class Shaders {
     private static ShaderInstance glowingRing;
 
     @Nullable
-    private static ShaderInstance crossHalo;
+    private static ShaderInstance crossLightSpot;
 
     @Nullable
-    private static ShaderInstance doubleCrossHalo;
+    private static ShaderInstance doubleCrossLightSpot;
+
+    @Nullable
+    private static ShaderInstance halo;
     
     public static ShaderInstance getRoundRectShader() {
         return Objects.requireNonNull(roundRect, "Attempted to call getRoundRectShader before shaders have finished loading.");
@@ -43,12 +46,16 @@ public class Shaders {
         return Objects.requireNonNull(glowingRing, "Attempted to call getGlowingRingShader before shaders have finished loading.");
     }
 
-    public static ShaderInstance getCrossHaloShader() {
-        return Objects.requireNonNull(crossHalo, "Attempted to call getCrossHaloShader before shaders have finished loading.");
+    public static ShaderInstance getCrossLightSpotShader() {
+        return Objects.requireNonNull(crossLightSpot, "Attempted to call getCrossLightSpotShader before shaders have finished loading.");
     }
 
-    public static ShaderInstance getDoubleCrossHaloShader() {
-        return Objects.requireNonNull(doubleCrossHalo, "Attempted to call getDoubleCrossHaloShader before shaders have finished loading.");
+    public static ShaderInstance getDoubleCrossLightSpotShader() {
+        return Objects.requireNonNull(doubleCrossLightSpot, "Attempted to call getDoubleCrossLightSpotShader before shaders have finished loading.");
+    }
+
+    public static ShaderInstance getHalo() {
+        return Objects.requireNonNull(halo, "Attempted to call getHaloShader before shaders have finished loading.");
     }
 
     @SubscribeEvent
@@ -84,20 +91,29 @@ public class Shaders {
 
                 new ShaderInstance(
                         event.getResourceProvider(),
-                        ThatSkyInteractions.getLocation("cross_halo"),
+                        ThatSkyInteractions.getLocation("cross_light_spot"),
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
-                (shader) -> crossHalo = shader
+                (shader) -> crossLightSpot = shader
         );
 
         event.registerShader(
 
                 new ShaderInstance(
                         event.getResourceProvider(),
-                        ThatSkyInteractions.getLocation("double_cross_halo"),
+                        ThatSkyInteractions.getLocation("double_cross_light_spot"),
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
-                (shader) -> doubleCrossHalo = shader
+                (shader) -> doubleCrossLightSpot = shader
+        );
+
+        event.registerShader(
+                new ShaderInstance(
+                        event.getResourceProvider(),
+                        ThatSkyInteractions.getLocation("halo"),
+                        DefaultVertexFormat.POSITION_TEX_COLOR
+                ),
+                (shader) -> halo = shader
         );
     }
 }

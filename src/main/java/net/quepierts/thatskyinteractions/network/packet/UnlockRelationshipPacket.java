@@ -18,9 +18,9 @@ import net.quepierts.simpleanimator.core.network.INetwork;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.PlayerUtils;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.data.RelationshipDataCache;
+import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
-import net.quepierts.thatskyinteractions.client.gui.layer.interact.UnlockRequestW2SButton;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.UnlockRequestW2SButton;
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
@@ -102,7 +102,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
             if (!this.pair.getOther(other).equals(sender.getUUID()))
                 return;
 
-            final RelationshipSavedData data = RelationshipSavedData.get(level);
+            final RelationshipSavedData data = RelationshipSavedData.getRelationTree(level);
             final InteractTree tree = data.getTree();
 
             if (!tree.contains(this.node))
@@ -124,7 +124,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
         @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
-            RelationshipDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
+            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
 
             Minecraft minecraft = Minecraft.getInstance();
             UUID local = minecraft.player.getUUID();
@@ -140,7 +140,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
 
                 InteractTreeInstance instance = cache.get(other);
                 World2ScreenGridLayer.INSTANCE.addWorldPositionObject(other, new UnlockRequestW2SButton(
-                        instance.getTree().get(this.node).asButton(null, NodeState.UNLOCKED),
+                        instance.getTree().get(this.node).asButton(null, NodeState.UNLOCKABLE),
                         this.pair,
                         this.node,
                         player
@@ -167,8 +167,8 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
             if (!this.pair.getOther(other).equals(sender.getUUID()))
                 return;
 
-            final RelationshipSavedData data = RelationshipSavedData.get(level);
-            final InteractTreeInstance instance = data.get(pair);
+            final RelationshipSavedData data = RelationshipSavedData.getRelationTree(level);
+            final InteractTreeInstance instance = data.getRelationTree(pair);
             final InteractTree tree = data.getTree();
 
             if (!tree.contains(this.node))
@@ -182,7 +182,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
             if (count < tNode.getPrice())
                 return;
 
-            if (!instance.unlock(node)) {
+            if (!instance.unlock(node, true)) {
                 return;
             }
 
@@ -195,7 +195,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
         @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
-            RelationshipDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
+            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
 
             Minecraft minecraft = Minecraft.getInstance();
             UUID local = minecraft.player.getUUID();
@@ -206,12 +206,13 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
                 return;
 
             InteractTreeInstance instance = cache.get(other);
-            instance.unlock(this.node);
+            instance.unlock(this.node, false);
+
+            InteractTreeNode tNode = instance.getTree().get(this.node);
 
             if (local.equals(sender)) {
                 ((IAnimateHandler) minecraft.player).simpleanimator$playAnimate(Animations.UNLOCK_ACCEPT, true);
             } else {
-                InteractTreeNode tNode = instance.getTree().get(this.node);
                 PlayerUtils.costItems(player, tNode.getCurrency(), tNode.getPrice());
             }
         }

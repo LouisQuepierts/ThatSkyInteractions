@@ -33,10 +33,9 @@ public class PlayerPair {
         return left.hashCode() ^ right.hashCode();
     }
 
-    public CompoundTag serializeNBT(CompoundTag tag) {
+    public void serializeNBT(CompoundTag tag) {
         tag.putUUID("a", this.left);
         tag.putUUID("b", this.right);
-        return tag;
     }
 
     public static PlayerPair deserializeNBT(CompoundTag tag) {

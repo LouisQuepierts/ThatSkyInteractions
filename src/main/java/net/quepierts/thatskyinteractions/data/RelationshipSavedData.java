@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
+import net.quepierts.simpleanimator.core.network.INetwork;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
@@ -31,7 +32,7 @@ public class RelationshipSavedData extends SavedData {
     public static final ResourceLocation FRIEND_INTERACT_TREE = ThatSkyInteractions.getLocation("friend");
     private static final String KEY_RELATIONSHIP = "relationship";
 
-    public static RelationshipSavedData get(ServerLevel level) {
+    public static RelationshipSavedData getRelationTree(ServerLevel level) {
         return level.getDataStorage().get(FACTORY, ID);
     }
 
@@ -53,7 +54,7 @@ public class RelationshipSavedData extends SavedData {
     private static RelationshipSavedData load(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider provider) {
         ThatSkyInteractions.LOGGER.info("Load TSI Data");
         RelationshipSavedData data = new RelationshipSavedData();
-        data.loadInner(tag, provider);
+        data.loadInner(tag);
         return data;
     }
 
@@ -74,11 +75,12 @@ public class RelationshipSavedData extends SavedData {
     public void sync(OnDatapackSyncEvent event) {
         ServerPlayer player = event.getPlayer();
 
+        INetwork network = SimpleAnimator.getNetwork();
         if (player != null) {
-            SimpleAnimator.getNetwork().sendToPlayer(new BatchRelationshipPacket(getPlayerMap(player.getUUID())), player);
+            network.sendToPlayer(new BatchRelationshipPacket(getPlayerMap(player.getUUID())), player);
         } else {
             for (ServerPlayer serverPlayer : event.getPlayerList().getPlayers()) {
-                SimpleAnimator.getNetwork().sendToPlayer(new BatchRelationshipPacket(getPlayerMap(serverPlayer.getUUID())), serverPlayer);
+                network.sendToPlayer(new BatchRelationshipPacket(getPlayerMap(serverPlayer.getUUID())), serverPlayer);
             }
         }
     }
@@ -97,7 +99,7 @@ public class RelationshipSavedData extends SavedData {
         return map;
     }
 
-    private void loadInner(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider provider) {
+    private void loadInner(@NotNull CompoundTag tag) {
         ThatSkyInteractions.LOGGER.info("Load TSI Data");
 
         this.setDirty(false);
@@ -109,18 +111,18 @@ public class RelationshipSavedData extends SavedData {
         ListTag relationship = tag.getList(KEY_RELATIONSHIP, ListTag.TAG_COMPOUND);
         relationship.stream()
                 .map(CompoundTag.class::cast)
-                .forEach(this::loadEntry);
+                .forEach(this::loadRelationship);
     }
 
-    private void loadEntry(CompoundTag tag) {
+    private void loadRelationship(CompoundTag tag) {
         PlayerPair pair = PlayerPair.deserializeNBT(tag);
         InteractTreeInstance instance = new InteractTreeInstance(pair, this.tree, tag);
         this.relationship.put(pair, instance);
         this.refPari(pair);
     }
 
-    private InteractTreeInstance create(PlayerPair pair) {
-        InteractTreeInstance put = this.relationship.put(pair, new InteractTreeInstance(pair, tree, FRIEND_INTERACT_TREE));
+    private InteractTreeInstance createRelationship(PlayerPair pair) {
+        InteractTreeInstance put = new InteractTreeInstance(pair, tree, FRIEND_INTERACT_TREE);
         this.refPari(pair);
         return put;
     }
@@ -130,9 +132,9 @@ public class RelationshipSavedData extends SavedData {
         this.reference.computeIfAbsent(pair.getRight(), (k) -> new ObjectOpenHashSet<>()).add(pair);
     }
 
-    public InteractTreeInstance get(PlayerPair pair) {
+    public InteractTreeInstance getRelationTree(PlayerPair pair) {
         this.setDirty();
-        return this.relationship.computeIfAbsent(pair, this::create);
+        return this.relationship.computeIfAbsent(pair, this::createRelationship);
     }
 
     public InteractTree getTree() {

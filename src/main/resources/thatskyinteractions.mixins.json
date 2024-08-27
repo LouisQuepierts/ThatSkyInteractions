@@ -9,7 +9,9 @@
   "client": [
     "ClientLevelMixin",
     "FogRendererMixin",
-    "LevelRendererMixin"
+    "LevelRendererMixin",
+    "CameraMixin",
+    "PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

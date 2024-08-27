@@ -11,6 +11,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
+import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmScreen;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
@@ -34,7 +35,7 @@ public class BlockButton extends TreeNodeButton {
 
         if (minecraft.screen instanceof AnimatableScreen screen) {
             screen.hide();
-            minecraft.pushGuiLayer(
+            AnimateScreenHolderLayer.INSTANCE.push(
                     new ConfirmScreen(
                             Component.empty(),
                             new ButtonConfirmProvider(screen, this) {

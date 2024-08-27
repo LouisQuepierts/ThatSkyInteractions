@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.client;
+package net.quepierts.thatskyinteractions.client.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

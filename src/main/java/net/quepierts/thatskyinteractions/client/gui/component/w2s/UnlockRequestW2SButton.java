@@ -1,15 +1,15 @@
-package net.quepierts.thatskyinteractions.client.gui.layer.interact;
+package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.RenderUtils;
+import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
+import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.tree.TreeNodeButton;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;
@@ -33,7 +33,7 @@ public class UnlockRequestW2SButton extends World2ScreenButton {
 
     @Override
     public void invoke() {
-        Minecraft.getInstance().setScreen(new ConfirmScreen(
+        AnimateScreenHolderLayer.INSTANCE.push(new ConfirmScreen(
                 Component.empty(),
                 new UnlockNodeAcceptConfirmProvider(this),
                 264, 176
@@ -41,41 +41,36 @@ public class UnlockRequestW2SButton extends World2ScreenButton {
     }
 
     @Override
-    public Vector3f getWorldPos() {
-        return this.position;
+    public void getWorldPos(Vector3f out) {
+        out.set(this.position);
     }
 
-    private static class UnlockNodeAcceptConfirmProvider implements ConfirmProvider {
-        private final UnlockRequestW2SButton button;
-
-        private UnlockNodeAcceptConfirmProvider(UnlockRequestW2SButton button) {
-            this.button = button;
-        }
+    private record UnlockNodeAcceptConfirmProvider(UnlockRequestW2SButton button) implements ConfirmProvider {
 
         @Override
-        public void render(GuiGraphics guiGraphics, int width, int height) {
-            RenderSystem.enableBlend();
-            Palette.useUnlockedIconColor();
-            RenderUtils.blitIcon(guiGraphics, this.button.parent.getIcon(), -20, 20 - height / 2, 40, 40);
-            Palette.reset();
+            public void render(GuiGraphics guiGraphics, int width, int height) {
+                RenderSystem.enableBlend();
+                Palette.useUnlockedIconColor();
+                RenderUtils.blitIcon(guiGraphics, this.button.parent.getIcon(), -20, 20 - height / 2, 40, 40);
+                Palette.reset();
 
-            PoseStack pose = guiGraphics.pose();
-            pose.pushPose();
-            pose.scale(1.25f, 1.25f, 1.25f);
-            this.button.parent.renderUnlockMessageAccept(guiGraphics, pose, width, height);
-            pose.popPose();
+                PoseStack pose = guiGraphics.pose();
+                pose.pushPose();
+                pose.scale(1.25f, 1.25f, 1.25f);
+                this.button.parent.renderUnlockMessageAccept(guiGraphics, pose, width, height);
+                pose.popPose();
 
-            Palette.reset();
+                Palette.reset();
+            }
+
+            @Override
+            public void confirm() {
+                ThatSkyInteractions.getInstance().getClient().getUnlockRelationshipHandler().accept(this.button.pair, this.button.node);
+            }
+
+            @Override
+            public void cancel() {
+
+            }
         }
-
-        @Override
-        public void confirm() {
-            ThatSkyInteractions.getInstance().getClient().getUnlockRelationshipHandler().accept(this.button.pair, this.button.node);
-        }
-
-        @Override
-        public void cancel() {
-
-        }
-    }
 }
