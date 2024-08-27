@@ -8,7 +8,6 @@ import net.quepierts.simpleanimator.core.network.IPacket;
 import net.quepierts.simpleanimator.core.network.NetworkDirection;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.network.packet.*;
-import net.quepierts.thatskyinteractions.network.packet.UserDataModifyPacket;
 import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeIgnitePacket;
 import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeSyncPacket;
 

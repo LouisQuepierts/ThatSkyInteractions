@@ -6,12 +6,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Vector3f;
-
-import java.util.UUID;
 
 public final class FakePlayerLightW2SWidget extends World2ScreenWidget {
     private final LivingEntity bound;

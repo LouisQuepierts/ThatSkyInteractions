@@ -17,7 +17,10 @@ import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class TSIUserData {
     @NotNull private final AstrolabeMap astrolabes;

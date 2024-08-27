@@ -20,7 +20,6 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerIgniteW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import org.jetbrains.annotations.NotNull;

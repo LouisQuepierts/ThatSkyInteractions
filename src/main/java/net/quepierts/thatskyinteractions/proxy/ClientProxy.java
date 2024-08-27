@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.proxy;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -8,9 +7,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.ChatTypeDecoration;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -42,7 +39,6 @@ import net.quepierts.thatskyinteractions.client.gui.screen.PlayerInteractScreen;
 import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
 import net.quepierts.thatskyinteractions.client.render.CandleLayer;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
-import net.quepierts.thatskyinteractions.client.util.FakeClientPlayer;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
 import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.data.FriendData;
