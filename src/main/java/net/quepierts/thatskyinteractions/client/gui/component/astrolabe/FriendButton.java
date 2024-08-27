@@ -8,12 +8,12 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
-import net.quepierts.thatskyinteractions.client.gui.screen.FriendScreen;
-import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
+import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
+import net.quepierts.thatskyinteractions.client.gui.screen.FriendScreen;
+import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 
 @OnlyIn(Dist.CLIENT)

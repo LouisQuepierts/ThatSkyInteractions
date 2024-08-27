@@ -7,8 +7,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;

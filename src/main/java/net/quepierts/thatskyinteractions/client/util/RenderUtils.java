@@ -15,7 +15,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.Shaders;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 
 import java.util.Objects;
 

@@ -1,7 +1,5 @@
 package net.quepierts.thatskyinteractions.client.util;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -13,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import java.util.EnumMap;
-import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class CameraHandler {

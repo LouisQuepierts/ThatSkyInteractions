@@ -10,11 +10,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
+import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)

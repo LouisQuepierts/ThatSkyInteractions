@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.data;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.NotNull;

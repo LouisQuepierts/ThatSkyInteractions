@@ -18,7 +18,6 @@ import net.quepierts.thatskyinteractions.client.gui.component.tree.TreeNodeButto
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.TSIUserDataStorage;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
-import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeLitPacket;
 import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeSyncPacket;
 import org.jetbrains.annotations.NotNull;
 

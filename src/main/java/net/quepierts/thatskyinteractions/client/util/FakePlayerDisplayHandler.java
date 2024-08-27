@@ -11,9 +11,9 @@ import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
-import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import org.joml.Vector3f;
 
 import java.util.UUID;
