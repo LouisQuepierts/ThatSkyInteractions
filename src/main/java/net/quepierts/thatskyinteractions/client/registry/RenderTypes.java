@@ -8,18 +8,25 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.render.BloomBufferSource;
+
+import java.util.LinkedHashMap;
+import java.util.SequencedMap;
 
 public class RenderTypes {
     public static final ResourceLocation TEXTURE;
     public static final RenderType BLOOM;
-    private static ByteBufferBuilder bloomBufferBuilder;
+    private static BloomBufferSource bufferSource;
+
     public static void onRegisterRenderBuffers(final RegisterRenderBuffersEvent event) {
-        bloomBufferBuilder = new ByteBufferBuilder(BLOOM.bufferSize());
+        ByteBufferBuilder bloomBufferBuilder = new ByteBufferBuilder(BLOOM.bufferSize());
         event.registerRenderBuffer(BLOOM, bloomBufferBuilder);
+        SequencedMap<RenderType, ByteBufferBuilder> map = new LinkedHashMap<>();
+        bufferSource = new BloomBufferSource(new ByteBufferBuilder(1536), map);
     }
 
-    public static ByteBufferBuilder getBloomBufferBuilder() {
-        return bloomBufferBuilder;
+    public static BloomBufferSource getBufferSource() {
+        return bufferSource;
     }
 
     static {

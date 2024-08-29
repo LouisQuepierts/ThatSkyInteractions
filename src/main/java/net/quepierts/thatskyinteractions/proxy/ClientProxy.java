@@ -127,7 +127,7 @@ public class ClientProxy extends CommonProxy {
             Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
             RenderBuffers buffers = ((LevelRendererAccessor) event.getLevelRenderer()).tsi$getRenderBuffers();
-            PostEffects.applyWOLBloom(buffers.bufferSource(), event.getPartialTick());
+            PostEffects.applyWOLBloom(event.getPartialTick());
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
             PostEffects.doWOLBloom();
         }

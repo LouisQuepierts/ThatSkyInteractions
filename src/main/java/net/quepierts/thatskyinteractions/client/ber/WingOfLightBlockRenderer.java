@@ -44,7 +44,7 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
 
         playerModel.young = false;
         playerModel.head.xRot = wingOfLightBlockEntity.getXRot();
-        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderTypes.BLOOM);
+        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM);
         playerModel.renderToBuffer(poseStack, vertexConsumer, combinedLight, combinedOverlay);
 
 //        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);

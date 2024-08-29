@@ -87,7 +87,7 @@ public class EffectDistributeLayer extends RenderLayer<AbstractClientPlayer, Pla
         for (IEffectDistributor distributor : distributors) {
             VariableHolder holder = animator.getVariable(distributor.name());
 
-            if (holder == VariableHolder.ZERO)
+            if (holder == VariableHolder.Immutable.ZERO)
                 continue;
 
             Vector3f transformed = matrix4f.transformPosition(distributor.position(), new Vector3f());
