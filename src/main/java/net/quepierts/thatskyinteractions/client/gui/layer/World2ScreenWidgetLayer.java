@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.client.gui.layer;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -24,8 +23,6 @@ import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
-import net.quepierts.thatskyinteractions.client.registry.PostEffects;
-import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.mixin.accessor.GameRendererAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
