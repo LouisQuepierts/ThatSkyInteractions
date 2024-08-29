@@ -12,7 +12,7 @@ import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerIgniteW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerLightW2SWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
-import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 
@@ -41,7 +41,7 @@ public class FakePlayerDisplayHandler {
 
     public void reset() {
         if (this.player != null) {
-            World2ScreenGridLayer.INSTANCE.remove(this.player.getUUID());
+            World2ScreenWidgetLayer.INSTANCE.remove(this.player.getUUID());
         }
         this.player = null;
         this.light = null;
@@ -55,7 +55,7 @@ public class FakePlayerDisplayHandler {
         this.player.setYHeadRot(yRot);
         this.enterAnimation.reset(0, 1);
         ScreenAnimator.GLOBAL.play(this.enterAnimation);
-        World2ScreenGridLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), light);
+        World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), light);
 
         UUID uuid = this.player.getDisplayUUID();
         FriendAstrolabeInstance.NodeData data = client.getCache().getUserData().getNodeData(uuid);
@@ -66,7 +66,7 @@ public class FakePlayerDisplayHandler {
         this.enterAnimation.reset(1, 0);
         this.canRepos = true;
         ScreenAnimator.GLOBAL.play(this.enterAnimation);
-        World2ScreenGridLayer.INSTANCE.lock(null);
+        World2ScreenWidgetLayer.INSTANCE.lock(null);
     }
 
     public boolean isVisible() {
@@ -104,8 +104,8 @@ public class FakePlayerDisplayHandler {
             }
 
             if (this.canIgnite) {
-                World2ScreenGridLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
-                World2ScreenGridLayer.INSTANCE.lock(this.ignite);
+                World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
+                World2ScreenWidgetLayer.INSTANCE.lock(this.ignite);
                 this.canIgnite = false;
             }
         }

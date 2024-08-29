@@ -26,7 +26,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.quepierts.simpleanimator.api.IAnimateHandler;
 import net.quepierts.simpleanimator.core.animation.Animator;
 import net.quepierts.simpleanimator.core.client.ClientAnimator;
-import net.quepierts.thatskyinteractions.client.Particles;
+import net.quepierts.thatskyinteractions.client.registry.Particles;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

@@ -14,7 +14,7 @@ import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.simpleanimator.core.network.BiPacket;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.InteractionRequestW2SButton;
-import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -82,7 +82,7 @@ public abstract class InteractButtonPacket extends BiPacket {
             if (player == null)
                 return;
 
-            World2ScreenGridLayer.INSTANCE.addWorldPositionObject(other, new InteractionRequestW2SButton(
+            World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(other, new InteractionRequestW2SButton(
                     this.interaction,
                     player
             ));
@@ -97,7 +97,7 @@ public abstract class InteractButtonPacket extends BiPacket {
         @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
-            World2ScreenGridLayer.INSTANCE.remove(this.other);
+            World2ScreenWidgetLayer.INSTANCE.remove(this.other);
         }
     }
 }

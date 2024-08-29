@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.client.gui.layer;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -8,6 +9,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -22,6 +24,9 @@ import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
+import net.quepierts.thatskyinteractions.client.registry.PostEffects;
+import net.quepierts.thatskyinteractions.client.util.RenderUtils;
+import net.quepierts.thatskyinteractions.mixin.accessor.GameRendererAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -34,11 +39,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
-public class World2ScreenGridLayer implements LayeredDraw.Layer {
-    public static final World2ScreenGridLayer INSTANCE = new World2ScreenGridLayer();
+public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
+    public static final World2ScreenWidgetLayer INSTANCE = new World2ScreenWidgetLayer();
     public static final ResourceLocation LOCATION = ThatSkyInteractions.getLocation("world_screen_grid");
-    protected static final int FADE_BEGIN_DISTANCE = 32 * 32;
-    protected static final int FADE_DISTANCE = 8;
+    public static final int FADE_BEGIN_DISTANCE = 32 * 32;
+    public static final int FADE_DISTANCE = 8;
 
     private final Minecraft minecraft = Minecraft.getInstance();
     private final Map<UUID, World2ScreenWidget> objects = new Object2ObjectOpenHashMap<>();
@@ -50,7 +55,7 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
     private World2ScreenWidget highlight;
     private World2ScreenWidget locked;
     private double scroll = 0;
-    World2ScreenGridLayer() {
+    World2ScreenWidgetLayer() {
         reset();
     }
 
@@ -65,16 +70,16 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
             return;
 
-        //RenderUtils.drawHalo(guiGraphics, 10, 10, 200);
-
-        update();
-
         float deltaTicks = deltaTracker.getGameTimeDeltaTicks();
+        update(deltaTicks);
 
         //Arrays.fill(grid, null);
         for (Iterator<World2ScreenWidget> iterator = objects.values().iterator(); iterator.hasNext(); ) {
             World2ScreenWidget object = iterator.next();
             if (!object.isComputed())
+                continue;
+
+            if (!object.shouldRender())
                 continue;
 
             boolean highlight1 = locked != null ? object == locked : object == highlight;
@@ -85,16 +90,21 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
                 iterator.remove();
                 continue;
             }
-            float d0 = Mth.lerp(deltaTicks, object.xO, object.x);
-            float d1 = Mth.lerp(deltaTicks, object.yO, object.y);
+            float d0 = object.x;
+            float d1 = object.y;
+
+            if (object.shouldSmoothPosition()) {
+                d0 = Mth.lerp(deltaTicks, object.xO, object.x);
+                d1 = Mth.lerp(deltaTicks, object.yO, object.y);
+            }
 
             object.xO = d0;
             object.yO = d1;
 
             if (highlight1) {
-                object.render(guiGraphics, true, this.click.getValue());
+                object.render(guiGraphics, true, this.click.getValue(), deltaTicks);
             } else {
-                object.render(guiGraphics, false, 0);
+                object.render(guiGraphics, false, 0, deltaTicks);
             }
         }
 
@@ -102,14 +112,16 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
         RenderSystem.disableBlend();
     }
 
-    public void update() {
+    public void update(float deltaTicks) {
         if (this.minecraft.level == null)
             return;
 
-        final Camera camera = this.minecraft.gameRenderer.getMainCamera();
+        final GameRenderer gameRenderer = this.minecraft.gameRenderer;
+        final Camera camera = gameRenderer.getMainCamera();
         final Vec3 cameraPos = camera.getPosition();
 
-        final Matrix4f projectionMatrix = this.minecraft.gameRenderer.getProjectionMatrix(this.minecraft.options.fov().get());
+        final double fov = ((GameRendererAccessor) gameRenderer).tsi$getFov(camera, deltaTicks, true);
+        final Matrix4f projectionMatrix = gameRenderer.getProjectionMatrix(fov);
 
         final Matrix4f viewMatrix = new Matrix4f()
                 .rotation(camera.rotation().conjugate(new Quaternionf()))
@@ -128,6 +140,9 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
 
         final Vector3f pos = new Vector3f();
         for (World2ScreenWidget object : objects.values()) {
+            if (object.shouldSkip())
+                continue;
+
             object.setComputed();
             object.getWorldPos(pos);
 
@@ -139,15 +154,24 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
                 cameraSpacePos.x = -cameraSpacePos.x;
             }
 
-            object.x = Mth.clamp((int) ((cameraSpacePos.x() / cameraSpacePos.z() * 0.5F + 0.5F) * screenWidth), 16, screenWidth - 16);
-            object.y = Mth.clamp((int) ((1.0F - (cameraSpacePos.y() / cameraSpacePos.z() * 0.5F + 0.5F)) * screenHeight), 16, screenHeight - 16);
+            object.x = (int) ((cameraSpacePos.x() / cameraSpacePos.z() * 0.5F + 0.5F) * screenWidth);
+            object.y = (int) ((1.0F - (cameraSpacePos.y() / cameraSpacePos.z() * 0.5F + 0.5F)) * screenHeight);
+
+            if (object.limitInScreen()) {
+                object.x = Mth.clamp(object.x, 16, screenWidth - 16);
+                object.y = Mth.clamp(object.y, 16, screenHeight - 16);
+            }
+
+            object.setInScreen(
+                    object.x > 0 && object.y > 0 && object.x < screenWidth && object.y < screenHeight
+            );
 
             //tryMove(getGridPosition(object.x, object.y), object);
             //apply(getGridPosition(object.x, object.y), object);
 
             float distance = Vector3f.distanceSquared(pos.x, pos.y, pos.z, (float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z);
-            object.fade = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - FADE_BEGIN_DISTANCE, 0) / FADE_DISTANCE);
-            if (distance > FADE_DISTANCE + FADE_BEGIN_DISTANCE)
+            object.calculateRenderScale(distance);
+            if (object.scale < 0.1f)
                 continue;
 
             if (locked == null && object.x > left && object.x < right && object.selectable) {
@@ -205,10 +229,14 @@ public class World2ScreenGridLayer implements LayeredDraw.Layer {
 //        grid[x + y * 64] = button;
 //    }
 
-    public void addWorldPositionObject(UUID uuid, World2ScreenWidget button) {
+    public void addWorldPositionObject(UUID uuid, World2ScreenWidget widget) {
         if (ThatSkyInteractions.getInstance().getClient().blocked(uuid))
             return;
-        this.objects.put(uuid, button);
+        this.objects.put(uuid, widget);
+    }
+
+    public void addWorldPositionObjectForced(UUID uuid, World2ScreenWidget widget) {
+        this.objects.put(uuid, widget);
     }
 
     public void remove(UUID other) {

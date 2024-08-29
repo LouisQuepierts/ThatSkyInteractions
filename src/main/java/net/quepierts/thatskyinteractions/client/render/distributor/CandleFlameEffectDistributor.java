@@ -5,7 +5,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.api.animation.keyframe.VariableHolder;
-import net.quepierts.thatskyinteractions.client.Particles;
+import net.quepierts.thatskyinteractions.client.registry.Particles;
 import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)

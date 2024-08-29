@@ -2,8 +2,11 @@ package net.quepierts.thatskyinteractions.client.gui.component;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 
+@OnlyIn(Dist.CLIENT)
 public class MessageBox extends LayoutObject implements CulledRenderable {
     private final Component message;
 

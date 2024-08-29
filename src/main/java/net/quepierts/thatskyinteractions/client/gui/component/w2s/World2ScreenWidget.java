@@ -6,27 +6,39 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import static net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer.FADE_BEGIN_DISTANCE;
+import static net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer.FADE_DISTANCE;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class World2ScreenWidget {
     protected static final ResourceLocation TEXTURE_NORMAL = ThatSkyInteractions.getLocation("textures/gui/w2s_button_normal.png");
     protected static final ResourceLocation TEXTURE_HIGHLIGHT = ThatSkyInteractions.getLocation("textures/gui/w2s_button_highlight.png");
+    protected final Vector3f worldPos = new Vector3f();
     public float xO;
     public float x;
     public float yO;
     public float y;
-    public float fade;
+    public float scale;
     public boolean selectable = false;
+    protected boolean limitInScreen = false;
+    protected boolean smoothPosition = false;
     private boolean computed = false;
+    private boolean inScreen = false;
 
     protected World2ScreenWidget() {
     }
 
-    public abstract void render(GuiGraphics guiGraphics, boolean highlight, float value);
+    public abstract void render(GuiGraphics guiGraphics, boolean highlight, float value, float deltaTicks);
 
     public abstract void getWorldPos(Vector3f out);
+
+    public void calculateRenderScale(float distance) {
+        this.scale = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - FADE_BEGIN_DISTANCE, 0) / FADE_DISTANCE);
+    }
 
     public void invoke() {}
 
@@ -59,5 +71,29 @@ public abstract class World2ScreenWidget {
 
     public boolean isComputed() {
         return computed;
+    }
+
+    public boolean limitInScreen() {
+        return this.limitInScreen;
+    }
+
+    public boolean shouldRender() {
+        return this.inScreen && this.scale > 0f;
+    }
+
+    public boolean shouldSmoothPosition() {
+        return this.smoothPosition;
+    }
+
+    public boolean shouldSkip() {
+        return false;
+    }
+
+    public void setInScreen(boolean inScreen) {
+        this.inScreen = inScreen;
+    }
+
+    public boolean isInScreen() {
+        return inScreen;
     }
 }

@@ -22,6 +22,9 @@ import net.quepierts.thatskyinteractions.data.astrolabe.node.AstrolabeNode;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeManager;
 import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
 import net.quepierts.thatskyinteractions.network.Packets;
+import net.quepierts.thatskyinteractions.registry.BlockEntities;
+import net.quepierts.thatskyinteractions.registry.Blocks;
+import net.quepierts.thatskyinteractions.registry.Items;
 
 import java.nio.file.Path;
 
@@ -46,6 +49,10 @@ public class CommonProxy {
         NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, this::onServerStopping);
         NeoForge.EVENT_BUS.addListener(PlayerEvent.LoadFromFile.class, this.userDataManager::onLoadFromFile);
         NeoForge.EVENT_BUS.addListener(PlayerEvent.SaveToFile.class, this.userDataManager::onSaveToFile);
+
+        Blocks.REGISTER.register(bus);
+        Items.REGISTER.register(bus);
+        BlockEntities.REGISTER.register(bus);
     }
 
     private void onServerTick(final ServerTickEvent.Post event) {

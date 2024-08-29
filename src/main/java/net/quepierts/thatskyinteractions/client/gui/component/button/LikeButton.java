@@ -2,6 +2,8 @@ package net.quepierts.thatskyinteractions.client.gui.component.button;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -11,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
+@OnlyIn(Dist.CLIENT)
 public class LikeButton extends SqueezeButton {
     public static final ResourceLocation TEXTURE_ON = ThatSkyInteractions.getLocation("textures/gui/like_on.png");
     public static final ResourceLocation TEXTURE_OFF = ThatSkyInteractions.getLocation("textures/gui/like_off.png");

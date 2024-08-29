@@ -2,6 +2,8 @@ package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
@@ -11,6 +13,7 @@ import org.joml.Vector3f;
 
 import java.util.UUID;
 
+@OnlyIn(Dist.CLIENT)
 public final class FakePlayerIgniteW2SButton extends World2ScreenButton {
     public static final ResourceLocation TEXTURE = ThatSkyInteractions.getLocation("textures/gui/ignite.png");
     private final FakeClientPlayer bound;

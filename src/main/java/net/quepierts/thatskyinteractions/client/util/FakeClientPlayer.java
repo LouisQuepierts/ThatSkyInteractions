@@ -18,6 +18,7 @@ public class FakeClientPlayer extends AbstractClientPlayer {
     private final FakePlayerDisplayHandler handler;
     private PlayerInfo displayPlayerInfo;
     private UUID displayUUID;
+    private boolean changed = false;
     public FakeClientPlayer(ClientLevel clientLevel, FakePlayerDisplayHandler handler) {
         super(clientLevel, new GameProfile(PLACEHOLDER_UUID, PLACEHOLDER_NAME));
         this.handler = handler;
@@ -37,6 +38,7 @@ public class FakeClientPlayer extends AbstractClientPlayer {
         if (uuid.equals(this.displayUUID))
             return;
 
+        this.changed = true;
         this.displayUUID = uuid;
         this.getDisplayPlayerInfo();
     }
@@ -73,7 +75,7 @@ public class FakeClientPlayer extends AbstractClientPlayer {
 
     @Nullable
     protected PlayerInfo getDisplayPlayerInfo() {
-        if (this.displayPlayerInfo == null) {
+        if (changed || this.displayPlayerInfo == null) {
             this.displayPlayerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(this.displayUUID);
         }
         return this.displayPlayerInfo;

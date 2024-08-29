@@ -1,7 +1,8 @@
-package net.quepierts.thatskyinteractions.client;
+package net.quepierts.thatskyinteractions.client.registry;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.server.packs.resources.ResourceProvider;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -33,6 +34,9 @@ public class Shaders {
 
     @Nullable
     private static ShaderInstance halo;
+
+    @Nullable
+    public static ShaderInstance bloomBlit;
     
     public static ShaderInstance getRoundRectShader() {
         return Objects.requireNonNull(roundRect, "Attempted to call getRoundRectShader before shaders have finished loading.");
@@ -58,11 +62,16 @@ public class Shaders {
         return Objects.requireNonNull(halo, "Attempted to call getHaloShader before shaders have finished loading.");
     }
 
+    public static ShaderInstance getBloomBlit() {
+        return Objects.requireNonNull(bloomBlit, "Attempted to call getBloomBlitShader before shaders have finished loading.");
+    }
+
     @SubscribeEvent
     public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
+        ResourceProvider provider = event.getResourceProvider();
         event.registerShader(
                 new ShaderInstance(
-                        event.getResourceProvider(),
+                        provider,
                         ThatSkyInteractions.getLocation("round_rect"),
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
@@ -71,7 +80,7 @@ public class Shaders {
 
         event.registerShader(
                 new ShaderInstance(
-                        event.getResourceProvider(),
+                        provider,
                         ThatSkyInteractions.getLocation("ring"),
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
@@ -80,7 +89,7 @@ public class Shaders {
 
         event.registerShader(
                 new ShaderInstance(
-                        event.getResourceProvider(),
+                        provider,
                         ThatSkyInteractions.getLocation("ring_glow"),
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
@@ -90,7 +99,7 @@ public class Shaders {
         event.registerShader(
 
                 new ShaderInstance(
-                        event.getResourceProvider(),
+                        provider,
                         ThatSkyInteractions.getLocation("cross_light_spot"),
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
@@ -100,7 +109,7 @@ public class Shaders {
         event.registerShader(
 
                 new ShaderInstance(
-                        event.getResourceProvider(),
+                        provider,
                         ThatSkyInteractions.getLocation("double_cross_light_spot"),
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
@@ -109,11 +118,22 @@ public class Shaders {
 
         event.registerShader(
                 new ShaderInstance(
-                        event.getResourceProvider(),
+                        provider,
                         ThatSkyInteractions.getLocation("halo"),
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
                 (shader) -> halo = shader
         );
+
+        event.registerShader(
+                new ShaderInstance(
+                        provider,
+                        ThatSkyInteractions.getLocation("bloom_blit"),
+                        DefaultVertexFormat.POSITION_TEX_COLOR
+                ),
+                (shader) -> bloomBlit = shader
+        );
+
+        PostEffects.setup(provider);
     }
 }

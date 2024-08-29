@@ -10,7 +10,7 @@ import net.quepierts.simpleanimator.api.IAnimateHandler;
 import net.quepierts.simpleanimator.core.PlayerUtils;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.simpleanimator.core.client.ClientPlayerNavigator;
-import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.network.packet.UnlockRelationshipPacket;
 import org.jetbrains.annotations.NotNull;
@@ -93,7 +93,7 @@ public class UnlockRelationshipHandler {
             return;
 
         UUID local = minecraft.player.getUUID();
-        World2ScreenGridLayer.INSTANCE.remove(this.pair.getOther(local));
+        World2ScreenWidgetLayer.INSTANCE.remove(this.pair.getOther(local));
         SimpleAnimator.getNetwork().update(new UnlockRelationshipPacket.Finish(local, pair, node));
         this.reset();
     }

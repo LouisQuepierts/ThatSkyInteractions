@@ -10,8 +10,11 @@
     "CameraMixin",
     "ClientLevelMixin",
     "FogRendererMixin",
+    "GameRendererMixin",
     "LevelRendererMixin",
-    "PlayerRendererMixin"
+    "PlayerRendererMixin",
+    "accessor.GameRendererAccessor",
+    "accessor.LevelRendererAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

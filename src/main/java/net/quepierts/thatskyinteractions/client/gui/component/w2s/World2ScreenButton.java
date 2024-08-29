@@ -13,10 +13,12 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
     protected World2ScreenButton(ResourceLocation icon) {
         this.icon = icon;
         this.selectable = true;
+        this.limitInScreen = true;
+        this.smoothPosition = true;
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, boolean highlight, float value) {
+    public void render(GuiGraphics guiGraphics, boolean highlight, float value, float deltaTicks) {
         PoseStack pose = guiGraphics.pose();
 
         RenderSystem.enableBlend();
@@ -24,9 +26,9 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
         RenderSystem.disableDepthTest();
         pose.pushPose();
         pose.translate(xO, yO, 100.0f);
-        pose.scale(fade, fade, 1.0f);
+        pose.scale(scale, scale, 1.0f);
         pose.mulPose(Axis.YP.rotation(value * Mth.TWO_PI));
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, fade);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, scale);
         RenderUtils.blit(guiGraphics, highlight ? TEXTURE_HIGHLIGHT : TEXTURE_NORMAL, -16, -16, 32, 32);
         RenderUtils.blit(guiGraphics, icon, -12, -12, 24, 24);
 

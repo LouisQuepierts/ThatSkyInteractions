@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.client;
+package net.quepierts.thatskyinteractions.client.registry;
 
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;

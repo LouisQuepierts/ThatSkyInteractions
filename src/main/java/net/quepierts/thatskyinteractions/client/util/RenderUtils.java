@@ -1,5 +1,7 @@
 package net.quepierts.thatskyinteractions.client.util;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
@@ -13,8 +15,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.Shaders;
+import net.quepierts.thatskyinteractions.client.registry.Shaders;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL30C;
 
 import java.util.Objects;
 
@@ -84,19 +87,20 @@ public class RenderUtils {
         RenderSystem.disableBlend();
     }
 
-    public static void drawHalo(GuiGraphics guiGraphics, float x, float y, int size) {
+    public static void drawHalo(GuiGraphics guiGraphics, float x, float y, int size, float intensity, int color) {
         float x2 = x + size;
         float y2 = y + size;
 
         RenderSystem.enableBlend();
         RenderSystem.setShader(Shaders::getHalo);
+        Objects.requireNonNull(Shaders.getHalo().getUniform("Intensity")).set(intensity);
 
         Matrix4f matrix4f = guiGraphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(0xffffffff);
-        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(0xffffffff);
-        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(0xffffffff);
-        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(0xffffffff);
+        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(color);
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         RenderSystem.disableBlend();
     }
@@ -202,5 +206,35 @@ public class RenderUtils {
         TextureManager manager = Minecraft.getInstance().getTextureManager();
         AbstractTexture texture = manager.getTexture(location);
         return texture == MissingTextureAtlasSprite.getTexture() ? manager.getTexture(DEFAULT_ICON) : texture;
+    }
+
+    public static void bloomBlit(RenderTarget target, int width, int height) {
+        RenderSystem.assertOnRenderThread();
+        GlStateManager._colorMask(true, true, true, false);
+        GlStateManager._disableDepthTest();
+        GlStateManager._depthMask(false);
+        GlStateManager._viewport(0, 0, width, height);
+
+        ShaderInstance shaderinstance = Shaders.getBloomBlit();
+        shaderinstance.setSampler("ScreenSampler", Minecraft.getInstance().getMainRenderTarget().getColorTextureId());
+        shaderinstance.setSampler("DiffuseSampler", target.getColorTextureId());
+        shaderinstance.apply();
+        BufferBuilder bufferbuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLIT_SCREEN);
+        bufferbuilder.addVertex(0.0F, 0.0F, 0.0F);
+        bufferbuilder.addVertex(1.0F, 0.0F, 0.0F);
+        bufferbuilder.addVertex(1.0F, 1.0F, 0.0F);
+        bufferbuilder.addVertex(0.0F, 1.0F, 0.0F);
+        BufferUploader.draw(bufferbuilder.buildOrThrow());
+        shaderinstance.clear();
+        GlStateManager._depthMask(true);
+        GlStateManager._colorMask(true, true, true, true);
+    }
+
+    public static void blitDepth(RenderTarget src, RenderTarget dest, int width, int height) {
+        GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, src.frameBufferId);
+        GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, dest.frameBufferId);
+        GL30C.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL30C.GL_DEPTH_BUFFER_BIT, GL30C.GL_NEAREST);
+
+        GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
     }
 }

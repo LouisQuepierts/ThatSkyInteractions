@@ -1,7 +1,9 @@
 package net.quepierts.thatskyinteractions.proxy;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -28,15 +30,18 @@ import net.quepierts.simpleanimator.api.event.common.*;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.Options;
-import net.quepierts.thatskyinteractions.client.Particles;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
-import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.FriendAstrolabeScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.PlayerInteractScreen;
 import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
+import net.quepierts.thatskyinteractions.client.registry.BlockEntityRenderers;
+import net.quepierts.thatskyinteractions.client.registry.Particles;
+import net.quepierts.thatskyinteractions.client.registry.PostEffects;
+import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
 import net.quepierts.thatskyinteractions.client.render.CandleLayer;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
@@ -44,6 +49,7 @@ import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.data.FriendData;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
+import net.quepierts.thatskyinteractions.mixin.accessor.LevelRendererAccessor;
 import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -86,6 +92,7 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(LevelEvent.Load.class, this::onWorldLoad);
         NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Pre.class, this::onRenderGUI);
         NeoForge.EVENT_BUS.addListener(RenderNameTagEvent.class, this::onRenderNameTag);
+        NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.class, this::onRenderLevelStage);
         NeoForge.EVENT_BUS.addListener(ClientChatReceivedEvent.Player.class, this::onChatReceivedPlayer);
         NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, cameraHandler::onComputeCameraAngles);
         NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Pre.class, fakePlayerDisplayHandler::onRenderPlayerPre);
@@ -104,10 +111,26 @@ public class ClientProxy extends CommonProxy {
         modBus.addListener(RegisterParticleProvidersEvent.class, this::onRegisterParticleProviders);
         modBus.addListener(RegisterKeyMappingsEvent.class, options::register);
         modBus.addListener(EntityRenderersEvent.AddLayers.class, this::onAddLayers);
+        modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, BlockEntityRenderers::onRegisterBER);
+        modBus.addListener(RegisterRenderBuffersEvent.class, RenderTypes::onRegisterRenderBuffers);
 
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         Particles.REGISTER.register(modBus);
+    }
+
+    private void onRenderLevelStage(final RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+            RenderTarget bloomTarget = PostEffects.getBloomTarget();
+            bloomTarget.setClearColor(0, 0, 0, 0);
+            bloomTarget.clear(Minecraft.ON_OSX);
+            Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+            RenderBuffers buffers = ((LevelRendererAccessor) event.getLevelRenderer()).tsi$getRenderBuffers();
+            PostEffects.applyWOLBloom(buffers.bufferSource(), event.getPartialTick());
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
+            PostEffects.doWOLBloom();
+        }
     }
 
     private void onChatReceivedPlayer(final ClientChatReceivedEvent.Player event) {
@@ -145,7 +168,7 @@ public class ClientProxy extends CommonProxy {
     private void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
         Player player = event.getEntity();
         UUID uuid = player.getUUID();
-        World2ScreenGridLayer.INSTANCE.remove(uuid);
+        World2ScreenWidgetLayer.INSTANCE.remove(uuid);
 
         //this.dataCache.setOnline(player, false);
         Minecraft minecraft = Minecraft.getInstance();
@@ -196,7 +219,7 @@ public class ClientProxy extends CommonProxy {
             return;
         }
 
-        World2ScreenGridLayer.INSTANCE.remove(event.getInviter().getUUID());
+        World2ScreenWidgetLayer.INSTANCE.remove(event.getInviter().getUUID());
     }
 
     private void onCancelInteract(final CancelInteractEvent event) {
@@ -225,13 +248,13 @@ public class ClientProxy extends CommonProxy {
         this.cameraHandler.cleanup();
         this.fakePlayerDisplayHandler.reset();
         AnimateScreenHolderLayer.INSTANCE.reset();
-        World2ScreenGridLayer.INSTANCE.reset();
+        World2ScreenWidgetLayer.INSTANCE.reset();
     }
 
     private void onRegisterGuiLayers(final RegisterGuiLayersEvent event) {
         event.registerAboveAll(CandleInfoLayer.LOCATION, CandleInfoLayer.INSTANCE);
         event.registerBelow(CandleInfoLayer.LOCATION, AnimateScreenHolderLayer.LOCATION, AnimateScreenHolderLayer.INSTANCE);
-        event.registerBelow(AnimateScreenHolderLayer.LOCATION, World2ScreenGridLayer.LOCATION, World2ScreenGridLayer.INSTANCE);
+        event.registerBelow(AnimateScreenHolderLayer.LOCATION, World2ScreenWidgetLayer.LOCATION, World2ScreenWidgetLayer.INSTANCE);
     }
 
     private void onRegisterParticleProviders(final RegisterParticleProvidersEvent event) {
@@ -288,14 +311,14 @@ public class ClientProxy extends CommonProxy {
             return;
         }
 
-        World2ScreenGridLayer.INSTANCE.scroll(event.getMouseY());
+        World2ScreenWidgetLayer.INSTANCE.scroll(event.getMouseY());
         event.setCanceled(true);
     }
 
     private void onKey(final InputEvent.Key event) {
         if (options.keyEnabledInteract.get().isDown()) {
             if (options.keyClickButton.get().isDown()) {
-                World2ScreenGridLayer.INSTANCE.click();
+                World2ScreenWidgetLayer.INSTANCE.click();
                 return;
             }
 
@@ -317,7 +340,7 @@ public class ClientProxy extends CommonProxy {
 
     public void block(UUID player) {
         this.dataCache.getUserData().block(player);
-        World2ScreenGridLayer.INSTANCE.remove(player);
+        World2ScreenWidgetLayer.INSTANCE.remove(player);
     }
 
     public void unblock(UUID player) {

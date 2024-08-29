@@ -8,7 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.component.button.LikeButton;
 import net.quepierts.thatskyinteractions.client.gui.component.button.NicknameButton;
-import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
 import net.quepierts.thatskyinteractions.data.FriendData;
@@ -86,7 +86,7 @@ public class FriendScreen extends RightPoopScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == client.options.keyClickButton.get().getKey().getValue()) {
-            World2ScreenGridLayer.INSTANCE.click();
+            World2ScreenWidgetLayer.INSTANCE.click();
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

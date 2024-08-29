@@ -20,7 +20,7 @@ import net.quepierts.thatskyinteractions.PlayerUtils;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.UnlockRequestW2SButton;
-import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenGridLayer;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
@@ -139,7 +139,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
                     return;
 
                 InteractTreeInstance instance = cache.get(other);
-                World2ScreenGridLayer.INSTANCE.addWorldPositionObject(other, new UnlockRequestW2SButton(
+                World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(other, new UnlockRequestW2SButton(
                         instance.getTree().get(this.node).asButton(null, NodeState.UNLOCKABLE),
                         this.pair,
                         this.node,
@@ -243,7 +243,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
         @Override
         protected void sync() {
             UUID other = this.pair.getOther(Minecraft.getInstance().player.getUUID());
-            World2ScreenGridLayer.INSTANCE.remove(other);
+            World2ScreenWidgetLayer.INSTANCE.remove(other);
         }
     }
 

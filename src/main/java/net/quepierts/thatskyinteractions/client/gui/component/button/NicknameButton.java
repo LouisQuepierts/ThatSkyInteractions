@@ -5,6 +5,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -12,6 +14,7 @@ import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLay
 import net.quepierts.thatskyinteractions.client.gui.screen.InputScreen;
 import net.quepierts.thatskyinteractions.data.FriendData;
 
+@OnlyIn(Dist.CLIENT)
 public class NicknameButton extends SqueezeButton {
     public static final ResourceLocation TEXTURE = ThatSkyInteractions.getLocation("textures/gui/nickname.png");
     private final FriendData friendData;

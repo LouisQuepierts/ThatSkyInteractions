@@ -5,11 +5,14 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Vector3f;
 
+@OnlyIn(Dist.CLIENT)
 public final class FakePlayerLightW2SWidget extends World2ScreenWidget {
     private final LivingEntity bound;
     private final FloatHolder enterHolder;
@@ -20,7 +23,7 @@ public final class FakePlayerLightW2SWidget extends World2ScreenWidget {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, boolean highlight, float value) {
+    public void render(GuiGraphics guiGraphics, boolean highlight, float value, float deltaTicks) {
         float enter = this.enterHolder.getValue();
 
         PoseStack pose = guiGraphics.pose();

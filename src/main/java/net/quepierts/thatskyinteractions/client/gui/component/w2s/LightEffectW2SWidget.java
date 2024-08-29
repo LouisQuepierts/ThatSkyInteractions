@@ -5,10 +5,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Vector3f;
 
+@OnlyIn(Dist.CLIENT)
 public class LightEffectW2SWidget extends World2ScreenWidget {
     private final LivingEntity bound;
     public LightEffectW2SWidget(LivingEntity bound) {
@@ -16,7 +19,7 @@ public class LightEffectW2SWidget extends World2ScreenWidget {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, boolean highlight, float value) {
+    public void render(GuiGraphics guiGraphics, boolean highlight, float value, float deltaTicks) {
         PoseStack pose = guiGraphics.pose();
         pose.pushPose();
 
