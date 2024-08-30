@@ -8,8 +8,8 @@ out vec4 fragColor;
 
 void main() {
     vec3 textureColor = texture(ScreenSampler, texCoord).rgb;
-    vec3 blurColor = texture(DiffuseSampler, texCoord).rgb;
+    vec4 blurColor = texture(DiffuseSampler, texCoord);
 
-    vec3 result = textureColor + blurColor;
+    vec3 result = textureColor + blurColor.rgb * 1.2;
     fragColor = vec4(result, 1.0);
 }

@@ -151,17 +151,20 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
                 cameraSpacePos.x = -cameraSpacePos.x;
             }
 
-            object.x = (int) ((cameraSpacePos.x() / cameraSpacePos.z() * 0.5F + 0.5F) * screenWidth);
-            object.y = (int) ((1.0F - (cameraSpacePos.y() / cameraSpacePos.z() * 0.5F + 0.5F)) * screenHeight);
+
+            float x = (int) ((cameraSpacePos.x() / cameraSpacePos.z() * 0.5F + 0.5F) * screenWidth);
+            float y = (int) ((1.0F - (cameraSpacePos.y() / cameraSpacePos.z() * 0.5F + 0.5F)) * screenHeight);
 
             if (object.limitInScreen()) {
-                object.x = Mth.clamp(object.x, 16, screenWidth - 16);
-                object.y = Mth.clamp(object.y, 16, screenHeight - 16);
+                x = Mth.clamp(x, 16, screenWidth - 16);
+                y = Mth.clamp(y, 16, screenHeight - 16);
             }
 
             object.setInScreen(
-                    object.x > 0 && object.y > 0 && object.x < screenWidth && object.y < screenHeight
+                    x > 0 && y > 0 && x < screenWidth && y < screenHeight
             );
+
+            object.setScreenPos(x, y);
 
             //tryMove(getGridPosition(object.x, object.y), object);
             //apply(getGridPosition(object.x, object.y), object);

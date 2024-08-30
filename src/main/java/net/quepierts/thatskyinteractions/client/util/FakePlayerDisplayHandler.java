@@ -104,6 +104,7 @@ public class FakePlayerDisplayHandler {
             }
 
             if (this.canIgnite) {
+                this.ignite.setClicked(false);
                 World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
                 World2ScreenWidgetLayer.INSTANCE.lock(this.ignite);
                 this.canIgnite = false;

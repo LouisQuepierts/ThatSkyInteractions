@@ -209,6 +209,9 @@ public class RenderUtils {
     }
 
     public static void bloomBlit(RenderTarget target, int width, int height) {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+
         RenderSystem.assertOnRenderThread();
         GlStateManager._colorMask(true, true, true, false);
         GlStateManager._disableDepthTest();
@@ -228,6 +231,9 @@ public class RenderUtils {
         shaderinstance.clear();
         GlStateManager._depthMask(true);
         GlStateManager._colorMask(true, true, true, true);
+
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
     }
 
     public static void blitDepth(RenderTarget src, RenderTarget dest, int width, int height) {

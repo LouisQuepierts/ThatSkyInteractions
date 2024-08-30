@@ -104,6 +104,21 @@ public class TSIUserData {
         return data;
     }
 
+    /* debug */
+    public @Nullable Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> addFriend(UUID player) {
+        if (player == null)
+            return null;
+
+        if (this.isFriend(player))
+            return null;
+
+        @Nullable Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> data = this.astrolabes.addFriend(player);
+        if (data != null) {
+            this.cache.put(player, data);
+        }
+        return data;
+    }
+
     public boolean likeFriend(UUID player) {
         Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> cache = this.cache.get(player);
         if (cache == null)

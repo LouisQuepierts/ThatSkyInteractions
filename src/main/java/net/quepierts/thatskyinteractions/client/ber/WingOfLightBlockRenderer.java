@@ -8,6 +8,7 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
@@ -40,12 +41,16 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
         poseStack.pushPose();
         poseStack.translate(0.5, 1.45, 0.5);
         poseStack.scale(-0.95F, -0.95F, 0.95F);
-        poseStack.mulPose(Axis.YN.rotation(wingOfLightBlockEntity.getYRot()));
+        poseStack.mulPose(Axis.YP.rotation(wingOfLightBlockEntity.getYRot()));
 
         playerModel.young = false;
         playerModel.head.xRot = wingOfLightBlockEntity.getXRot();
         VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM);
         playerModel.renderToBuffer(poseStack, vertexConsumer, combinedLight, combinedOverlay);
+
+        VertexConsumer buffer = multiBufferSource.getBuffer(playerModel.renderType(RenderTypes.TEXTURE));
+        playerModel.renderToBuffer(poseStack, buffer, combinedLight, combinedOverlay);
+
 
 //        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
 

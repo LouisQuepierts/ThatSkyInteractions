@@ -19,7 +19,7 @@ public class RayTraceUtil {
             );
             BlockState state = level.getBlockState(pos);
 
-            if (state.canOcclude()) {
+            if (state.isSolidRender(level, pos)) {
                 return true;
             }
 

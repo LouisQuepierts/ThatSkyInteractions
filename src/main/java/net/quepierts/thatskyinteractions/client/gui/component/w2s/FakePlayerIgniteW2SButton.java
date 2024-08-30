@@ -49,4 +49,8 @@ public final class FakePlayerIgniteW2SButton extends World2ScreenButton {
                 position.z()
         );
     }
+
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
+    }
 }

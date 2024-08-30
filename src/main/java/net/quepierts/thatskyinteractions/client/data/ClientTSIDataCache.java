@@ -64,6 +64,15 @@ public class ClientTSIDataCache {
                     UUID uuid = data.getFriendData().getUuid();
                     data.setFlag(FriendAstrolabeInstance.Flag.ONLINE, uuids.contains(uuid));
                 });
+
+        /*for (int i = 0; i < 11; i++) {
+            UUID uuid = UUID.randomUUID();
+            this.addFriend(uuid);
+
+            if (ThatSkyInteractions.RANDOM.nextBoolean()) {
+                this.likeFriend(uuid, false);
+            }
+        }*/
     }
 
     public InteractTreeInstance get(UUID other) {
@@ -111,7 +120,7 @@ public class ClientTSIDataCache {
     }
 
     private @Nullable Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> addFriend(UUID uuid) {
-        return this.getUserData().astrolabes().addFriend(uuid);
+        return this.getUserData().addFriend(uuid);
     }
 
     public void likeFriend(UUID uuid, boolean update) {

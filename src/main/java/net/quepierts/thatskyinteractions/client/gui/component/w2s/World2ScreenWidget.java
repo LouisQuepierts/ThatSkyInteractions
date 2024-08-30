@@ -36,6 +36,11 @@ public abstract class World2ScreenWidget {
 
     public abstract void getWorldPos(Vector3f out);
 
+    public void setScreenPos(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public void calculateRenderScale(float distance) {
         this.scale = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - FADE_BEGIN_DISTANCE, 0) / FADE_DISTANCE);
     }

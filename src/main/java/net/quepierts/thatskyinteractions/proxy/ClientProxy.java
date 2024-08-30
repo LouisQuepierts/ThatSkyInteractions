@@ -18,6 +18,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -254,7 +255,7 @@ public class ClientProxy extends CommonProxy {
     private void onRegisterGuiLayers(final RegisterGuiLayersEvent event) {
         event.registerAboveAll(CandleInfoLayer.LOCATION, CandleInfoLayer.INSTANCE);
         event.registerBelow(CandleInfoLayer.LOCATION, AnimateScreenHolderLayer.LOCATION, AnimateScreenHolderLayer.INSTANCE);
-        event.registerBelow(AnimateScreenHolderLayer.LOCATION, World2ScreenWidgetLayer.LOCATION, World2ScreenWidgetLayer.INSTANCE);
+        event.registerBelow(VanillaGuiLayers.DEBUG_OVERLAY, World2ScreenWidgetLayer.LOCATION, World2ScreenWidgetLayer.INSTANCE);
     }
 
     private void onRegisterParticleProviders(final RegisterParticleProvidersEvent event) {

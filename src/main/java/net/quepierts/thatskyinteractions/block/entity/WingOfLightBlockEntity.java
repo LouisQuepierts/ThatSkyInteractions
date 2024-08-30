@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.HaloEffectW2SWidget;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.PickupWingOfLightW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
@@ -17,13 +18,18 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
     private static final String TAG_YROT = "yRot";
 
     @OnlyIn(Dist.CLIENT)
-    private final HaloEffectW2SWidget halo = new HaloEffectW2SWidget(this);
+    private HaloEffectW2SWidget halo;
     @OnlyIn(Dist.CLIENT)
-    private final PickupWingOfLightW2SButton pickup = new PickupWingOfLightW2SButton(this);
+    private PickupWingOfLightW2SButton pickup;
     private float xRot;
     private float yRot;
     public WingOfLightBlockEntity(BlockPos pos, BlockState blockState) {
         super(BlockEntities.WING_OF_LIGHT_BE.get(), pos, blockState);
+
+        if (FMLEnvironment.dist.isClient()) {
+            halo = new HaloEffectW2SWidget(this);
+            pickup = new PickupWingOfLightW2SButton(this);
+        }
     }
 
     @Override
@@ -77,5 +83,13 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
 
     public float getYRot() {
         return yRot;
+    }
+
+    public void setXRot(float xRot) {
+        this.xRot = xRot;
+    }
+
+    public void setYRot(float yRot) {
+        this.yRot = yRot;
     }
 }

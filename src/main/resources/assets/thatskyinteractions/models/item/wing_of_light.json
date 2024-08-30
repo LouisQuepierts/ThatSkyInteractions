@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "thatskyinteracations:item/wing_of_light"
+    "layer0": "thatskyinteractions:item/wing_of_light"
   }
 }

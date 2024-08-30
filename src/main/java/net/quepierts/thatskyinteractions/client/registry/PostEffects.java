@@ -28,12 +28,17 @@ public class PostEffects {
         int height = minecraft.getWindow().getHeight();
         RenderUtils.blitDepth(mainRenderTarget, bloomTarget, width, height);
 
-        bloomTarget.bindWrite(true);
+        bloomTarget.bindWrite(false);
         GlStateManager._glBindFramebuffer(36160, bloomTarget.frameBufferId);
         RenderTypes.getBufferSource().endBatch(RenderTypes.BLOOM);
+        mainRenderTarget.bindWrite(false);
+        RenderUtils.bloomBlit(bloomTarget, width, height);
+        bloomTarget.bindWrite(false);
+
         //multibuffersource$buffersource.endBatch(RenderTypes.BLOOM);
         bloomEffect.process(deltaTracker.getGameTimeDeltaTicks());
         mainRenderTarget.bindWrite(false);
+
 
         /*RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
@@ -47,12 +52,10 @@ public class PostEffects {
         Minecraft minecraft = Minecraft.getInstance();
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-//        bloomTarget.blitToScreen(width, height);
+//        bloomTarget.blitToScreen(width / 2, height / 2);
+
         RenderUtils.bloomBlit(bloomTarget, width, height);
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
+        minecraft.getMainRenderTarget().bindWrite(false);
     }
 
     public static void processBloom(float partialTick) {

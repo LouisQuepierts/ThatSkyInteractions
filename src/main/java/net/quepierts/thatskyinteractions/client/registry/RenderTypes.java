@@ -16,6 +16,7 @@ import java.util.SequencedMap;
 public class RenderTypes {
     public static final ResourceLocation TEXTURE;
     public static final RenderType BLOOM;
+    public static final RenderType BLOOM_RAW;
     private static BloomBufferSource bufferSource;
 
     public static void onRegisterRenderBuffers(final RegisterRenderBuffersEvent event) {
@@ -41,5 +42,6 @@ public class RenderTypes {
                 .createCompositeState(true);
 
         BLOOM = RenderType.create("wing_of_light", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, false, true, renderState);
+        BLOOM_RAW = RenderType.create("wing_of_light_raw", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, false, true, renderState);
     }
 }

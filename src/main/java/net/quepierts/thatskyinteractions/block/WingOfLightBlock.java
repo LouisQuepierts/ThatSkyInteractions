@@ -60,7 +60,7 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
         builder.add(HALF, WATERLOGGED);
     }
 
-    @Override
+    /*@Override
     protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
             BlockPos above = pos.above();
@@ -69,7 +69,7 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
                     state.setValue(HALF, DoubleBlockHalf.UPPER).setValue(WATERLOGGED, level.getFluidState(above).getType() == Fluids.WATER),
                     3);
         }
-    }
+    }*/
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
