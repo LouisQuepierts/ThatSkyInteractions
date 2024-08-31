@@ -42,21 +42,6 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
         this.registerDefaultState(this.stateDefinition.any().setValue(HALF, DoubleBlockHalf.LOWER).setValue(WATERLOGGED, false));
     }
 
-    public WingOfLightBlock() {
-        this(BlockBehaviour.Properties.of()
-                .strength(-1.0F, 3600000.8F)
-                .mapColor(MapColor.COLOR_YELLOW)
-                .noLootTable()
-                .noCollission()
-                .noOcclusion()
-                .isValidSpawn(Blocks::never)
-                .noTerrainParticles()
-                .pushReaction(PushReaction.BLOCK)
-                .lightLevel(blockState -> 15)
-        );
-        this.registerDefaultState(this.stateDefinition.any().setValue(HALF, DoubleBlockHalf.LOWER).setValue(WATERLOGGED, false));
-    }
-
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(HALF, WATERLOGGED);

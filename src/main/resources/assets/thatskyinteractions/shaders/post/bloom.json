@@ -1,0 +1,57 @@
+{
+  "targets": [
+    "swap",
+    "final",
+    "surround"
+  ],
+  "passes": [
+    {
+      "name": "box_blur",
+      "intarget": "final",
+      "outtarget": "swap",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        }
+      ]
+    },
+    {
+      "name": "box_blur",
+      "intarget": "swap",
+      "outtarget": "final",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        }
+      ]
+    },
+    {
+      "name": "thatskyinteractions:bloom",
+      "intarget": "final",
+      "outtarget": "swap",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        }
+      ]
+    },
+    {
+      "name": "thatskyinteractions:bloom",
+      "intarget": "swap",
+      "outtarget": "surround",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        }
+      ]
+    }
+  ]
+}
