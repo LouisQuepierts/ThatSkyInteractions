@@ -1,8 +1,6 @@
 package net.quepierts.thatskyinteractions.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.ParticleStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;

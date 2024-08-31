@@ -1,9 +1,7 @@
 package net.quepierts.thatskyinteractions.proxy;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -52,7 +50,6 @@ import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.data.FriendData;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
-import net.quepierts.thatskyinteractions.mixin.accessor.LevelRendererAccessor;
 import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,10 +67,6 @@ public class ClientProxy extends CommonProxy {
     @NotNull private final CameraHandler cameraHandler;
 
     @Nullable private UUID target;
-    private static final Set<ResourceLocation> HELD_ANIMATIONS = ObjectSet.of(
-            Animations.HELD_CANDLE,
-            Animations.UNLOCK_INVITE
-    );
 
     public ClientProxy(IEventBus modBus, ModContainer modContainer) {
         super(modBus, modContainer);

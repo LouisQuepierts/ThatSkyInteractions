@@ -4,14 +4,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.animate.WaitAnimation;
-import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
-import net.quepierts.thatskyinteractions.data.TSIUserData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
