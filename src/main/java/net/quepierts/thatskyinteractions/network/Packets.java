@@ -13,6 +13,7 @@ import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeSyncP
 
 import java.util.function.Function;
 
+@SuppressWarnings("all")
 public enum Packets {
     BATCH_INTERACT_TREE(BatchInteractTreePacket.class, BatchInteractTreePacket::new, NetworkDirection.PLAY_TO_CLIENT),
     BATCH_ASTROLABE(BatchAstrolabePacket.class, BatchAstrolabePacket::new, NetworkDirection.PLAY_TO_CLIENT),

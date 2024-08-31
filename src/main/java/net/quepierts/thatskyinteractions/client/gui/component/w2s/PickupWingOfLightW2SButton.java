@@ -27,9 +27,9 @@ public class PickupWingOfLightW2SButton extends World2ScreenButton {
     @Override
     public void invoke() {
         ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
-        ScreenAnimator.GLOBAL.play(new WaitAnimation(0.5f, () -> {
-            cache.pickupWingOfLight(this.bound, true);
-        }));
+        ScreenAnimator.GLOBAL.play(new WaitAnimation(0.5f, () ->
+                cache.pickupWingOfLight(this.bound, true))
+        );
     }
 
     @Override

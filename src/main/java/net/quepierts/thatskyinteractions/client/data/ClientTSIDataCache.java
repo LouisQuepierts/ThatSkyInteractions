@@ -4,7 +4,9 @@ import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
@@ -52,7 +54,12 @@ public class ClientTSIDataCache {
 
     public void handleUpdateUserData(TSIUserData userData) {
         ThatSkyInteractions.LOGGER.info("Update UserData");
-        List<AbstractClientPlayer> players = Minecraft.getInstance().level.players();
+        ClientLevel level = Minecraft.getInstance().level;
+
+        if (level == null)
+            return;
+
+        List<AbstractClientPlayer> players = level.players();
         Set<UUID> uuids = new HashSet<>(players.size());
         for (AbstractClientPlayer player : players) {
             uuids.add(player.getUUID());
@@ -79,7 +86,8 @@ public class ClientTSIDataCache {
     }
 
     public InteractTreeInstance get(UUID other) {
-        PlayerPair pair = new PlayerPair(other, Minecraft.getInstance().player.getUUID());
+        LocalPlayer player = Minecraft.getInstance().player;
+        PlayerPair pair = new PlayerPair(other, player.getUUID());
         return relationship.computeIfAbsent(other, key -> new InteractTreeInstance(pair, tree, RelationshipSavedData.FRIEND_INTERACT_TREE));
     }
 

@@ -46,9 +46,7 @@ public class FriendAstrolabeButton extends AstrolabeButton {
         if (this.data == null)
             return;
 
-        if (this.data.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
-
-        } else {
+        if (!this.data.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
             AnimateScreenHolderLayer.INSTANCE.push(new FriendScreen(
                     this.data.getFriendData()
             ));

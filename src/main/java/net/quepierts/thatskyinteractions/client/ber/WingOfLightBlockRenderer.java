@@ -33,7 +33,14 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
     }
 
     @Override
-    public void render(WingOfLightBlockEntity wingOfLightBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int combinedLight, int combinedOverlay) {
+    public void render(
+            @NotNull WingOfLightBlockEntity wingOfLightBlockEntity,
+            float partialTick,
+            @NotNull PoseStack poseStack,
+            @NotNull MultiBufferSource multiBufferSource,
+            int combinedLight,
+            int combinedOverlay
+    ) {
         TSIUserData userData = ThatSkyInteractions.getInstance().getClient().getCache().getUserData();
 
         if (userData.isPickedUp(wingOfLightBlockEntity)) {

@@ -1,7 +1,7 @@
 package net.quepierts.thatskyinteractions.proxy;
 
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -55,7 +55,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 public class ClientProxy extends CommonProxy {
@@ -173,7 +172,12 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onClientAnimatorExit(final ClientAnimatorStateEvent.Exit event) {
-        if (!event.getOwner().equals(Minecraft.getInstance().player.getUUID())) {
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null)
+            return;
+
+        if (!event.getOwner().equals(player.getUUID())) {
             return;
         }
 
@@ -193,13 +197,12 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onInteractInvite(final InteractInviteEvent.Pre event) {
-        if (!event.getTarget().isLocalPlayer()) {
+        /*if (!event.getTarget().isLocalPlayer()) {
             return;
         }
 
         if (!event.getInteractionID().getNamespace().equals(ThatSkyInteractions.MODID)) {
-            return;
-        }
+        }*/
 
     }
 

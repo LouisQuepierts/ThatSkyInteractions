@@ -42,6 +42,7 @@ public class PickupWingOfLightPacket implements IUpdate {
         friendlyByteBuf.writeUUID(this.wolUUID);
     }
 
+    @NotNull
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;

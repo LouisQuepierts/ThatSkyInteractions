@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class TSIUserData {
     @NotNull private final AstrolabeMap astrolabes;
     @NotNull private final Set<UUID> blackList;
@@ -47,7 +48,7 @@ public class TSIUserData {
         }
     }
 
-    public static TSIUserData create(UUID uuid) {
+    public static TSIUserData create() {
         AstrolabeManager manager = ThatSkyInteractions.getInstance().getProxy().getAstrolabeManager();
         ResourceLocation first = manager.getBestFriendAstrolabes().getFirst();
         ResourceLocation generated = manager.getGeneratedLocation(0);
@@ -72,7 +73,7 @@ public class TSIUserData {
         return new TSIUserData(astrolabes, blackList, pickedWingOfLight, l);
     }
 
-    public static CompoundTag toNBT(CompoundTag tag, TSIUserData data) {
+    public static void toNBT(CompoundTag tag, TSIUserData data) {
         data.savedTime = System.currentTimeMillis();
         tag.put("astrolabe", AstrolabeMap.toNBT(new CompoundTag(), data.astrolabes));
         ListTag blackList = new ListTag();
@@ -86,7 +87,6 @@ public class TSIUserData {
         }
         tag.put("pickedWingOfLight", pickedWingOfLight);
         tag.putLong("lastUpdateTime", data.savedTime);
-        return tag;
     }
 
     public static TSIUserData fromNBT(CompoundTag tag) {
@@ -105,7 +105,9 @@ public class TSIUserData {
         return new TSIUserData(astrolabes, blackList, pickedWingOfLight, savedTime);
     }
 
-    public @Nullable Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> addFriend(Player player) {
+    @Nullable
+    @SuppressWarnings("all")
+    public Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> addFriend(Player player) {
         if (player == null)
             return null;
 

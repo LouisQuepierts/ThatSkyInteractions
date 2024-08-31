@@ -132,7 +132,7 @@ public class TSIUserDataStorage {
 
     private TSIUserData loadOrCreate(UUID uuid) {
         Optional<TSIUserData> load = this.load(uuid);
-        return load.orElse(TSIUserData.create(uuid));
+        return load.orElse(TSIUserData.create());
     }
 
     public void litLight(UUID sender, UUID target) {
