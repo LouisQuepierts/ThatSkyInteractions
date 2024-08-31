@@ -208,7 +208,7 @@ public class RenderUtils {
         return texture == MissingTextureAtlasSprite.getTexture() ? manager.getTexture(DEFAULT_ICON) : texture;
     }
 
-    public static void bloomBlit(RenderTarget target, int width, int height) {
+    public static void bloomBlit(RenderTarget src, RenderTarget target, int width, int height, float blend) {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
 
@@ -219,8 +219,9 @@ public class RenderUtils {
         GlStateManager._viewport(0, 0, width, height);
 
         ShaderInstance shaderinstance = Shaders.getBloomBlit();
-        shaderinstance.setSampler("ScreenSampler", Minecraft.getInstance().getMainRenderTarget().getColorTextureId());
-        shaderinstance.setSampler("DiffuseSampler", target.getColorTextureId());
+        shaderinstance.setSampler("ScreenSampler", target.getColorTextureId());
+        shaderinstance.setSampler("DiffuseSampler", src.getColorTextureId());
+        Objects.requireNonNull(shaderinstance.getUniform("Blend")).set(blend);
         shaderinstance.apply();
         BufferBuilder bufferbuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLIT_SCREEN);
         bufferbuilder.addVertex(0.0F, 0.0F, 0.0F);
@@ -234,6 +235,10 @@ public class RenderUtils {
 
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
+    }
+
+    public static void bloomBlit(RenderTarget target, int width, int height, float blend) {
+        bloomBlit(target, Minecraft.getInstance().getMainRenderTarget(), width, height, blend);
     }
 
     public static void blitDepth(RenderTarget src, RenderTarget dest, int width, int height) {

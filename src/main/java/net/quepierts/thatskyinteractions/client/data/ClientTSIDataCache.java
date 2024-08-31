@@ -11,6 +11,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.data.PlayerPair;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
 import net.quepierts.thatskyinteractions.data.TSIUserData;
@@ -18,6 +20,7 @@ import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.BatchRelationshipPacket;
+import net.quepierts.thatskyinteractions.network.packet.PickupWingOfLightPacket;
 import net.quepierts.thatskyinteractions.network.packet.UserDataModifyPacket;
 import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeIgnitePacket;
 import org.jetbrains.annotations.NotNull;
@@ -132,6 +135,19 @@ public class ClientTSIDataCache {
     public void unlikeFriend(UUID uuid, boolean update) {
         if (this.getUserData().unlikeFriend(uuid) && update) {
             SimpleAnimator.getNetwork().update(new UserDataModifyPacket.Unlike(uuid));
+        }
+    }
+
+    public void pickupWingOfLight(WingOfLightBlockEntity wol, boolean update) {
+        TSIUserData data = this.getUserData();
+        if (!data.isPickedUp(wol)) {
+            UUID uuid = wol.getUUID();
+            data.pickupWingOfLight(uuid);
+            World2ScreenWidgetLayer.INSTANCE.remove(uuid);
+
+            if (update) {
+                SimpleAnimator.getNetwork().update(new PickupWingOfLightPacket(wol));
+            }
         }
     }
 

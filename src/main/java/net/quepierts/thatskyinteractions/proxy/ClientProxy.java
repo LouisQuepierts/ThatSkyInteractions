@@ -39,11 +39,13 @@ import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLaye
 import net.quepierts.thatskyinteractions.client.gui.screen.FriendAstrolabeScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.PlayerInteractScreen;
 import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
+import net.quepierts.thatskyinteractions.client.particle.StarParticle;
 import net.quepierts.thatskyinteractions.client.registry.BlockEntityRenderers;
 import net.quepierts.thatskyinteractions.client.registry.Particles;
 import net.quepierts.thatskyinteractions.client.registry.PostEffects;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
 import net.quepierts.thatskyinteractions.client.render.CandleLayer;
+import net.quepierts.thatskyinteractions.client.render.EffectDistributeLayer;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
 import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
@@ -121,16 +123,8 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onRenderLevelStage(final RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-            RenderTarget bloomTarget = PostEffects.getBloomTarget();
-            bloomTarget.setClearColor(0, 0, 0, 0);
-            bloomTarget.clear(Minecraft.ON_OSX);
-            Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            RenderBuffers buffers = ((LevelRendererAccessor) event.getLevelRenderer()).tsi$getRenderBuffers();
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
             PostEffects.applyWOLBloom(event.getPartialTick());
-        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
-            PostEffects.doWOLBloom();
         }
     }
 
@@ -158,6 +152,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onRenderGUI(RenderGuiEvent.Pre event) {
+        PostEffects.doWOLBloom();
         ScreenAnimator.GLOBAL.tick();
     }
 
@@ -260,6 +255,7 @@ public class ClientProxy extends CommonProxy {
 
     private void onRegisterParticleProviders(final RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(Particles.SHORTER_FLAME.get(), ShorterFlameParticle.Provider::new);
+        event.registerSpriteSet(Particles.STAR.get(), StarParticle.Provider::new);
     }
 
     public void onEntityInteract(final PlayerInteractEvent.EntityInteract event) {
@@ -298,7 +294,7 @@ public class ClientProxy extends CommonProxy {
 
     private void addLayers(EntityRenderer<? extends Player> renderer, BlockRenderDispatcher dispatcher) {
         if (renderer instanceof PlayerRenderer playerRenderer) {
-            //playerRenderer.addLayer(new EffectDistributeLayer(playerRenderer));
+            playerRenderer.addLayer(new EffectDistributeLayer(playerRenderer));
             playerRenderer.addLayer(new CandleLayer(playerRenderer, dispatcher));
         }
     }

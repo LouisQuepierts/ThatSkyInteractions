@@ -12,5 +12,7 @@ public interface IEffectDistributor {
 
     Vector3f position();
 
+    boolean shouldDistribute(VariableHolder var);
+
     void distribute(Vector3f pos, AbstractClientPlayer player, VariableHolder var);
 }

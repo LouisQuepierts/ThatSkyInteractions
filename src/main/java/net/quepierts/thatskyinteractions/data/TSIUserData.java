@@ -11,6 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeMap;
 import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
@@ -26,11 +27,13 @@ public class TSIUserData {
     @NotNull private final AstrolabeMap astrolabes;
     @NotNull private final Set<UUID> blackList;
     @NotNull private final Map<UUID, Pair<FriendAstrolabeInstance.NodeData, ResourceLocation>> cache;
+    @NotNull private final Set<UUID> pickedWingOfLight;
     private long savedTime;
 
-    public TSIUserData(@NotNull AstrolabeMap astrolabes, @NotNull Set<UUID> blackList, long savedTime) {
+    public TSIUserData(@NotNull AstrolabeMap astrolabes, @NotNull Set<UUID> blackList, @NotNull Set<UUID> pickedWingOfLight, long savedTime) {
         this.astrolabes = astrolabes;
         this.blackList = blackList;
+        this.pickedWingOfLight = pickedWingOfLight;
         this.savedTime = savedTime;
 
         this.cache = new Object2ObjectOpenHashMap<>();
@@ -52,42 +55,54 @@ public class TSIUserData {
         astrolabeMap.put(first, new FriendAstrolabeInstance(first));
         astrolabeMap.put(generated, new FriendAstrolabeInstance(generated));
 
-        return new TSIUserData(astrolabeMap, new HashSet<>(), System.currentTimeMillis());
+        return new TSIUserData(astrolabeMap, new HashSet<>(), new HashSet<>(), System.currentTimeMillis());
     }
     public static void toNetwork(FriendlyByteBuf byteBuf, TSIUserData data) {
         AstrolabeMap.toNetwork(byteBuf, data.astrolabes);
         byteBuf.writeCollection(data.blackList, (o, uuid) -> o.writeUUID(uuid));
+        byteBuf.writeCollection(data.pickedWingOfLight, (o, uuid) -> o.writeUUID(uuid));
         byteBuf.writeLong(data.savedTime);
     }
 
     public static TSIUserData fromNetwork(FriendlyByteBuf byteBuf) {
         AstrolabeMap astrolabes = AstrolabeMap.fromNetwork(byteBuf);
         Set<UUID> blackList = byteBuf.readCollection(ObjectOpenHashSet::new, (o) -> o.readUUID());
+        Set<UUID> pickedWingOfLight = byteBuf.readCollection(ObjectOpenHashSet::new, (o) -> o.readUUID());
         long l = byteBuf.readLong();
-        return new TSIUserData(astrolabes, blackList, l);
+        return new TSIUserData(astrolabes, blackList, pickedWingOfLight, l);
     }
 
     public static CompoundTag toNBT(CompoundTag tag, TSIUserData data) {
         data.savedTime = System.currentTimeMillis();
         tag.put("astrolabe", AstrolabeMap.toNBT(new CompoundTag(), data.astrolabes));
-        ListTag list = new ListTag();
+        ListTag blackList = new ListTag();
         for (UUID uuid : data.blackList) {
-            list.add(NbtUtils.createUUID(uuid));
+            blackList.add(NbtUtils.createUUID(uuid));
         }
-        tag.put("blackList", list);
+        tag.put("blackList", blackList);
+        ListTag pickedWingOfLight = new ListTag();
+        for (UUID uuid : data.pickedWingOfLight) {
+            pickedWingOfLight.add(NbtUtils.createUUID(uuid));
+        }
+        tag.put("pickedWingOfLight", pickedWingOfLight);
         tag.putLong("lastUpdateTime", data.savedTime);
         return tag;
     }
 
     public static TSIUserData fromNBT(CompoundTag tag) {
         AstrolabeMap astrolabes = AstrolabeMap.fromNBT(tag.getCompound("astrolabe"));
-        ListTag list = tag.getList("blackList", ListTag.TAG_INT_ARRAY);
-        ObjectOpenHashSet<UUID> blackList = new ObjectOpenHashSet<>(list.size());
-        for (Tag uuid : list) {
+        ListTag blackListTag = tag.getList("blackList", ListTag.TAG_INT_ARRAY);
+        ObjectOpenHashSet<UUID> blackList = new ObjectOpenHashSet<>(blackListTag.size());
+        for (Tag uuid : blackListTag) {
             blackList.add(NbtUtils.loadUUID(uuid));
         }
+        ListTag pickedWingOfLightTag = tag.getList("pickedWingOfLight", Tag.TAG_INT_ARRAY);
+        ObjectOpenHashSet<UUID> pickedWingOfLight = new ObjectOpenHashSet<>(pickedWingOfLightTag.size());
+        for (Tag uuid : pickedWingOfLightTag) {
+            pickedWingOfLight.add(NbtUtils.loadUUID(uuid));
+        }
         long savedTime = tag.getLong("lastUpdateTime");
-        return new TSIUserData(astrolabes, blackList, savedTime);
+        return new TSIUserData(astrolabes, blackList, pickedWingOfLight, savedTime);
     }
 
     public @Nullable Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> addFriend(Player player) {
@@ -117,6 +132,15 @@ public class TSIUserData {
             this.cache.put(player, data);
         }
         return data;
+    }
+
+    public boolean isPickedUp(@NotNull WingOfLightBlockEntity wingOfLightBlockEntity) {
+        UUID uuid = wingOfLightBlockEntity.getUUID();
+        return this.pickedWingOfLight.contains(uuid);
+    }
+
+    public void pickupWingOfLight(@NotNull UUID wolUUID) {
+        this.pickedWingOfLight.add(wolUUID);
     }
 
     public boolean likeFriend(UUID player) {

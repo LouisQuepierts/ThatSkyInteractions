@@ -22,7 +22,8 @@ public enum Packets {
     ASTROLABE_IGNITE(AstrolabeIgnitePacket.class, AstrolabeIgnitePacket::new, NetworkDirection.ALL),
     UNLOCK_RELATIONSHIP(UnlockRelationshipPacket.class, UnlockRelationshipPacket::decode, NetworkDirection.ALL),
     INTERACT_BUTTON(InteractButtonPacket.class, InteractButtonPacket::decode, NetworkDirection.ALL),
-    ASTROLABE_MODIFY(UserDataModifyPacket.class, UserDataModifyPacket::decode, NetworkDirection.PLAY_TO_SERVER)
+    ASTROLABE_MODIFY(UserDataModifyPacket.class, UserDataModifyPacket::decode, NetworkDirection.PLAY_TO_SERVER),
+    PICKUP_WING_OF_LIGHT(PickupWingOfLightPacket.class, PickupWingOfLightPacket::new, NetworkDirection.PLAY_TO_SERVER)
     ;
 
     private final NetworkPackets.PacketType<?> packet;

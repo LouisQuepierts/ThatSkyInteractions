@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public class ShorterFlameParticle extends FlameParticle {
     protected ShorterFlameParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed);
-        this.setLifetime(2);
+        this.setLifetime(1);
     }
 
     public static class Provider implements ParticleProvider<SimpleParticleType> {

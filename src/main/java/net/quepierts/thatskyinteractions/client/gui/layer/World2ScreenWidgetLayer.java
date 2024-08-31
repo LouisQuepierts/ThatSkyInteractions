@@ -230,6 +230,10 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
 //    }
 
     public void addWorldPositionObject(UUID uuid, World2ScreenWidget widget) {
+        if (widget == null) {
+            this.objects.remove(uuid);
+            return;
+        }
         if (ThatSkyInteractions.getInstance().getClient().blocked(uuid))
             return;
         this.objects.put(uuid, widget);

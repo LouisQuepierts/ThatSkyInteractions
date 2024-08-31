@@ -20,7 +20,7 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
     @OnlyIn(Dist.CLIENT)
     private HaloEffectW2SWidget halo;
     @OnlyIn(Dist.CLIENT)
-    private PickupWingOfLightW2SButton pickup;
+    private PickupWingOfLightW2SButton pickupButton;
     private float xRot;
     private float yRot;
     public WingOfLightBlockEntity(BlockPos pos, BlockState blockState) {
@@ -28,7 +28,7 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
 
         if (FMLEnvironment.dist.isClient()) {
             halo = new HaloEffectW2SWidget(this);
-            pickup = new PickupWingOfLightW2SButton(this);
+            pickupButton = new PickupWingOfLightW2SButton(this);
         }
     }
 
@@ -74,7 +74,7 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
     @OnlyIn(Dist.CLIENT)
     @Override
     public World2ScreenWidget provideW2SWidget(float distanceSqr) {
-        return distanceSqr > 8 ? this.halo : this.pickup;
+        return distanceSqr > 8 ? this.halo : this.pickupButton;
     }
 
     public float getXRot() {

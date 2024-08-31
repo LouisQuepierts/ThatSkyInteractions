@@ -17,7 +17,12 @@ public class CandleFlameEffectDistributor implements IEffectDistributor {
 
     @Override
     public Vector3f position() {
-        return new Vector3f(-0.0625F, 0, 0.5625F);
+        return new Vector3f(0.0f, -0.48f, 0.75f);
+    }
+
+    @Override
+    public boolean shouldDistribute(VariableHolder var) {
+        return var.getAsBoolean();
     }
 
     @Override

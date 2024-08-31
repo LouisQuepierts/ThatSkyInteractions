@@ -11,12 +11,17 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
+import net.quepierts.thatskyinteractions.client.registry.PostEffects;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
+import net.quepierts.thatskyinteractions.data.TSIUserData;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLightBlockEntity> {
@@ -30,11 +35,17 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
 
     @Override
     public void render(WingOfLightBlockEntity wingOfLightBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int combinedLight, int combinedOverlay) {
-        BlockPos pos = wingOfLightBlockEntity.getBlockPos();
-        float distanceSqr = (float) minecraft.player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
+        TSIUserData userData = ThatSkyInteractions.getInstance().getClient().getCache().getUserData();
 
-        //RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
-//        PostEffects.getBloomTarget().bindWrite(true);
+        if (userData.isPickedUp(wingOfLightBlockEntity)) {
+            return;
+        }
+
+        BlockPos pos = wingOfLightBlockEntity.getBlockPos();
+
+        if (minecraft.player == null)
+            return;
+        float distanceSqr = (float) minecraft.player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
 
         World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(wingOfLightBlockEntity.getUUID(), wingOfLightBlockEntity.provideW2SWidget(distanceSqr));
         poseStack.pushPose();
@@ -44,18 +55,14 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
 
         playerModel.young = false;
         playerModel.head.xRot = wingOfLightBlockEntity.getXRot();
-        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM);
+        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.WOL);
         playerModel.renderToBuffer(poseStack, vertexConsumer, combinedLight, combinedOverlay);
 
-        VertexConsumer buffer = multiBufferSource.getBuffer(playerModel.renderType(RenderTypes.TEXTURE));
-        playerModel.renderToBuffer(poseStack, buffer, combinedLight, combinedOverlay);
-
-
-//        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-
+        PostEffects.setApplyBloom();
         poseStack.popPose();
     }
 
+    @NotNull
     @Override
     public AABB getRenderBoundingBox(WingOfLightBlockEntity blockEntity) {
         BlockPos pos = blockEntity.getBlockPos();

@@ -113,7 +113,7 @@ public class HaloEffectW2SWidget extends World2ScreenWidget {
         if (computeList.isEmpty())
             return;
 
-        RenderTarget renderTarget = PostEffects.getBloomTarget();
+        RenderTarget renderTarget = PostEffects.getBloomFinalTarget();
         if (renderTarget == null)
             return;
 

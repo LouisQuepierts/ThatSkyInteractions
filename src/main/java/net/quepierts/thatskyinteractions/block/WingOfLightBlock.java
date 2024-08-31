@@ -1,8 +1,11 @@
 package net.quepierts.thatskyinteractions.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.ParticleStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -26,6 +29,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
+import net.quepierts.thatskyinteractions.client.registry.Particles;
 import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +77,18 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), 3);
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (!level.isClientSide) {
+            BlockPos above = pos.above();
+            boolean isWater = level.getBlockState(above).getFluidState().getType() == Fluids.WATER;
+            level.setBlock(
+                    above,
+                    this.defaultBlockState()
+                            .setValue(HALF, DoubleBlockHalf.UPPER)
+                            .setValue(WATERLOGGED, isWater),
+                    3
+            );
+        }
     }
 
     @Override
@@ -86,14 +101,16 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos blockpos = context.getClickedPos();
         Level level = context.getLevel();
-        BlockState state = this.defaultBlockState().setValue(
-                WATERLOGGED,
-                context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER
-        );
+
+        boolean isWater = context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER;
         if (blockpos.getY() < level.getMaxBuildHeight() - 1 && level.getBlockState(blockpos.above()).canBeReplaced(context)) {
-            return state.setValue(HALF, DoubleBlockHalf.LOWER);
+            return this.defaultBlockState()
+                    .setValue(HALF, DoubleBlockHalf.LOWER)
+                    .setValue(WATERLOGGED, isWater);
         } else {
-            return state;
+            return this.defaultBlockState()
+                    .setValue(HALF, DoubleBlockHalf.UPPER)
+                    .setValue(WATERLOGGED, isWater);
         }
     }
 
@@ -133,6 +150,25 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
         if (blockState.getValue(HALF) == DoubleBlockHalf.UPPER)
             return null;
         return new WingOfLightBlockEntity(blockPos, blockState);
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (state.getValue(HALF) == DoubleBlockHalf.UPPER)
+            return;
+        float x = pos.getX();
+        float y = pos.getY();
+        float z = pos.getZ();
+
+        for (int i = 0; i < 2; i++) {
+            level.addParticle(
+                    Particles.STAR.get(),
+                    x + random.nextFloat() * 0.8f,
+                    y + random.nextFloat() * 2.0f,
+                    z + random.nextFloat() * 0.8f,
+                    0, 0, 0
+            );
+        }
     }
 
     @Override

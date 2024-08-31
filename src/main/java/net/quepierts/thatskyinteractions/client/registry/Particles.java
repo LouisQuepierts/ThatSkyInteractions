@@ -17,9 +17,16 @@ public class Particles {
 
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SHORTER_FLAME;
 
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> STAR;
+
     static {
         SHORTER_FLAME = REGISTER.register(
                 "shorter_flame",
+                () -> new SimpleParticleType(false)
+        );
+
+        STAR = REGISTER.register(
+                "star",
                 () -> new SimpleParticleType(false)
         );
     }

@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.client.registry;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
@@ -17,50 +16,51 @@ import java.io.IOException;
 public class PostEffects {
     public static final ResourceLocation BLOOM_LOCATION = ThatSkyInteractions.getLocation("shaders/post/bloom.json");
     private static PostChain bloomEffect;
-    private static RenderTarget bloomTarget;
+    private static RenderTarget bloomFinalTarget;
+    private static RenderTarget bloomSurroundTarget;
+
+    private static boolean shouldApplyBloom = false;
 
     public static void applyWOLBloom(DeltaTracker deltaTracker) {
+        if (!shouldApplyBloom)
+            return;
+
+        bloomFinalTarget.clear(Minecraft.ON_OSX);
+        bloomSurroundTarget.clear(Minecraft.ON_OSX);
+
         Minecraft minecraft = Minecraft.getInstance();
         RenderTarget mainRenderTarget = minecraft.getMainRenderTarget();
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
-        RenderUtils.blitDepth(mainRenderTarget, bloomTarget, width, height);
+        RenderUtils.blitDepth(mainRenderTarget, bloomFinalTarget, width, height);
 
-        bloomTarget.bindWrite(false);
-        GlStateManager._glBindFramebuffer(36160, bloomTarget.frameBufferId);
-        RenderTypes.getBufferSource().endBatch(RenderTypes.BLOOM);
-        mainRenderTarget.bindWrite(false);
-        RenderUtils.bloomBlit(bloomTarget, width, height);
-        bloomTarget.bindWrite(false);
+        bloomFinalTarget.bindWrite(false);
+        RenderTypes.getBufferSource().endBatch(RenderTypes.WOL);
+        /*mainRenderTarget.bindWrite(false);
+        RenderUtils.bloomBlit(bloomFinalTarget, width, height, 1.0f);
+        bloomFinalTarget.bindWrite(false);*/
 
-        //multibuffersource$buffersource.endBatch(RenderTypes.BLOOM);
         bloomEffect.process(deltaTracker.getGameTimeDeltaTicks());
         mainRenderTarget.bindWrite(false);
-
-
-        /*RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-        RenderUtils.bloomBlit(bloomTarget, width, height);
-        //bloomTarget.blitToScreen(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight(), false);
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();*/
     }
 
     public static void doWOLBloom() {
+        if (!shouldApplyBloom)
+            return;
         Minecraft minecraft = Minecraft.getInstance();
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
-//        bloomTarget.blitToScreen(width / 2, height / 2);
 
-        RenderUtils.bloomBlit(bloomTarget, width, height);
+        //bloomFinalTarget.blitToScreen(width / 2, height / 2);
+
         minecraft.getMainRenderTarget().bindWrite(false);
+        RenderUtils.bloomBlit(bloomSurroundTarget, width, height, 1.2f);
+        RenderUtils.bloomBlit(bloomFinalTarget, width, height, 1.8f);
+        shouldApplyBloom = false;
     }
 
-    public static void processBloom(float partialTick) {
-        if (bloomEffect != null) {
-            bloomEffect.setUniform("Radius", 1.0f);
-            bloomEffect.process(partialTick);
-        }
+    public static void setApplyBloom() {
+        shouldApplyBloom = true;
     }
 
     public static void setup(ResourceProvider provider) {
@@ -70,8 +70,12 @@ public class PostEffects {
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
 
-        if (bloomTarget != null) {
-            bloomTarget.destroyBuffers();
+        if (bloomFinalTarget != null) {
+            bloomFinalTarget.destroyBuffers();
+        }
+
+        if (bloomSurroundTarget != null) {
+            bloomSurroundTarget.destroyBuffers();
         }
 
         if (bloomEffect != null) {
@@ -85,7 +89,8 @@ public class PostEffects {
                     BLOOM_LOCATION
             );
             bloomEffect.resize(width, height);
-            bloomTarget = bloomEffect.getTempTarget("final");
+            bloomFinalTarget = bloomEffect.getTempTarget("final");
+            bloomSurroundTarget = bloomEffect.getTempTarget("surround");
         } catch (IOException ioexception) {
             ThatSkyInteractions.LOGGER.warn("Failed to load shader: {}", BLOOM_LOCATION, ioexception);
         } catch (JsonSyntaxException jsonsyntaxexception) {
@@ -99,7 +104,11 @@ public class PostEffects {
         }
     }
 
-    public static RenderTarget getBloomTarget() {
-        return bloomTarget;
+    public static RenderTarget getBloomFinalTarget() {
+        return bloomFinalTarget;
+    }
+
+    public static RenderTarget getBloomSurroundTarget() {
+        return bloomSurroundTarget;
     }
 }
