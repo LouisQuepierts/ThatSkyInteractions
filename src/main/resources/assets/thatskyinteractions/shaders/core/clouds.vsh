@@ -13,7 +13,6 @@ uniform float GameTime;
 uniform vec3 Light0_Direction;
 uniform vec3 Light1_Direction;
 
-out vec2 texCoord0;
 out vec4 vertexColor;
 
 #define MINECRAFT_LIGHT_POWER   (0.6)
@@ -46,7 +45,6 @@ void main() {
     position.z += (fastSin(delta - 9.43) + fastSin(delta + 0.942477796)) * noise0(Position.xy) / 2;
 
     gl_Position = ProjMat * ModelViewMat * vec4(position + ChunkOffset, 1.0);
-    texCoord0 = UV0;
     vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal, Color);
     vertexColor.rgb *= wave;
 }

@@ -69,7 +69,7 @@ public class EffectDistributorManager {
         for (EffectDistributor distributor : distributors) {
             VariableHolder holder = animator.getVariable(distributor.name());
 
-            if (holder == VariableHolder.Immutable.ZERO || distributor.shouldSkipDistribute(holder))
+            if (holder == VariableHolder.Immutable.INSTANCE || distributor.shouldSkipDistribute(holder))
                 continue;
 
             Vector3f transformed = matrix4f.transformPosition(distributor.position(animator), new Vector3f());

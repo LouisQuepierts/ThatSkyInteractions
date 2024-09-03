@@ -21,6 +21,7 @@ import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class FakePlayerDisplayHandler {
     private final ClientProxy client;
@@ -116,10 +117,6 @@ public class FakePlayerDisplayHandler {
 
     public void setPlayerSkin(UUID uuid) {
         this.player.setPlayerSkin(uuid);
-    }
-
-    public float enterValue() {
-        return this.enterHolder.getValue();
     }
 
     private void addButton() {

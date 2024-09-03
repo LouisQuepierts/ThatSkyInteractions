@@ -18,9 +18,8 @@ class CloudMeshBuilder {
     private final float red;
     private final float green;
     private final float blue;
-    private final float extend;
 
-    CloudMeshBuilder(Tesselator tesselator, double x, double y, double z, Vec3 cloudColor, float extend) {
+    CloudMeshBuilder(Tesselator tesselator, double x, double y, double z, Vec3 cloudColor) {
         this.bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
         this.x = (float) x;
         this.y = (float) y;
@@ -29,7 +28,6 @@ class CloudMeshBuilder {
         this.red = (float) cloudColor.x;
         this.green = (float) cloudColor.y;
         this.blue = (float) cloudColor.z;
-        this.extend = extend;
     }
 
     public MeshData build(Collection<ObjectList<CloudData>> clouds) {
@@ -54,30 +52,6 @@ class CloudMeshBuilder {
         float x2 = cloud.position().x + cloud.size().x + 0.03f - x;
         float y2 = cloud.position().y + cloud.size().y + 0.03f - y;
         float z2 = cloud.position().z + cloud.size().z + 0.03f - z;
-        
-        if (renderXP) {
-            x2 += this.extend;
-        }
-
-        if (renderXN) {
-            x1 -= this.extend;
-        }
-
-        if (renderYP) {
-            y2 += this.extend;
-        }
-
-        if (renderYN) {
-            y1 -= this.extend;
-        }
-
-        if (renderZP) {
-            z2 += this.extend;
-        }
-
-        if (renderZN) {
-            z1 -= this.extend;
-        }
         
         if (renderXP) {
             this.bufferbuilder.addVertex(x2, y1, z1).setUv(0, 0).setColor(red, blue, green, alpha).setNormal(1.0f, 0.0f, 0.0f);

@@ -10,6 +10,7 @@ import net.quepierts.thatskyinteractions.client.registry.Particles;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
+@SuppressWarnings("all")
 @OnlyIn(Dist.CLIENT)
 public class HugEffectDistributor extends EffectDistributor {
     @Override

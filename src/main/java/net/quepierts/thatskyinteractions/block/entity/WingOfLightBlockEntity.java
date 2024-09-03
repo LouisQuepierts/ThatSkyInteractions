@@ -95,14 +95,6 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
         return yRot;
     }
 
-    public void setXRot(float xRot) {
-        this.xRot = xRot;
-    }
-
-    public void setYRot(float yRot) {
-        this.yRot = yRot;
-    }
-
     public void setRotation(float xRot, float yRot) {
         this.xRot = xRot;
         this.yRot = yRot;

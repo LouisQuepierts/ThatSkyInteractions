@@ -3,7 +3,6 @@
 uniform vec4 ColorModulator;
 uniform vec4 FogColor;
 
-in vec2 texCoord0;
 in vec4 vertexColor;
 
 out vec4 fragColor;

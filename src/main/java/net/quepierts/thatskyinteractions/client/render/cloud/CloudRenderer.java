@@ -23,13 +23,10 @@ import net.quepierts.thatskyinteractions.client.registry.PostEffects;
 import net.quepierts.thatskyinteractions.client.registry.Shaders;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 
+@SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class CloudRenderer {
     public static final int CULL_XP = 1;
@@ -90,7 +87,7 @@ public class CloudRenderer {
                 this.buffer.close();
             }
 
-            MeshData meshData = this.buildClouds(Tesselator.getInstance(), dx, dy, dz, cloudColor, 0.0f);
+            MeshData meshData = this.buildClouds(Tesselator.getInstance(), dx, dy, dz, cloudColor);
             if (meshData != null) {
                 this.buffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
                 this.buffer.bind();
@@ -157,8 +154,8 @@ public class CloudRenderer {
 
     }
 
-    private MeshData buildClouds(Tesselator tesselator, double x, double y, double z, Vec3 cloudColor, float extend) {
-        CloudMeshBuilder builder = new CloudMeshBuilder(tesselator, 0, 0, 0, cloudColor, extend);
+    private MeshData buildClouds(Tesselator tesselator, double x, double y, double z, Vec3 cloudColor) {
+        CloudMeshBuilder builder = new CloudMeshBuilder(tesselator, 0, 0, 0, cloudColor);
         return builder.build(this.clouds.values());
     }
 
