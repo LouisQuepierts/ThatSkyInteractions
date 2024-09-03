@@ -29,7 +29,7 @@ public class CloudExpandItem extends Item {
             if (state.is(Blocks.CLOUD)) {
                 BlockEntity entity = level.getBlockEntity(pos);
                 if (entity instanceof CloudBlockEntity cloud) {
-                    cloud.expand(context.getClickedFace(), 16);
+                    cloud.expand(context.getClickedFace(), player.isShiftKeyDown() ? 1 : 16);
                     return InteractionResult.SUCCESS;
                 }
             }

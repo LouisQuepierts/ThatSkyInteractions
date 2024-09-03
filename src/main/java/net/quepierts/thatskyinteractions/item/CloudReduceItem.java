@@ -29,7 +29,7 @@ public class CloudReduceItem extends Item {
             if (state.is(Blocks.CLOUD)) {
                 BlockEntity entity = level.getBlockEntity(pos);
                 if (entity instanceof CloudBlockEntity cloud) {
-                    cloud.reduce(context.getClickedFace(), 16);
+                    cloud.reduce(context.getClickedFace(), player.isShiftKeyDown() ? 1 : 16);
                     return InteractionResult.SUCCESS;
                 }
             }
