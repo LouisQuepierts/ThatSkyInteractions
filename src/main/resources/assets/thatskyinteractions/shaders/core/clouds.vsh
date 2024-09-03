@@ -1,7 +1,5 @@
 #version 150
 
-#moj_import <light.glsl>
-
 in vec3 Position;
 in vec2 UV0;
 in vec4 Color;
@@ -17,6 +15,16 @@ uniform vec3 Light1_Direction;
 
 out vec2 texCoord0;
 out vec4 vertexColor;
+
+#define MINECRAFT_LIGHT_POWER   (0.6)
+#define MINECRAFT_AMBIENT_LIGHT (0.4)
+
+vec4 minecraft_mix_light(vec3 lightDir0, vec3 lightDir1, vec3 normal, vec4 color) {
+    float light0 = max(0.0, dot(lightDir0, normal));
+    float light1 = max(0.0, dot(lightDir1, normal));
+    float lightAccum = min(1.0, (light0 + light1) * MINECRAFT_LIGHT_POWER + MINECRAFT_AMBIENT_LIGHT);
+    return vec4(color.rgb * lightAccum, color.a);
+}
 
 float fastSin(float x) {
     x = mod(x + 3.14159265, 6.28318531) - 3.14159265;
