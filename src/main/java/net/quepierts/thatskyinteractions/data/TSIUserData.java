@@ -141,6 +141,10 @@ public class TSIUserData {
         return this.pickedWingOfLight.contains(uuid);
     }
 
+    public boolean isPickedUp(UUID wolUUID) {
+        return this.pickedWingOfLight.contains(wolUUID);
+    }
+
     public void pickupWingOfLight(@NotNull UUID wolUUID) {
         this.pickedWingOfLight.add(wolUUID);
     }
@@ -210,6 +214,10 @@ public class TSIUserData {
 
     public boolean sendLight(UUID player) {
         Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> pair = this.cache.get(player);
+
+        if (pair == null)
+            return false;
+
         FriendAstrolabeInstance.NodeData data = pair.getFirst();
 
         if (data == null)
@@ -222,10 +230,29 @@ public class TSIUserData {
     }
 
     public void awardLight(UUID player) {
-        FriendAstrolabeInstance.NodeData data = this.cache.get(player).getFirst();
+        Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> pair = this.cache.get(player);
+
+        if (pair == null)
+            return;
+
+        FriendAstrolabeInstance.NodeData data = pair.getFirst();
         if (data != null) {
             data.setFlag(FriendAstrolabeInstance.Flag.RECEIVED, true);
         }
+    }
+
+    public boolean gainLight(UUID player) {
+        Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> pair = this.cache.get(player);
+
+        if (pair == null)
+            return false;
+
+        FriendAstrolabeInstance.NodeData first = pair.getFirst();
+
+        if (!first.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED))
+            return false;
+        first.setFlag(FriendAstrolabeInstance.Flag.RECEIVED, false);
+        return true;
     }
 
     public Set<UUID> blackList() {
@@ -256,6 +283,7 @@ public class TSIUserData {
         return this.cache.containsKey(player);
     }
 
+    @Nullable
     public FriendAstrolabeInstance.NodeData getNodeData(UUID target) {
         Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> cache = this.cache.get(target);
         if (cache == null)

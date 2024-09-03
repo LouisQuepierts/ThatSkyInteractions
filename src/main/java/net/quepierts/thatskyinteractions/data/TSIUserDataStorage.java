@@ -140,6 +140,11 @@ public class TSIUserDataStorage {
         this.getUserData(target).awardLight(sender);
     }
 
+
+    public void gainLight(UUID sender, UUID target) {
+        this.getUserData(sender).gainLight(target);
+    }
+
     public void setRootPath(Path root) {
         this.root = root.getParent().resolve(ThatSkyInteractions.MODID + "/userdata");
     }

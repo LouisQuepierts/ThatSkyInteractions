@@ -135,9 +135,12 @@ public class AstrolabeManager implements PreparableReloadListener {
             if (!grid[x + y * GRID_WIDTH]) {
                 i++;
 
+                AstrolabeNode.DescriptionPosition descriptionPosition = testDescriptionPosition(grid, x, y);
+
                 AstrolabeNode node = new FriendNode(
                         x * GRID_UNIT - ASTROLABE_WIDTH / 2 + random.nextInt(5) - random.nextInt(5),
-                        y * GRID_UNIT - ASTROLABE_HEIGHT / 2 + random.nextInt(5) - random.nextInt(5)
+                        y * GRID_UNIT - ASTROLABE_HEIGHT / 2 + random.nextInt(5) - random.nextInt(5),
+                        descriptionPosition
                 );
                 nodes.add(node);
                 grid[x + y * GRID_WIDTH] = true;
@@ -145,6 +148,10 @@ public class AstrolabeManager implements PreparableReloadListener {
         }
 
         return new Astrolabe(nodes, ObjectLists.emptyList());
+    }
+
+    private AstrolabeNode.DescriptionPosition testDescriptionPosition(boolean[] grid, int x, int y) {
+        return AstrolabeNode.DescriptionPosition.UP;
     }
 
     private CompletableFuture<List<ResourceLocation>> loadFriendAstrolabeList(ResourceManager pResourceManager, Executor pBackgroundExecutor) {

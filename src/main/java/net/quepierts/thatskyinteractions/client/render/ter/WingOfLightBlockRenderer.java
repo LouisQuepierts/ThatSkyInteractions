@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.client.ber;
+package net.quepierts.thatskyinteractions.client.render.ter;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

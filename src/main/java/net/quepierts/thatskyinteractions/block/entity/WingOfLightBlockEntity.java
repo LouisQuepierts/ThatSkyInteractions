@@ -24,7 +24,7 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
     private float xRot;
     private float yRot;
     public WingOfLightBlockEntity(BlockPos pos, BlockState blockState) {
-        super(BlockEntities.WING_OF_LIGHT_BE.get(), pos, blockState);
+        super(BlockEntities.WING_OF_LIGHT.get(), pos, blockState);
 
         if (FMLEnvironment.dist.isClient()) {
             halo = new HaloEffectW2SWidget(this);
@@ -33,7 +33,7 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    protected void loadAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         if (tag.contains(TAG_XROT)) {
             this.xRot = tag.getFloat(TAG_XROT);
@@ -45,14 +45,14 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    protected void saveAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putFloat(TAG_XROT, this.xRot);
         tag.putFloat(TAG_YROT, this.yRot);
     }
 
     @Override
-    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
+    public @NotNull CompoundTag getUpdateTag(@NotNull HolderLookup.Provider registries) {
         CompoundTag tag = super.getUpdateTag(registries);
         tag.putFloat(TAG_XROT, this.xRot);
         tag.putFloat(TAG_YROT, this.yRot);
@@ -60,7 +60,7 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
     }
 
     @Override
-    public void handleUpdateTag(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider lookupProvider) {
+    public void handleUpdateTag(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider lookupProvider) {
         super.handleUpdateTag(tag, lookupProvider);
         if (tag.contains(TAG_XROT)) {
             this.xRot = tag.getFloat(TAG_XROT);

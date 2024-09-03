@@ -9,6 +9,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
@@ -50,6 +51,9 @@ public class FriendAstrolabeButton extends AstrolabeButton {
             AnimateScreenHolderLayer.INSTANCE.push(new FriendScreen(
                     this.data.getFriendData()
             ));
+        } else {
+            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
+            cache.gainLight(this.data.getFriendData().getUuid(), true);
         }
     }
 

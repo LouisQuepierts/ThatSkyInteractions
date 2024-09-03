@@ -2,11 +2,13 @@ package net.quepierts.thatskyinteractions.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringUtil;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
@@ -21,15 +23,22 @@ public class InputScreen extends AnimatedScreen {
     private final ResourceLocation icon;
     private final int boxWidth;
     private final int boxHeight;
-    private EditBox editBox;
+    private final EditBox editBox;
     private final Consumer<String> consumer;
 
-    public InputScreen(ResourceLocation icon, int boxWidth, int boxHeight, Component message, Consumer<String> consumer) {
+    public InputScreen(ResourceLocation icon, int boxWidth, int boxHeight, Component message, String def, Consumer<String> consumer) {
         super(message);
         this.icon = icon;
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
         this.consumer = consumer;
+        this.editBox = new EditBox(
+                Minecraft.getInstance().font,
+                boxWidth / -4, 6,
+                boxWidth / 2, 16,
+                Component.empty()
+        );
+        this.editBox.setValue(def);
     }
 
     public InputScreen(ResourceLocation icon, int boxWidth, int boxHeight, Component message) {
@@ -38,16 +47,16 @@ public class InputScreen extends AnimatedScreen {
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
         this.consumer = (string) -> {};
-    }
-
-    @Override
-    protected void init() {
         this.editBox = new EditBox(
-                this.font,
+                Minecraft.getInstance().font,
                 boxWidth / -4, 6,
                 boxWidth / 2, 16,
                 Component.empty()
         );
+    }
+
+    @Override
+    protected void init() {
         this.addRenderableWidget(this.editBox);
 
         int bottom = this.boxHeight / 2 - 52;
@@ -55,7 +64,11 @@ public class InputScreen extends AnimatedScreen {
         this.addRenderableWidget(new SqueezeButton(20, bottom, 32, Component.literal(""), this.animator, ConfirmScreen.ICON_CONFIRM) {
             @Override
             public void onPress() {
-                consumer.accept(editBox.getValue());
+                String value = editBox.getValue();
+                if (StringUtil.isNullOrEmpty(value)) {
+                    return;
+                }
+                consumer.accept(value);
                 AnimateScreenHolderLayer.INSTANCE.pop(InputScreen.this);
             }
         });

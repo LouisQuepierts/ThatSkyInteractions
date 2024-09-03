@@ -26,9 +26,8 @@ public abstract class AstrolabeSyncPacket implements ISync {
 
     public static AstrolabeSyncPacket decode(FriendlyByteBuf byteBuf) {
         byte code = byteBuf.readByte();
-        switch (code) {
-            case ADD_FRIEND:
-                return new AddFriend(byteBuf);
+        if (code == ADD_FRIEND) {
+            return new AddFriend(byteBuf);
         }
 
         throw new IllegalArgumentException("Packet Code: " + code);

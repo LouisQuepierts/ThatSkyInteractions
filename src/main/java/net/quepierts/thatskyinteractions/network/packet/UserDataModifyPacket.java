@@ -9,6 +9,7 @@ import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.TSIUserData;
 import net.quepierts.thatskyinteractions.data.TSIUserDataStorage;
+import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 
 import java.util.UUID;
 
@@ -190,9 +191,14 @@ public abstract class UserDataModifyPacket implements IUpdate {
         public void update(ServerPlayer serverPlayer) {
             TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
             TSIUserData userData = manager.getUserData(serverPlayer.getUUID());
-            if (!userData.isFriend(this.friendUUID))
+            if (!userData.isFriend(this.friendUUID)) {
                 return;
-            userData.getNodeData(this.friendUUID).getFriendData().setNickname(this.nickname);
+            }
+            FriendAstrolabeInstance.NodeData data = userData.getNodeData(this.friendUUID);
+            if (data == null) {
+                return;
+            }
+            data.getFriendData().setNickname(this.nickname);
         }
     }
 }

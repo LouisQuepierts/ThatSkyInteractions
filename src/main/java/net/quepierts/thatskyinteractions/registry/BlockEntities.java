@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.MuralBlockEntity;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 
 public class BlockEntities {
@@ -14,11 +15,15 @@ public class BlockEntities {
             BuiltInRegistries.BLOCK_ENTITY_TYPE, ThatSkyInteractions.MODID
     );
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WingOfLightBlockEntity>> WING_OF_LIGHT_BE = REGISTER.register(
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WingOfLightBlockEntity>> WING_OF_LIGHT = REGISTER.register(
             "wing_of_light_entity", () -> BlockEntityType.Builder.of(WingOfLightBlockEntity::new, Blocks.WING_OF_LIGHT.get()).build(DSL.remainderType())
     );
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CloudBlockEntity>> CLOUD_BE = REGISTER.register(
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CloudBlockEntity>> CLOUD = REGISTER.register(
             "cloud", () -> BlockEntityType.Builder.of(CloudBlockEntity::new, Blocks.CLOUD.get()).build(DSL.remainderType())
+    );
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MuralBlockEntity>> MURAL = REGISTER.register(
+            "mural", () -> BlockEntityType.Builder.of(MuralBlockEntity::new, Blocks.MURAL.get()).build(DSL.remainderType())
     );
 }

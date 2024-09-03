@@ -54,7 +54,7 @@ neoForge {
         client_b {
             client()
             jvmArguments.addAll "-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition", "-XX:NonProfiledCodeHeapSize=240M", "-XX:ProfiledCodeHeapSize=240M"
-            programArguments.addAll "--username", "Dev1"
+            programArguments.addAll "--username", "Dev2"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
@@ -116,8 +116,8 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     api "maven.modrinth:simpleanimator:$simpleanimator_maven_version"
 
-//    runtimeOnly "maven.modrinth:sodium:$sodium_maven_version"
-//    runtimeOnly "maven.modrinth:iris:$iris_maven_version"
+    runtimeOnly "maven.modrinth:sodium:$sodium_maven_version"
+    runtimeOnly "maven.modrinth:iris:$iris_maven_version"
 
 //    api "maven.modrinth:sodium:$sodium_maven_version"
 //    api "maven.modrinth:iris:$iris_maven_version"

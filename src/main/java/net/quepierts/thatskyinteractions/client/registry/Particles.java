@@ -16,8 +16,9 @@ public class Particles {
     );
 
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SHORTER_FLAME;
-
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> STAR;
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> HEART;
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CIRCLE;
 
     static {
         SHORTER_FLAME = REGISTER.register(
@@ -27,6 +28,16 @@ public class Particles {
 
         STAR = REGISTER.register(
                 "star",
+                () -> new SimpleParticleType(false)
+        );
+
+        HEART = REGISTER.register(
+                "heart",
+                () -> new SimpleParticleType(false)
+        );
+
+        CIRCLE = REGISTER.register(
+                "circle",
                 () -> new SimpleParticleType(false)
         );
     }

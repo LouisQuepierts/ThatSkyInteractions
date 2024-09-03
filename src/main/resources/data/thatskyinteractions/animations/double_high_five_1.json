@@ -1,6 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"useVanillaRig": false,
+	"abortable": false,
 	"animations": {
 		"invite": {
 			"animation_length": 0.25,
@@ -183,7 +184,7 @@
 			}
 		},
 		"main": {
-			"animation_length": 4.375,
+			"animation_length": 2.7083,
 			"bones": {
 				"requester_root": {
 					"position": {

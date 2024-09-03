@@ -9,6 +9,7 @@ import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
+import net.quepierts.thatskyinteractions.client.gui.animate.WaitAnimation;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerIgniteW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerLightW2SWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
@@ -22,6 +23,7 @@ public class FakePlayerDisplayHandler {
     private final ClientProxy client;
     private final FloatHolder enterHolder = new FloatHolder(0.0f);
     private final LerpNumberAnimation enterAnimation = new LerpNumberAnimation(this.enterHolder, AnimateUtils.Lerp::smooth, 0, 1, 1.0f);
+    private final WaitAnimation addButtonLater = new WaitAnimation(0.8f, this::addButton);
     private FakeClientPlayer player;
     private FakePlayerLightW2SWidget light;
     private FakePlayerIgniteW2SButton ignite;
@@ -54,12 +56,16 @@ public class FakePlayerDisplayHandler {
         this.player.setYBodyRot(yRot);
         this.player.setYHeadRot(yRot);
         this.enterAnimation.reset(0, 1);
-        ScreenAnimator.GLOBAL.play(this.enterAnimation);
         World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), light);
 
         UUID uuid = this.player.getDisplayUUID();
         FriendAstrolabeInstance.NodeData data = client.getCache().getUserData().getNodeData(uuid);
         this.canIgnite = (data != null && !data.hasFlag(FriendAstrolabeInstance.Flag.SENT));
+
+        ScreenAnimator.GLOBAL.play(this.enterAnimation);
+        if (this.canIgnite) {
+            ScreenAnimator.GLOBAL.play(this.addButtonLater);
+        }
     }
 
     public void hide() {
@@ -102,13 +108,6 @@ public class FakePlayerDisplayHandler {
                 this.player.setPos(0, -128, 0);
                 this.canRepos = false;
             }
-
-            if (this.canIgnite) {
-                this.ignite.setClicked(false);
-                World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
-                World2ScreenWidgetLayer.INSTANCE.lock(this.ignite);
-                this.canIgnite = false;
-            }
         }
     }
 
@@ -118,6 +117,13 @@ public class FakePlayerDisplayHandler {
 
     public float enterValue() {
         return this.enterHolder.getValue();
+    }
+
+    private void addButton() {
+        this.ignite.setClicked(false);
+        World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
+        World2ScreenWidgetLayer.INSTANCE.lock(this.ignite);
+        this.canIgnite = false;
     }
 
 }

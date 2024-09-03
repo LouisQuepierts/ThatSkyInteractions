@@ -6,9 +6,6 @@ uniform sampler2D DiffuseSampler;
 in vec2 texCoord;
 in vec2 sampleStep;
 
-uniform float Radius;
-uniform float RadiusMultiplier;
-
 out vec4 fragColor;
 
 const float weight[] = float[] (

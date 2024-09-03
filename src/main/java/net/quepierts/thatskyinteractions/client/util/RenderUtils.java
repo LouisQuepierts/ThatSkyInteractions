@@ -245,7 +245,6 @@ public class RenderUtils {
         GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, src.frameBufferId);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, dest.frameBufferId);
         GL30C.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL30C.GL_DEPTH_BUFFER_BIT, GL30C.GL_NEAREST);
-
         GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
     }
 }

@@ -36,7 +36,10 @@ public class Shaders {
     private static ShaderInstance halo;
 
     @Nullable
-    public static ShaderInstance bloomBlit;
+    private static ShaderInstance bloomBlit;
+
+    @Nullable
+    private static ShaderInstance clouds;
     
     public static ShaderInstance getRoundRectShader() {
         return Objects.requireNonNull(roundRect, "Attempted to call getRoundRectShader before shaders have finished loading.");
@@ -64,6 +67,10 @@ public class Shaders {
 
     public static ShaderInstance getBloomBlit() {
         return Objects.requireNonNull(bloomBlit, "Attempted to call getBloomBlitShader before shaders have finished loading.");
+    }
+
+    public static ShaderInstance getCloudShader() {
+        return Objects.requireNonNull(clouds, "Attempted to call getCloudShader before shaders have finished loading.");
     }
 
     @SubscribeEvent
@@ -132,6 +139,15 @@ public class Shaders {
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
                 (shader) -> bloomBlit = shader
+        );
+
+        event.registerShader(
+                new ShaderInstance(
+                        provider,
+                        ThatSkyInteractions.getLocation("clouds"),
+                        DefaultVertexFormat.POSITION_TEX_COLOR
+                ),
+                (shader) -> clouds = shader
         );
 
         PostEffects.setup(provider);

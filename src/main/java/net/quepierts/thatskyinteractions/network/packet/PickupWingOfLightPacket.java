@@ -33,8 +33,10 @@ public class PickupWingOfLightPacket implements IUpdate {
         TSIUserDataStorage userDataManager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
         TSIUserData userData = userDataManager.getUserData(serverPlayer.getUUID());
 
-        userData.pickupWingOfLight(this.wolUUID);
-        serverPlayer.addItem(new ItemStack(Items.RED_CANDLE));
+        if (!userData.isPickedUp(this.wolUUID)) {
+            userData.pickupWingOfLight(this.wolUUID);
+            serverPlayer.addItem(new ItemStack(Items.RED_CANDLE));
+        }
     }
 
     @Override

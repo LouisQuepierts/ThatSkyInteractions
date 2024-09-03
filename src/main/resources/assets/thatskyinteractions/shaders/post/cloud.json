@@ -1,0 +1,80 @@
+{
+  "targets": [
+    "swap",
+    "final"
+  ],
+  "passes": [
+    {
+      "name": "thatskyinteractions:amplifier",
+      "intarget": "final",
+      "outtarget": "swap",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        }
+      ]
+    },
+    {
+      "name": "thatskyinteractions:amplifier",
+      "intarget": "swap",
+      "outtarget": "final",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        }
+      ]
+    },
+    {
+      "name": "box_blur",
+      "intarget": "final",
+      "outtarget": "swap",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        }
+      ]
+    },
+    {
+      "name": "box_blur",
+      "intarget": "swap",
+      "outtarget": "final",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        }
+      ]
+    },
+    {
+      "name": "thatskyinteractions:cloud_bloom",
+      "intarget": "final",
+      "outtarget": "swap",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 1.0, 0.0 ]
+        }
+      ]
+    },
+    {
+      "name": "thatskyinteractions:cloud_bloom",
+      "intarget": "swap",
+      "outtarget": "final",
+      "use_linear_filter": true,
+      "uniforms": [
+        {
+          "name": "BlurDir",
+          "values": [ 0.0, 1.0 ]
+        }
+      ]
+    }
+  ]
+}

@@ -80,7 +80,8 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
                 continue;
 
             boolean highlight1 = locked != null ? object == locked : object == highlight;
-            if (object.shouldRemove() && (!highlight1 || !this.animation.isRunning())) {
+            boolean shouldRemove = object.shouldRemove();
+            if (shouldRemove && (!highlight1 || !this.animation.isRunning())) {
                 if (object == locked) {
                     locked = null;
                 }

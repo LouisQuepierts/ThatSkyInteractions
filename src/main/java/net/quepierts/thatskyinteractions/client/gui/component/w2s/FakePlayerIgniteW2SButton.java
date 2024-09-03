@@ -28,7 +28,7 @@ public final class FakePlayerIgniteW2SButton extends World2ScreenButton {
 
     @Override
     public boolean shouldRemove() {
-        return clicked || this.enterHolder.getValue() < 0.5f;
+        return clicked || this.enterHolder.getValue() < 0.3f;
     }
 
     @Override

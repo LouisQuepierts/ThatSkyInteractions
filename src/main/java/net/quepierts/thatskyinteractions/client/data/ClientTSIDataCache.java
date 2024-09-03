@@ -24,7 +24,7 @@ import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.BatchRelationshipPacket;
 import net.quepierts.thatskyinteractions.network.packet.PickupWingOfLightPacket;
 import net.quepierts.thatskyinteractions.network.packet.UserDataModifyPacket;
-import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeIgnitePacket;
+import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeOperationPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,10 +121,12 @@ public class ClientTSIDataCache {
     }
 
     public void setOnline(Player player, boolean online) {
-        if (player.isLocalPlayer())
+        Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> pair = this.getUserData().cache().get(player.getUUID());
+        if (pair == null) {
             return;
+        }
 
-        FriendAstrolabeInstance.NodeData data = this.getUserData().cache().get(player.getUUID()).getFirst();
+        FriendAstrolabeInstance.NodeData data = pair.getFirst();
         if (data != null) {
             data.setFlag(FriendAstrolabeInstance.Flag.ONLINE, online);
         }
@@ -161,11 +163,21 @@ public class ClientTSIDataCache {
 
     public void sendLight(UUID target, boolean update) {
         if (this.getUserData().sendLight(target) && update) {
-            SimpleAnimator.getNetwork().update(new AstrolabeIgnitePacket(target));
+            SimpleAnimator.getNetwork().update(new AstrolabeOperationPacket.Ignite(target));
         }
     }
 
     public void awardLight(UUID target) {
         this.getUserData().awardLight(target);
+    }
+
+    public void gainLight(UUID uuid, boolean update) {
+        if (this.getUserData().gainLight(uuid) && update) {
+            SimpleAnimator.getNetwork().update(new AstrolabeOperationPacket.Gain(uuid));
+        }
+    }
+
+    public boolean prepared() {
+        return this.userData != null;
     }
 }

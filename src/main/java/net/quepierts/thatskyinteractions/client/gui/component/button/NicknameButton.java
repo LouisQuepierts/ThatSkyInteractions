@@ -33,6 +33,7 @@ public class NicknameButton extends SqueezeButton {
                 new InputScreen(
                         icon, 264, 176,
                         Component.translatable("gui.message.nickname.change").withColor(Palette.NORMAL_TEXT_COLOR),
+                        this.friendData.getUsername(),
                         friendData::updateNickname
                 )
         );
