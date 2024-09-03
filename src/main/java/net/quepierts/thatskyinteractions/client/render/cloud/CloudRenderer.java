@@ -15,16 +15,22 @@ import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.quepierts.thatskyinteractions.block.ICloud;
 import net.quepierts.thatskyinteractions.client.registry.PostEffects;
 import net.quepierts.thatskyinteractions.client.registry.Shaders;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+@OnlyIn(Dist.CLIENT)
 public class CloudRenderer {
     public static final int CULL_XP = 1;
     public static final int CULL_XN = 2;
@@ -35,47 +41,31 @@ public class CloudRenderer {
     public static final int INVISIBLE = 63;
 
     public static final int SINGLE_CLOUD_SIZE = 4;
-    private final Map<UUID, ObjectList<CloudData>> clouds = new Object2ObjectOpenHashMap<>();
+    private final Map<ICloud, ObjectList<CloudData>> clouds = new Object2ObjectOpenHashMap<>();
     private VertexBuffer buffer;
-    private VertexBuffer extend;
     private boolean rebuildClouds;
     private ClientLevel level;
-    private boolean shouldRender = false;
 
     public CloudRenderer() {
     }
 
-    private void debug() {
-        Random random = new Random();
-        this.clouds.clear();
-        this.rebuildClouds = true;
-
-        for (int i = 0; i < 10; i++) {
-            this.addCloud(UUID.randomUUID(),  new CloudData(
-                    new Vector3f(
-                            random.nextInt(20) * 12,
-                            random.nextInt(20),
-                            random.nextInt(20) * 12
-                    ),
-                    new Vector3f(
-                            8 + random.nextInt(20 * 12),
-                            2 + random.nextInt(6),
-                            8 + random.nextInt(20 * 12)
-                    ),
-                    0
-            ));
+    public void onClientTick(final ClientTickEvent.Post event) {
+        if (clouds.isEmpty()) {
+            return;
         }
+
+        clouds.entrySet().removeIf(next -> next.getKey().isRemoved());
     }
 
-    public void addCloud(UUID uuid, CloudData data) {
-        ObjectList<CloudData> list = this.clouds.computeIfAbsent(uuid, o -> new ObjectArrayList<>());
+    public void addCloud(ICloud iCloud, CloudData data) {
+        ObjectList<CloudData> list = this.clouds.computeIfAbsent(iCloud, o -> new ObjectArrayList<>());
         list.clear();
         data.split(list);
         this.rebuildClouds = true;
     }
 
-    public void removeCloud(UUID uuid) {
-        this.clouds.remove(uuid);
+    public void removeCloud(ICloud iCloud) {
+        this.clouds.remove(iCloud);
         this.rebuildClouds = true;
     }
 
@@ -178,6 +168,7 @@ public class CloudRenderer {
             this.buffer = null;
         }
 
+        this.clouds.clear();
         this.rebuildClouds = true;
     }
 

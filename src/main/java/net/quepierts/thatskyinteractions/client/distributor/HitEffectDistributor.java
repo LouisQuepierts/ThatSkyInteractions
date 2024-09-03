@@ -2,12 +2,15 @@ package net.quepierts.thatskyinteractions.client.distributor;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.api.animation.keyframe.VariableHolder;
 import net.quepierts.simpleanimator.core.client.ClientAnimator;
 import net.quepierts.thatskyinteractions.client.registry.Particles;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
+@OnlyIn(Dist.CLIENT)
 public class HitEffectDistributor extends EffectDistributor {
     private static final int PARTICLE_AMOUNT = 20;
     @Override

@@ -114,6 +114,7 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Pre.class, fakePlayerDisplayHandler::onRenderPlayerPre);
         NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Post.class, fakePlayerDisplayHandler::onRenderPlayerPost);
         NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, fakePlayerDisplayHandler::onClientTick);
+        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, cloudRenderer::onClientTick);
         //NeoForge.EVENT_BUS.addListener(ClientTickEvent.Pre.class, particleDistributorManager::onClientTick);
         NeoForge.EVENT_BUS.addListener(PlayerTickEvent.Pre.class, particleDistributorManager::onPlayerTick);
 

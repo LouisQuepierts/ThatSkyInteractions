@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
@@ -19,6 +21,7 @@ import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 
 import java.util.UUID;
 
+@OnlyIn(Dist.CLIENT)
 public class FakePlayerDisplayHandler {
     private final ClientProxy client;
     private final FloatHolder enterHolder = new FloatHolder(0.0f);

@@ -13,6 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
 import net.quepierts.thatskyinteractions.client.registry.PostEffects;
@@ -24,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
+@OnlyIn(Dist.CLIENT)
 public class CloudBlockRenderer implements BlockEntityRenderer<CloudBlockEntity> {
     // WTF?
     private final SkullModel highlight;
@@ -60,7 +63,7 @@ public class CloudBlockRenderer implements BlockEntityRenderer<CloudBlockEntity>
                     size0.y / 16.0f,
                     size0.z / 16.0f
             );
-            this.renderer.addCloud(cloudBlockEntity.getUUID(), new CloudData(position, size, 0));
+            this.renderer.addCloud(cloudBlockEntity, new CloudData(position, size, 0));
             cloudBlockEntity.setShouldRecompile(false);
         }
 
@@ -97,7 +100,7 @@ public class CloudBlockRenderer implements BlockEntityRenderer<CloudBlockEntity>
             }
 
             blockEntity.setShouldRecompile(true);
-            this.renderer.removeCloud(blockEntity.getUUID());
+            this.renderer.removeCloud(blockEntity);
         }
         return render;
     }

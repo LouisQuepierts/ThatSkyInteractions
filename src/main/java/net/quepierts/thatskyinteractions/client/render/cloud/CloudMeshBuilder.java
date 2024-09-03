@@ -3,9 +3,12 @@ package net.quepierts.thatskyinteractions.client.render.cloud;
 import com.mojang.blaze3d.vertex.*;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Collection;
 
+@OnlyIn(Dist.CLIENT)
 class CloudMeshBuilder {
     private final BufferBuilder bufferbuilder;
     private final float x;

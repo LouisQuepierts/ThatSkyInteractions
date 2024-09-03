@@ -38,12 +38,12 @@ float noise0(vec2 co) {
 void main() {
     vec3 position = Position;
 
-    float delta = GameTime * 943 + (Position.x + Position.y + Position.z);
+    float delta = GameTime * 943 + (Position.x + Position.z);
     float noise = noise0(Position.xz);
     float wave = (fastSin(delta) + fastSin(delta + 1.57079632)) * noise;
-    position.x += noise0(Position.yz) / 2;
+    position.x += (fastSin(delta + 9.43) + fastSin(delta + 1.57079632)) * noise0(Position.yz) / 2;
     position.y += wave / 2;
-    position.z += noise0(Position.xy) / 2;
+    position.z += (fastSin(delta - 9.43) + fastSin(delta + 0.942477796)) * noise0(Position.xy) / 2;
 
     gl_Position = ProjMat * ModelViewMat * vec4(position + ChunkOffset, 1.0);
     texCoord0 = UV0;

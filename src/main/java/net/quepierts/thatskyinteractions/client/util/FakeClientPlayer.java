@@ -7,11 +7,14 @@ import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.PlayerSkin;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+@OnlyIn(Dist.CLIENT)
 public class FakeClientPlayer extends AbstractClientPlayer {
     public static final String PLACEHOLDER_NAME = "";
     public static final UUID PLACEHOLDER_UUID = new UUID(42, -42);

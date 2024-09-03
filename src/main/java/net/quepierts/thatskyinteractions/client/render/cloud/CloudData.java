@@ -1,11 +1,13 @@
 package net.quepierts.thatskyinteractions.client.render.cloud;
 
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3f;
 
 import java.util.List;
 
+@OnlyIn(Dist.CLIENT)
 public record CloudData(Vector3f position, Vector3f size, int cullFlag) {
-
     public void split(List<CloudData> listIn) {
         int xChunks = (int) Math.ceil(size.x / (float) CloudRenderer.SINGLE_CLOUD_SIZE);
         int yChunks = (int) Math.ceil(size.y / (float) CloudRenderer.SINGLE_CLOUD_SIZE);

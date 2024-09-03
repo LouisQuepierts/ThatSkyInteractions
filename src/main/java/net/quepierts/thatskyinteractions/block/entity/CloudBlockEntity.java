@@ -5,15 +5,25 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.block.ICloud;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
 
-public class CloudBlockEntity extends UUIDBlockEntity {
+import java.util.UUID;
+
+public class CloudBlockEntity extends BlockEntity implements ICloud {
     private static final String TAG_SIZE = "size";
     private static final String TAG_OFFSET = "offset";
     private final Vector3i offset = new Vector3i(0);
@@ -59,6 +69,7 @@ public class CloudBlockEntity extends UUIDBlockEntity {
     @Override
     public void handleUpdateTag(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider lookupProvider) {
         super.handleUpdateTag(tag, lookupProvider);
+
         if (tag.contains(TAG_SIZE)) {
             int[] array = tag.getIntArray(TAG_SIZE);
             if (array.length == 3) {
@@ -77,8 +88,19 @@ public class CloudBlockEntity extends UUIDBlockEntity {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void setRemoved() {
-        ThatSkyInteractions.getInstance().getClient().getCloudRenderer().removeCloud(this.getUUID());
+        ThatSkyInteractions.getInstance().getClient().getCloudRenderer().removeCloud(this);
         super.setRemoved();
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+        super.onDataPacket(net, pkt, lookupProvider);
     }
 
     public void setSize(int x, int y, int z) {
@@ -104,54 +126,74 @@ public class CloudBlockEntity extends UUIDBlockEntity {
     }
 
     public void expand(Direction direction, int strength) {
-        Vec3i normal = direction.getNormal().multiply(strength);
-        switch (direction) {
-            case UP: case EAST: case SOUTH: {
-                this.size.add(normal.getX(), normal.getY(), normal.getZ());
-                break;
+        if (this.level != null) {
+            Vec3i normal = direction.getNormal().multiply(strength);
+            switch (direction) {
+                case UP:
+                case EAST:
+                case SOUTH: {
+                    this.size.add(normal.getX(), normal.getY(), normal.getZ());
+                    break;
+                }
+                case DOWN:
+                case WEST:
+                case NORTH: {
+                    this.size.sub(normal.getX(), normal.getY(), normal.getZ());
+                    this.offset.add(normal.getX(), normal.getY(), normal.getZ());
+                    break;
+                }
             }
-            case DOWN: case WEST: case NORTH: {
-                this.size.sub(normal.getX(), normal.getY(), normal.getZ());
-                this.offset.add(normal.getX(), normal.getY(), normal.getZ());
-                break;
-            }
+            this.recompile = true;
+            this.markUpdate();
         }
-        this.recompile = true;
-        this.setChanged();
     }
 
     public void reduce(Direction direction, int strength) {
-        if (this.size.lengthSquared() < (long) strength * strength + 8)
-            return;
+        if (this.level != null) {
+            if (this.size.lengthSquared() < (long) strength * strength + 8)
+                return;
 
-        Vector3i size = new Vector3i(this.size);
-        Vec3i normal = direction.getNormal().multiply(strength);
-        switch (direction) {
-            case UP: case EAST: case SOUTH: {
-                size.sub(normal.getX(), normal.getY(), normal.getZ());
+            Vector3i size = new Vector3i(this.size);
+            Vec3i normal = direction.getNormal().multiply(strength);
+            switch (direction) {
+                case UP:
+                case EAST:
+                case SOUTH: {
+                    size.sub(normal.getX(), normal.getY(), normal.getZ());
 
-                if (size.x < 2 || size.y < 2 || size.z < 2) {
-                    return;
+                    if (size.x < 2 || size.y < 2 || size.z < 2) {
+                        return;
+                    }
+                    break;
                 }
-                break;
-            }
-            case DOWN: case WEST: case NORTH: {
-                size.add(normal.getX(), normal.getY(), normal.getZ());
+                case DOWN:
+                case WEST:
+                case NORTH: {
+                    size.add(normal.getX(), normal.getY(), normal.getZ());
 
-                if (size.x < 2 || size.y < 2 || size.z < 2) {
-                    return;
+                    if (size.x < 2 || size.y < 2 || size.z < 2) {
+                        return;
+                    }
+
+                    this.offset.sub(normal.getX(), normal.getY(), normal.getZ());
+                    break;
                 }
-
-                this.offset.sub(normal.getX(), normal.getY(), normal.getZ());
-                break;
             }
+            this.size.set(size);
+            this.recompile = true;
+            this.markUpdate();
         }
-        this.size.set(size);
-        this.recompile = true;
-        this.setChanged();
     }
 
     public void setShouldRecompile(boolean recompile) {
         this.recompile = recompile;
+    }
+
+    public void markUpdate() {
+        this.setChanged();
+
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_ALL);
+        }
     }
 }

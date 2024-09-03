@@ -20,6 +20,10 @@ public class CloudExpandItem extends Item {
     @NotNull
     @Override
     public InteractionResult useOn(UseOnContext context) {
+        if (context.getLevel().isClientSide) {
+            return InteractionResult.sidedSuccess(true);
+        }
+
         Player player = context.getPlayer();
         if (player != null && player.isCreative()) {
             BlockPos pos = context.getClickedPos();

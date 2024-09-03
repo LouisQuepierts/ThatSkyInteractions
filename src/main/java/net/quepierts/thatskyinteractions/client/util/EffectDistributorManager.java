@@ -3,6 +3,8 @@ package net.quepierts.thatskyinteractions.client.util;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.quepierts.simpleanimator.api.IAnimateHandler;
 import net.quepierts.simpleanimator.api.animation.ModelBone;
@@ -17,6 +19,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 
+@OnlyIn(Dist.CLIENT)
 public class EffectDistributorManager {
     private final EnumMap<ModelBone, ImmutableList<EffectDistributor>> distributors;
     private final Map<UUID, PartMatrices> matrices;

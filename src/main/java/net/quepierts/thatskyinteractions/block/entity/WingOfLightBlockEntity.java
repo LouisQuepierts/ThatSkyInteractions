@@ -3,6 +3,9 @@ package net.quepierts.thatskyinteractions.block.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -12,6 +15,7 @@ import net.quepierts.thatskyinteractions.client.gui.component.w2s.PickupWingOfLi
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
     private static final String TAG_XROT = "xRot";
@@ -71,6 +75,12 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
         }
     }
 
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public World2ScreenWidget provideW2SWidget(float distanceSqr) {
@@ -91,5 +101,11 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
 
     public void setYRot(float yRot) {
         this.yRot = yRot;
+    }
+
+    public void setRotation(float xRot, float yRot) {
+        this.xRot = xRot;
+        this.yRot = yRot;
+        this.markUpdate();
     }
 }

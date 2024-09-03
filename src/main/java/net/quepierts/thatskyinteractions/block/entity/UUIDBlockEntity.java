@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.block.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,6 +47,14 @@ public abstract class UUIDBlockEntity extends BlockEntity {
             this.uuid = tag.getUUID("uuid");
         }
         super.handleUpdateTag(tag, lookupProvider);
+    }
+
+    public void markUpdate() {
+        this.setChanged();
+
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_ALL);
+        }
     }
 
     public UUID getUUID() {
