@@ -6,9 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
-import net.quepierts.thatskyinteractions.block.entity.MuralBlockEntity;
-import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.*;
 
 public class BlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(
@@ -19,8 +17,12 @@ public class BlockEntities {
             "wing_of_light_entity", () -> BlockEntityType.Builder.of(WingOfLightBlockEntity::new, Blocks.WING_OF_LIGHT.get()).build(DSL.remainderType())
     );
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CloudBlockEntity>> CLOUD = REGISTER.register(
-            "cloud", () -> BlockEntityType.Builder.of(CloudBlockEntity::new, Blocks.CLOUD.get()).build(DSL.remainderType())
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SimpleCloudBlockEntity>> SIMPLE_CLOUD = REGISTER.register(
+            "simple_cloud", () -> BlockEntityType.Builder.of(SimpleCloudBlockEntity::new, Blocks.CLOUD.get()).build(DSL.remainderType())
+    );
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ColoredCloudBlockEntity>> COLORED_CLOUD = REGISTER.register(
+            "colored_cloud", () -> BlockEntityType.Builder.of(ColoredCloudBlockEntity::new, Blocks.COLORED_CLOUD.get()).build(DSL.remainderType())
     );
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MuralBlockEntity>> MURAL = REGISTER.register(

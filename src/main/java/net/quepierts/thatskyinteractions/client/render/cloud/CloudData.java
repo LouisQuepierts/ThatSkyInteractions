@@ -7,7 +7,11 @@ import org.joml.Vector3f;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public record CloudData(Vector3f position, Vector3f size, int cullFlag) {
+public record CloudData(Vector3f position, Vector3f size, Vector3f color, int cullFlag) {
+    public static final Vector3f DEFAULT_COLOR = new Vector3f(1);
+    public CloudData(Vector3f position, Vector3f size, int cullFlag) {
+        this(position, size, DEFAULT_COLOR, cullFlag);
+    }
     public void split(List<CloudData> listIn) {
         int xChunks = (int) Math.ceil(size.x / (float) CloudRenderer.SINGLE_CLOUD_SIZE);
         int yChunks = (int) Math.ceil(size.y / (float) CloudRenderer.SINGLE_CLOUD_SIZE);
@@ -58,7 +62,7 @@ public record CloudData(Vector3f position, Vector3f size, int cullFlag) {
                             Math.min(CloudRenderer.SINGLE_CLOUD_SIZE, this.size.z - k * CloudRenderer.SINGLE_CLOUD_SIZE)
                     );
 
-                    listIn.add(new CloudData(position, size, flag));
+                    listIn.add(new CloudData(position, size, color, flag));
                 }
             }
         }

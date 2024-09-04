@@ -22,6 +22,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -132,10 +133,15 @@ public class ClientProxy extends CommonProxy {
         modBus.addListener(EntityRenderersEvent.AddLayers.class, this::onAddLayers);
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, BlockEntityRenderers::onRegisterBER);
         modBus.addListener(RegisterRenderBuffersEvent.class, RenderTypes::onRegisterRenderBuffers);
+        modBus.addListener(BuildCreativeModeTabContentsEvent.class, this::onBuildCreativeTab);
 
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         Particles.REGISTER.register(modBus);
+    }
+
+    private void onBuildCreativeTab(BuildCreativeModeTabContentsEvent event) {
+
     }
 
     private void onRenderLevelStage(final RenderLevelStageEvent event) {

@@ -52,6 +52,17 @@ class CloudMeshBuilder {
         float x2 = cloud.position().x + cloud.size().x + 0.03f - x;
         float y2 = cloud.position().y + cloud.size().y + 0.03f - y;
         float z2 = cloud.position().z + cloud.size().z + 0.03f - z;
+
+        float red, blue, green;
+        if (cloud.color() == CloudData.DEFAULT_COLOR) {
+            red = this.red;
+            blue = this.blue;
+            green = this.green;
+        } else {
+            red = cloud.color().x;
+            blue = cloud.color().y;
+            green = cloud.color().z;
+        }
         
         if (renderXP) {
             this.bufferbuilder.addVertex(x2, y1, z1).setUv(0, 0).setColor(red, blue, green, alpha).setNormal(1.0f, 0.0f, 0.0f);

@@ -9,6 +9,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.CloudBlock;
+import net.quepierts.thatskyinteractions.block.ColoredCloudBlock;
 import net.quepierts.thatskyinteractions.block.MuralBlock;
 import net.quepierts.thatskyinteractions.block.WingOfLightBlock;
 
@@ -33,6 +34,20 @@ public class Blocks {
     );
     public static final DeferredHolder<Block, CloudBlock> CLOUD = REGISTER.register(
             "cloud", () -> new CloudBlock(
+                    BlockBehaviour.Properties.of()
+                            .strength(-1.0F, 3600000.8F)
+                            .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                            .noLootTable()
+                            .noCollission()
+                            .noOcclusion()
+                            .isValidSpawn(net.minecraft.world.level.block.Blocks::never)
+                            .noTerrainParticles()
+                            .pushReaction(PushReaction.BLOCK)
+            )
+    );
+
+    public static final DeferredHolder<Block, ColoredCloudBlock> COLORED_CLOUD = REGISTER.register(
+            "colored_cloud", () -> new ColoredCloudBlock(
                     BlockBehaviour.Properties.of()
                             .strength(-1.0F, 3600000.8F)
                             .mapColor(MapColor.COLOR_LIGHT_BLUE)

@@ -19,8 +19,12 @@ public class Items {
             "wing_of_light", WingOfLightItem::new
     );
 
-    public static final DeferredHolder<Item, CloudItem> CLOUD = REGISTER.register(
-            "cloud", CloudItem::new
+    public static final DeferredHolder<Item, CloudItem> SIMPLE_CLOUD = REGISTER.register(
+            "simple_cloud", () -> new CloudItem(Blocks.CLOUD.get())
+    );
+
+    public static final DeferredHolder<Item, CloudItem> COLORED_CLOUD = REGISTER.register(
+            "colored_cloud", () -> new CloudItem(Blocks.COLORED_CLOUD.get())
     );
 
     public static final DeferredHolder<Item, CloudExpandItem> CLOUD_EXPAND = REGISTER.register(

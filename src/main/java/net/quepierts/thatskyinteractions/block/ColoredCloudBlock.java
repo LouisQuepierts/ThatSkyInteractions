@@ -2,24 +2,21 @@ package net.quepierts.thatskyinteractions.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
-import net.quepierts.thatskyinteractions.block.entity.SimpleCloudBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.ColoredCloudBlockEntity;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CloudBlock extends BaseEntityBlock {
-    public static final MapCodec<CloudBlock> CODEC = simpleCodec(CloudBlock::new);
-    public CloudBlock(Properties properties) {
+public class ColoredCloudBlock extends CloudBlock {
+    public static final MapCodec<ColoredCloudBlock> CODEC = simpleCodec(ColoredCloudBlock::new);
+    public ColoredCloudBlock(Properties properties) {
         super(properties);
     }
 
@@ -29,15 +26,14 @@ public class CloudBlock extends BaseEntityBlock {
         return CODEC;
     }
 
-    @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, BlockEntities.SIMPLE_CLOUD.get(), CloudBlockEntity::tick);
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        return createTickerHelper(blockEntityType, BlockEntities.COLORED_CLOUD.get(), CloudBlockEntity::tick);
     }
 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
-        return new SimpleCloudBlockEntity(blockPos, blockState);
+        return new ColoredCloudBlockEntity(blockPos, blockState);
     }
 }

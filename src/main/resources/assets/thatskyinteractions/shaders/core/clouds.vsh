@@ -46,5 +46,5 @@ void main() {
 
     gl_Position = ProjMat * ModelViewMat * vec4(position + ChunkOffset, 1.0);
     vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal, Color);
-    vertexColor.rgb *= wave;
+    vertexColor.rgb *= wave * 2 - 0.5;
 }
