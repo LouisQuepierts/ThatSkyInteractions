@@ -31,7 +31,7 @@ logoFile = "thatskyinteractions.png"
     modId = "simple_animator"
     type = "required"
     versionRange = "${simpleanimator_version_range}"
-    ordering = "NONE"
+    ordering = "AFTER"
     side = "BOTH"
 
 
