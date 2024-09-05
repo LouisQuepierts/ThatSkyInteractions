@@ -18,7 +18,6 @@ import java.util.function.BiFunction;
 public class RenderTypes {
     public static final ResourceLocation TEXTURE;
     public static final RenderType WOL;
-    public static final RenderType CLOUD;
     public static final BiFunction<ResourceLocation, Boolean, RenderType> BLOOM;
     private static BloomBufferSource bufferSource;
 
@@ -51,21 +50,5 @@ public class RenderTypes {
         );
 
         WOL = BLOOM.apply(TEXTURE, false);
-
-        CLOUD = RenderType.create(
-                "clouds",
-                DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL,
-                VertexFormat.Mode.QUADS,
-                786432,
-                false,
-                false,
-                RenderType.CompositeState.builder()
-                        .setShaderState(RenderStateShards.CLOUD)
-                        .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                        .setCullState(RenderStateShard.NO_CULL)
-                        .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
-                        .setOutputState(RenderStateShards.BLOOM_TARGET)
-                        .createCompositeState(true)
-        );
     }
 }

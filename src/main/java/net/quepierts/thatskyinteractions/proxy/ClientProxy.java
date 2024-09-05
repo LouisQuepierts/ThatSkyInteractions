@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -45,10 +46,7 @@ import net.quepierts.thatskyinteractions.client.particle.CircleParticle;
 import net.quepierts.thatskyinteractions.client.particle.HeartParticle;
 import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
 import net.quepierts.thatskyinteractions.client.particle.StarParticle;
-import net.quepierts.thatskyinteractions.client.registry.BlockEntityRenderers;
-import net.quepierts.thatskyinteractions.client.registry.Particles;
-import net.quepierts.thatskyinteractions.client.registry.PostEffects;
-import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
+import net.quepierts.thatskyinteractions.client.registry.*;
 import net.quepierts.thatskyinteractions.client.render.CandleLayer;
 import net.quepierts.thatskyinteractions.client.render.PartPoseResolveLayer;
 import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
@@ -60,6 +58,7 @@ import net.quepierts.thatskyinteractions.data.FriendData;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
+import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -138,10 +137,15 @@ public class ClientProxy extends CommonProxy {
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         Particles.REGISTER.register(modBus);
+        CreativeModeTabs.REGISTER.register(modBus);
     }
 
     private void onBuildCreativeTab(BuildCreativeModeTabContentsEvent event) {
-
+        if (event.getTab() == CreativeModeTabs.TSI.get()) {
+            event.accept(new ItemStack(Items.SIMPLE_CLOUD));
+            event.accept(new ItemStack(Items.CLOUD_EDITOR));
+            event.accept(new ItemStack(Items.WING_OF_LIGHT));
+        }
     }
 
     private void onRenderLevelStage(final RenderLevelStageEvent event) {
@@ -168,7 +172,6 @@ public class ClientProxy extends CommonProxy {
 
             if (PostEffects.shouldApplyBloom()) {
                 PostEffects.postBloom(partialTick);
-                PostEffects.doWOLBloom();
             }
         }
     }

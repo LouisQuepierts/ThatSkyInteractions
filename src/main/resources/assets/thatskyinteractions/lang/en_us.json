@@ -21,6 +21,8 @@
 
   "gui.tree.node.interaction.level": "Level %s",
 
+  "tab.tsi": "That Sky Interactions",
+
   "interaction.thatskyinteractions.high_five": "High Five",
   "interaction.thatskyinteractions.hug": "Hug",
   "interaction.thatskyinteractions.double_high_five": "Double High Five",

@@ -53,29 +53,29 @@ class CloudMeshBuilder {
         float y2 = cloud.position().y + cloud.size().y + 0.03f - y;
         float z2 = cloud.position().z + cloud.size().z + 0.03f - z;
 
-        float red, blue, green;
+        float red, green, blue;
         if (cloud.color() == CloudData.DEFAULT_COLOR) {
             red = this.red;
-            blue = this.blue;
-            green = this.green;
+            green = this.blue;
+            blue = this.green;
         } else {
-            red = cloud.color().x;
-            blue = cloud.color().y;
-            green = cloud.color().z;
+            red = cloud.color().x / 255f;
+            green = cloud.color().y / 255f;
+            blue = cloud.color().z / 255f;
         }
         
         if (renderXP) {
-            this.bufferbuilder.addVertex(x2, y1, z1).setUv(0, 0).setColor(red, blue, green, alpha).setNormal(1.0f, 0.0f, 0.0f);
-            this.bufferbuilder.addVertex(x2, y1, z2).setUv(1, 0).setColor(red, blue, green, alpha).setNormal(1.0f, 0.0f, 0.0f);
-            this.bufferbuilder.addVertex(x2, y2, z2).setUv(1, 1).setColor(red, blue, green, alpha).setNormal(1.0f, 0.0f, 0.0f);
-            this.bufferbuilder.addVertex(x2, y2, z1).setUv(0, 1).setColor(red, blue, green, alpha).setNormal(1.0f, 0.0f, 0.0f);
+            this.bufferbuilder.addVertex(x2, y1, z1).setUv(0, 0).setColor(red, green, blue, alpha).setNormal(1.0f, 0.0f, 0.0f);
+            this.bufferbuilder.addVertex(x2, y1, z2).setUv(1, 0).setColor(red, green, blue, alpha).setNormal(1.0f, 0.0f, 0.0f);
+            this.bufferbuilder.addVertex(x2, y2, z2).setUv(1, 1).setColor(red, green, blue, alpha).setNormal(1.0f, 0.0f, 0.0f);
+            this.bufferbuilder.addVertex(x2, y2, z1).setUv(0, 1).setColor(red, green, blue, alpha).setNormal(1.0f, 0.0f, 0.0f);
         }
 
         if (renderXN) {
-            this.bufferbuilder.addVertex(x1, y1, z2).setUv(0, 0).setColor(red, blue, green, alpha).setNormal(-1.0f, 0.0f, 0.0f);
-            this.bufferbuilder.addVertex(x1, y1, z1).setUv(1, 0).setColor(red, blue, green, alpha).setNormal(-1.0f, 0.0f, 0.0f);
-            this.bufferbuilder.addVertex(x1, y2, z1).setUv(1, 1).setColor(red, blue, green, alpha).setNormal(-1.0f, 0.0f, 0.0f);
-            this.bufferbuilder.addVertex(x1, y2, z2).setUv(0, 1).setColor(red, blue, green, alpha).setNormal(-1.0f, 0.0f, 0.0f);
+            this.bufferbuilder.addVertex(x1, y1, z2).setUv(0, 0).setColor(red, green, blue, alpha).setNormal(-1.0f, 0.0f, 0.0f);
+            this.bufferbuilder.addVertex(x1, y1, z1).setUv(1, 0).setColor(red, green, blue, alpha).setNormal(-1.0f, 0.0f, 0.0f);
+            this.bufferbuilder.addVertex(x1, y2, z1).setUv(1, 1).setColor(red, green, blue, alpha).setNormal(-1.0f, 0.0f, 0.0f);
+            this.bufferbuilder.addVertex(x1, y2, z2).setUv(0, 1).setColor(red, green, blue, alpha).setNormal(-1.0f, 0.0f, 0.0f);
         }
 
         if (renderYP) {
@@ -93,17 +93,17 @@ class CloudMeshBuilder {
         }
 
         if (renderZP) {
-            this.bufferbuilder.addVertex(x2, y1, z2).setUv(0, 0).setColor(red, blue, green, alpha).setNormal(0.0f, 0.0f, 1.0f);
-            this.bufferbuilder.addVertex(x1, y1, z2).setUv(1, 0).setColor(red, blue, green, alpha).setNormal(0.0f, 0.0f, 1.0f);
-            this.bufferbuilder.addVertex(x1, y2, z2).setUv(1, 1).setColor(red, blue, green, alpha).setNormal(0.0f, 0.0f, 1.0f);
-            this.bufferbuilder.addVertex(x2, y2, z2).setUv(0, 1).setColor(red, blue, green, alpha).setNormal(0.0f, 0.0f, 1.0f);
+            this.bufferbuilder.addVertex(x2, y1, z2).setUv(0, 0).setColor(red, green, blue, alpha).setNormal(0.0f, 0.0f, 1.0f);
+            this.bufferbuilder.addVertex(x1, y1, z2).setUv(1, 0).setColor(red, green, blue, alpha).setNormal(0.0f, 0.0f, 1.0f);
+            this.bufferbuilder.addVertex(x1, y2, z2).setUv(1, 1).setColor(red, green, blue, alpha).setNormal(0.0f, 0.0f, 1.0f);
+            this.bufferbuilder.addVertex(x2, y2, z2).setUv(0, 1).setColor(red, green, blue, alpha).setNormal(0.0f, 0.0f, 1.0f);
         }
 
         if (renderZN) {
-            this.bufferbuilder.addVertex(x1, y1, z1).setUv(0, 0).setColor(red, blue, green, alpha).setNormal(0.0f, 0.0f, -1.0f);
-            this.bufferbuilder.addVertex(x2, y1, z1).setUv(1, 0).setColor(red, blue, green, alpha).setNormal(0.0f, 0.0f, -1.0f);
-            this.bufferbuilder.addVertex(x2, y2, z1).setUv(1, 1).setColor(red, blue, green, alpha).setNormal(0.0f, 0.0f, -1.0f);
-            this.bufferbuilder.addVertex(x1, y2, z1).setUv(0, 1).setColor(red, blue, green, alpha).setNormal(0.0f, 0.0f, -1.0f);
+            this.bufferbuilder.addVertex(x1, y1, z1).setUv(0, 0).setColor(red, green, blue, alpha).setNormal(0.0f, 0.0f, -1.0f);
+            this.bufferbuilder.addVertex(x2, y1, z1).setUv(1, 0).setColor(red, green, blue, alpha).setNormal(0.0f, 0.0f, -1.0f);
+            this.bufferbuilder.addVertex(x2, y2, z1).setUv(1, 1).setColor(red, green, blue, alpha).setNormal(0.0f, 0.0f, -1.0f);
+            this.bufferbuilder.addVertex(x1, y2, z1).setUv(0, 1).setColor(red, green, blue, alpha).setNormal(0.0f, 0.0f, -1.0f);
         }
     }
 }

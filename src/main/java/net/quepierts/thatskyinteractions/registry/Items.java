@@ -5,10 +5,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.item.CloudExpandItem;
-import net.quepierts.thatskyinteractions.item.CloudItem;
-import net.quepierts.thatskyinteractions.item.CloudReduceItem;
-import net.quepierts.thatskyinteractions.item.WingOfLightItem;
+import net.quepierts.thatskyinteractions.item.*;
 
 public class Items {
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(
@@ -33,5 +30,9 @@ public class Items {
 
     public static final DeferredHolder<Item, CloudReduceItem> CLOUD_REDUCE = REGISTER.register(
             "cloud_reduce", CloudReduceItem::new
+    );
+
+    public static final DeferredHolder<Item, CloudEditorItem> CLOUD_EDITOR = REGISTER.register(
+            "cloud_editor", CloudEditorItem::new
     );
 }

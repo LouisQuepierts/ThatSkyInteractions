@@ -40,7 +40,7 @@ public class PlayerInteractScreen extends RightPoopScreen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (ThatSkyInteractions.getInstance().getClient().getTarget() == null) {

@@ -40,6 +40,9 @@ public class Shaders {
 
     @Nullable
     private static ShaderInstance clouds;
+
+    @Nullable
+    private static ShaderInstance coloredClouds;
     
     public static ShaderInstance getRoundRectShader() {
         return Objects.requireNonNull(roundRect, "Attempted to call getRoundRectShader before shaders have finished loading.");
@@ -71,6 +74,10 @@ public class Shaders {
 
     public static ShaderInstance getCloudShader() {
         return Objects.requireNonNull(clouds, "Attempted to call getCloudShader before shaders have finished loading.");
+    }
+
+    public static ShaderInstance getColoredCloudShader() {
+        return Objects.requireNonNull(coloredClouds, "Attempted to call getColoredCloudShader before shaders have finished loading.");
     }
 
     @SubscribeEvent
@@ -148,6 +155,15 @@ public class Shaders {
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
                 (shader) -> clouds = shader
+        );
+
+        event.registerShader(
+                new ShaderInstance(
+                        provider,
+                        ThatSkyInteractions.getLocation("colored_clouds"),
+                        DefaultVertexFormat.POSITION_TEX_COLOR
+                ),
+                (shader) -> coloredClouds = shader
         );
 
         PostEffects.setup(provider);

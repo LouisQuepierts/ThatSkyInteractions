@@ -10,11 +10,9 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,7 +22,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.ICloud;
-import net.quepierts.thatskyinteractions.registry.BlockEntities;
+import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -244,14 +242,13 @@ public abstract class CloudBlockEntity extends BlockEntity implements ICloud {
 
         List<Entity> entities = level.getEntitiesOfClass(Entity.class, cloud.aabb);
         for (Entity entity : entities) {
-            if (entity instanceof Player player && player.getAbilities().flying) {
+            ItemStack item = entity.getWeaponItem();
+            if (item != null && item.is(Items.CLOUD_EDITOR.get())) {
                 continue;
             }
             Vec3 position = entity.position();
             Vec3 movement = entity.getDeltaMovement();
             double absY = position.y - cloud.aabb.maxY + 0.35;
-            double sqrY = absY * absY;
-
 
             entity.setDeltaMovement(movement.add(
                     0,

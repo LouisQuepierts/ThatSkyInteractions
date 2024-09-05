@@ -31,7 +31,7 @@ public final class FakePlayerLightW2SWidget extends World2ScreenWidget {
 
         RenderUtils.drawCrossLightSpot(
                 guiGraphics,
-                this.x - 16, this.y - 16,
+                this.xO - 16, this.yO - 16,
                 32,
                 (0.95f + Mth.sin((ScreenAnimator.GLOBAL.time()) * 12) * 0.02f) * (1.2f - enter),
                 2.0f, 0xffa4e5f7

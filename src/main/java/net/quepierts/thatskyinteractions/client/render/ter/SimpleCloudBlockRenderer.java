@@ -1,13 +1,8 @@
 package net.quepierts.thatskyinteractions.client.render.ter;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.SkullModel;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.player.LocalPlayer;
@@ -31,8 +26,6 @@ import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-
-import java.util.Collections;
 
 @OnlyIn(Dist.CLIENT)
 public class SimpleCloudBlockRenderer implements BlockEntityRenderer<SimpleCloudBlockEntity> {
@@ -83,7 +76,7 @@ public class SimpleCloudBlockRenderer implements BlockEntityRenderer<SimpleCloud
         }
 
         Item item = player.getItemInHand(InteractionHand.MAIN_HAND).getItem();
-        boolean simple = item == Items.SIMPLE_CLOUD.get();
+        boolean simple = item == Items.SIMPLE_CLOUD.get() || item == Items.CLOUD_EDITOR.get();
         boolean expand = item == Items.CLOUD_EXPAND.get();
         boolean reduce = item == Items.CLOUD_REDUCE.get();
         if (simple || expand || reduce) {

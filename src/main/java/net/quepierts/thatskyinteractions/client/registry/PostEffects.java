@@ -45,16 +45,10 @@ public class PostEffects {
         bloomFinalTarget.bindWrite(false);
         Minecraft minecraft = Minecraft.getInstance();
         RenderTarget mainRenderTarget = minecraft.getMainRenderTarget();
-        RenderUtils.blitDepth(bloomFinalTarget, mainRenderTarget, minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
+        //RenderUtils.blitDepth(bloomFinalTarget, mainRenderTarget, minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
 
         bloomEffect.process(deltaTracker);
         mainRenderTarget.bindWrite(false);
-    }
-
-    public static void doWOLBloom() {
-        if (!shouldApplyBloom())
-            return;
-        Minecraft minecraft = Minecraft.getInstance();
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
 
@@ -63,9 +57,9 @@ public class PostEffects {
         minecraft.getMainRenderTarget().bindWrite(false);
         RenderUtils.bloomBlit(bloomSurroundTarget, width, height, 1.2f);
         RenderUtils.bloomBlit(bloomFinalTarget, width, height, 1.8f);
+//        bloomFinalTarget.blitToScreen(width, height);
         shouldApplyBloom = false;
     }
-
     public static void setApplyBloom() {
         shouldApplyBloom = true;
     }

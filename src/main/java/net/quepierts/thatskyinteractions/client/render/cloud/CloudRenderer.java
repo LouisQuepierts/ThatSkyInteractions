@@ -152,34 +152,52 @@ public class CloudRenderer {
                 poseStack.pushPose();
                 poseStack.mulPose(frustumMatrix);
 
+                PostChain cloudEffect = PostEffects.getCloudEffect();
+
                 RenderSystem.disableCull();
                 RenderSystem.enableDepthTest();
-                ShaderInstance shaderinstance = Shaders.getCloudShader();
-                RenderSystem.setupShaderLights(shaderinstance);
-                FogRenderer.levelFogColor();
-                if (shaderinstance.GAME_TIME != null) {
-                    shaderinstance.GAME_TIME.set(RenderSystem.getShaderGameTime());
-                }
 
-                if (shaderinstance.CHUNK_OFFSET != null) {
-                    shaderinstance.CHUNK_OFFSET.set(
-                            -fx,
-                            -fy,
-                            -fz
-                    );
-                }
-
-                PostChain cloudEffect = PostEffects.getCloudEffect();
                 target.bindWrite(false);
 
                 if (this.normalBuffer != null) {
+                    ShaderInstance cloudShader = Shaders.getCloudShader();
+                    RenderSystem.setupShaderLights(cloudShader);
+                    FogRenderer.levelFogColor();
+                    if (cloudShader.GAME_TIME != null) {
+                        cloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
+                    }
+
+
+                    if (cloudShader.CHUNK_OFFSET != null) {
+                        cloudShader.CHUNK_OFFSET.set(
+                                -fx,
+                                -fy,
+                                -fz
+                        );
+                    }
+
                     this.normalBuffer.bind();
-                    this.normalBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, shaderinstance);
+                    this.normalBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader);
                 }
 
                 if (this.coloredBuffer != null) {
+                    ShaderInstance coloredCloudShader = Shaders.getColoredCloudShader();
+                    RenderSystem.setupShaderLights(coloredCloudShader);
+                    if (coloredCloudShader.GAME_TIME != null) {
+                        coloredCloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
+                    }
+
+
+                    if (coloredCloudShader.CHUNK_OFFSET != null) {
+                        coloredCloudShader.CHUNK_OFFSET.set(
+                                -fx,
+                                -fy,
+                                -fz
+                        );
+                    }
+
                     this.coloredBuffer.bind();
-                    this.coloredBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, shaderinstance);
+                    this.coloredBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, coloredCloudShader);
                 }
 
                 cloudEffect.process(partialTick);

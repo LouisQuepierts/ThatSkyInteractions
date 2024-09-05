@@ -70,7 +70,7 @@ public class ColoredCloudBlockRenderer implements BlockEntityRenderer<ColoredClo
                     FastColor.ARGB32.green(color0),
                     FastColor.ARGB32.blue(color0)
             );
-            this.renderer.addCloud(entity, new CloudData(position, size, color, 0));
+            this.renderer.addColoredCloud(entity, new CloudData(position, size, color, 0));
             entity.setShouldRecompile(false);
         }
 

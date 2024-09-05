@@ -9,6 +9,7 @@ import net.quepierts.thatskyinteractions.data.tree.NodeState;
 public class Palette {
     public static final int NORMAL_TEXT_COLOR = 0xfff4f5e3;
     public static final int HIGHLIGHT_TEXT_COLOR = 0xfff67e1e;
+    public static final int HIGHLIGHT_COLOR = 0xfffffee0;
     public static void useLockedIconColor() {
         RenderSystem.setShaderColor(
                 82f / 255f,

@@ -6,7 +6,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.entity.*;
+import net.quepierts.thatskyinteractions.block.entity.ColoredCloudBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.MuralBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.SimpleCloudBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 
 public class BlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(

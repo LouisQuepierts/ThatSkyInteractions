@@ -24,6 +24,7 @@ import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
 import net.quepierts.thatskyinteractions.network.Packets;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import net.quepierts.thatskyinteractions.registry.Blocks;
+import net.quepierts.thatskyinteractions.registry.DataComponents;
 import net.quepierts.thatskyinteractions.registry.Items;
 
 import java.nio.file.Path;
@@ -53,6 +54,7 @@ public class CommonProxy {
         Blocks.REGISTER.register(bus);
         Items.REGISTER.register(bus);
         BlockEntities.REGISTER.register(bus);
+        DataComponents.REGISTER.register(bus);
     }
 
     private void onServerTick(final ServerTickEvent.Post event) {

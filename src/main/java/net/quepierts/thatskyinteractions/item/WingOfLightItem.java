@@ -43,6 +43,8 @@ public class WingOfLightItem extends BlockItem {
                     );
                     return InteractionResult.SUCCESS;
                 }
+            } else {
+                return super.useOn(context);
             }
         }
         return InteractionResult.FAIL;

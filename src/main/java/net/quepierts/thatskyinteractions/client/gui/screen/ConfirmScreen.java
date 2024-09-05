@@ -36,7 +36,7 @@ public class ConfirmScreen extends AnimatedScreen {
     protected void init() {
         int bottom = this.boxHeight / 2 - 52;
 
-        this.addRenderableWidget(new SqueezeButton(20, bottom, 32, Component.literal(""), this.animator, ICON_CONFIRM) {
+        this.addRenderableWidget(new SqueezeButton(20, bottom, 32, Component.literal("confirm"), this.animator, ICON_CONFIRM) {
             @Override
             public void onPress() {
                 provider.confirm();
@@ -44,7 +44,7 @@ public class ConfirmScreen extends AnimatedScreen {
             }
         });
 
-        this.addRenderableWidget(new SqueezeButton(-52, bottom, 32, Component.literal(""), this.animator, ICON_CANCEL) {
+        this.addRenderableWidget(new SqueezeButton(-52, bottom, 32, Component.literal("cancel"), this.animator, ICON_CANCEL) {
             @Override
             public void onPress() {
                 provider.cancel();
