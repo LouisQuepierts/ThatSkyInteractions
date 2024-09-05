@@ -1,16 +1,21 @@
 package net.quepierts.thatskyinteractions.network.packet.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.quepierts.simpleanimator.core.network.IUpdate;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
 import net.quepierts.thatskyinteractions.block.entity.ColoredCloudBlockEntity;
+import net.quepierts.thatskyinteractions.registry.DataComponents;
+import net.quepierts.thatskyinteractions.registry.Items;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3i;
 
 import java.util.Optional;
@@ -18,26 +23,28 @@ import java.util.Optional;
 public class UpdateCloudDataPacket implements IUpdate {
     public static final Type<UpdateCloudDataPacket> TYPE = NetworkPackets.createType(UpdateCloudDataPacket.class);
 
-    private final Vector3i position;
-    private final Vector3i offset;
-    private final Vector3i size;
-    private final Optional<Vector3i> color;
+    private final Vec3i position;
+    private final Vec3i offset;
+    private final Vec3i size;
+    private final Vec3i color;
 
     public UpdateCloudDataPacket(CloudBlockEntity entity) {
         BlockPos pos = entity.getBlockPos();
-        this.position = new Vector3i(pos.getX(), pos.getY(), pos.getZ());
-        this.offset = entity.getOffset();
-        this.size = entity.getSize();
+        this.position = new Vec3i(pos.getX(), pos.getY(), pos.getZ());
+        Vector3i offset = entity.getOffset();
+        Vector3i size = entity.getSize();
+        this.offset = new Vec3i(offset.x, offset.y, offset.z);
+        this.size = new Vec3i(size.x, size.y, size.z);
 
         if (entity instanceof ColoredCloudBlockEntity colored) {
             int color = colored.getColor();
-            this.color = Optional.of(new Vector3i(
+            this.color = new Vec3i(
                     FastColor.ARGB32.red(color),
                     FastColor.ARGB32.green(color),
                     FastColor.ARGB32.blue(color)
-            ));
+            );
         } else {
-            this.color = Optional.empty();
+            this.color = null;
         }
     }
 
@@ -45,7 +52,7 @@ public class UpdateCloudDataPacket implements IUpdate {
         this.position = this.readVector3i(byteBuf);
         this.offset = this.readVector3i(byteBuf);
         this.size = this.readVector3i(byteBuf);
-        this.color = byteBuf.readOptional(this::readVector3i);
+        this.color = byteBuf.readOptional(this::readVector3i).orElse(null);
     }
 
     @Override
@@ -55,17 +62,26 @@ public class UpdateCloudDataPacket implements IUpdate {
         }
 
         if (serverPlayer.isCreative() && serverPlayer.hasPermissions(4)) {
-            Level level = serverPlayer.level();
+            ItemStack item = serverPlayer.getMainHandItem();
 
-            BlockEntity entity = level.getBlockEntity(new BlockPos(this.position.x, this.position.y, this.position.z));
+            if (!item.is(Items.CLOUD_EDITOR)) {
+                return;
+            }
+
+            Vec3i vec3i = item.get(DataComponents.VEC3I);
+            if (vec3i == null || !vec3i.equals(this.position)) {
+                return;
+            }
+
+            Level level = serverPlayer.level();
+            BlockEntity entity = level.getBlockEntity(new BlockPos(this.position));
 
             if (entity instanceof CloudBlockEntity cloud) {
-                cloud.setOffset(this.position.x, this.position.y, this.position.z);
-                cloud.setSize(this.size.x, this.size.y, this.size.z);
+                cloud.setOffset(this.position.getX(), this.position.getY(), this.position.getZ());
+                cloud.setSize(this.size.getX(), this.size.getY(), this.size.getZ());
 
-                if (cloud instanceof ColoredCloudBlockEntity colored && this.color.isPresent()) {
-                    Vector3i color = this.color.get();
-                    colored.setColor(FastColor.ARGB32.color(color.x, color.y, color.z));
+                if (cloud instanceof ColoredCloudBlockEntity colored && this.color != null) {
+                    colored.setColor(FastColor.ARGB32.color(this.color.getX(), color.getY(), color.getZ()));
                 }
 
                 cloud.markUpdate();
@@ -78,22 +94,23 @@ public class UpdateCloudDataPacket implements IUpdate {
         this.writeVector3i(friendlyByteBuf, this.position);
         this.writeVector3i(friendlyByteBuf, this.offset);
         this.writeVector3i(friendlyByteBuf, this.size);
-        friendlyByteBuf.writeOptional(this.color, this::writeVector3i);
+        friendlyByteBuf.writeOptional(Optional.ofNullable(this.color), this::writeVector3i);
     }
 
+    @NotNull
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
-    private void writeVector3i(FriendlyByteBuf byteBuf, Vector3i vector3i) {
-        byteBuf.writeVarInt(vector3i.x);
-        byteBuf.writeVarInt(vector3i.y);
-        byteBuf.writeVarInt(vector3i.z);
+    private void writeVector3i(FriendlyByteBuf byteBuf, Vec3i vector3i) {
+        byteBuf.writeVarInt(vector3i.getX());
+        byteBuf.writeVarInt(vector3i.getY());
+        byteBuf.writeVarInt(vector3i.getZ());
     }
 
-    private Vector3i readVector3i(FriendlyByteBuf byteBuf) {
-        return new Vector3i(
+    private Vec3i readVector3i(FriendlyByteBuf byteBuf) {
+        return new Vec3i(
                 byteBuf.readVarInt(),
                 byteBuf.readVarInt(),
                 byteBuf.readVarInt()
