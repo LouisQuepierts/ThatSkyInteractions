@@ -130,7 +130,7 @@ public class CloudRenderer {
             MeshData meshData = this.buildColoredClouds(Tesselator.getInstance(), cloudColor);
             if (meshData != null) {
                 this.coloredBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-                this.coloredBuffer.bind();;
+                this.coloredBuffer.bind();
                 this.coloredBuffer.upload(meshData);
                 VertexBuffer.unbind();
             } else {

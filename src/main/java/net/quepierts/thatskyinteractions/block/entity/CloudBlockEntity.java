@@ -131,10 +131,6 @@ public abstract class CloudBlockEntity extends BlockEntity implements ICloud {
         );
     }
 
-    public void setAABB(int x1, int y1, int z1, int x2, int y2, int z2) {
-
-    }
-
     public Vector3i getSize() {
         return new Vector3i(this.size);
     }

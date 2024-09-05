@@ -55,6 +55,7 @@ import net.quepierts.thatskyinteractions.client.util.EffectDistributorManager;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
 import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.data.FriendData;
+import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
@@ -182,7 +183,11 @@ public class ClientProxy extends CommonProxy {
     private void onChatReceivedPlayer(final ClientChatReceivedEvent.Player event) {
         UUID sender = event.getSender();
         if (this.dataCache.isFriend(sender)) {
-            FriendData friendData = this.dataCache.getUserData().getNodeData(sender).getFriendData();
+            FriendAstrolabeInstance.NodeData data = this.dataCache.getUserData().getNodeData(sender);
+            if (data == null) {
+                return;
+            }
+            FriendData friendData = data.getFriendData();
             Component decorated = event.getPlayerChatMessage().decoratedContent();
             event.setMessage(Component.translatable(ChatType.DEFAULT_CHAT_DECORATION.translationKey(), friendData.getNickname(), decorated));
         }
@@ -195,7 +200,13 @@ public class ClientProxy extends CommonProxy {
         if (this.blocked(uuid)) {
             event.setCanRender(TriState.FALSE);
         } else if (this.dataCache.isFriend(uuid)) {
-            FriendData friendData = this.dataCache.getUserData().getNodeData(uuid).getFriendData();
+            FriendAstrolabeInstance.NodeData data = this.dataCache.getUserData().getNodeData(uuid);
+
+            if (data == null) {
+                return;
+            }
+
+            FriendData friendData = data.getFriendData();
             if (friendData.getUsername().equals(friendData.getNickname()))
                 return;
             event.setContent(Component.literal(friendData.getNickname()));

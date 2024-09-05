@@ -100,11 +100,6 @@ public class ConfirmScreen extends AnimatedScreen {
     }
 
     @Override
-    public boolean isPauseScreen() {
-        return false;
-    }
-
-    @Override
     public void resize(@NotNull Minecraft minecraft, int width, int height) {
         this.width = width;
         this.height = height;

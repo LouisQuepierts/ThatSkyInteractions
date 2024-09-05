@@ -27,9 +27,9 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
+@SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class SimpleCloudBlockRenderer implements BlockEntityRenderer<SimpleCloudBlockEntity> {
-    private static final ResourceLocation HIGHLIGHT = ThatSkyInteractions.getLocation("textures/entity/wing_of_light.png");
     private final ModelPart.Cube cube;
     private CloudRenderer renderer;
 

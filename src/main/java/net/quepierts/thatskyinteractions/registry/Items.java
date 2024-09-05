@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.item.*;
 
+@SuppressWarnings("unused")
 public class Items {
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(
             BuiltInRegistries.ITEM, ThatSkyInteractions.MODID

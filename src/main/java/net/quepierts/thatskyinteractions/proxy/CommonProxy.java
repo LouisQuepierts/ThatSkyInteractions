@@ -33,6 +33,8 @@ public class CommonProxy {
     private final InteractTreeManager interactTreeManager;
     private final AstrolabeManager astrolabeManager;
     private final TSIUserDataStorage userDataManager;
+
+    @SuppressWarnings("unused")
     public CommonProxy(IEventBus bus, ModContainer modContainer) {
 
         InteractTreeNode.register();

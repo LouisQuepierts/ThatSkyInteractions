@@ -12,6 +12,7 @@ import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 
 import java.io.IOException;
 
+@SuppressWarnings("unused")
 public class PostEffects {
     public static final ResourceLocation BLOOM_LOCATION = ThatSkyInteractions.getLocation("shaders/post/bloom.json");
     public static final ResourceLocation CLOUD_LOCATION = ThatSkyInteractions.getLocation("shaders/post/cloud.json");

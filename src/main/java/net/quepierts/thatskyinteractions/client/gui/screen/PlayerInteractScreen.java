@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.client.gui.screen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -54,7 +55,13 @@ public class PlayerInteractScreen extends RightPoopScreen {
         ThatSkyInteractions.getInstance().getClient().setTarget(null);
         CandleInfoLayer.INSTANCE.show(false);
 
-        IAnimateHandler handler = ((IAnimateHandler) Minecraft.getInstance().player);
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null) {
+            return;
+        }
+
+        IAnimateHandler handler = ((IAnimateHandler) player);
         if (handler.simpleanimator$isRunning() && handler.simpleanimator$getAnimator().getAnimationLocation().equals(Animations.HELD_CANDLE)) {
             handler.simpleanimator$stopAnimate(true);
         }

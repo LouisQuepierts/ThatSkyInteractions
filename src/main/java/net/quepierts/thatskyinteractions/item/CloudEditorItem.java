@@ -46,7 +46,7 @@ public class CloudEditorItem extends Item {
 
     @NotNull
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
+    public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
         ItemStack item = player.getItemInHand(usedHand);
         if (player.isCreative()) {
             if (player.isShiftKeyDown()) {

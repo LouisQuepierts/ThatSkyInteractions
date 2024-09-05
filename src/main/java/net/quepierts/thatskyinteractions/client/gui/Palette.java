@@ -5,6 +5,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.data.tree.NodeState;
 
+@SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class Palette {
     public static final int NORMAL_TEXT_COLOR = 0xfff4f5e3;

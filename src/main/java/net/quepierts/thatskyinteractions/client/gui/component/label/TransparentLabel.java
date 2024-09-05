@@ -32,10 +32,6 @@ public class TransparentLabel extends AbstractWidget implements Renderable, Widg
         this.widgets.forEach(consumer);
     }
 
-    protected void addWidget(AbstractWidget widget) {
-        this.widgets.add(widget);
-    }
-
     protected void addWidgets(AbstractWidget... widgets) {
         Collections.addAll(this.widgets, widgets);
     }
