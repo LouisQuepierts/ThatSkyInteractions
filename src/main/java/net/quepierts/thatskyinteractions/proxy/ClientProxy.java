@@ -1,8 +1,5 @@
 package net.quepierts.thatskyinteractions.proxy;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -53,7 +50,10 @@ import net.quepierts.thatskyinteractions.client.registry.*;
 import net.quepierts.thatskyinteractions.client.render.CandleLayer;
 import net.quepierts.thatskyinteractions.client.render.PartPoseResolveLayer;
 import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
-import net.quepierts.thatskyinteractions.client.util.*;
+import net.quepierts.thatskyinteractions.client.util.CameraHandler;
+import net.quepierts.thatskyinteractions.client.util.EffectDistributorManager;
+import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
+import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.data.FriendData;
 import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
