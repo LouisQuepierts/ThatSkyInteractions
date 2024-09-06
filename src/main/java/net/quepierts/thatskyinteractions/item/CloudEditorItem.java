@@ -29,6 +29,10 @@ public class CloudEditorItem extends Item {
     @NotNull
     @Override
     public InteractionResult useOn(UseOnContext context) {
+        if (context.getHand() == InteractionHand.OFF_HAND) {
+            return InteractionResult.FAIL;
+        }
+
         Player player = context.getPlayer();
         if (player != null && player.isCreative()) {
             BlockPos pos = context.getClickedPos();

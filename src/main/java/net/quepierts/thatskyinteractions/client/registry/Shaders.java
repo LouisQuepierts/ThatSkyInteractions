@@ -9,6 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -167,5 +168,13 @@ public class Shaders {
         );
 
         PostEffects.setup(provider);
+        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
+        client.getCloudRenderer().setup(provider);
+    }
+
+    public static void resize(int width, int height) {
+        PostEffects.resize(width, height);
+        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
+        client.getCloudRenderer().resize(width, height);
     }
 }

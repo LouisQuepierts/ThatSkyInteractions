@@ -8,7 +8,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.quepierts.simpleanimator.core.network.BiPacket;
 import net.quepierts.simpleanimator.core.network.IUpdate;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
@@ -74,10 +77,11 @@ public class UpdateCloudDataPacket implements IUpdate {
             }
 
             Level level = serverPlayer.level();
-            BlockEntity entity = level.getBlockEntity(new BlockPos(this.position));
+            BlockPos pos = new BlockPos(this.position);
+            BlockEntity entity = level.getBlockEntity(pos);
 
             if (entity instanceof CloudBlockEntity cloud) {
-                cloud.setOffset(this.position.getX(), this.position.getY(), this.position.getZ());
+                cloud.setOffset(this.offset.getX(), this.offset.getY(), this.offset.getZ());
                 cloud.setSize(this.size.getX(), this.size.getY(), this.size.getZ());
 
                 if (cloud instanceof ColoredCloudBlockEntity colored && this.color != null) {
@@ -85,6 +89,8 @@ public class UpdateCloudDataPacket implements IUpdate {
                 }
 
                 cloud.markUpdate();
+                BlockState state = level.getBlockState(pos);
+                level.sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
             }
         }
     }

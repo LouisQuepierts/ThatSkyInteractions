@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -238,9 +239,10 @@ public abstract class CloudBlockEntity extends BlockEntity implements ICloud {
 
         List<Entity> entities = level.getEntitiesOfClass(Entity.class, cloud.aabb);
         for (Entity entity : entities) {
-            ItemStack item = entity.getWeaponItem();
-            if (item != null && item.is(Items.CLOUD_EDITOR.get())) {
-                continue;
+            if (entity instanceof Player player) {
+                if (player.getMainHandItem().is(Items.CLOUD_EDITOR) || player.getOffhandItem().is(Items.CLOUD_EDITOR.get())) {
+                    continue;
+                }
             }
             Vec3 position = entity.position();
             Vec3 movement = entity.getDeltaMovement();

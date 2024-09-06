@@ -17,10 +17,8 @@ public class PostEffects {
     public static final ResourceLocation BLOOM_LOCATION = ThatSkyInteractions.getLocation("shaders/post/bloom.json");
     public static final ResourceLocation CLOUD_LOCATION = ThatSkyInteractions.getLocation("shaders/post/cloud.json");
     private static PostChain bloomEffect;
-    private static PostChain cloudEffect;
     private static RenderTarget bloomFinalTarget;
     private static RenderTarget bloomSurroundTarget;
-    private static RenderTarget cloudTarget;
 
     private static boolean shouldApplyBloom = false;
 
@@ -84,10 +82,6 @@ public class PostEffects {
             bloomEffect.close();
         }
 
-        if (cloudEffect != null) {
-            cloudEffect.close();
-        }
-
         try {
             bloomEffect = new PostChain(
                     textureManager, provider,
@@ -102,29 +96,11 @@ public class PostEffects {
         } catch (JsonSyntaxException jsonsyntaxexception) {
             ThatSkyInteractions.LOGGER.warn("Failed to parse shader: {}", BLOOM_LOCATION, jsonsyntaxexception);
         }
-
-        try {
-            cloudEffect = new PostChain(
-                    textureManager, provider,
-                    minecraft.getMainRenderTarget(),
-                    CLOUD_LOCATION
-            );
-            cloudEffect.resize(width, height);
-            cloudTarget = cloudEffect.getTempTarget("final");
-        }catch (IOException ioexception) {
-            ThatSkyInteractions.LOGGER.warn("Failed to load shader: {}", CLOUD_LOCATION, ioexception);
-        } catch (JsonSyntaxException jsonsyntaxexception) {
-            ThatSkyInteractions.LOGGER.warn("Failed to parse shader: {}", CLOUD_LOCATION, jsonsyntaxexception);
-        }
     }
 
     public static void resize(int width, int height) {
         if (bloomEffect != null) {
             bloomEffect.resize(width, height);
-        }
-
-        if (cloudEffect != null) {
-            cloudEffect.resize(width, height);
         }
     }
 
@@ -134,14 +110,6 @@ public class PostEffects {
 
     public static RenderTarget getBloomSurroundTarget() {
         return bloomSurroundTarget;
-    }
-
-    public static RenderTarget getCloudTarget() {
-        return cloudTarget;
-    }
-
-    public static PostChain getCloudEffect() {
-        return cloudEffect;
     }
 
     public static boolean shouldApplyBloom() {

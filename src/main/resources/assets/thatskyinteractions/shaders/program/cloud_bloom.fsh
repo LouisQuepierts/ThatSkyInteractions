@@ -25,7 +25,7 @@ const float weight[] = float[] (
 
 void main() {
     vec4 blurred = vec4(0.0);
-    vec2 step = sampleStep * 5.32;
+    vec2 step = sampleStep * 4.32;
     blurred += texture(DiffuseSampler, texCoord + step * 1) * weight[1];
     blurred += texture(DiffuseSampler, texCoord - step * 1) * weight[1];
 
