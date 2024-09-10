@@ -24,6 +24,7 @@ import org.joml.Vector3f;
 @OnlyIn(Dist.CLIENT)
 public class MuralBlockRenderer extends HighlightBlockEntityRenderer<MuralBlockEntity> {
 
+    @SuppressWarnings("unused")
     public MuralBlockRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override

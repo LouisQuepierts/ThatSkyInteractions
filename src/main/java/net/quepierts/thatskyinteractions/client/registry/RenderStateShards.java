@@ -6,6 +6,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 
+@SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class RenderStateShards {
     public static final RenderStateShard.ShaderStateShard CLOUD = new RenderStateShard.ShaderStateShard(Shaders::getCloudShader);

@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 @OnlyIn(Dist.CLIENT)
 public class CircleParticle extends SimpleAnimatedParticle {
-    private static final int MAX_AGE = 60;
     protected CircleParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, SpriteSet sprites) {
         super(level, x, y, z, sprites, 0);
         float size = 0.35f + this.random.nextFloat() * 0.25f;

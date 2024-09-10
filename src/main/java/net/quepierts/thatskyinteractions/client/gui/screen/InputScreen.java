@@ -44,6 +44,7 @@ public class InputScreen extends AnimatedScreen {
         this.editBox.setValue(def);
     }
 
+    @SuppressWarnings("unused")
     public InputScreen(ResourceLocation icon, int boxWidth, int boxHeight, Component message) {
         super(message);
         this.icon = icon;

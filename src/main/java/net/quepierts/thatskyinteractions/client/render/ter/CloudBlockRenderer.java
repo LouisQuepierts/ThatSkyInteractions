@@ -27,10 +27,12 @@ public class CloudBlockRenderer extends HighlightBlockEntityRenderer<AbstractClo
     private final CloudRenderer cloudRenderer;
     private final boolean colored;
 
+    @SuppressWarnings("unused")
     public static CloudBlockRenderer simple(BlockEntityRendererProvider.Context context) {
         return new CloudBlockRenderer(false);
     }
 
+    @SuppressWarnings("unused")
     public static CloudBlockRenderer colored(BlockEntityRendererProvider.Context context) {
         return new CloudBlockRenderer(true);
     }

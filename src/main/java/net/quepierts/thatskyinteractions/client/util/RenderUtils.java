@@ -21,6 +21,7 @@ import org.lwjgl.opengl.GL30C;
 
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class RenderUtils {
     public static final ResourceLocation DEFAULT_ICON = ThatSkyInteractions.getLocation("textures/icon/none.png");

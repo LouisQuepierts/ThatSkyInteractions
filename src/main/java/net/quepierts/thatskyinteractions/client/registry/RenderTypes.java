@@ -24,6 +24,7 @@ public class RenderTypes {
     public static final BiFunction<ResourceLocation, Boolean, RenderType> BLOOM;
     private static BloomBufferSource bufferSource;
 
+    @SuppressWarnings("unused")
     public static void onRegisterRenderBuffers(final RegisterRenderBuffersEvent event) {
         ByteBufferBuilder bloomBufferBuilder = new ByteBufferBuilder(WOL.bufferSize());
 //        event.registerRenderBuffer(WOL, bloomBufferBuilder);

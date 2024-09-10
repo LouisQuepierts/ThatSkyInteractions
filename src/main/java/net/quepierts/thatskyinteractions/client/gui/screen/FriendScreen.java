@@ -56,6 +56,7 @@ public class FriendScreen extends RightPoopScreen {
 
         CameraHandler.Entry rotation = this.cameraHandler.get(CameraHandler.Property.ROTATION);
         Vector3f rotationUnmodified = rotation.getUnmodified(new Vector3f());
+        assert minecraft != null;
         CameraType cameraType = minecraft.options.getCameraType();
         float rotY = rotationUnmodified.y;
         if (cameraType.isMirrored()) {
