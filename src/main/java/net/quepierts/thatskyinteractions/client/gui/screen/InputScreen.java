@@ -4,12 +4,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringUtil;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.gui.component.TEditBox;
 import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
@@ -17,13 +19,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
+@OnlyIn(Dist.CLIENT)
 public class InputScreen extends AnimatedScreen {
     public static final int BG_COLOR = 0xc0101010;
 
     private final ResourceLocation icon;
     private final int boxWidth;
     private final int boxHeight;
-    private final EditBox editBox;
+    private final TEditBox editBox;
     private final Consumer<String> consumer;
 
     public InputScreen(ResourceLocation icon, int boxWidth, int boxHeight, Component message, String def, Consumer<String> consumer) {
@@ -32,7 +35,7 @@ public class InputScreen extends AnimatedScreen {
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
         this.consumer = consumer;
-        this.editBox = new EditBox(
+        this.editBox = new TEditBox(
                 Minecraft.getInstance().font,
                 boxWidth / -4, 6,
                 boxWidth / 2, 16,
@@ -47,7 +50,7 @@ public class InputScreen extends AnimatedScreen {
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
         this.consumer = (string) -> {};
-        this.editBox = new EditBox(
+        this.editBox = new TEditBox(
                 Minecraft.getInstance().font,
                 boxWidth / -4, 6,
                 boxWidth / 2, 16,
@@ -119,11 +122,6 @@ public class InputScreen extends AnimatedScreen {
         RenderSystem.disableBlend();
 
         pose.popPose();
-    }
-
-    @Override
-    public boolean isPauseScreen() {
-        return false;
     }
 
     @Override

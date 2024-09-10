@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.item;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -15,13 +14,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.block.CloudBlock;
-import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.AbstractCloudBlockEntity;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
-import net.quepierts.thatskyinteractions.client.gui.screen.CloudEditScreen;
+import net.quepierts.thatskyinteractions.client.gui.screen.blockentity.CloudEditScreen;
 import net.quepierts.thatskyinteractions.registry.DataComponents;
 import org.jetbrains.annotations.NotNull;
 
-public class CloudEditorItem extends Item {
+public class CloudEditorItem extends Item implements ICloudHighlight {
     public CloudEditorItem() {
         super(new Properties().stacksTo(1));
     }
@@ -62,7 +61,7 @@ public class CloudEditorItem extends Item {
 
                 if (vec3i != null) {
                     BlockEntity entity = level.getBlockEntity(new BlockPos(vec3i));
-                    if (entity instanceof CloudBlockEntity cloud) {
+                    if (entity instanceof AbstractCloudBlockEntity cloud) {
                         this.openEditorUI(cloud);
                         return InteractionResultHolder.success(item);
                     }
@@ -74,7 +73,18 @@ public class CloudEditorItem extends Item {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void openEditorUI(CloudBlockEntity cloud) {
-        AnimateScreenHolderLayer.INSTANCE.push(new CloudEditScreen(Component.empty(), cloud));
+    private void openEditorUI(AbstractCloudBlockEntity cloud) {
+        AnimateScreenHolderLayer.INSTANCE.push(new CloudEditScreen(cloud));
+    }
+
+    @Override
+    public int color(@NotNull ItemStack itemStack, @NotNull AbstractCloudBlockEntity cloud) {
+        Vec3i pos = itemStack.get(DataComponents.VEC3I);
+
+        if (pos != null && cloud.getBlockPos().equals(pos)) {
+            return 0xff0000ff;
+        }
+
+        return 0xffffffff;
     }
 }

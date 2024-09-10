@@ -10,7 +10,7 @@ import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.network.packet.*;
 import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeOperationPacket;
 import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeSyncPacket;
-import net.quepierts.thatskyinteractions.network.packet.block.UpdateCloudDataPacket;
+import net.quepierts.thatskyinteractions.network.packet.block.UpdateBlockEntityDataPacket;
 
 import java.util.function.Function;
 
@@ -26,7 +26,7 @@ public enum Packets {
     INTERACT_BUTTON(InteractButtonPacket.class, InteractButtonPacket::decode, NetworkDirection.ALL),
     ASTROLABE_MODIFY(UserDataModifyPacket.class, UserDataModifyPacket::decode, NetworkDirection.PLAY_TO_SERVER),
     PICKUP_WING_OF_LIGHT(PickupWingOfLightPacket.class, PickupWingOfLightPacket::new, NetworkDirection.PLAY_TO_SERVER),
-    UPDATE_CLOUD_DATA(UpdateCloudDataPacket.class, UpdateCloudDataPacket::new, NetworkDirection.PLAY_TO_SERVER)
+    UPDATE_BLOCK_ENTITY(UpdateBlockEntityDataPacket.class, UpdateBlockEntityDataPacket::new, NetworkDirection.PLAY_TO_SERVER)
     ;
 
     private final NetworkPackets.PacketType<?> packet;

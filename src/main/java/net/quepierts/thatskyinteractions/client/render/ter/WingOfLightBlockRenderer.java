@@ -17,8 +17,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
-import net.quepierts.thatskyinteractions.client.registry.PostEffects;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
+import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.data.TSIUserData;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,10 +26,13 @@ import org.jetbrains.annotations.NotNull;
 public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLightBlockEntity> {
     private final PlayerModel<AbstractClientPlayer> playerModel;
     private final Minecraft minecraft;
+    private final BloomRenderer renderer;
+
     public WingOfLightBlockRenderer(BlockEntityRendererProvider.Context context) {
         this.playerModel = new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER), false);
         this.playerModel.young = false;
         this.minecraft = Minecraft.getInstance();
+        this.renderer = ThatSkyInteractions.getInstance().getClient().getBloomRenderer();
     }
 
     @Override
@@ -49,9 +52,9 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
 
         BlockPos pos = wingOfLightBlockEntity.getBlockPos();
 
-        if (minecraft.player == null)
+        if (this.minecraft.player == null)
             return;
-        float distanceSqr = (float) minecraft.player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
+        float distanceSqr = (float) this.minecraft.player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
 
         World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(wingOfLightBlockEntity.getUUID(), wingOfLightBlockEntity.provideW2SWidget(distanceSqr));
         poseStack.pushPose();
@@ -59,12 +62,12 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
         poseStack.scale(-0.95F, -0.95F, 0.95F);
         poseStack.mulPose(Axis.YP.rotation(wingOfLightBlockEntity.getYRot()));
 
-        playerModel.young = false;
-        playerModel.head.xRot = wingOfLightBlockEntity.getXRot();
+        this.playerModel.young = false;
+        this.playerModel.head.xRot = wingOfLightBlockEntity.getXRot();
         VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.WOL);
-        playerModel.renderToBuffer(poseStack, vertexConsumer, combinedLight, combinedOverlay);
+        this.playerModel.renderToBuffer(poseStack, vertexConsumer, combinedLight, combinedOverlay);
 
-        PostEffects.setApplyBloom();
+        this.renderer.setApplyBloom();
         poseStack.popPose();
     }
 

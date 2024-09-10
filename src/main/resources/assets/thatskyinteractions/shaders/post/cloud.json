@@ -1,6 +1,9 @@
 {
   "targets": [
     "swap",
+    "origin",
+    "depth",
+    "temp",
     "final"
   ],
   "passes": [

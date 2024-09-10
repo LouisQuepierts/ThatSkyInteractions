@@ -153,7 +153,7 @@ public class Shaders {
                 new ShaderInstance(
                         provider,
                         ThatSkyInteractions.getLocation("clouds"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
+                        DefaultVertexFormat.POSITION_COLOR_NORMAL
                 ),
                 (shader) -> clouds = shader
         );
@@ -162,19 +162,21 @@ public class Shaders {
                 new ShaderInstance(
                         provider,
                         ThatSkyInteractions.getLocation("colored_clouds"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
+                        DefaultVertexFormat.POSITION_COLOR_NORMAL
                 ),
                 (shader) -> coloredClouds = shader
         );
 
-        PostEffects.setup(provider);
+        //PostEffects.setup(provider);
         ClientProxy client = ThatSkyInteractions.getInstance().getClient();
         client.getCloudRenderer().setup(provider);
+        client.getBloomRenderer().setup(provider);
     }
 
     public static void resize(int width, int height) {
-        PostEffects.resize(width, height);
+        //PostEffects.resize(width, height);
         ClientProxy client = ThatSkyInteractions.getInstance().getClient();
         client.getCloudRenderer().resize(width, height);
+        client.getBloomRenderer().resize(width, height);
     }
 }

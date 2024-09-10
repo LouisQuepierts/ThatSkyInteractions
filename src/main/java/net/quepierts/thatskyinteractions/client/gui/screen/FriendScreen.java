@@ -5,6 +5,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.component.button.LikeButton;
 import net.quepierts.thatskyinteractions.client.gui.component.button.NicknameButton;
@@ -18,6 +20,7 @@ import org.joml.Vector3f;
 
 import java.util.Objects;
 
+@OnlyIn(Dist.CLIENT)
 public class FriendScreen extends RightPoopScreen {
     private final FakePlayerDisplayHandler fakePlayerDisplayHandler;
     private final CameraHandler cameraHandler;

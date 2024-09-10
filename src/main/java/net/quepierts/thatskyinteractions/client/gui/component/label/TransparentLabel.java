@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.component.WidgetHolder;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.jetbrains.annotations.NotNull;
@@ -22,10 +23,14 @@ import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class TransparentLabel extends AbstractWidget implements Renderable, WidgetHolder {
+    protected final ScreenAnimator animator;
+    protected final Minecraft minecraft;
     private final List<AbstractWidget> widgets;
-    public TransparentLabel(@NotNull Component title, int xPos, int yPos, int width, int height) {
+    public TransparentLabel(@NotNull Component title, int xPos, int yPos, int width, int height, ScreenAnimator animator) {
         super(xPos, yPos, width, height, title);
+        this.animator = animator;
         this.widgets = new ArrayList<>();
+        this.minecraft = Minecraft.getInstance();
     }
 
     public void addToParent(@NotNull Consumer<AbstractWidget> consumer) {
@@ -40,9 +45,8 @@ public class TransparentLabel extends AbstractWidget implements Renderable, Widg
     protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         float alpha = Palette.getShaderAlpha();
         RenderSystem.enableBlend();
-        RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0.1f, 0x80000000);
-        Minecraft minecraft = Minecraft.getInstance();
-        guiGraphics.drawCenteredString(minecraft.font, this.getMessage(), this.getX() + this.getWidth() / 2, this.getY() + 10, Palette.NORMAL_TEXT_COLOR);
+        RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0.1f * this.getHeight() / this.getWidth(), 0x80000000);
+        guiGraphics.drawCenteredString(this.minecraft.font, this.getMessage(), this.getX() + this.getWidth() / 2, this.getY() + 10, Palette.NORMAL_TEXT_COLOR);
         RenderSystem.disableBlend();
         Palette.setShaderAlpha(alpha);
     }
@@ -56,4 +60,6 @@ public class TransparentLabel extends AbstractWidget implements Renderable, Widg
     protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
         narrationElementOutput.add(NarratedElementType.TITLE, this.getMessage());
     }
+
+    public void onResize(int xPos, int yPos, int width, int height) {}
 }

@@ -36,4 +36,8 @@ public class Items {
     public static final DeferredHolder<Item, CloudEditorItem> CLOUD_EDITOR = REGISTER.register(
             "cloud_editor", CloudEditorItem::new
     );
+
+    public static final DeferredHolder<Item, MuralItem> MURAL = REGISTER.register(
+            "mural", MuralItem::new
+    );
 }

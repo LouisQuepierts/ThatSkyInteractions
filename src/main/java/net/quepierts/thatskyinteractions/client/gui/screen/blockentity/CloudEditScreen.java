@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.client.gui.screen;
+package net.quepierts.thatskyinteractions.client.gui.screen.blockentity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,26 +9,28 @@ import net.minecraft.util.FastColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
-import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.AbstractCloudBlockEntity;
 import net.quepierts.thatskyinteractions.block.entity.ColoredCloudBlockEntity;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButton;
 import net.quepierts.thatskyinteractions.client.gui.component.label.ColorInputLabel;
 import net.quepierts.thatskyinteractions.client.gui.component.label.Vector3InputLabel;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
-import net.quepierts.thatskyinteractions.network.packet.block.UpdateCloudDataPacket;
+import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
+import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
+import net.quepierts.thatskyinteractions.network.packet.block.UpdateBlockEntityDataPacket;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3i;
 
 @OnlyIn(Dist.CLIENT)
 public class CloudEditScreen extends AnimatedScreen {
-    private final CloudBlockEntity cloud;
+    private final AbstractCloudBlockEntity cloud;
     private Vector3InputLabel offset;
     private Vector3InputLabel size;
     private Vector3InputLabel color;
 
-    public CloudEditScreen(Component title, CloudBlockEntity cloud) {
-        super(title);
+    public CloudEditScreen(@NotNull AbstractCloudBlockEntity cloud) {
+        super(Component.translatable("screen.cloud.title"));
         this.cloud = cloud;
     }
 
@@ -36,7 +38,7 @@ public class CloudEditScreen extends AnimatedScreen {
     protected void init() {
         super.init();
 
-        if (this.cloud != null) {
+        if (!this.cloud.isRemoved()) {
             int middle = this.width / 2;
             boolean editColor = this.cloud instanceof ColoredCloudBlockEntity;
             int sliderWidth = 100;
@@ -54,7 +56,7 @@ public class CloudEditScreen extends AnimatedScreen {
 
             if (editColor) {
                 this.color = new ColorInputLabel(this.getAnimator(), left + 220, top, sliderWidth, sliderHeight, 10, 30);
-                int argb = ((ColoredCloudBlockEntity) this.cloud).getColor();
+                int argb = this.cloud.getColor();
                 this.color.setValue(new Vector3i(
                         FastColor.ARGB32.red(argb),
                         FastColor.ARGB32.green(argb),
@@ -62,7 +64,6 @@ public class CloudEditScreen extends AnimatedScreen {
                 ));
                 this.addRenderableWidget(this.color);
             }
-
 
             this.addRenderableWidget(new SqueezeButton(
                     middle - 16, this.height / 2 + 80, 32, CommonComponents.GUI_DONE, this.getAnimator(), ConfirmScreen.ICON_CONFIRM
@@ -86,7 +87,6 @@ public class CloudEditScreen extends AnimatedScreen {
 
     @Override
     public void irender(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-
         float value = this.enter.getValue();
         if (value == 1.0f) {
             this.renderBlurredBackground(delta);
@@ -135,7 +135,7 @@ public class CloudEditScreen extends AnimatedScreen {
         }
 
         this.cloud.markUpdate();
-        SimpleAnimator.getNetwork().update(new UpdateCloudDataPacket(this.cloud));
+        SimpleAnimator.getNetwork().update(new UpdateBlockEntityDataPacket(this.cloud));
         AnimateScreenHolderLayer.INSTANCE.pop(this);
     }
 }

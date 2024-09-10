@@ -46,10 +46,14 @@ import net.quepierts.thatskyinteractions.client.particle.CircleParticle;
 import net.quepierts.thatskyinteractions.client.particle.HeartParticle;
 import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
 import net.quepierts.thatskyinteractions.client.particle.StarParticle;
-import net.quepierts.thatskyinteractions.client.registry.*;
-import net.quepierts.thatskyinteractions.client.render.CandleLayer;
-import net.quepierts.thatskyinteractions.client.render.PartPoseResolveLayer;
+import net.quepierts.thatskyinteractions.client.registry.BlockEntityRenderers;
+import net.quepierts.thatskyinteractions.client.registry.CreativeModeTabs;
+import net.quepierts.thatskyinteractions.client.registry.Particles;
+import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
+import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
+import net.quepierts.thatskyinteractions.client.render.layer.CandleLayer;
+import net.quepierts.thatskyinteractions.client.render.layer.PartPoseResolveLayer;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.EffectDistributorManager;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
@@ -81,6 +85,8 @@ public class ClientProxy extends CommonProxy {
     private final EffectDistributorManager particleDistributorManager;
     @NotNull
     private final CloudRenderer cloudRenderer;
+    @NotNull
+    private final BloomRenderer bloomRenderer;
 
     @Nullable
     private UUID target;
@@ -88,13 +94,14 @@ public class ClientProxy extends CommonProxy {
     public ClientProxy(IEventBus modBus, ModContainer modContainer) {
         super(modBus, modContainer);
 
-        options = new Options();
-        dataCache = new ClientTSIDataCache();
-        unlockRelationshipHandler = new UnlockRelationshipHandler();
-        fakePlayerDisplayHandler = new FakePlayerDisplayHandler(this);
-        cameraHandler = new CameraHandler();
-        particleDistributorManager = new EffectDistributorManager();
-        cloudRenderer = new CloudRenderer();
+        this.options = new Options();
+        this.dataCache = new ClientTSIDataCache();
+        this.unlockRelationshipHandler = new UnlockRelationshipHandler();
+        this.fakePlayerDisplayHandler = new FakePlayerDisplayHandler(this);
+        this.cameraHandler = new CameraHandler();
+        this.particleDistributorManager = new EffectDistributorManager();
+        this.cloudRenderer = new CloudRenderer();
+        this.bloomRenderer = new BloomRenderer();
 
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(InputEvent.MouseScrollingEvent.class, this::onMouseScrolling);
@@ -145,7 +152,10 @@ public class ClientProxy extends CommonProxy {
         if (event.getTab() == CreativeModeTabs.TSI.get()) {
             event.accept(new ItemStack(Items.SIMPLE_CLOUD));
             event.accept(new ItemStack(Items.CLOUD_EDITOR));
+            event.accept(new ItemStack(Items.CLOUD_EXPAND));
+            event.accept(new ItemStack(Items.CLOUD_REDUCE));
             event.accept(new ItemStack(Items.WING_OF_LIGHT));
+            event.accept(new ItemStack(Items.MURAL));
         }
     }
 
@@ -157,11 +167,7 @@ public class ClientProxy extends CommonProxy {
         Vec3 position = camera.getPosition();
 
         if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            if (PostEffects.shouldApplyBloom()) {
-                PostEffects.prepareBloom();
-            }
-
-            this.cloudRenderer.prepareRender();
+            this.bloomRenderer.prepareBloom();
         } else if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             this.cloudRenderer.renderClouds(
                     event.getPoseStack(),
@@ -171,9 +177,7 @@ public class ClientProxy extends CommonProxy {
                     position
             );
 
-            if (PostEffects.shouldApplyBloom()) {
-                PostEffects.postBloom(partialTick);
-            }
+            this.bloomRenderer.postBloom(partialTick);
             /*Window window = Minecraft.getInstance().getWindow();
 
             RenderTarget target = this.cloudRenderer.getFinalTarget();
@@ -466,5 +470,10 @@ public class ClientProxy extends CommonProxy {
     @NotNull
     public CloudRenderer getCloudRenderer() {
         return this.cloudRenderer;
+    }
+
+    @NotNull
+    public BloomRenderer getBloomRenderer() {
+        return this.bloomRenderer;
     }
 }

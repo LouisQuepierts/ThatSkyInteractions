@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.AbstractCloudBlockEntity;
 import net.quepierts.thatskyinteractions.block.entity.SimpleCloudBlockEntity;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ public class CloudBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, BlockEntities.SIMPLE_CLOUD.get(), CloudBlockEntity::tick);
+        return createTickerHelper(blockEntityType, BlockEntities.SIMPLE_CLOUD.get(), AbstractCloudBlockEntity::tick);
     }
 
     @Nullable

@@ -12,12 +12,9 @@ void main() {
     vec2 step = sampleStep * 5.43;
 
     blurred = max(texture(DiffuseSampler, texCoord + step), blurred);
-    blurred = max(texture(DiffuseSampler, texCoord + step * 5.2), blurred);
+    blurred = max(texture(DiffuseSampler, texCoord + step * 5), blurred);
     blurred = max(texture(DiffuseSampler, texCoord - step), blurred);
     blurred = max(texture(DiffuseSampler, texCoord - step * 5.2), blurred);
-
-    // Adding the final texture with half weight as per the original code
-    //blurred.a += texture(DiffuseSampler, texCoord + sampleStep * actualRadius) / 2.0;
 
     fragColor = blurred;
 }

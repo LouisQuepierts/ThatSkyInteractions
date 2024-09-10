@@ -1,11 +1,7 @@
 package net.quepierts.thatskyinteractions.block.entity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -15,9 +11,8 @@ import net.quepierts.thatskyinteractions.client.gui.component.w2s.PickupWingOfLi
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
+public class WingOfLightBlockEntity extends AbstractW2SWidgetProviderBlockEntity {
     private static final String TAG_XROT = "xRot";
     private static final String TAG_YROT = "yRot";
 
@@ -37,8 +32,15 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
     }
 
     @Override
-    protected void loadAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void toNBT(@NotNull CompoundTag tag) {
+        super.toNBT(tag);
+        tag.putFloat(TAG_XROT, this.xRot);
+        tag.putFloat(TAG_YROT, this.yRot);
+    }
+
+    @Override
+    public void fromNBT(@NotNull CompoundTag tag) {
+        super.fromNBT(tag);
         if (tag.contains(TAG_XROT)) {
             this.xRot = tag.getFloat(TAG_XROT);
         }
@@ -46,39 +48,6 @@ public class WingOfLightBlockEntity extends W2SWidgetProviderBlockEntity {
         if (tag.contains(TAG_YROT)) {
             this.yRot = tag.getFloat(TAG_YROT);
         }
-    }
-
-    @Override
-    protected void saveAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        tag.putFloat(TAG_XROT, this.xRot);
-        tag.putFloat(TAG_YROT, this.yRot);
-    }
-
-    @Override
-    public @NotNull CompoundTag getUpdateTag(@NotNull HolderLookup.Provider registries) {
-        CompoundTag tag = super.getUpdateTag(registries);
-        tag.putFloat(TAG_XROT, this.xRot);
-        tag.putFloat(TAG_YROT, this.yRot);
-        return tag;
-    }
-
-    @Override
-    public void handleUpdateTag(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider lookupProvider) {
-        super.handleUpdateTag(tag, lookupProvider);
-        if (tag.contains(TAG_XROT)) {
-            this.xRot = tag.getFloat(TAG_XROT);
-        }
-
-        if (tag.contains(TAG_YROT)) {
-            this.yRot = tag.getFloat(TAG_YROT);
-        }
-    }
-
-    @Nullable
-    @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @OnlyIn(Dist.CLIENT)

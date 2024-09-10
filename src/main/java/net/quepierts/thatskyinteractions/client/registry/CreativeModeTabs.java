@@ -4,11 +4,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.registry.Items;
 
+@OnlyIn(Dist.CLIENT)
 public class CreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> REGISTER = DeferredRegister.create(
             BuiltInRegistries.CREATIVE_MODE_TAB, ThatSkyInteractions.MODID

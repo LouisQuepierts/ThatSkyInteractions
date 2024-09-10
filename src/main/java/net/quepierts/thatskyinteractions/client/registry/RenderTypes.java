@@ -7,14 +7,17 @@ import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterRenderBuffersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.render.BloomBufferSource;
+import net.quepierts.thatskyinteractions.client.render.bloom.BloomBufferSource;
 
 import java.util.LinkedHashMap;
 import java.util.SequencedMap;
 import java.util.function.BiFunction;
 
+@OnlyIn(Dist.CLIENT)
 public class RenderTypes {
     public static final ResourceLocation TEXTURE;
     public static final RenderType WOL;
@@ -23,8 +26,9 @@ public class RenderTypes {
 
     public static void onRegisterRenderBuffers(final RegisterRenderBuffersEvent event) {
         ByteBufferBuilder bloomBufferBuilder = new ByteBufferBuilder(WOL.bufferSize());
-        event.registerRenderBuffer(WOL, bloomBufferBuilder);
+//        event.registerRenderBuffer(WOL, bloomBufferBuilder);
         SequencedMap<RenderType, ByteBufferBuilder> map = new LinkedHashMap<>();
+        map.put(WOL, bloomBufferBuilder);
         bufferSource = new BloomBufferSource(new ByteBufferBuilder(786432), map);
     }
 

@@ -37,8 +37,8 @@ public class RenderUtils {
 
         RenderSystem.setShader(Shaders::getRoundRectShader);
         ShaderInstance shader = Shaders.getRoundRectShader();
-        Objects.requireNonNull(shader.getUniform("Ratio")).set(ratio);
-        Objects.requireNonNull(shader.getUniform("Radius")).set(radius);
+        shader.safeGetUniform("Ratio").set(ratio);
+        shader.safeGetUniform("Radius").set(radius);
 
         Matrix4f matrix4f = guiGraphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
@@ -55,7 +55,7 @@ public class RenderUtils {
 
         RenderSystem.setShader(Shaders::getRingShader);
         ShaderInstance shader = Shaders.getRingShader();
-        Objects.requireNonNull(shader.getUniform("Width")).set(width);
+        shader.safeGetUniform("Width").set(width);
 
         Matrix4f matrix4f = guiGraphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
@@ -157,6 +157,21 @@ public class RenderUtils {
         bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1);
         bufferbuilder.addVertex(matrix4f, (float)x2, (float)y2, 0).setUv(1, 1);
         bufferbuilder.addVertex(matrix4f, (float)x2, (float)y, 0).setUv(1, 0);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+    }
+
+    public static void blitXZ(PoseStack poseStack, ResourceLocation location, int x, int y, int width, int height, float uvScale) {
+        int x2 = x + width;
+        int y2 = y + height;
+
+        Matrix4f matrix4f = poseStack.last().pose();
+        RenderSystem.setShaderTexture(0, location);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.addVertex(matrix4f, (float)x, 0, (float)y).setUv(-uvScale, -uvScale);
+        bufferbuilder.addVertex(matrix4f, (float)x, 0, (float)y2).setUv(-uvScale, uvScale);
+        bufferbuilder.addVertex(matrix4f, (float)x2, 0, (float)y2).setUv(uvScale, uvScale);
+        bufferbuilder.addVertex(matrix4f, (float)x2, 0, (float)y).setUv(uvScale, -uvScale);
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 

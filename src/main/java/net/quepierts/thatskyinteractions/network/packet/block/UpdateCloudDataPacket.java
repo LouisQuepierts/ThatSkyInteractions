@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.network.packet.block;
 
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.FriendlyByteBuf;
@@ -13,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.quepierts.simpleanimator.core.network.IUpdate;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
-import net.quepierts.thatskyinteractions.block.entity.CloudBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.AbstractCloudBlockEntity;
 import net.quepierts.thatskyinteractions.block.entity.ColoredCloudBlockEntity;
 import net.quepierts.thatskyinteractions.registry.DataComponents;
 import net.quepierts.thatskyinteractions.registry.Items;
@@ -30,7 +31,7 @@ public class UpdateCloudDataPacket implements IUpdate {
     private final Vec3i size;
     private final Vec3i color;
 
-    public UpdateCloudDataPacket(CloudBlockEntity entity) {
+    public UpdateCloudDataPacket(AbstractCloudBlockEntity entity) {
         BlockPos pos = entity.getBlockPos();
         this.position = new Vec3i(pos.getX(), pos.getY(), pos.getZ());
         Vector3i offset = entity.getOffset();
@@ -63,7 +64,7 @@ public class UpdateCloudDataPacket implements IUpdate {
             return;
         }
 
-        if (serverPlayer.isCreative() && serverPlayer.hasPermissions(4)) {
+        if (serverPlayer.isCreative() && serverPlayer.hasPermissions(Commands.LEVEL_GAMEMASTERS)) {
             ItemStack item = serverPlayer.getMainHandItem();
 
             if (!item.is(Items.CLOUD_EDITOR)) {
@@ -79,7 +80,7 @@ public class UpdateCloudDataPacket implements IUpdate {
             BlockPos pos = new BlockPos(this.position);
             BlockEntity entity = level.getBlockEntity(pos);
 
-            if (entity instanceof CloudBlockEntity cloud) {
+            if (entity instanceof AbstractCloudBlockEntity cloud) {
                 cloud.setOffset(this.offset.getX(), this.offset.getY(), this.offset.getZ());
                 cloud.setSize(this.size.getX(), this.size.getY(), this.size.getZ());
 

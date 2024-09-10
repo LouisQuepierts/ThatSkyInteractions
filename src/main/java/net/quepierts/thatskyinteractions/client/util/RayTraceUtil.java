@@ -22,7 +22,7 @@ public class RayTraceUtil {
             );
             BlockState state = level.getBlockState(pos);
 
-            if (state.isSolidRender(level, pos)) {
+            if (state.isViewBlocking(level, pos)) {
                 return true;
             }
 

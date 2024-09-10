@@ -7,6 +7,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
+import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.animate.WaitAnimation;
 import org.jetbrains.annotations.NotNull;
@@ -40,5 +41,10 @@ public class PickupWingOfLightW2SButton extends World2ScreenButton {
     @Override
     public void getWorldPos(Vector3f out) {
         out.set(this.worldPos);
+    }
+
+    @Override
+    public void calculateRenderScale(float distance) {
+        this.scale = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - 16, 0) / 4);
     }
 }

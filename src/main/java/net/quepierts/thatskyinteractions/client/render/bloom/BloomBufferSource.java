@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.client.render;
+package net.quepierts.thatskyinteractions.client.render.bloom;
 
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;

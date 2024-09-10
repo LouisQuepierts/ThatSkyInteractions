@@ -30,7 +30,7 @@ public class DataComponents {
     );
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Vec3i>> VEC3I = REGISTER.registerComponentType(
-            "block_pos",
+            "vec3i",
             builder -> builder
                     .persistent(VEC3I_CODEC)
                     .networkSynchronized(VEC3I_STREAM_CODEC)

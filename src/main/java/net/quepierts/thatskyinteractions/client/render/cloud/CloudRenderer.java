@@ -46,20 +46,15 @@ public class CloudRenderer {
 
     public static final int SINGLE_CLOUD_SIZE = 2;
     private final Map<ICloud, ObjectList<CloudData>> normalClouds = new Object2ObjectOpenHashMap<>();
-    private final Map<ICloud, ObjectList<CloudData>> colorClouds = new Object2ObjectOpenHashMap<>();
     private VertexBuffer normalBuffer;
-    private VertexBuffer coloredBuffer;
     private boolean rebuildNormalClouds;
-    private boolean rebuildColoredClouds;
     private ClientLevel level;
 
     private PostChain effect;
     private RenderTarget finalTarget;
+    private RenderTarget maskTarget;
 //    private RenderTarget originTarget;
 //    private RenderTarget depthTarget;
-
-    public CloudRenderer() {
-    }
 
     public void onClientTick(final ClientTickEvent.Post event) {
         if (normalClouds.isEmpty()) {
@@ -76,50 +71,17 @@ public class CloudRenderer {
         this.rebuildNormalClouds = true;
     }
 
-    public void addColoredCloud(ICloud iCloud, CloudData data) {
-        ObjectList<CloudData> list = this.colorClouds.computeIfAbsent(iCloud, o -> new ObjectArrayList<>());
-        list.clear();
-        data.split(list);
-        this.rebuildColoredClouds = true;
-    }
-
     public void removeCloud(ICloud iCloud) {
         if (this.normalClouds.containsKey(iCloud)) {
             this.normalClouds.remove(iCloud);
             this.rebuildNormalClouds = true;
-        } else if (this.colorClouds.containsKey(iCloud)) {
-            this.colorClouds.remove(iCloud);
-            this.rebuildColoredClouds = true;
-        }
-    }
-
-    public void removeColoredCloud(ICloud iCloud) {
-        if (this.colorClouds.containsKey(iCloud)) {
-            this.colorClouds.remove(iCloud);
-            this.rebuildColoredClouds = true;
         }
     }
 
     public void setLevel(ClientLevel level) {
         this.level = level;
         this.rebuildNormalClouds = false;
-        this.rebuildColoredClouds = false;
         //this.debug();
-    }
-
-    public void prepareRender() {
-        if (this.normalBuffer != null) {
-            RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
-
-            final int width = this.finalTarget.viewWidth;
-            final int height = this.finalTarget.viewHeight;
-
-            this.finalTarget.clear(Minecraft.ON_OSX);
-//            this.depthTarget.clear(Minecraft.ON_OSX);
-//            RenderUtils.blitDepthToScreen(mainRenderTarget, width, height);
-            RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
-            mainRenderTarget.bindWrite(false);
-        }
     }
 
     public void renderClouds(PoseStack poseStack, Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, Vec3 cameraPosition) {
@@ -148,33 +110,16 @@ public class CloudRenderer {
             }
         }
 
-        if (this.rebuildColoredClouds) {
-            this.rebuildColoredClouds = false;
-            if (this.coloredBuffer != null) {
-                this.coloredBuffer.close();
-            }
-
-            MeshData meshData = this.buildColoredClouds(Tesselator.getInstance(), cloudColor);
-            if (meshData != null) {
-                this.coloredBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-                this.coloredBuffer.bind();
-                this.coloredBuffer.upload(meshData);
-                VertexBuffer.unbind();
-            } else {
-                this.coloredBuffer = null;
-            }
-        }
-
         if (this.normalBuffer != null) {
             RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
 
             final int width = this.finalTarget.viewWidth;
             final int height = this.finalTarget.viewHeight;
 
-            if (this.normalBuffer != null || this.coloredBuffer != null) {
-//                this.originTarget.bindWrite(false);
-//                RenderUtils.blitDepthToScreen(mainRenderTarget, width, height);
+            this.finalTarget.clear(Minecraft.ON_OSX);
+            RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
 
+            if (this.normalBuffer != null) {
                 poseStack.pushPose();
                 poseStack.mulPose(frustumMatrix);
 
@@ -189,7 +134,6 @@ public class CloudRenderer {
                         cloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
                     }
 
-
                     if (cloudShader.CHUNK_OFFSET != null) {
                         cloudShader.CHUNK_OFFSET.set(
                                 -fx,
@@ -197,31 +141,10 @@ public class CloudRenderer {
                                 -fz
                         );
                     }
-
-                    this.finalTarget.bindWrite(false);
                     this.normalBuffer.bind();
-                    this.normalBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader);
-                }
-
-                if (this.coloredBuffer != null) {
-                    ShaderInstance coloredCloudShader = Shaders.getColoredCloudShader();
-                    RenderSystem.setupShaderLights(coloredCloudShader);
-                    if (coloredCloudShader.GAME_TIME != null) {
-                        coloredCloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
-                    }
-
-
-                    if (coloredCloudShader.CHUNK_OFFSET != null) {
-                        coloredCloudShader.CHUNK_OFFSET.set(
-                                -fx,
-                                -fy,
-                                -fz
-                        );
-                    }
 
                     this.finalTarget.bindWrite(false);
-                    this.coloredBuffer.bind();
-                    this.coloredBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, coloredCloudShader);
+                    this.normalBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader);
                 }
 
                 RenderSystem.enableCull();
@@ -248,11 +171,6 @@ public class CloudRenderer {
         return builder.build(this.normalClouds.values());
     }
 
-    private MeshData buildColoredClouds(Tesselator tesselator, Vec3 cloudColor) {
-        CloudMeshBuilder builder = new CloudMeshBuilder(tesselator, 0, 0, 0, cloudColor);
-        return builder.build(this.colorClouds.values());
-    }
-
     public void setup(ResourceProvider provider) {
         Minecraft minecraft = Minecraft.getInstance();
         TextureManager textureManager = minecraft.getTextureManager();
@@ -272,6 +190,7 @@ public class CloudRenderer {
             );
             this.effect.resize(width, height);
             this.finalTarget = this.effect.getTempTarget("final");
+            this.maskTarget = this.effect.getTempTarget("mask");
 //            this.depthTarget = this.effect.getTempTarget("depth");
 //            this.originTarget = this.effect.getTempTarget("origin");
         }catch (IOException ioexception) {
@@ -293,13 +212,7 @@ public class CloudRenderer {
             this.normalBuffer = null;
         }
 
-        if (this.coloredBuffer != null) {
-            this.coloredBuffer.close();
-            this.coloredBuffer = null;
-        }
-
         this.normalClouds.clear();
-        this.colorClouds.clear();
     }
 
     public RenderTarget getFinalTarget() {

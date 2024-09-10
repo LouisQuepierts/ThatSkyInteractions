@@ -32,6 +32,10 @@ public class IntSlider extends Slider {
         return (int) Interpolation.linerInterpolation(this.min, this.max, (float) this.value);
     }
 
+    public int getDisplayIntValue() {
+        return (int) Interpolation.linerInterpolation(this.min, this.max, (float) this.display);
+    }
+
     public void setIntValue(int value) {
         this.setValue((double) (value - this.min) / (this.max - this.min));
     }
