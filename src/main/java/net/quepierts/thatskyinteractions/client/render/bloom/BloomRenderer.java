@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.client.render.bloom;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -22,26 +23,20 @@ public class BloomRenderer {
 
     private boolean shouldApplyBloom = false;
 
-    public void prepareBloom() {
-        if (!this.shouldApplyBloom) {
-            return;
-        }
-
+    public void prepare() {
         this.finalTarget.clear(Minecraft.ON_OSX);
         this.surroundTarget.clear(Minecraft.ON_OSX);
 
         Minecraft minecraft = Minecraft.getInstance();
-        RenderTarget mainRenderTarget = minecraft.getMainRenderTarget();
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
-        RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
+        RenderUtils.blitDepth(minecraft.getMainRenderTarget(), this.finalTarget, width, height);
+    }
 
+    public void blitObjects() {
         this.finalTarget.bindWrite(false);
         RenderTypes.getBufferSource().endBatch();
-        /*mainRenderTarget.bindWrite(false);
-        RenderUtils.bloomBlit(bloomFinalTarget, width, height, 1.0f);
-        bloomFinalTarget.bindWrite(false);*/
-        mainRenderTarget.bindWrite(false);
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
     }
 
     public void postBloom(float deltaTracker) {
@@ -58,6 +53,7 @@ public class BloomRenderer {
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
 
+//        this.finalTarget.blitToScreen(width, height);
         RenderUtils.bloomBlit(this.surroundTarget, width, height, 1.2f);
         RenderUtils.bloomBlit(this.finalTarget, width, height, 1.8f);
         this.shouldApplyBloom = false;
@@ -102,5 +98,12 @@ public class BloomRenderer {
 
     public RenderTarget getFinalTarget() {
         return this.finalTarget;
+    }
+
+    public VertexConsumer getBuffer(ResourceLocation location) {
+        this.finalTarget.bindWrite(false);
+        VertexConsumer buffer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM.apply(location, false));
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+        return buffer;
     }
 }

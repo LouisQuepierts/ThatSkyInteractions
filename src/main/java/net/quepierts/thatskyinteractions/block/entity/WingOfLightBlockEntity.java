@@ -2,10 +2,12 @@ package net.quepierts.thatskyinteractions.block.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.HaloEffectW2SWidget;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.PickupWingOfLightW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
@@ -13,6 +15,7 @@ import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import org.jetbrains.annotations.NotNull;
 
 public class WingOfLightBlockEntity extends AbstractW2SWidgetProviderBlockEntity {
+    public static final ResourceLocation TYPE = ThatSkyInteractions.getLocation("wing_of_light");
     private static final String TAG_XROT = "xRot";
     private static final String TAG_YROT = "yRot";
 
@@ -48,6 +51,11 @@ public class WingOfLightBlockEntity extends AbstractW2SWidgetProviderBlockEntity
         if (tag.contains(TAG_YROT)) {
             this.yRot = tag.getFloat(TAG_YROT);
         }
+    }
+
+    @Override
+    public ResourceLocation type() {
+        return TYPE;
     }
 
     @OnlyIn(Dist.CLIENT)

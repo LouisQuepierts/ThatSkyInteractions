@@ -225,33 +225,17 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
         for (Entity entity : entities) {
             Vec3 position = entity.position();
             Vec3 movement = entity.getDeltaMovement();
-            /*double absY = position.y - cloud.aabb.maxY + 0.35;
-
-            entity.setDeltaMovement(movement.add(
-                    0,
-                    absY < -0.5 ? 0.2 : Math.max(absY * absY * 0.943, 0.2),
-                    0
-            ));
-            entity.resetFallDistance();*/
 
             double distance = cloud.aabb.maxY - position.y;
+            double oscillationForce = Mth.cos((float) Mth.clamp(distance, 0, 1) * Mth.PI + Mth.PI) * 0.1;
 
-            if (!entity.onGround() && distance < 1) {
-                double oscillationForce = Mth.sin((float) (distance * Mth.PI)) * 0.1;
-
-                entity.setDeltaMovement(
-                        movement.x,
-                        movement.y + oscillationForce,
-                        movement.z);
+            if (distance > 2) {
+                oscillationForce = Math.min(0.5f, oscillationForce + (distance - 1.8) / 8);
             }
-
-            if (distance > 2.2) {
-                entity.setDeltaMovement(
-                        movement.x,
-                        movement.y + Math.min(distance - 1.8, 0.5),
-                        movement.z
-                );
-            }
+            entity.setDeltaMovement(
+                    movement.x,
+                    movement.y + oscillationForce,
+                    movement.z);
         }
     }
 

@@ -166,8 +166,10 @@ public class ClientProxy extends CommonProxy {
         Camera camera = event.getCamera();
         Vec3 position = camera.getPosition();
 
-        if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            this.bloomRenderer.prepareBloom();
+        if (stage == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+            this.bloomRenderer.prepare();
+        } else if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+            this.bloomRenderer.blitObjects();
         } else if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             this.cloudRenderer.renderClouds(
                     event.getPoseStack(),

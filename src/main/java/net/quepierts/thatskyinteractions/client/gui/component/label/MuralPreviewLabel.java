@@ -15,6 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.entity.MuralBlockEntity;
+import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -33,6 +34,7 @@ import java.util.function.Consumer;
 @OnlyIn(Dist.CLIENT)
 public class MuralPreviewLabel extends TransparentLabel {
     private static final ResourceLocation PLACEHOLDER = ThatSkyInteractions.getLocation("textures/gui/placeholder.png");
+    private static final ResourceLocation ARROW = ThatSkyInteractions.getLocation("textures/gui/arrow.png");
     private final Consumer<Vector3i> offsetConsumer;
     private final Consumer<Vector3i> rotateConsumer;
     private final Consumer<Vector2i> sizeConsumer;
@@ -107,6 +109,15 @@ public class MuralPreviewLabel extends TransparentLabel {
         float scale = this.scale.getValue();
         RenderUtils.blitXZ(pose, PLACEHOLDER, -48, -48, 112, 112, 4 / scale);
 
+        float alpha = Palette.getShaderAlpha();
+
+        pose.translate(8, -1, 8);
+        RenderSystem.setShaderColor(0, 0, 1, alpha);
+        RenderUtils.blitXZ(pose, ARROW, -8, -56, 16, 16);
+        pose.mulPose(Axis.YN.rotation(Mth.HALF_PI));
+        RenderSystem.setShaderColor(1, 0, 0, alpha);
+        RenderUtils.blitXZ(pose, ARROW, -8, -56, 16, 16);
+        RenderSystem.setShaderColor(1, 1, 1, alpha);
         pose.popPose();
 
         pose.scale(scale, scale, scale);

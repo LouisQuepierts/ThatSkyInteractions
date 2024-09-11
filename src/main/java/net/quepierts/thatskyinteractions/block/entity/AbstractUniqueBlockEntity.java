@@ -2,16 +2,17 @@ package net.quepierts.thatskyinteractions.block.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public abstract class AbstractUUIDBlockEntity extends AbstractUpdatableBlockEntity {
+public abstract class AbstractUniqueBlockEntity extends AbstractUpdatableBlockEntity {
     private UUID uuid;
 
-    public AbstractUUIDBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
+    public AbstractUniqueBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.uuid = UUID.randomUUID();
     }
@@ -30,5 +31,11 @@ public abstract class AbstractUUIDBlockEntity extends AbstractUpdatableBlockEnti
 
     public UUID getUUID() {
         return this.uuid;
+    }
+
+    public abstract ResourceLocation type();
+
+    public boolean shouldRecord() {
+        return true;
     }
 }

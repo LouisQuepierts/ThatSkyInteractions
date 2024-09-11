@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -14,6 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.block.entity.MuralBlockEntity;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
+import net.quepierts.thatskyinteractions.client.render.bloom.BloomBufferSource;
 import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -66,15 +68,14 @@ public class MuralBlockRenderer extends HighlightBlockEntityRenderer<MuralBlockE
         Vector3f v01 = matrix4f.transformPosition(-x,    y, 0, new Vector3f());
         Vector3f v11 = matrix4f.transformPosition( x,    y, 0, new Vector3f());
         Vector3f v10 = matrix4f.transformPosition( x,   -y, 0, new Vector3f());
-        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM.apply(mural.getTextureLocation(), false));
 
+        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM.apply(mural.getTextureLocation(), false), this.bloomRenderer.getFinalTarget());
         vertexConsumer.addVertex(v00.x, v00.y, v00.z, 0xffffffff, 0, 1, combinedOverlay, combinedLight, normal.x, normal.y, normal.z);
         vertexConsumer.addVertex(v01.x, v01.y, v01.z, 0xffffffff, 0, 0, combinedOverlay, combinedLight, normal.x, normal.y, normal.z);
         vertexConsumer.addVertex(v11.x, v11.y, v11.z, 0xffffffff, 1, 0, combinedOverlay, combinedLight, normal.x, normal.y, normal.z);
         vertexConsumer.addVertex(v10.x, v10.y, v10.z, 0xffffffff, 1, 1, combinedOverlay, combinedLight, normal.x, normal.y, normal.z);
 
         poseStack.popPose();
-
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && !player.isSpectator() && player.isShiftKeyDown()) {
             ItemStack itemStack = player.getItemInHand(InteractionHand.MAIN_HAND);

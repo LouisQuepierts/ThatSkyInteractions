@@ -33,7 +33,7 @@ import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+public class WingOfLightBlock extends AbstractUniqueEntityBlock implements SimpleWaterloggedBlock {
     public static final MapCodec<WingOfLightBlock> CODEC = simpleCodec(WingOfLightBlock::new);
     public static final EnumProperty<DoubleBlockHalf> HALF;
     public static final BooleanProperty WATERLOGGED;
@@ -48,19 +48,8 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
         builder.add(HALF, WATERLOGGED);
     }
 
-    /*@Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
-            BlockPos above = pos.above();
-            level.setBlock(
-                    above,
-                    state.setValue(HALF, DoubleBlockHalf.UPPER).setValue(WATERLOGGED, level.getFluidState(above).getType() == Fluids.WATER),
-                    3);
-        }
-    }*/
-
     @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
         if (!level.isClientSide) {
             BlockPos above = pos.above();
@@ -75,8 +64,9 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
         }
     }
 
+    @NotNull
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, CollisionContext context) {
         return context.isHoldingItem(Items.WING_OF_LIGHT.get()) ? Shapes.block() : Shapes.empty();
     }
 
@@ -98,8 +88,9 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
         }
     }
 
+    @NotNull
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState updateShape(BlockState state, @NotNull Direction direction, @NotNull BlockState neighborState, @NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
@@ -107,16 +98,18 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
+    @NotNull
     @Override
     protected FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
-    protected float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+    protected float getShadeBrightness(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos) {
         return 1.0f;
     }
 
+    @NotNull
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
@@ -137,7 +130,7 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
     }
 
     @Override
-    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+    public void animateTick(BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (state.getValue(HALF) == DoubleBlockHalf.UPPER)
             return;
         float x = pos.getX() + 0.1f;
@@ -154,6 +147,8 @@ public class WingOfLightBlock extends BaseEntityBlock implements SimpleWaterlogg
             );
         }
     }
+
+
 
     @Override
     protected void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState newState, boolean movedByPiston) {

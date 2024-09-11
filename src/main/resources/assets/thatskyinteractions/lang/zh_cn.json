@@ -24,5 +24,14 @@
   "interaction.thatskyinteractions.high_five": "击掌",
   "interaction.thatskyinteractions.hug": "拥抱",
   "interaction.thatskyinteractions.double_high_five": "双击掌",
-  "interaction.thatskyinteractions.pat_head": "摸头"
+  "interaction.thatskyinteractions.pat_head": "摸头",
+
+  "block.thatskyinteractions.cloud": "云",
+  "block.thatskyinteractions.wing_of_light": "光翼",
+  "block.thatskyinteractions.mural": "壁画",
+
+  "item.thatskyinteractions.cloud_editor": "云编辑器",
+  "item.thatskyinteractions.cloud_expand": "云放大",
+  "item.thatskyinteractions.cloud_reduce": "云缩小",
+  "tab.tsi": "That Sky Interactions"
 }

@@ -26,5 +26,13 @@
   "interaction.thatskyinteractions.high_five": "High Five",
   "interaction.thatskyinteractions.hug": "Hug",
   "interaction.thatskyinteractions.double_high_five": "Double High Five",
-  "interaction.thatskyinteractions.pat_head": "Pat Head"
+  "interaction.thatskyinteractions.pat_head": "Pat Head",
+
+  "block.thatskyinteractions.cloud": "Cloud",
+  "block.thatskyinteractions.wing_of_light": "Wing Of Light",
+  "block.thatskyinteractions.mural": "Mural",
+
+  "item.thatskyinteractions.cloud_editor": "Cloud Editor",
+  "item.thatskyinteractions.cloud_expand": "Cloud Expand",
+  "item.thatskyinteractions.cloud_reduce": "Cloud Reduce"
 }
