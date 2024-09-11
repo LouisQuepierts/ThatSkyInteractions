@@ -191,6 +191,10 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onChatReceivedPlayer(final ClientChatReceivedEvent.Player event) {
+        if (this.dataCache.unprepared()) {
+            return;
+        }
+
         UUID sender = event.getSender();
         if (this.dataCache.isFriend(sender)) {
             FriendAstrolabeInstance.NodeData data = this.dataCache.getUserData().getNodeData(sender);
@@ -204,6 +208,10 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onRenderNameTag(final RenderNameTagEvent event) {
+        if (this.dataCache.unprepared()) {
+            return;
+        }
+
         Entity entity = event.getEntity();
         UUID uuid = entity.getUUID();
 
@@ -228,13 +236,13 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onPlayerLoggedIn(final PlayerEvent.PlayerLoggedInEvent event) {
-        if (!this.dataCache.prepared())
+        if (this.dataCache.unprepared())
             return;
         this.dataCache.setOnline(event.getEntity(), true);
     }
 
     private void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!this.dataCache.prepared())
+        if (this.dataCache.unprepared())
             return;
 
         Player player = event.getEntity();

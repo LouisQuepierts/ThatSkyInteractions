@@ -56,8 +56,9 @@ public class ClientTSIDataCache {
         ThatSkyInteractions.LOGGER.info("Update UserData");
         ClientLevel level = Minecraft.getInstance().level;
 
-        if (level == null)
+        if (level == null) {
             return;
+        }
 
         List<AbstractClientPlayer> players = level.players();
         Set<UUID> uuids = new HashSet<>(players.size());
@@ -89,16 +90,16 @@ public class ClientTSIDataCache {
         LocalPlayer player = Minecraft.getInstance().player;
         PlayerPair pair = new PlayerPair(other, player.getUUID());
         return relationship.computeIfAbsent(other, key -> new InteractTreeInstance(pair, tree, RelationshipSavedData.FRIEND_INTERACT_TREE));
-    }
 
-    @NotNull
+    }
+    @Nullable
     public InteractTree getTree() {
-        return Objects.requireNonNull(this.tree, "Attempted to call getTree before client data have synced.");
+        return this.tree;
     }
 
-    @NotNull
+    @Nullable
     public TSIUserData getUserData() {
-        return Objects.requireNonNull(this.userData, "Attempted to call getUserData before client data have synced.");
+        return this.userData;
     }
 
     public Object2ObjectMap<UUID, InteractTreeInstance> relationships() {
@@ -113,15 +114,27 @@ public class ClientTSIDataCache {
     }
 
     public boolean isFriend(UUID player) {
-        return this.getUserData().isFriend(player);
+        if (this.userData == null) {
+            return false;
+        }
+
+        return this.userData.isFriend(player);
     }
 
     public boolean isLikedFriend(UUID player) {
-        return this.getUserData().isLiked(player);
+        if (this.userData == null) {
+            return false;
+        }
+
+        return this.userData.isLiked(player);
     }
 
     public void setOnline(Player player, boolean online) {
-        Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> pair = this.getUserData().cache().get(player.getUUID());
+        if (this.userData == null) {
+            return;
+        }
+
+        Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> pair = this.userData.cache().get(player.getUUID());
         if (pair == null) {
             return;
         }
@@ -132,24 +145,41 @@ public class ClientTSIDataCache {
         }
     }
 
-    private @Nullable Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> addFriend(UUID uuid) {
-        return this.getUserData().addFriend(uuid);
+    @Nullable
+    private Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> addFriend(UUID uuid) {
+        if (this.userData == null) {
+            return null;
+        }
+
+        return this.userData.addFriend(uuid);
     }
 
     public void likeFriend(UUID uuid, boolean update) {
-        if (this.getUserData().likeFriend(uuid) && update) {
+        if (this.userData == null) {
+            return;
+        }
+        if (this.userData.likeFriend(uuid) && update) {
             SimpleAnimator.getNetwork().update(new UserDataModifyPacket.Like(uuid));
         }
     }
 
     public void unlikeFriend(UUID uuid, boolean update) {
-        if (this.getUserData().unlikeFriend(uuid) && update) {
+        if (this.userData == null) {
+            return;
+        }
+        
+        if (this.userData.unlikeFriend(uuid) && update) {
             SimpleAnimator.getNetwork().update(new UserDataModifyPacket.Unlike(uuid));
         }
     }
 
     public void pickupWingOfLight(WingOfLightBlockEntity wol, boolean update) {
-        TSIUserData data = this.getUserData();
+        TSIUserData data = this.userData;
+
+        if (data == null) {
+            return;
+        }
+
         if (!data.isPickedUp(wol)) {
             UUID uuid = wol.getUUID();
             data.pickupWingOfLight(uuid);
@@ -162,22 +192,34 @@ public class ClientTSIDataCache {
     }
 
     public void sendLight(UUID target, boolean update) {
-        if (this.getUserData().sendLight(target) && update) {
+        if (this.userData == null) {
+            return;
+        }
+
+        if (this.userData.sendLight(target) && update) {
             SimpleAnimator.getNetwork().update(new AstrolabeOperationPacket.Ignite(target));
         }
     }
 
     public void awardLight(UUID target) {
-        this.getUserData().awardLight(target);
+        if (this.userData == null) {
+            return;
+        }
+
+        this.userData.awardLight(target);
     }
 
     public void gainLight(UUID uuid, boolean update) {
-        if (this.getUserData().gainLight(uuid) && update) {
+        if (this.userData == null) {
+            return;
+        }
+
+        if (this.userData.gainLight(uuid) && update) {
             SimpleAnimator.getNetwork().update(new AstrolabeOperationPacket.Gain(uuid));
         }
     }
 
-    public boolean prepared() {
-        return this.userData != null;
+    public boolean unprepared() {
+        return this.userData == null;
     }
 }
