@@ -16,6 +16,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.block.entity.MuralBlockEntity;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
 import net.quepierts.thatskyinteractions.client.render.bloom.BloomBufferSource;
+import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -57,33 +58,19 @@ public class MuralBlockRenderer extends HighlightBlockEntityRenderer<MuralBlockE
                 )
         );
 
-        PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix4f = pose.pose();
+        poseStack.scale(sizeF.x / 16f, sizeF.y / 16f, 1);
 
-        final float x = sizeF.x() / 32f;
-        final float y = sizeF.y() / 32f;
-
-        Vector3f normal = pose.transformNormal(0, 1, 0, new Vector3f());
-        Vector3f v00 = matrix4f.transformPosition(-x,   -y, 0, new Vector3f());
-        Vector3f v01 = matrix4f.transformPosition(-x,    y, 0, new Vector3f());
-        Vector3f v11 = matrix4f.transformPosition( x,    y, 0, new Vector3f());
-        Vector3f v10 = matrix4f.transformPosition( x,   -y, 0, new Vector3f());
-
-        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM.apply(mural.getTextureLocation(), false), this.bloomRenderer.getFinalTarget());
-        vertexConsumer.addVertex(v00.x, v00.y, v00.z, 0xffffffff, 0, 1, combinedOverlay, combinedLight, normal.x, normal.y, normal.z);
-        vertexConsumer.addVertex(v01.x, v01.y, v01.z, 0xffffffff, 0, 0, combinedOverlay, combinedLight, normal.x, normal.y, normal.z);
-        vertexConsumer.addVertex(v11.x, v11.y, v11.z, 0xffffffff, 1, 0, combinedOverlay, combinedLight, normal.x, normal.y, normal.z);
-        vertexConsumer.addVertex(v10.x, v10.y, v10.z, 0xffffffff, 1, 1, combinedOverlay, combinedLight, normal.x, normal.y, normal.z);
+        this.bloomRenderer.batchRender(VertexBufferManager.QUAD, poseStack.last().pose(), mural.getTextureLocation());
 
         poseStack.popPose();
-        LocalPlayer player = Minecraft.getInstance().player;
+        /*LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && !player.isSpectator() && player.isShiftKeyDown()) {
             ItemStack itemStack = player.getItemInHand(InteractionHand.MAIN_HAND);
 
             if (itemStack.is(Items.MURAL)) {
                 this.renderHighLight(poseStack, 0xffffffff, combinedLight, combinedOverlay);
             }
-        }
+        }*/
 
         this.bloomRenderer.setApplyBloom();
     }

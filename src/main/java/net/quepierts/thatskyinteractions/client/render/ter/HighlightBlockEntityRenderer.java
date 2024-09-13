@@ -11,6 +11,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
 import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
+import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class HighlightBlockEntityRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
@@ -23,10 +24,12 @@ public abstract class HighlightBlockEntityRenderer<T extends BlockEntity> implem
     }
 
     protected void renderHighLight(PoseStack poseStack, int color, int combinedLight, int combinedOverlay) {
-        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM.apply(RenderTypes.TEXTURE, false));
-        CUBE.compile(poseStack.last(), vertexConsumer, combinedLight, combinedOverlay, color);
+//        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM.apply(RenderTypes.TEXTURE, false));
+//        CUBE.compile(poseStack.last(), vertexConsumer, combinedLight, combinedOverlay, color);
 
-        this.bloomRenderer.setApplyBloom();
+        poseStack.pushPose();
+        this.bloomRenderer.batchRender(VertexBufferManager.CUBE, poseStack.last().pose(), RenderTypes.TEXTURE);
+        poseStack.popPose();
     }
 
     static {

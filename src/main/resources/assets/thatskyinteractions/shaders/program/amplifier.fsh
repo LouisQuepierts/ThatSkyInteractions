@@ -14,7 +14,7 @@ void main() {
     blurred = max(texture(DiffuseSampler, texCoord + step), blurred);
     blurred = max(texture(DiffuseSampler, texCoord + step * 5), blurred);
     blurred = max(texture(DiffuseSampler, texCoord - step), blurred);
-    blurred = max(texture(DiffuseSampler, texCoord - step * 5.2), blurred);
+    blurred = max(texture(DiffuseSampler, texCoord - step * 5), blurred);
 
     fragColor = blurred;
 }

@@ -15,6 +15,14 @@ public abstract class AbstractUniqueEntityBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected void onPlace(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean movedByPiston) {
+        if (level instanceof ServerLevel serverLevel && level.getBlockEntity(pos) instanceof AbstractUniqueBlockEntity entity) {
+            UniqueBlockEntitySavedData data = UniqueBlockEntitySavedData.getData(serverLevel);
+            data.add(entity);
+        }
+    }
+
+    @Override
     protected void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState newState, boolean movedByPiston) {
         if (level instanceof ServerLevel serverLevel && level.getBlockEntity(pos) instanceof AbstractUniqueBlockEntity entity) {
             UniqueBlockEntitySavedData data = UniqueBlockEntitySavedData.getData(serverLevel);

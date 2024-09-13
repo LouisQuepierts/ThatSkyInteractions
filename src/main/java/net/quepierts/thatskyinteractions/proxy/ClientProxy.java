@@ -24,6 +24,7 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -54,6 +55,7 @@ import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
 import net.quepierts.thatskyinteractions.client.render.layer.CandleLayer;
 import net.quepierts.thatskyinteractions.client.render.layer.PartPoseResolveLayer;
+import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.EffectDistributorManager;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
@@ -84,6 +86,8 @@ public class ClientProxy extends CommonProxy {
     @NotNull
     private final EffectDistributorManager particleDistributorManager;
     @NotNull
+    private final VertexBufferManager vertexBufferManager;
+    @NotNull
     private final CloudRenderer cloudRenderer;
     @NotNull
     private final BloomRenderer bloomRenderer;
@@ -100,8 +104,9 @@ public class ClientProxy extends CommonProxy {
         this.fakePlayerDisplayHandler = new FakePlayerDisplayHandler(this);
         this.cameraHandler = new CameraHandler();
         this.particleDistributorManager = new EffectDistributorManager();
+        this.vertexBufferManager = new VertexBufferManager();
         this.cloudRenderer = new CloudRenderer();
-        this.bloomRenderer = new BloomRenderer();
+        this.bloomRenderer = new BloomRenderer(this.vertexBufferManager);
 
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(InputEvent.MouseScrollingEvent.class, this::onMouseScrolling);
@@ -118,6 +123,7 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.class, this::onRenderLevelStage);
         NeoForge.EVENT_BUS.addListener(RenderHandEvent.class, this::onRenderHand);
         NeoForge.EVENT_BUS.addListener(ClientChatReceivedEvent.Player.class, this::onChatReceivedPlayer);
+        NeoForge.EVENT_BUS.addListener(GameShuttingDownEvent.class, this::onGameShuttingDown);
         NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, cameraHandler::onComputeCameraAngles);
         NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Pre.class, fakePlayerDisplayHandler::onRenderPlayerPre);
         NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Post.class, fakePlayerDisplayHandler::onRenderPlayerPost);
@@ -141,11 +147,20 @@ public class ClientProxy extends CommonProxy {
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, BlockEntityRenderers::onRegisterBER);
         modBus.addListener(RegisterRenderBuffersEvent.class, RenderTypes::onRegisterRenderBuffers);
         modBus.addListener(BuildCreativeModeTabContentsEvent.class, this::onBuildCreativeTab);
+        modBus.addListener(RegisterClientReloadListenersEvent.class, this::onClientReloadListeners);
 
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         Particles.REGISTER.register(modBus);
         CreativeModeTabs.REGISTER.register(modBus);
+    }
+
+    private void onClientReloadListeners(RegisterClientReloadListenersEvent event) {
+        this.vertexBufferManager.setReload();
+    }
+
+    private void onGameShuttingDown(final GameShuttingDownEvent event) {
+        this.vertexBufferManager.cleanup();
     }
 
     private void onBuildCreativeTab(BuildCreativeModeTabContentsEvent event) {
@@ -166,10 +181,16 @@ public class ClientProxy extends CommonProxy {
         Camera camera = event.getCamera();
         Vec3 position = camera.getPosition();
 
-        if (stage == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-            this.bloomRenderer.prepare();
+
+        if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            this.vertexBufferManager.tick();
         } else if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            this.bloomRenderer.blitObjects();
+            this.bloomRenderer.drawObjects(
+                    event.getPoseStack(),
+                    event.getModelViewMatrix(),
+                    event.getProjectionMatrix(),
+                    position
+            );
         } else if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             this.cloudRenderer.renderClouds(
                     event.getPoseStack(),
@@ -179,7 +200,12 @@ public class ClientProxy extends CommonProxy {
                     position
             );
 
-            this.bloomRenderer.postBloom(partialTick);
+            this.bloomRenderer.processBloom(
+                    partialTick,
+                    event.getPoseStack(),
+                    event.getProjectionMatrix(),
+                    event.getModelViewMatrix(),
+                    position);
             /*Window window = Minecraft.getInstance().getWindow();
 
             RenderTarget target = this.cloudRenderer.getFinalTarget();
@@ -197,6 +223,9 @@ public class ClientProxy extends CommonProxy {
 
         UUID sender = event.getSender();
         if (this.dataCache.isFriend(sender)) {
+            if (this.dataCache.unprepared()) {
+                return;
+            }
             FriendAstrolabeInstance.NodeData data = this.dataCache.getUserData().getNodeData(sender);
             if (data == null) {
                 return;
@@ -218,6 +247,10 @@ public class ClientProxy extends CommonProxy {
         if (this.blocked(uuid)) {
             event.setCanRender(TriState.FALSE);
         } else if (this.dataCache.isFriend(uuid)) {
+            if (this.dataCache.unprepared()) {
+                return;
+            }
+            assert this.dataCache.getUserData() != null;
             FriendAstrolabeInstance.NodeData data = this.dataCache.getUserData().getNodeData(uuid);
 
             if (data == null) {
@@ -431,15 +464,24 @@ public class ClientProxy extends CommonProxy {
     }
 
     public boolean blocked(UUID player) {
+        if (this.dataCache.unprepared()) {
+            return false;
+        }
         return this.dataCache.getUserData().isBlocked(player);
     }
 
     public void block(UUID player) {
+        if (this.dataCache.unprepared()) {
+            return;
+        }
         this.dataCache.getUserData().block(player);
         World2ScreenWidgetLayer.INSTANCE.remove(player);
     }
 
     public void unblock(UUID player) {
+        if (this.dataCache.unprepared()) {
+            return;
+        }
         this.dataCache.getUserData().unblock(player);
     }
 
@@ -485,5 +527,10 @@ public class ClientProxy extends CommonProxy {
     @NotNull
     public BloomRenderer getBloomRenderer() {
         return this.bloomRenderer;
+    }
+
+    @NotNull
+    public VertexBufferManager getVertexBufferManager() {
+        return this.vertexBufferManager;
     }
 }

@@ -2,49 +2,157 @@ package net.quepierts.thatskyinteractions.client.render.bloom;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
+import net.minecraft.world.phys.Vec3;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
+import net.quepierts.thatskyinteractions.client.registry.Shaders;
+import net.quepierts.thatskyinteractions.client.render.pipeline.BatchRenderer;
+import net.quepierts.thatskyinteractions.client.render.pipeline.RenderPrepareData;
+import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
+import org.joml.Matrix4f;
 
 import java.io.IOException;
 
 public class BloomRenderer {
     public static final ResourceLocation EFFECT_LOCATION = ThatSkyInteractions.getLocation("shaders/post/bloom.json");
 
+    private final VertexBufferManager vertexBufferManager;
+    private final BatchRenderer batchRenderer;
     private PostChain effect;
     private RenderTarget finalTarget;
     private RenderTarget surroundTarget;
 
     private boolean shouldApplyBloom = false;
 
-    public void prepare() {
+    public BloomRenderer(VertexBufferManager vertexBufferManager) {
+        this.vertexBufferManager = vertexBufferManager;
+        this.batchRenderer = new BatchRenderer(vertexBufferManager);
+    }
+
+    public void drawObjects(PoseStack poseStack, Matrix4f frustumMatrix, Matrix4f projectionMatrix, Vec3 cameraPosition) {
+        if (!this.shouldApplyBloom) {
+            return;
+        }
+
         this.finalTarget.clear(Minecraft.ON_OSX);
         this.surroundTarget.clear(Minecraft.ON_OSX);
 
         Minecraft minecraft = Minecraft.getInstance();
+        RenderTarget mainRenderTarget = minecraft.getMainRenderTarget();
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
-        RenderUtils.blitDepth(minecraft.getMainRenderTarget(), this.finalTarget, width, height);
-    }
+        RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
 
-    public void blitObjects() {
         this.finalTarget.bindWrite(false);
-        RenderTypes.getBufferSource().endBatch();
-        Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+        RenderTypes.getBufferSource().endBatch(RenderTypes.WOL);
+
+        float fx = (float) cameraPosition.x;
+        float fy = (float) cameraPosition.y;
+        float fz = (float) cameraPosition.z;
+
+        poseStack.pushPose();
+        poseStack.mulPose(frustumMatrix);
+
+        RenderSystem.disableCull();
+        RenderSystem.enableDepthTest();
+
+        ShaderInstance shader = Shaders.Batch.getLightedShader();
+        RenderSystem.setupShaderLights(shader);
+
+        if (shader.CHUNK_OFFSET != null) {
+            shader.CHUNK_OFFSET.set(
+                    -fx,
+                    -fy,
+                    -fz
+            );
+        }
+
+        this.finalTarget.bindWrite(false);
+        this.batchRenderer.endBatch(projectionMatrix, poseStack.last().pose());
+
+        RenderSystem.enableCull();
+        RenderSystem.disableDepthTest();
+
+        poseStack.popPose();
+
+        VertexBuffer.unbind();
+        mainRenderTarget.bindWrite(false);
     }
 
-    public void postBloom(float deltaTracker) {
+    public void drawBatched(PoseStack poseStack, Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, Vec3 cameraPosition) {
+        float fx = (float) cameraPosition.x;
+        float fy = (float) cameraPosition.y;
+        float fz = (float) cameraPosition.z;
+
+        RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
+
+        poseStack.pushPose();
+        poseStack.mulPose(frustumMatrix);
+
+        RenderSystem.disableCull();
+        RenderSystem.enableDepthTest();
+
+        ShaderInstance shader = Shaders.Batch.getLightedShader();
+        RenderSystem.setupShaderLights(shader);
+
+        if (shader.CHUNK_OFFSET != null) {
+            shader.CHUNK_OFFSET.set(
+                    -fx,
+                    -fy,
+                    -fz
+            );
+        }
+
+        this.finalTarget.bindWrite(false);
+        this.batchRenderer.endBatch(projectionMatrix, poseStack.last().pose());
+
+        RenderSystem.enableCull();
+        RenderSystem.disableDepthTest();
+
+        poseStack.popPose();
+
+        VertexBuffer.unbind();
+        mainRenderTarget.bindWrite(false);
+    }
+
+    public void processBloom(float deltaTracker, final PoseStack poseStack, final Matrix4f projectionMatrix, final Matrix4f frustumMatrix, Vec3 position) {
         if (!this.shouldApplyBloom) {
             return;
         }
 
         this.finalTarget.bindWrite(false);
+/*
+        RenderSystem.disableCull();
+        RenderSystem.enableDepthTest();
+
+        ShaderInstance cloudShader = Shaders.getCloudShader();
+        RenderSystem.setupShaderLights(cloudShader);
+        FogRenderer.levelFogColor();
+        if (cloudShader.GAME_TIME != null) {
+            cloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
+        }
+        VertexBuffer buffer = this.vertexBufferManager.get(VertexBufferManager.CUBE);
+        buffer.bind();
+
+        this.finalTarget.bindWrite(false);
+        buffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader);
+
+        RenderSystem.enableCull();
+        RenderSystem.disableDepthTest();
+
+        VertexBuffer.unbind();*/
+
         Minecraft minecraft = Minecraft.getInstance();
         RenderTarget mainRenderTarget = minecraft.getMainRenderTarget();
 
@@ -98,6 +206,24 @@ public class BloomRenderer {
 
     public RenderTarget getFinalTarget() {
         return this.finalTarget;
+    }
+
+    public void batchRender(
+            final ResourceLocation meshLocation,
+            final Matrix4f transformation,
+            final ResourceLocation textureLocation
+    ) {
+        this.batchRenderer.toBatch(meshLocation, new RenderPrepareData(
+                Shaders.Batch.getGlowShader(),
+                new Matrix4f(transformation),
+                textureLocation
+        ));
+
+        this.setApplyBloom();
+    }
+
+    public void cleanup() {
+        this.batchRenderer.cleanup();
     }
 
     public VertexConsumer getBuffer(ResourceLocation location) {

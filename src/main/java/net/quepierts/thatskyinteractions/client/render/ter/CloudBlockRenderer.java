@@ -51,10 +51,10 @@ public class CloudBlockRenderer extends HighlightBlockEntityRenderer<AbstractClo
             int combinedLight,
             int combinedOverlay
     ) {
+        BlockPos pos = cloud.getBlockPos();
         if (cloud.shouldRecompile()) {
             Vector3i size0 = cloud.getSize();
             Vector3i offset = cloud.getOffset();
-            BlockPos pos = cloud.getBlockPos();
             Vector3f position = new Vector3f(pos.getX(), pos.getY(), pos.getZ()).add(
                     offset.x / 16.0f - 0.25f,
                     offset.y / 16.0f - 0.25f,

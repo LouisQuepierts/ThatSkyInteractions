@@ -25,6 +25,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.ICloud;
 import net.quepierts.thatskyinteractions.client.registry.Shaders;
+import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Matrix4f;
 
@@ -46,8 +47,11 @@ public class CloudRenderer {
 
     public static final int SINGLE_CLOUD_SIZE = 2;
     private final Map<ICloud, ObjectList<CloudData>> normalClouds = new Object2ObjectOpenHashMap<>();
-    private VertexBuffer normalBuffer;
+    private final Map<ICloud, ObjectList<CloudData>> vanillaClouds = new Object2ObjectOpenHashMap<>();
+    private VertexBuffer simpleCloudBuffer;
+    private VertexBuffer vanillaCloudBuffer;
     private boolean rebuildNormalClouds;
+    private boolean rebuildVanillaClouds;
     private ClientLevel level;
 
     private PostChain effect;
@@ -95,22 +99,22 @@ public class CloudRenderer {
 
         if (this.rebuildNormalClouds) {
             this.rebuildNormalClouds = false;
-            if (this.normalBuffer != null) {
-                this.normalBuffer.close();
+            if (this.simpleCloudBuffer != null) {
+                this.simpleCloudBuffer.close();
             }
 
             MeshData meshData = this.buildClouds(Tesselator.getInstance(), dx, dy, dz, cloudColor);
             if (meshData != null) {
-                this.normalBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-                this.normalBuffer.bind();
-                this.normalBuffer.upload(meshData);
+                this.simpleCloudBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+                this.simpleCloudBuffer.bind();
+                this.simpleCloudBuffer.upload(meshData);
                 VertexBuffer.unbind();
             } else {
-                this.normalBuffer = null;
+                this.simpleCloudBuffer = null;
             }
         }
 
-        if (this.normalBuffer != null) {
+        if (this.simpleCloudBuffer != null) {
             RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
 
             final int width = this.finalTarget.viewWidth;
@@ -119,14 +123,14 @@ public class CloudRenderer {
             this.finalTarget.clear(Minecraft.ON_OSX);
             RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
 
-            if (this.normalBuffer != null) {
+            if (this.simpleCloudBuffer != null) {
                 poseStack.pushPose();
                 poseStack.mulPose(frustumMatrix);
 
                 RenderSystem.disableCull();
                 RenderSystem.enableDepthTest();
 
-                if (this.normalBuffer != null) {
+                if (this.simpleCloudBuffer != null) {
                     ShaderInstance cloudShader = Shaders.getCloudShader();
                     RenderSystem.setupShaderLights(cloudShader);
                     FogRenderer.levelFogColor();
@@ -141,10 +145,10 @@ public class CloudRenderer {
                                 -fz
                         );
                     }
-                    this.normalBuffer.bind();
+                    this.simpleCloudBuffer.bind();
 
                     this.finalTarget.bindWrite(false);
-                    this.normalBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader);
+                    this.simpleCloudBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader);
                 }
 
                 RenderSystem.enableCull();
@@ -158,6 +162,7 @@ public class CloudRenderer {
                 poseStack.popPose();
             }
 
+            VertexBuffer.unbind();
             mainRenderTarget.bindWrite(false);
 //            RenderUtils.blitDepthToScreen(width, height);
             RenderUtils.bloomBlit(this.finalTarget, mainRenderTarget, width, height, 1.0f);
@@ -207,9 +212,9 @@ public class CloudRenderer {
     }
 
     public void reset() {
-        if (this.normalBuffer != null) {
-            this.normalBuffer.close();
-            this.normalBuffer = null;
+        if (this.simpleCloudBuffer != null) {
+            this.simpleCloudBuffer.close();
+            this.simpleCloudBuffer = null;
         }
 
         this.normalClouds.clear();
