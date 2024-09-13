@@ -3,13 +3,10 @@ package net.quepierts.thatskyinteractions.client.render.pipeline;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.thatskyinteractions.client.registry.Shaders;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Map;

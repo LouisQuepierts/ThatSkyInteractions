@@ -25,7 +25,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.ICloud;
 import net.quepierts.thatskyinteractions.client.registry.Shaders;
-import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Matrix4f;
 

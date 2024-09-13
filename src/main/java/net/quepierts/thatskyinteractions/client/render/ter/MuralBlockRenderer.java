@@ -1,25 +1,15 @@
 package net.quepierts.thatskyinteractions.client.render.ter;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.block.entity.MuralBlockEntity;
-import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
-import net.quepierts.thatskyinteractions.client.render.bloom.BloomBufferSource;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
-import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.client.render.pipeline;
 
-import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
