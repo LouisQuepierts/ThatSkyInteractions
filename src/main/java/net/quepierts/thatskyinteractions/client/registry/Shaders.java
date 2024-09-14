@@ -9,7 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.render.pipeline.TransformShader;
+import net.quepierts.thatskyinteractions.client.render.pipeline.BatchShaderInstance;
 import net.quepierts.thatskyinteractions.proxy.ClientProxy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -176,38 +176,38 @@ public class Shaders {
     }
 
     public static final class Batch {
-        private static TransformShader lighted;
+        private static BatchShaderInstance lighted;
 
-        private static TransformShader glow;
+        private static BatchShaderInstance glow;
 
         @NotNull
-        public static TransformShader getLightedShader() {
+        public static BatchShaderInstance getLightedShader() {
             return Objects.requireNonNull(lighted, "Attempted to call getLightedShader before shaders have finished loading.");
         }
 
         @NotNull
-        public static TransformShader getGlowShader() {
+        public static BatchShaderInstance getGlowShader() {
             return Objects.requireNonNull(glow, "Attempted to call getGlowShader before shaders have finished loading.");
         }
 
         private static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
             ResourceProvider provider = event.getResourceProvider();
             event.registerShader(
-                    new TransformShader(
+                    new BatchShaderInstance(
                             provider,
                             ThatSkyInteractions.getLocation("batch/lighted"),
                             DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL
                     ),
-                    (shader) -> lighted = (TransformShader) shader
+                    (shader) -> lighted = (BatchShaderInstance) shader
             );
 
             event.registerShader(
-                    new TransformShader(
+                    new BatchShaderInstance(
                             provider,
                             ThatSkyInteractions.getLocation("batch/glow"),
                             DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL
                     ),
-                    (shader) -> glow = (TransformShader) shader
+                    (shader) -> glow = (BatchShaderInstance) shader
             );
         }
     }

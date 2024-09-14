@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.client.render.pipeline;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -54,8 +55,36 @@ public class BatchRenderer {
         }
 
         vertexBuffer.bind();
+
+        BatchShaderInstance using = null;
         for (IRenderAction action : batch) {
+            if (action.shader() != using) {
+                if (using != null) {
+                    using.clear();
+                }
+
+                using = action.shader();
+
+                if (using.MODEL_VIEW_MATRIX != null) {
+                    using.MODEL_VIEW_MATRIX.set(frustumMatrix);
+                }
+
+                if (using.PROJECTION_MATRIX != null) {
+                    using.PROJECTION_MATRIX.set(projectionMatrix);
+                }
+
+                if (using.COLOR_MODULATOR != null) {
+                    using.COLOR_MODULATOR.set(RenderSystem.getShaderColor());
+                }
+
+                using.apply();
+            }
+
             action.apply(vertexBuffer, projectionMatrix, frustumMatrix);
+        }
+
+        if (using != null) {
+            using.clear();
         }
         VertexBuffer.unbind();
 
