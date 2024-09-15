@@ -40,4 +40,8 @@ public class Items {
     public static final DeferredHolder<Item, MuralItem> MURAL = REGISTER.register(
             "mural", MuralItem::new
     );
+
+    public static final DeferredHolder<Item, CandleClusterItem> CANDLE_CLUSTER = REGISTER.register(
+            "candle_cluster", CandleClusterItem::new
+    );
 }

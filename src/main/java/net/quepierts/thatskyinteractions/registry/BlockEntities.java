@@ -6,10 +6,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.entity.ColoredCloudBlockEntity;
-import net.quepierts.thatskyinteractions.block.entity.MuralBlockEntity;
-import net.quepierts.thatskyinteractions.block.entity.SimpleCloudBlockEntity;
-import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.*;
 
 public class BlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(
@@ -30,5 +27,9 @@ public class BlockEntities {
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MuralBlockEntity>> MURAL = REGISTER.register(
             "mural", () -> BlockEntityType.Builder.of(MuralBlockEntity::new, Blocks.MURAL.get()).build(DSL.remainderType())
+    );
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CandleClusterBlockEntity>> CANDLE_CLUSTER = REGISTER.register(
+            "candle_cluster", () -> BlockEntityType.Builder.of(CandleClusterBlockEntity::new, Blocks.CANDLE_CLUSTER.get()).build(DSL.remainderType())
     );
 }

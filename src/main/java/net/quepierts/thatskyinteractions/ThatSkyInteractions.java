@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.neoforged.api.distmarker.Dist;
@@ -38,6 +39,10 @@ public class ThatSkyInteractions {
 
     public static ResourceLocation getLocation(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    }
+
+    public static ModelResourceLocation getModelLocation(String path) {
+        return new ModelResourceLocation(getLocation(path), "vbo");
     }
 
     public CommonProxy getProxy() {

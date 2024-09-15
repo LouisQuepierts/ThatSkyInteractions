@@ -8,8 +8,8 @@ import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraft.world.phys.Vec3;
@@ -55,64 +55,12 @@ public class BloomRenderer {
         RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
 
         this.finalTarget.bindWrite(false);
-        RenderTypes.getBufferSource().endBatch(RenderTypes.WOL);
-
-        float fx = (float) cameraPosition.x;
-        float fy = (float) cameraPosition.y;
-        float fz = (float) cameraPosition.z;
 
         poseStack.pushPose();
         poseStack.mulPose(frustumMatrix);
 
         RenderSystem.disableCull();
         RenderSystem.enableDepthTest();
-
-        ShaderInstance shader = Shaders.Batch.getLightedShader();
-        RenderSystem.setupShaderLights(shader);
-
-        if (shader.CHUNK_OFFSET != null) {
-            shader.CHUNK_OFFSET.set(
-                    -fx,
-                    -fy,
-                    -fz
-            );
-        }
-
-        this.finalTarget.bindWrite(false);
-        this.batchRenderer.endBatch(projectionMatrix, poseStack.last().pose());
-
-        RenderSystem.enableCull();
-        RenderSystem.disableDepthTest();
-
-        poseStack.popPose();
-
-        VertexBuffer.unbind();
-        mainRenderTarget.bindWrite(false);
-    }
-
-    public void drawBatched(PoseStack poseStack, Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, Vec3 cameraPosition) {
-        float fx = (float) cameraPosition.x;
-        float fy = (float) cameraPosition.y;
-        float fz = (float) cameraPosition.z;
-
-        RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
-
-        poseStack.pushPose();
-        poseStack.mulPose(frustumMatrix);
-
-        RenderSystem.disableCull();
-        RenderSystem.enableDepthTest();
-
-        ShaderInstance shader = Shaders.Batch.getLightedShader();
-        RenderSystem.setupShaderLights(shader);
-
-        if (shader.CHUNK_OFFSET != null) {
-            shader.CHUNK_OFFSET.set(
-                    -fx,
-                    -fy,
-                    -fz
-            );
-        }
 
         this.finalTarget.bindWrite(false);
         this.batchRenderer.endBatch(projectionMatrix, poseStack.last().pose());
@@ -132,27 +80,6 @@ public class BloomRenderer {
         }
 
         this.finalTarget.bindWrite(false);
-/*
-        RenderSystem.disableCull();
-        RenderSystem.enableDepthTest();
-
-        ShaderInstance cloudShader = Shaders.getCloudShader();
-        RenderSystem.setupShaderLights(cloudShader);
-        FogRenderer.levelFogColor();
-        if (cloudShader.GAME_TIME != null) {
-            cloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
-        }
-        VertexBuffer buffer = this.vertexBufferManager.get(VertexBufferManager.CUBE);
-        buffer.bind();
-
-        this.finalTarget.bindWrite(false);
-        buffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader);
-
-        RenderSystem.enableCull();
-        RenderSystem.disableDepthTest();
-
-        VertexBuffer.unbind();*/
-
         Minecraft minecraft = Minecraft.getInstance();
         RenderTarget mainRenderTarget = minecraft.getMainRenderTarget();
 
@@ -209,7 +136,7 @@ public class BloomRenderer {
     }
 
     public void batchRender(
-            final ResourceLocation meshLocation,
+            final ModelResourceLocation meshLocation,
             final Matrix4f transformation,
             final ResourceLocation textureLocation
     ) {

@@ -2,16 +2,14 @@ package net.quepierts.thatskyinteractions.registry;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.CloudBlock;
-import net.quepierts.thatskyinteractions.block.ColoredCloudBlock;
-import net.quepierts.thatskyinteractions.block.MuralBlock;
-import net.quepierts.thatskyinteractions.block.WingOfLightBlock;
+import net.quepierts.thatskyinteractions.block.*;
 
 public class Blocks {
     public static final DeferredRegister<Block> REGISTER = DeferredRegister.create(
@@ -71,6 +69,18 @@ public class Blocks {
                             .isValidSpawn(net.minecraft.world.level.block.Blocks::never)
                             .noTerrainParticles()
                             .pushReaction(PushReaction.BLOCK)
+            )
+    );
+
+    public static final DeferredHolder<Block, CandleClusterBlock> CANDLE_CLUSTER = REGISTER.register(
+            "candle_cluster", () -> new CandleClusterBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_RED)
+                            .noOcclusion()
+                            .strength(0.1F)
+                            .sound(SoundType.CANDLE)
+                            .pushReaction(PushReaction.BLOCK)
+                            .lightLevel(CandleClusterBlock.LIGHT_EMISSION)
             )
     );
 }

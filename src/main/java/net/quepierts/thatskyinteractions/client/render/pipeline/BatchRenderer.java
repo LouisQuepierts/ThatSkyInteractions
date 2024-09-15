@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
@@ -15,14 +15,14 @@ import java.util.Map;
 @OnlyIn(Dist.CLIENT)
 public class BatchRenderer {
     private final VertexBufferManager vertexBufferManager;
-    private final Map<ResourceLocation, List<IRenderAction>> batches;
+    private final Map<ModelResourceLocation, List<IRenderAction>> batches;
 
     public BatchRenderer(VertexBufferManager vertexBufferManager) {
         this.vertexBufferManager = vertexBufferManager;
         this.batches = new Object2ObjectOpenHashMap<>();
     }
 
-    public void toBatch(ResourceLocation meshLocation, IRenderAction action) {
+    public void toBatch(ModelResourceLocation meshLocation, IRenderAction action) {
         List<IRenderAction> batch = this.batches.computeIfAbsent(meshLocation, (u) -> new ObjectArrayList<>());
         batch.add(action);
     }
@@ -31,13 +31,13 @@ public class BatchRenderer {
             final Matrix4f projectionMatrix,
             final Matrix4f frustumMatrix
     ) {
-        for (ResourceLocation location : this.batches.keySet()) {
+        for (ModelResourceLocation location : this.batches.keySet()) {
             this.endBatch(location, projectionMatrix, frustumMatrix);
         }
     }
 
     public void endBatch(
-            final ResourceLocation meshLocation,
+            final ModelResourceLocation meshLocation,
             final Matrix4f projectionMatrix,
             final Matrix4f frustumMatrix
     ) {

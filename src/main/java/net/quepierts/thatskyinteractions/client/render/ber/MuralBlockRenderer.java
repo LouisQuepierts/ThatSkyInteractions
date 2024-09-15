@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.client.render.ter;
+package net.quepierts.thatskyinteractions.client.render.ber;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;

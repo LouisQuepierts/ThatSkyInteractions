@@ -1,5 +1,8 @@
 package net.quepierts.thatskyinteractions.proxy;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.MeshData;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -14,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -55,6 +59,7 @@ import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
 import net.quepierts.thatskyinteractions.client.render.layer.CandleLayer;
 import net.quepierts.thatskyinteractions.client.render.layer.PartPoseResolveLayer;
+import net.quepierts.thatskyinteractions.client.render.pipeline.BatchRenderer;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.EffectDistributorManager;
@@ -91,6 +96,8 @@ public class ClientProxy extends CommonProxy {
     private final CloudRenderer cloudRenderer;
     @NotNull
     private final BloomRenderer bloomRenderer;
+    @NotNull
+    private final BatchRenderer batchBER;
 
     @Nullable
     private UUID target;
@@ -107,6 +114,7 @@ public class ClientProxy extends CommonProxy {
         this.vertexBufferManager = new VertexBufferManager();
         this.cloudRenderer = new CloudRenderer();
         this.bloomRenderer = new BloomRenderer(this.vertexBufferManager);
+        this.batchBER = new BatchRenderer(this.vertexBufferManager);
 
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(InputEvent.MouseScrollingEvent.class, this::onMouseScrolling);
@@ -171,6 +179,7 @@ public class ClientProxy extends CommonProxy {
             event.accept(new ItemStack(Items.CLOUD_REDUCE));
             event.accept(new ItemStack(Items.WING_OF_LIGHT));
             event.accept(new ItemStack(Items.MURAL));
+            event.accept(new ItemStack(Items.CANDLE_CLUSTER));
         }
     }
 
@@ -184,32 +193,44 @@ public class ClientProxy extends CommonProxy {
 
         if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
             this.vertexBufferManager.tick();
-        } else if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            this.bloomRenderer.drawObjects(
-                    event.getPoseStack(),
-                    event.getModelViewMatrix(),
-                    event.getProjectionMatrix(),
-                    position
-            );
-        } else if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            this.cloudRenderer.renderClouds(
-                    event.getPoseStack(),
-                    event.getModelViewMatrix(),
-                    event.getProjectionMatrix(),
-                    partialTick,
-                    position
-            );
+        } else {
+            PoseStack poseStack = event.getPoseStack();
+            if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+                this.bloomRenderer.drawObjects(
+                        poseStack,
+                        event.getModelViewMatrix(),
+                        event.getProjectionMatrix(),
+                        position
+                );
+            } else if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+                poseStack.pushPose();
+                RenderSystem.disableCull();
+                poseStack.mulPose(event.getModelViewMatrix());
+                this.batchBER.endBatch(
+                        event.getProjectionMatrix(),
+                        poseStack.last().pose()
+                );
+                RenderSystem.enableCull();
+                poseStack.popPose();
+                this.cloudRenderer.renderClouds(
+                        poseStack,
+                        event.getModelViewMatrix(),
+                        event.getProjectionMatrix(),
+                        partialTick,
+                        position
+                );
 
-            this.bloomRenderer.processBloom(
-                    partialTick,
-                    event.getPoseStack(),
-                    event.getProjectionMatrix(),
-                    event.getModelViewMatrix(),
-                    position);
-            /*Window window = Minecraft.getInstance().getWindow();
+                this.bloomRenderer.processBloom(
+                        partialTick,
+                        poseStack,
+                        event.getProjectionMatrix(),
+                        event.getModelViewMatrix(),
+                        position);
+                /*Window window = Minecraft.getInstance().getWindow();
 
-            RenderTarget target = this.cloudRenderer.getFinalTarget();
-            RenderUtils.blitDepthToScreen(target, window.getScreenWidth(), window.getScreenHeight());*/
+                RenderTarget target = this.cloudRenderer.getFinalTarget();
+                RenderUtils.blitDepthToScreen(target, window.getScreenWidth(), window.getScreenHeight());*/
+            }
         }
     }
 
@@ -530,7 +551,19 @@ public class ClientProxy extends CommonProxy {
     }
 
     @NotNull
+    public BatchRenderer getBatchBER() {
+        return batchBER;
+    }
+
+    @NotNull
     public VertexBufferManager getVertexBufferManager() {
         return this.vertexBufferManager;
+    }
+
+    public void onUploadVertexBuffers(final VertexBufferManager upload) {
+        MeshData candle = VertexBufferManager.blockModel2Mesh(Blocks.CANDLE.defaultBlockState());
+        if (candle != null) {
+            upload.upload(ThatSkyInteractions.getModelLocation("candle"), candle);
+        }
     }
 }
