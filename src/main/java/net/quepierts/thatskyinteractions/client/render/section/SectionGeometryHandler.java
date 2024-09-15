@@ -20,13 +20,9 @@ import org.jetbrains.annotations.NotNull;
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = ThatSkyInteractions.MODID, value = Dist.CLIENT)
 public class SectionGeometryHandler {
-    private static final RandomSource RANDOM = RandomSource.createNewThreadLocalInstance();
-    private static int rot = 0;
     @SubscribeEvent
     public static void onAddSectionGeometry(final AddSectionGeometryEvent event) {
         BlockPos origin = event.getSectionOrigin();
-
-        rot = (rot + 1) % 8;
         event.addRenderer(new Renderer(origin));
     }
 
