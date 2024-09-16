@@ -3,7 +3,6 @@ package net.quepierts.thatskyinteractions.datagen;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.CandleType;
@@ -21,8 +20,7 @@ public class CandleItemProvider extends ItemModelProvider {
             String typename = type.name().toLowerCase();
             ResourceLocation item = ThatSkyInteractions.getLocation("candle_cluster_" + typename);
             this.getBuilder(item.toString())
-                    .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                    .texture("layer0", type.isFramed() ? framed : normal);
+                    .parent(this.getExistingFile(ThatSkyInteractions.getLocation("block/candle/" + typename)));
         }
     }
 }

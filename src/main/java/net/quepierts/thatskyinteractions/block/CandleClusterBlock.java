@@ -21,6 +21,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -40,17 +42,18 @@ import java.util.function.ToIntFunction;
 
 public class CandleClusterBlock extends BaseEntityBlock {
     public static final IntegerProperty LEVEL;
+    public static final EnumProperty<DoubleBlockHalf> HALF;
     public static final ToIntFunction<BlockState> LIGHT_EMISSION;
 
     public static final MapCodec<CandleClusterBlock> CODEC = simpleCodec(CandleClusterBlock::new);
     public CandleClusterBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(LEVEL, 0));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(LEVEL, 0).setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(LEVEL);
+        builder.add(LEVEL, HALF);
     }
 
     @NotNull
@@ -62,16 +65,17 @@ public class CandleClusterBlock extends BaseEntityBlock {
     @NotNull
     @Override
     protected VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
-        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
-            return entity.getShape();
+        DoubleBlockHalf half = state.getValue(HALF);
+        if (this.getBlockEntity(pos, state, level) instanceof CandleClusterBlockEntity entity) {
+            return entity.getShape(half);
         }
-        return Shapes.empty();
+        return super.getShape(state, level, pos, context);
     }
 
     @NotNull
     @Override
     public ItemStack getCloneItemStack(@NotNull BlockState state, @NotNull HitResult target, @NotNull LevelReader level, @NotNull BlockPos pos, @NotNull Player player) {
-        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
+        if (this.getBlockEntity(pos, state, level) instanceof CandleClusterBlockEntity entity) {
             Vec3 location = target.getLocation();
             int localX = (int) ((location.x - pos.getX()) * 16);
             int localZ = (int) ((location.z - pos.getZ()) * 16);
@@ -102,7 +106,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
             return ItemInteractionResult.FAIL;
         }
 
-        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
+        if (this.getBlockEntity(pos, state, level) instanceof CandleClusterBlockEntity entity) {
             Vec3 location = hitResult.getLocation();
 
             int localX = (int) ((location.x - pos.getX()) * 16);
@@ -110,19 +114,14 @@ public class CandleClusterBlock extends BaseEntityBlock {
 
             if (stack.isEmpty()) {
                 if (player.isShiftKeyDown()) {
-                    if (entity.tryRemoveCandle(localX, localZ)) {
-                        this.spawnDestroyParticles(level, player, pos, state);
+                    if (entity.tryRemoveCandle(localX, localZ, player)) {
                         return ItemInteractionResult.sidedSuccess(level.isClientSide);
                     }
                 } if (entity.tryExtinguishCandle(localX, localZ)) {
                     return ItemInteractionResult.sidedSuccess(level.isClientSide);
                 }
             } else if (stack.is(Tags.Items.TOOLS_IGNITER)) {
-                if (player.isShiftKeyDown()) {
-                    if (entity.tryLitAll()) {
-                        return ItemInteractionResult.sidedSuccess(level.isClientSide);
-                    }
-                } else if (entity.tryLitCandle(localX, localZ)) {
+                if (entity.tryLitCandle(localX, localZ) || entity.tryLitAny()) {
                     return ItemInteractionResult.sidedSuccess(level.isClientSide);
                 }
             }
@@ -132,7 +131,11 @@ public class CandleClusterBlock extends BaseEntityBlock {
 
     @Override
     public void animateTick(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull RandomSource random) {
-        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
+        if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {
+            return;
+        }
+
+        if (this.getBlockEntity(pos, state, level) instanceof CandleClusterBlockEntity entity) {
             ShortArrayList lighted = entity.getLightedCandles();
             for (int i = 0; i < lighted.size(); i++) {
                 short candle = lighted.getShort(i);
@@ -152,7 +155,15 @@ public class CandleClusterBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
+        if (blockState.getValue(HALF) == DoubleBlockHalf.UPPER) {
+            return null;
+        }
         return new CandleClusterBlockEntity(blockPos, blockState);
+    }
+
+    public BlockEntity getBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state, @NotNull BlockGetter level) {
+        return level.getBlockEntity(state.getValue(HALF) == DoubleBlockHalf.UPPER ? pos.below() : pos);
+
     }
 
     @NotNull
@@ -204,6 +215,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
 
     static {
         LEVEL = BlockStateProperties.LEVEL;
+        HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
         LIGHT_EMISSION = (state) -> state.getValue(LEVEL);
     }
 }

@@ -1,23 +1,23 @@
 package net.quepierts.thatskyinteractions.block.entity;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.quepierts.thatskyinteractions.block.CandleClusterBlock;
 import net.quepierts.thatskyinteractions.block.CandleType;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
+import net.quepierts.thatskyinteractions.registry.Blocks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -32,16 +32,16 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
     private final ShortArrayList candles;
     private final ShortArrayList lightedCandles;
     private final int[] grid;
-    private final ObjectList<VoxelShape> shapes;
 
     @NotNull
-    private VoxelShape shape = Shapes.empty();
+    private VoxelShape lowerShape = Shapes.empty();
+    @NotNull
+    private VoxelShape upperShape = Shapes.empty();
 
-    public CandleClusterBlockEntity( BlockPos pos, BlockState blockState) {
+    public CandleClusterBlockEntity(BlockPos pos, BlockState blockState) {
         super(BlockEntities.CANDLE_CLUSTER.get(), pos, blockState);
         this.grid = new int[GRID_LENGTH];
         this.candles = new ShortArrayList();
-        this.shapes = new ObjectArrayList<>();
         this.lightedCandles = new ShortArrayList();
     }
 
@@ -58,25 +58,18 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
 
     @Override
     public void fromNBT(@NotNull CompoundTag tag) {
-        if (this.level == null) {
-            return;
-        }
-
-        if (tag.contains(TAG_CANDLES, Tag.TAG_INT_ARRAY)) {
+        if (tag.contains(TAG_CANDLES)) {
             Arrays.fill(this.grid, 0);
             this.candles.clear();
-            this.shapes.clear();
             this.lightedCandles.clear();
 
             int[] array = tag.getIntArray(TAG_CANDLES);
 
-            if (array.length == 0) {
-                this.level.setBlock(this.getBlockPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-            } else {
-                for (int bits : array) {
-                    this.addCandle((short) bits);
-                }
+            for (int bits : array) {
+                this.addCandle((short) bits);
+            }
 
+            if (this.level != null) {
                 this.update(level);
             }
         }
@@ -84,10 +77,18 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
 
     @Override
     public void markUpdate() {
-        if (this.level != null) {
-            this.update(level);
-            this.setChanged();
+        BlockState current = this.getBlockState();
+        BlockState state = current.setValue(CandleClusterBlock.LEVEL, this.calculateLightLevel());
+        BlockPos pos = this.getBlockPos();
+
+        if (level != null) {
+            level.setBlock(
+                    pos,
+                    state,
+                    Block.UPDATE_CLIENTS
+            );
         }
+        super.markUpdate();
     }
 
     private void update(@NotNull Level level) {
@@ -129,6 +130,18 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
     }
 
     public boolean tryAddCandle(int xi, int zi, @NotNull CandleType type, int rotation) {
+        if (this.candles.size() > 31) {
+            return false;
+        }
+
+        if (this.level != null && type.getHeight() > 16) {
+            BlockState above = this.level.getBlockState(this.getBlockPos().above());
+
+            if (!above.isAir() || above.is(Blocks.CANDLE_CLUSTER.get()) && above.getValue(CandleClusterBlock.HALF) == DoubleBlockHalf.LOWER) {
+                return false;
+            }
+        }
+
         int x = Mth.clamp(xi, 1, 15);
         int z = Mth.clamp(zi, 1, 15);
         int size = type.getSize();
@@ -154,13 +167,30 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         return true;
     }
 
-    public boolean tryRemoveCandle(int x, int z) {
+    public boolean tryRemoveCandle(int x, int z, @NotNull Player player) {
         int ix = Mth.clamp(x, 0, 15);
         int iz = Mth.clamp(z, 0, 15);
 
         if (this.removeCandle(ix, iz)) {
+            if (this.level != null) {
+                this.level.levelEvent(
+                        player,
+                        LevelEvent.PARTICLES_DESTROY_BLOCK,
+                        this.getBlockPos(),
+                        Block.getId(Blocks.CANDLE_CLUSTER.get().defaultBlockState())
+                );
+
+                if (this.upperShape.isEmpty()) {
+                    this.level.removeBlock(this.getBlockPos().above(), false);
+                }
+            }
             if (this.candles.isEmpty() && this.level != null) {
-                this.level.setBlock(this.getBlockPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+                this.level.removeBlock(this.getBlockPos(), false);
+
+                BlockPos above = this.getBlockPos().above();
+                if (this.level.getBlockState(above).is(Blocks.CANDLE_CLUSTER)) {
+                    this.level.removeBlock(above, false);
+                }
             } else {
                 this.markUpdate();
             }
@@ -191,29 +221,35 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         this.markUpdate();
 
         if (this.level != null) {
-            level.playSound(null, this.getBlockPos(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.playSound(null, this.getBlockPos(), SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
         return true;
     }
 
-    public boolean tryLitAll() {
+    public boolean tryLitAny() {
         if (this.candles.size() == this.lightedCandles.size()) {
             return false;
         }
 
-        this.lightedCandles.clear();
         for (int i = 0; i < this.candles.size(); i++) {
             short candle = this.candles.getShort(i);
-            this.candles.set(i, (short) (candle | LIT_FLAG));
+            if (getCandleLit(candle)) {
+                continue;
+            }
+
+            candle |= LIT_FLAG;
+            this.candles.set(i, candle);
             this.lightedCandles.add(candle);
+
+            this.markUpdate();
+            if (this.level != null) {
+                level.playSound(null, this.getBlockPos(), SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+
+            return true;
         }
 
-        this.markUpdate();
-        if (this.level != null) {
-            level.playSound(null, this.getBlockPos(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
-        }
-
-        return true;
+        return false;
     }
 
     public boolean tryExtinguishCandle(int x, int z) {
@@ -296,22 +332,27 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         int size = type.getSize();
 
         this.candles.add(bits);
-        this.shapes.add(Block.box(
-                x, 0, z,
-                x + size, type.getHeight(),z + size
-        ));
 
         if (getCandleLit(bits)) {
             this.lightedCandles.add(bits);
         }
 
-        this.buildShape();
-
-        for (int i = x; i < x + size; i++) {
-            for (int j = z; j < z + size; j++) {
+        for (int i = x; i < Math.min(x + size, 15); i++) {
+            for (int j = z; j < Math.min(z + size, 15); j++) {
                 this.setOccupy(i, j);
             }
         }
+
+        if (this.level != null && type.isDoubleBlock()) {
+            BlockPos above = this.getBlockPos().above();
+            BlockState aboveState = this.level.getBlockState(above);
+
+            if (aboveState.isAir()) {
+                this.level.setBlockAndUpdate(above, this.getBlockState().setValue(CandleClusterBlock.HALF, DoubleBlockHalf.UPPER));
+            }
+        }
+
+        this.buildShape(type.isDoubleBlock());
     }
 
     private boolean removeCandle(int x, int z) {
@@ -334,33 +375,85 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         int candleX = getCandleX(bits);
         int candleZ = getCandleZ(bits);
 
-        this.shapes.remove(i);
         this.candles.removeShort(i);
 
         if (getCandleLit(bits)) {
             this.lightedCandles.rem(bits);
         }
 
-        final int size = getCandleType(bits).getSize();
+        CandleType type = getCandleType(bits);
+        final int size = type.getSize();
         for (int k = candleX; k < candleX + size; k++) {
             for (int j = candleZ; j < candleZ + size; j++) {
                 this.setEmpty(k, j);
             }
         }
 
-        this.buildShape();
+        this.buildShape(type.isDoubleBlock());
         return true;
     }
 
-    private void buildShape() {
-        if (this.shapes.isEmpty()) {
-            this.shape = Shapes.empty();
-        } else {
-            this.shape = this.shapes.get(0);
-            for (int i = 1; i < this.shapes.size(); i++) {
-                this.shape = Shapes.or(this.shape, this.shapes.get(i));
+    private void buildShape(boolean doubleBlock) {
+        this.lowerShape = Shapes.empty();
+
+        if (doubleBlock) {
+            this.upperShape = Shapes.empty();
+        }
+
+        if (!this.candles.isEmpty()) {
+            for (int i = 0; i < this.candles.size(); i++) {
+                short candle = this.candles.getShort(i);
+                CandleType type = getCandleType(candle);
+
+                if (this.lowerShape == Shapes.empty()) {
+                    this.lowerShape = getLowerCandleShape(candle);
+                } else {
+                    this.lowerShape = Shapes.or(this.lowerShape, getLowerCandleShape(candle));
+                }
+
+                if (doubleBlock) {
+                    if (!type.isDoubleBlock()) {
+                        continue;
+                    }
+
+                    if (this.upperShape == Shapes.empty()) {
+                        this.upperShape = getUpperCandleShape(candle);
+                    } else {
+                        this.upperShape = Shapes.or(this.lowerShape, getUpperCandleShape(candle));
+                    }
+                }
             }
         }
+    }
+
+    private static VoxelShape getLowerCandleShape(final int candle) {
+        return getLowerCandleShape((short) candle);
+    }
+
+    private static VoxelShape getLowerCandleShape(final short candle) {
+        final int x = getCandleX(candle);
+        final int z = getCandleZ(candle);
+        final CandleType type = getCandleType(candle);
+        final int size = type.getSize();
+        return Block.box(
+                x, 0, z,
+                x + size, Math.min(type.getHeight(), 16),z + size
+        );
+    }
+
+    private static VoxelShape getUpperCandleShape(final int candle) {
+        return getUpperCandleShape((short) candle);
+    }
+
+    private static VoxelShape getUpperCandleShape(final short candle) {
+        final int x = getCandleX(candle);
+        final int z = getCandleZ(candle);
+        final CandleType type = getCandleType(candle);
+        final int size = type.getSize();
+        int height = type.getHeight() - 16;
+        return height > 0 ?
+                Block.box(x, 0, z, x + size, height,z + size) :
+                Shapes.empty();
     }
 
     private short saveGet(int index) {
@@ -380,21 +473,6 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         int bit = (z % 2) * 16 + x;
         this.grid[index] ^= (1 << bit);
     }
-
-    private void addShape(int x, int z, int size, int height) {
-        int clamped = Math.min(height, 16);
-        VoxelShape shape = Block.box(x, 0, z, x + size, clamped, z + size);
-
-        if (clamped != size) {
-            shape = Shapes.or(shape, Block.box(
-                    x, 16, z,
-                    x + size, clamped - height, z + size
-            ));
-        }
-
-        this.shapes.add(shape);
-    }
-
     public boolean isOccupied(int x, int z) {
         if (isPositionInvalid(x) || isPositionInvalid(z)) {
             return false;
@@ -458,11 +536,16 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
     }
 
     @NotNull
-    public VoxelShape getShape() {
-        return shape;
+    public VoxelShape getLowerShape() {
+        return lowerShape;
     }
 
     public ShortArrayList getLightedCandles() {
         return lightedCandles;
+    }
+
+    @NotNull
+    public VoxelShape getShape(DoubleBlockHalf half) {
+        return half == DoubleBlockHalf.UPPER ? upperShape : lowerShape;
     }
 }

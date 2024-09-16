@@ -1,6 +1,3 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "thatskyinteractions:item/candle_framed"
-  }
+  "parent": "thatskyinteractions:block/candle/t_framed_standard"
 }

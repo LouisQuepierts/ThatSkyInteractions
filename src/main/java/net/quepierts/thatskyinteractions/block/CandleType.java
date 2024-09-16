@@ -36,6 +36,10 @@ public enum CandleType {
         return height;
     }
 
+    public boolean isDoubleBlock() {
+        return height > 16;
+    }
+
     public boolean isFramed() {
         return framed;
     }

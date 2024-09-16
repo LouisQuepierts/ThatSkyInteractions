@@ -13,6 +13,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.quepierts.thatskyinteractions.block.CandleType;
 import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
@@ -56,9 +58,14 @@ public class CandleClusterItem extends BlockItem {
         int localZ = (int) ((location.z - pos.getZ()) * 16);
 
         if (player.isShiftKeyDown()) {
-            if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity candleClusterBlockEntity) {
-                if (candleClusterBlockEntity.tryRemoveCandle(localX, localZ)) {
-                    return InteractionResult.sidedSuccess(level.isClientSide);
+            BlockState state = level.getBlockState(pos);
+            if (state.is(Blocks.CANDLE_CLUSTER)) {
+                BlockEntity entity = Blocks.CANDLE_CLUSTER.get().getBlockEntity(pos, state, level);
+
+                if (entity instanceof CandleClusterBlockEntity candleClusterBlockEntity) {
+                    if (candleClusterBlockEntity.tryRemoveCandle(localX, localZ, player)) {
+                        return InteractionResult.sidedSuccess(level.isClientSide);
+                    }
                 }
             }
         }
@@ -67,6 +74,14 @@ public class CandleClusterItem extends BlockItem {
         if (level.getBlockEntity(above) instanceof CandleClusterBlockEntity candleCluster) {
             return this.placeInner(candleCluster, context, localX, localZ);
         } else if (!CandleClusterBlockEntity.isPlacePositionInvalid(localX, localZ, type.getSize())) {
+            if (context.getClickedFace() != Direction.UP) {
+                return InteractionResult.PASS;
+            }
+
+            if (type.isDoubleBlock() && !level.getBlockState(above.above()).isAir()) {
+                return InteractionResult.PASS;
+            }
+
             InteractionResult result = super.useOn(context);
 
             if (level.getBlockEntity(above) instanceof CandleClusterBlockEntity candleCluster) {
@@ -80,10 +95,6 @@ public class CandleClusterItem extends BlockItem {
     }
 
     private InteractionResult placeInner(@NotNull CandleClusterBlockEntity entity, @NotNull UseOnContext context, final int localX, final int localZ) {
-        if (context.getClickedFace() != Direction.UP) {
-            return InteractionResult.PASS;
-        }
-
         final BlockPos pos = context.getClickedPos();
         final Level level = context.getLevel();
         final Player player = context.getPlayer();
