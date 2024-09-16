@@ -2,25 +2,32 @@ package net.quepierts.thatskyinteractions.client.render.ber;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.block.CandleClusterBlock;
+import net.quepierts.thatskyinteractions.block.CandleType;
 import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
 import net.quepierts.thatskyinteractions.client.render.section.StaticModelRenderer;
+import net.quepierts.thatskyinteractions.client.util.CandleModels;
 import net.quepierts.thatskyinteractions.registry.Blocks;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
 public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<CandleClusterBlockEntity> {
-    private final BlockRenderDispatcher dispatcher;
+    private final ModelManager manager;
 
     public CandleClusterBlockRenderer(BlockEntityRendererProvider.Context context) {
-        this.dispatcher = context.getBlockRenderDispatcher();
+        this.manager = Minecraft.getInstance().getModelManager();
     }
 
     @Override
@@ -32,31 +39,41 @@ public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<Can
     ) {
         BlockState normalState = Blocks.CANDLE_CLUSTER.get().defaultBlockState();
         BlockState litState = Blocks.CANDLE_CLUSTER.get().defaultBlockState().setValue(CandleClusterBlock.LIT, true);
-        BakedModel normalModel = dispatcher.getBlockModel(normalState);
-        BakedModel litModel = dispatcher.getBlockModel(litState);
 
         ShortArrayList candles = cluster.getCandles();
 
         poseStack.translate(-0.5f, 0, -0.5f);
         for (Short candle : candles) {
-            float x = (CandleClusterBlockEntity.getCandleX(candle) + 1) / 16.0f;
-            float z = (CandleClusterBlockEntity.getCandleZ(candle) + 1) / 16.0f;
+            CandleType type = CandleClusterBlockEntity.getCandleType(candle);
+            float half = type.getSize() / 2f;
+            float x = (CandleClusterBlockEntity.getCandleX(candle) + half) / 16.0f;
+            float z = (CandleClusterBlockEntity.getCandleZ(candle) + half) / 16.0f;
+            int rotation = CandleClusterBlockEntity.getCandleRotation(candle);
             boolean lit = CandleClusterBlockEntity.getCandleLit(candle);
+
+            BlockState state = lit ? litState : normalState;
 
             poseStack.pushPose();
             poseStack.translate(x, 0, z);
 
-            if (lit) {
+            if (rotation != 0) {
+                Matrix4f matrix4f = new Matrix4f()
+                        .translate(0.5f, 0.0f, 0.5f)
+                        .rotateY(CandleClusterBlockEntity.UNIT_ROTATION_RAD * rotation)
+                        .translate(-0.5f, 0.0f, -0.5f);
                 renderer.render(
-                        litModel,
-                        litState,
+                        RenderType.cutout(),
+                        manager.getModel(CandleModels.get(type)),
+                        state,
                         blockPos,
-                        poseStack
+                        poseStack,
+                        matrix4f
                 );
             } else {
                 renderer.render(
-                        normalModel,
-                        normalState,
+                        RenderType.cutout(),
+                        manager.getModel(CandleModels.get(type)),
+                        state,
                         blockPos,
                         poseStack
                 );

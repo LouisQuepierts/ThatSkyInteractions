@@ -1,9 +1,12 @@
 package net.quepierts.thatskyinteractions.registry;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -81,6 +84,28 @@ public class Blocks {
                             .sound(SoundType.CANDLE)
                             .pushReaction(PushReaction.BLOCK)
                             .lightLevel(CandleClusterBlock.LIGHT_EMISSION)
+                            .isRedstoneConductor(Blocks::never)
+                            .isSuffocating(Blocks::never)
+                            .isViewBlocking(Blocks::never)
             )
     );
+
+    public static final DeferredHolder<Block, HugeCandleClusterBlock> HUGE_CANDLE_CLUSTER = REGISTER.register(
+            "huge_candle_cluster", () -> new HugeCandleClusterBlock(
+                    BlockBehaviour.Properties.of()
+                            .mapColor(MapColor.COLOR_RED)
+                            .noOcclusion()
+                            .strength(0.1F)
+                            .sound(SoundType.CANDLE)
+                            .pushReaction(PushReaction.BLOCK)
+                            .lightLevel(CandleClusterBlock.LIGHT_EMISSION)
+                            .isRedstoneConductor(Blocks::never)
+                            .isSuffocating(Blocks::never)
+                            .isViewBlocking(Blocks::never)
+            )
+    );
+
+    private static boolean never(BlockState state, BlockGetter blockGetter, BlockPos pos) {
+        return false;
+    }
 }

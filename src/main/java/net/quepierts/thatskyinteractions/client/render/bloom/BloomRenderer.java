@@ -56,6 +56,8 @@ public class BloomRenderer {
 
         this.finalTarget.bindWrite(false);
 
+        RenderTypes.getBufferSource().endBatch();
+
         poseStack.pushPose();
         poseStack.mulPose(frustumMatrix);
 

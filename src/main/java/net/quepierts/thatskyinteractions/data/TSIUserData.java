@@ -56,6 +56,10 @@ public class TSIUserData {
         astrolabeMap.put(first, new FriendAstrolabeInstance(first));
         astrolabeMap.put(generated, new FriendAstrolabeInstance(generated));
 
+        /*for (ResourceLocation astrolabe : manager.getBestFriendAstrolabes()) {
+            astrolabeMap.put(astrolabe, new FriendAstrolabeInstance(astrolabe));
+        }*/
+
         return new TSIUserData(astrolabeMap, new HashSet<>(), new HashSet<>(), System.currentTimeMillis());
     }
     public static void toNetwork(FriendlyByteBuf byteBuf, TSIUserData data) {

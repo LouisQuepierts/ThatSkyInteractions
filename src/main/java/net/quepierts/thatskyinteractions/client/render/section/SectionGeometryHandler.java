@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class SectionGeometryHandler {
     @SubscribeEvent
     public static void onAddSectionGeometry(final AddSectionGeometryEvent event) {
-        BlockPos origin = event.getSectionOrigin();
+        BlockPos origin = event.getSectionOrigin().immutable();
         event.addRenderer(new Renderer(origin));
     }
 

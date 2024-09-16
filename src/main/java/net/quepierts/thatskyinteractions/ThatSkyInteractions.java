@@ -45,6 +45,14 @@ public class ThatSkyInteractions {
         return new ModelResourceLocation(getLocation(path), "vbo");
     }
 
+    public static ModelResourceLocation getStandaloneModel(String path) {
+        return ModelResourceLocation.standalone(getLocation(path));
+    }
+
+    public static ModelResourceLocation getModelLocation(String path, String variant) {
+        return new ModelResourceLocation(getLocation(path), variant);
+    }
+
     public CommonProxy getProxy() {
         return this.proxy;
     }

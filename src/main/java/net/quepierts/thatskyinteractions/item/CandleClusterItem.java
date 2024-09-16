@@ -10,13 +10,16 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.Vec3;
+import net.quepierts.thatskyinteractions.block.CandleType;
 import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
 import net.quepierts.thatskyinteractions.registry.Blocks;
 import org.jetbrains.annotations.NotNull;
 
 public class CandleClusterItem extends BlockItem {
-    public CandleClusterItem() {
+    private final CandleType type;
+    public CandleClusterItem(CandleType type) {
         super(Blocks.CANDLE_CLUSTER.get(), new Properties());
+        this.type = type;
     }
 
     @NotNull
@@ -43,8 +46,6 @@ public class CandleClusterItem extends BlockItem {
         }
     }
 
-
-
     private InteractionResult placeInner(@NotNull CandleClusterBlockEntity entity, @NotNull UseOnContext context) {
         BlockPos pos = context.getClickedPos();
         Vec3 location = context.getClickLocation();
@@ -57,9 +58,11 @@ public class CandleClusterItem extends BlockItem {
 
         int localX = (int) ((location.x - pos.getX()) * 16);
         int localZ = (int) ((location.z - pos.getZ()) * 16);
+        int rotation = player.isShiftKeyDown() ?
+                CandleClusterBlockEntity.MAX_ROTATION - (int) (player.getYRot() / CandleClusterBlockEntity.UNIT_ROTATION_DEG) :
+                level.getRandom().nextInt(0, CandleClusterBlockEntity.MAX_ROTATION);
 
-
-        boolean success = entity.tryAddCandle(localX, localZ);
+        boolean success = entity.tryAddCandle(localX, localZ, type, rotation);
         if (success) {
             SoundType soundtype = SoundType.CANDLE;
             level.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);

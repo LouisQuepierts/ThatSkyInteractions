@@ -5,6 +5,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.block.CandleType;
 import net.quepierts.thatskyinteractions.item.*;
 
 @SuppressWarnings("unused")
@@ -41,7 +42,17 @@ public class Items {
             "mural", MuralItem::new
     );
 
-    public static final DeferredHolder<Item, CandleClusterItem> CANDLE_CLUSTER = REGISTER.register(
-            "candle_cluster", CandleClusterItem::new
-    );
+    @SuppressWarnings("unchecked")
+    public static final DeferredHolder<Item, CandleClusterItem>[] CANDLES = new DeferredHolder[CandleType.values().length];
+
+    static {
+        CandleType[] values = CandleType.values();
+        for (int i = 0; i < values.length; i++) {
+            CandleType type = values[i];
+            CANDLES[i] = REGISTER.register(
+                    "candle_cluster_" + type.name().toLowerCase(),
+                    () -> new CandleClusterItem(type)
+            );
+        }
+    }
 }

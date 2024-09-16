@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.block;
 
 import com.mojang.serialization.MapCodec;
+import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,6 +22,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -28,7 +31,6 @@ import net.neoforged.neoforge.common.Tags;
 import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2i;
 
 import java.util.function.ToIntFunction;
 
@@ -62,6 +64,11 @@ public class CandleClusterBlock extends BaseEntityBlock {
         return Shapes.empty();
     }
 
+    @Override
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+        return super.getCloneItemStack(state, target, level, pos, player);
+    }
+
     @NotNull
     @Override
     protected ItemInteractionResult useItemOn(
@@ -77,7 +84,9 @@ public class CandleClusterBlock extends BaseEntityBlock {
             return ItemInteractionResult.FAIL;
         }
 
-        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
+        BlockPos bePos = level.getBlockState(pos) != state ? pos.below() : pos;
+
+        if (level.getBlockEntity(bePos) instanceof CandleClusterBlockEntity entity) {
             Vec3 location = hitResult.getLocation();
 
             int localX = (int) ((location.x - pos.getX()) * 16);
@@ -106,13 +115,16 @@ public class CandleClusterBlock extends BaseEntityBlock {
     @Override
     public void animateTick(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
-            double y = pos.getY() + 0.625;
-            for (Vector2i position : entity.getLitPositions()) {
+            ShortArrayList lighted = entity.getLightedCandles();
+            for (int i = 0; i < lighted.size(); i++) {
+                short candle = lighted.getShort(i);
+                CandleType type = CandleClusterBlockEntity.getCandleType(candle);
+                double half = type.getSize() / 32.0;
                 this.addParticlesAndSound(
                         level,
-                        pos.getX() + 0.0625 + position.x() / 16.0,
-                        y,
-                        pos.getZ() + 0.0625 + position.y() / 16.0,
+                        pos.getX() + half + CandleClusterBlockEntity.getCandleX(candle) / 16.0,
+                        pos.getY() + 0.0625 + type.getHeight() / 16.0,
+                        pos.getZ() + half + CandleClusterBlockEntity.getCandleZ(candle) / 16.0,
                         random
                 );
             }
@@ -123,6 +135,32 @@ public class CandleClusterBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
         return new CandleClusterBlockEntity(blockPos, blockState);
+    }
+
+    @NotNull
+    protected VoxelShape getVisualShape(
+            @NotNull BlockState state,
+            @NotNull BlockGetter getter,
+            @NotNull BlockPos pos,
+            @NotNull CollisionContext context
+    ) {
+        return Shapes.empty();
+    }
+
+    protected float getShadeBrightness(
+            @NotNull BlockState p_308911_,
+            @NotNull BlockGetter p_308952_,
+            @NotNull BlockPos p_308918_
+    ) {
+        return 1.0F;
+    }
+
+    protected boolean propagatesSkylightDown(
+            @NotNull BlockState p_309084_,
+            @NotNull BlockGetter p_309133_,
+            @NotNull BlockPos p_309097_
+    ) {
+        return true;
     }
 
     private void addParticlesAndSound(Level level, double x, double y, double z, RandomSource random) {

@@ -179,7 +179,6 @@ public class ClientProxy extends CommonProxy {
             event.accept(new ItemStack(Items.CLOUD_REDUCE));
             event.accept(new ItemStack(Items.WING_OF_LIGHT));
             event.accept(new ItemStack(Items.MURAL));
-            event.accept(new ItemStack(Items.CANDLE_CLUSTER));
         }
     }
 
