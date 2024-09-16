@@ -278,6 +278,7 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         }
         return true;
     }
+
     public boolean tryExtinguishAll() {
         if (this.lightedCandles.isEmpty()) {
             return false;
@@ -426,10 +427,6 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         }
     }
 
-    private static VoxelShape getLowerCandleShape(final int candle) {
-        return getLowerCandleShape((short) candle);
-    }
-
     private static VoxelShape getLowerCandleShape(final short candle) {
         final int x = getCandleX(candle);
         final int z = getCandleZ(candle);
@@ -439,10 +436,6 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
                 x, 0, z,
                 x + size, Math.min(type.getHeight(), 16),z + size
         );
-    }
-
-    private static VoxelShape getUpperCandleShape(final int candle) {
-        return getUpperCandleShape((short) candle);
     }
 
     private static VoxelShape getUpperCandleShape(final short candle) {
@@ -516,10 +509,6 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         }
     }
 
-    private static boolean isPlacePositionInvalid(int p) {
-        return p < 0 || p > 14;
-    }
-
     private static boolean isPositionInvalid(int p) {
         return p < 0 || p > 15;
     }
@@ -533,11 +522,6 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
     @NotNull
     public ShortArrayList getCandles() {
         return this.candles;
-    }
-
-    @NotNull
-    public VoxelShape getLowerShape() {
-        return lowerShape;
     }
 
     public ShortArrayList getLightedCandles() {

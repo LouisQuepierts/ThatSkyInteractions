@@ -14,8 +14,6 @@ public class CandleItemProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        ResourceLocation normal = ThatSkyInteractions.getLocation("item/candle_normal");
-        ResourceLocation framed = ThatSkyInteractions.getLocation("item/candle_framed");
         for (CandleType type : CandleType.values()) {
             String typename = type.name().toLowerCase();
             ResourceLocation item = ThatSkyInteractions.getLocation("candle_cluster_" + typename);
