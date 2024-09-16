@@ -10,21 +10,16 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamDecoder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.TimeUtil;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeMap;
 import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
-import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 public class TSIUserData {

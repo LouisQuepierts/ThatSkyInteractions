@@ -1,7 +1,6 @@
 package net.quepierts.thatskyinteractions.client.registry;
 
 
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;

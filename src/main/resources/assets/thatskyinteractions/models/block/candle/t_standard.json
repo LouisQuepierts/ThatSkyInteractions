@@ -1,0 +1,44 @@
+{
+	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "thatskyinteractions:block/candles",
+		"particle": "thatskyinteractions:block/candles"
+	},
+	"elements": [
+		{
+			"from": [7, 0, 7],
+			"to": [9, 8, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 0, 7]},
+			"faces": {
+				"north": {"uv": [13, 10, 14, 14], "texture": "#0"},
+				"east": {"uv": [13, 10, 14, 14], "texture": "#0"},
+				"south": {"uv": [13, 10, 14, 14], "texture": "#0"},
+				"west": {"uv": [13, 10, 14, 14], "texture": "#0"},
+				"up": {"uv": [13, 9, 14, 10], "texture": "#0"},
+				"down": {"uv": [13, 14, 14, 15], "texture": "#0"}
+			}
+		},
+		{
+			"name": "candlewick",
+			"from": [7.5, 8, 8],
+			"to": [8.5, 9, 8],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 0.5, 0.5], "texture": "#0"},
+				"south": {"uv": [0, 0, 0.5, 0.5], "texture": "#0"}
+			}
+		},
+		{
+			"name": "candlewick",
+			"from": [7.5, 8, 8],
+			"to": [8.5, 9, 8],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 0.5, 0.5], "texture": "#0"},
+				"south": {"uv": [0, 0, 0.5, 0.5], "texture": "#0"}
+			}
+		}
+	]
+}
