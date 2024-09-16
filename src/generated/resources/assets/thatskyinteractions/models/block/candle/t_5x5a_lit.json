@@ -1,0 +1,7 @@
+{
+  "parent": "thatskyinteractions:block/candle/t_5x5a",
+  "textures": {
+    "0": "thatskyinteractions:block/candles_lit",
+    "particle": "thatskyinteractions:block/candles_lit"
+  }
+}

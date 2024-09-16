@@ -11,8 +11,8 @@ public class CandleModels {
     private static final ModelResourceLocation[] normal;
     private static final ModelResourceLocation[] lit;
 
-    public static ModelResourceLocation get(CandleType type) {
-        return normal[type.ordinal()];
+    public static ModelResourceLocation get(CandleType type, boolean isLighted) {
+        return isLighted ? lit[type.ordinal()] : normal[type.ordinal()];
     }
 
     static {
@@ -21,8 +21,8 @@ public class CandleModels {
         lit = new ModelResourceLocation[values.length];
 
         for (int i = 0; i < values.length; i++) {
-            normal[i] = ThatSkyInteractions.getStandaloneModel("block/" + values[i].name().toLowerCase());
-            lit[i] = ThatSkyInteractions.getStandaloneModel("block/" + values[i].name().toLowerCase() + "_lit");
+            normal[i] = ThatSkyInteractions.getStandaloneModel("block/candle/" + values[i].name().toLowerCase());
+            lit[i] = ThatSkyInteractions.getStandaloneModel("block/candle/" + values[i].name().toLowerCase() + "_lit");
         }
     }
 }

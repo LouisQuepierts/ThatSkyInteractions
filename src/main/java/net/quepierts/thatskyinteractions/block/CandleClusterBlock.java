@@ -8,19 +8,24 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -28,25 +33,29 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
+import net.quepierts.thatskyinteractions.item.CandleClusterItem;
+import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.ToIntFunction;
 
 public class CandleClusterBlock extends BaseEntityBlock {
-    public static final BooleanProperty LIT;
+    public static final IntegerProperty LEVEL;
     public static final ToIntFunction<BlockState> LIGHT_EMISSION;
 
     public static final MapCodec<CandleClusterBlock> CODEC = simpleCodec(CandleClusterBlock::new);
     public CandleClusterBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(LIT, false));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(LEVEL, 0));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(LIT);
+        builder.add(LEVEL);
     }
 
     @NotNull
@@ -64,9 +73,29 @@ public class CandleClusterBlock extends BaseEntityBlock {
         return Shapes.empty();
     }
 
+    @NotNull
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
-        return super.getCloneItemStack(state, target, level, pos, player);
+    public ItemStack getCloneItemStack(@NotNull BlockState state, @NotNull HitResult target, @NotNull LevelReader level, @NotNull BlockPos pos, @NotNull Player player) {
+        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
+            Vec3 location = target.getLocation();
+            int localX = (int) ((location.x - pos.getX()) * 16);
+            int localZ = (int) ((location.z - pos.getZ()) * 16);
+
+            short candle = entity.getCandle(localX, localZ);
+
+            if (candle != 0) {
+                CandleType type = CandleClusterBlockEntity.getCandleType(candle);
+                DeferredHolder<Item, CandleClusterItem> holder = Items.CANDLES[type.ordinal()];
+                return new ItemStack(holder);
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    protected void onProjectileHit(@NotNull Level level, @NotNull BlockState state, @NotNull BlockHitResult hit, @NotNull Projectile projectile) {
+
+        super.onProjectileHit(level, state, hit, projectile);
     }
 
     @NotNull
@@ -84,9 +113,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
             return ItemInteractionResult.FAIL;
         }
 
-        BlockPos bePos = level.getBlockState(pos) != state ? pos.below() : pos;
-
-        if (level.getBlockEntity(bePos) instanceof CandleClusterBlockEntity entity) {
+        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
             Vec3 location = hitResult.getLocation();
 
             int localX = (int) ((location.x - pos.getX()) * 16);
@@ -99,12 +126,14 @@ public class CandleClusterBlock extends BaseEntityBlock {
                         return ItemInteractionResult.sidedSuccess(level.isClientSide);
                     }
                 } if (entity.tryExtinguishCandle(localX, localZ)) {
-                    level.playSound(null, pos, SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
                     return ItemInteractionResult.sidedSuccess(level.isClientSide);
                 }
             } else if (stack.is(Tags.Items.TOOLS_IGNITER)) {
-                if (entity.tryLitCandle(localX, localZ)) {
-                    level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                if (player.isShiftKeyDown()) {
+                    if (entity.tryLitAll()) {
+                        return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                    }
+                } else if (entity.tryLitCandle(localX, localZ)) {
                     return ItemInteractionResult.sidedSuccess(level.isClientSide);
                 }
             }
@@ -123,7 +152,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
                 this.addParticlesAndSound(
                         level,
                         pos.getX() + half + CandleClusterBlockEntity.getCandleX(candle) / 16.0,
-                        pos.getY() + 0.0625 + type.getHeight() / 16.0,
+                        pos.getY() + 0.125 + type.getHeight() / 16.0,
                         pos.getZ() + half + CandleClusterBlockEntity.getCandleZ(candle) / 16.0,
                         random
                 );
@@ -185,7 +214,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
     }
 
     static {
-        LIT = BlockStateProperties.LIT;
-        LIGHT_EMISSION = (state) -> state.getValue(LIT) ? 15 : 0;
+        LEVEL = BlockStateProperties.LEVEL;
+        LIGHT_EMISSION = (state) -> state.getValue(LEVEL);
     }
 }

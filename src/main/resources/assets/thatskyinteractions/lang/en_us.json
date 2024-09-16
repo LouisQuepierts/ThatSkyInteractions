@@ -35,5 +35,8 @@
 
   "item.thatskyinteractions.cloud_editor": "Cloud Editor",
   "item.thatskyinteractions.cloud_expand": "Cloud Expand",
-  "item.thatskyinteractions.cloud_reduce": "Cloud Reduce"
+  "item.thatskyinteractions.cloud_reduce": "Cloud Reduce",
+
+  "candle_cluster.scale": "Scale: %d x %d x %d",
+  "candle_cluster.framed": "Framed: %s"
 }

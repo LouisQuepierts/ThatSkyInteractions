@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -33,6 +34,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.quepierts.simpleanimator.api.IInteractHandler;
 import net.quepierts.simpleanimator.api.animation.AnimationState;
 import net.quepierts.simpleanimator.api.event.client.ClientAnimatorStateEvent;
@@ -69,6 +71,7 @@ import net.quepierts.thatskyinteractions.data.FriendData;
 import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
+import net.quepierts.thatskyinteractions.item.CandleClusterItem;
 import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
 import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
@@ -179,6 +182,10 @@ public class ClientProxy extends CommonProxy {
             event.accept(new ItemStack(Items.CLOUD_REDUCE));
             event.accept(new ItemStack(Items.WING_OF_LIGHT));
             event.accept(new ItemStack(Items.MURAL));
+
+            for (DeferredHolder<Item, CandleClusterItem> candle : Items.CANDLES) {
+                event.accept(new ItemStack(candle));
+            }
         }
     }
 

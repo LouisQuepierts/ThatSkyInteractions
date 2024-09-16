@@ -6,7 +6,10 @@ import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -55,6 +58,10 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
 
     @Override
     public void fromNBT(@NotNull CompoundTag tag) {
+        if (this.level == null) {
+            return;
+        }
+
         if (tag.contains(TAG_CANDLES, Tag.TAG_INT_ARRAY)) {
             Arrays.fill(this.grid, 0);
             this.candles.clear();
@@ -62,35 +69,72 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
             this.lightedCandles.clear();
 
             int[] array = tag.getIntArray(TAG_CANDLES);
-            for (int bits : array) {
-                this.addCandle((short) bits);
-            }
 
-            this.markUpdate();
+            if (array.length == 0) {
+                this.level.setBlock(this.getBlockPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+            } else {
+                for (int bits : array) {
+                    this.addCandle((short) bits);
+                }
+
+                this.update(level);
+            }
         }
     }
 
     @Override
     public void markUpdate() {
-        this.setChanged();
         if (this.level != null) {
-            this.level.setBlock(this.getBlockPos(), this.getBlockState().setValue(CandleClusterBlock.LIT, !this.lightedCandles.isEmpty()), 0);
-            this.level.sendBlockUpdated(
-                    this.getBlockPos(),
-                    this.getBlockState(),
-                    this.getBlockState(),
-                    Block.UPDATE_ALL
-            );
+            this.update(level);
+            this.setChanged();
         }
     }
 
-    public boolean tryAddCandle(int xi, int zi, CandleType type, int rotation) {
+    private void update(@NotNull Level level) {
+        BlockState current = this.getBlockState();
+        BlockState state = current.setValue(CandleClusterBlock.LEVEL, this.calculateLightLevel());
+        BlockPos pos = this.getBlockPos();
+
+        level.setBlock(
+                pos,
+                state,
+                Block.UPDATE_CLIENTS
+        );
+
+        level.sendBlockUpdated(
+                pos,
+                current,
+                state,
+                Block.UPDATE_CLIENTS
+        );
+    }
+
+    private int calculateLightLevel() {
+        if (this.lightedCandles.isEmpty()) {
+            return 0;
+        }
+
+        int level = 0;
+        for (Short candle : this.lightedCandles) {
+            CandleType type = getCandleType(candle);
+            level += type.getSize() / 2;
+
+            if (level > 14) {
+                level = 15;
+                break;
+            }
+        }
+
+        return level;
+    }
+
+    public boolean tryAddCandle(int xi, int zi, @NotNull CandleType type, int rotation) {
         int x = Mth.clamp(xi, 1, 15);
         int z = Mth.clamp(zi, 1, 15);
         int size = type.getSize();
         int half = size / 2;
 
-        if (isPlacePositionInvalid(x, size) || isPlacePositionInvalid(z, size)) {
+        if (isPlacePositionInvalid(x, z, size)) {
             return false;
         }
 
@@ -111,11 +155,10 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
     }
 
     public boolean tryRemoveCandle(int x, int z) {
-        if (isPositionInvalid(x) || isPositionInvalid(z)) {
-            return false;
-        }
+        int ix = Mth.clamp(x, 0, 15);
+        int iz = Mth.clamp(z, 0, 15);
 
-        if (this.removeCandle(x, z)) {
+        if (this.removeCandle(ix, iz)) {
             if (this.candles.isEmpty() && this.level != null) {
                 this.level.setBlock(this.getBlockPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
             } else {
@@ -128,53 +171,122 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
     }
 
     public boolean tryLitCandle(int x, int z) {
-        if (isPlacePositionInvalid(x) || isPlacePositionInvalid(z)) {
+        int ix = Mth.clamp(x, 0, 15);
+        int iz = Mth.clamp(z, 0, 15);
+
+        int index = this.indexOf(ix, iz);
+        if (index == -1) {
             return false;
         }
 
+        short candle = this.candles.getShort(index);
+
+        if (getCandleLit(candle)) {
+            return false;
+        }
+
+        candle |= LIT_FLAG;
+        this.candles.set(index, candle);
+        this.lightedCandles.add(candle);
+        this.markUpdate();
+
+        if (this.level != null) {
+            level.playSound(null, this.getBlockPos(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+        return true;
+    }
+
+    public boolean tryLitAll() {
+        if (this.candles.size() == this.lightedCandles.size()) {
+            return false;
+        }
+
+        this.lightedCandles.clear();
         for (int i = 0; i < this.candles.size(); i++) {
             short candle = this.candles.getShort(i);
-            int candleX = getCandleX(candle);
-            int candleZ = getCandleZ(candle);
-
-            if (x >= candleX && x <= candleX + 2 && z >= candleZ && z <= candleZ + 2) {
-                if (!getCandleLit(candle)) {
-                    candle |= LIT_FLAG;
-                    this.candles.set(i, candle);
-                    this.lightedCandles.add(candle);
-
-                    this.markUpdate();
-                    return true;
-                }
-
-                break;
-            }
+            this.candles.set(i, (short) (candle | LIT_FLAG));
+            this.lightedCandles.add(candle);
         }
-        return false;
+
+        this.markUpdate();
+        if (this.level != null) {
+            level.playSound(null, this.getBlockPos(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+
+        return true;
     }
 
     public boolean tryExtinguishCandle(int x, int z) {
-        if (isPlacePositionInvalid(x) || isPlacePositionInvalid(z)) {
+        int ix = Mth.clamp(x, 0, 15);
+        int iz = Mth.clamp(z, 0, 15);
+
+        int index = this.indexOf(ix, iz);
+        if (index == -1) {
             return false;
         }
 
+        short candle = this.candles.getShort(index);
+
+        if (!getCandleLit(candle)) {
+            return false;
+        }
+
+        this.lightedCandles.rem(candle);
+
+        candle ^= LIT_FLAG;
+        this.candles.set(index, candle);
+
+        this.markUpdate();
+        if (this.level != null) {
+            level.playSound(null, this.getBlockPos(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+        return true;
+    }
+    public boolean tryExtinguishAll() {
+        if (this.lightedCandles.isEmpty()) {
+            return false;
+        }
+
+        this.lightedCandles.clear();
         for (int i = 0; i < this.candles.size(); i++) {
+            short candle = this.candles.getShort(i);
+            this.candles.set(i, (short) (candle ^ LIT_FLAG));
+        }
+
+        this.markUpdate();
+        if (this.level != null) {
+            level.playSound(null, this.getBlockPos(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+        return true;
+    }
+
+    public int indexOf(int x, int z) {
+        int i;
+        for (i = 0; i < this.candles.size(); i++) {
             short candle = this.candles.getShort(i);
             int candleX = getCandleX(candle);
             int candleZ = getCandleZ(candle);
+            int size = getCandleType(candle).getSize();
 
-            if (x >= candleX && x <= candleX + 2 && z >= candleZ && z <= candleZ + 2) {
-                if (getCandleLit(candle)) {
-                    candle ^= LIT_FLAG;
-                    this.candles.set(i, candle);
-                    this.lightedCandles.rem(candle);
-                    this.markUpdate();
-                    return true;
-                }
+            if (x >= candleX && x <= candleX + size && z >= candleZ && z <= candleZ + size) {
                 break;
             }
         }
-        return false;
+
+        if (i == this.candles.size()) {
+            return -1;
+        }
+
+        return i;
+    }
+
+    public short getCandle(int x, int z) {
+        int index = this.indexOf(x, z);
+        if (index == -1) {
+            return 0;
+        } else {
+            return this.candles.getShort(index);
+        }
     }
 
     private void addCandle(short bits) {
@@ -211,19 +323,9 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
             return false;
         }
 
-        int i;
-        for (i = 0; i < this.candles.size(); i++) {
-            short candle = this.candles.getShort(i);
-            int candleX = getCandleX(candle);
-            int candleZ = getCandleZ(candle);
-            int size = getCandleType(candle).getSize();
+        int i = this.indexOf(x, z);
 
-            if (x >= candleX && x <= candleX + size && z >= candleZ && z <= candleZ + size) {
-                break;
-            }
-        }
-
-        if (i == this.candles.size()) {
+        if (i == -1) {
             return false;
         }
 
@@ -279,6 +381,20 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         this.grid[index] ^= (1 << bit);
     }
 
+    private void addShape(int x, int z, int size, int height) {
+        int clamped = Math.min(height, 16);
+        VoxelShape shape = Block.box(x, 0, z, x + size, clamped, z + size);
+
+        if (clamped != size) {
+            shape = Shapes.or(shape, Block.box(
+                    x, 16, z,
+                    x + size, clamped - height, z + size
+            ));
+        }
+
+        this.shapes.add(shape);
+    }
+
     public boolean isOccupied(int x, int z) {
         if (isPositionInvalid(x) || isPositionInvalid(z)) {
             return false;
@@ -307,7 +423,7 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
     }
 
     public static int getCandleRotation(short bits) {
-        return (bits >>> 12) & 0xb;
+        return (bits >>> 12) & 0x7;
     }
 
     public static boolean getCandleLit(short bits) {
@@ -326,13 +442,14 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
         return p < 0 || p > 14;
     }
 
-    private static boolean isPlacePositionInvalid(int p, int size) {
-        int half = size / 2;
-        return p < half || p > 16 - half;
-    }
-
     private static boolean isPositionInvalid(int p) {
         return p < 0 || p > 15;
+    }
+
+    public static boolean isPlacePositionInvalid(int x, int z, int size) {
+        int half = size / 2;
+        int right = 16 - half;
+        return x < half || x > right || z < half || z > right;
     }
 
     @NotNull

@@ -98,7 +98,7 @@ public class Blocks {
                             .strength(0.1F)
                             .sound(SoundType.CANDLE)
                             .pushReaction(PushReaction.BLOCK)
-                            .lightLevel(CandleClusterBlock.LIGHT_EMISSION)
+                            .lightLevel(HugeCandleClusterBlock.LIGHT_EMISSION)
                             .isRedstoneConductor(Blocks::never)
                             .isSuffocating(Blocks::never)
                             .isViewBlocking(Blocks::never)

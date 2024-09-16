@@ -36,7 +36,6 @@ public class CommonProxy {
 
     @SuppressWarnings("unused")
     public CommonProxy(IEventBus bus, ModContainer modContainer) {
-
         InteractTreeNode.register();
         AstrolabeNode.register();
         bus.addListener(RegisterPayloadHandlersEvent.class, Packets::onRegisterPayloadHandlers);

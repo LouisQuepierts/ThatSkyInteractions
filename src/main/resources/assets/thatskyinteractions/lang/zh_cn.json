@@ -34,5 +34,8 @@
   "item.thatskyinteractions.cloud_editor": "云编辑器",
   "item.thatskyinteractions.cloud_expand": "云放大",
   "item.thatskyinteractions.cloud_reduce": "云缩小",
-  "tab.tsi": "That Sky Interactions"
+  "tab.tsi": "That Sky Interactions",
+
+  "candle_cluster.scale": "大小: %d x %d x %d",
+  "candle_cluster.framed": "边框: %s"
 }

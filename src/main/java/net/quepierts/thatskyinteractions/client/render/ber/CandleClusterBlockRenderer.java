@@ -15,6 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.block.CandleClusterBlock;
 import net.quepierts.thatskyinteractions.block.CandleType;
+import net.quepierts.thatskyinteractions.block.HugeCandleClusterBlock;
 import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
 import net.quepierts.thatskyinteractions.client.render.section.StaticModelRenderer;
 import net.quepierts.thatskyinteractions.client.util.CandleModels;
@@ -37,9 +38,7 @@ public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<Can
             @NotNull BlockPos blockPos,
             @NotNull PoseStack poseStack
     ) {
-        BlockState normalState = Blocks.CANDLE_CLUSTER.get().defaultBlockState();
-        BlockState litState = Blocks.CANDLE_CLUSTER.get().defaultBlockState().setValue(CandleClusterBlock.LIT, true);
-
+        BlockState state = Blocks.CANDLE_CLUSTER.get().defaultBlockState();
         ShortArrayList candles = cluster.getCandles();
 
         poseStack.translate(-0.5f, 0, -0.5f);
@@ -51,11 +50,10 @@ public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<Can
             int rotation = CandleClusterBlockEntity.getCandleRotation(candle);
             boolean lit = CandleClusterBlockEntity.getCandleLit(candle);
 
-            BlockState state = lit ? litState : normalState;
-
             poseStack.pushPose();
             poseStack.translate(x, 0, z);
 
+            BakedModel model = manager.getModel(CandleModels.get(type, lit));
             if (rotation != 0) {
                 Matrix4f matrix4f = new Matrix4f()
                         .translate(0.5f, 0.0f, 0.5f)
@@ -63,7 +61,7 @@ public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<Can
                         .translate(-0.5f, 0.0f, -0.5f);
                 renderer.render(
                         RenderType.cutout(),
-                        manager.getModel(CandleModels.get(type)),
+                        model,
                         state,
                         blockPos,
                         poseStack,
@@ -72,7 +70,7 @@ public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<Can
             } else {
                 renderer.render(
                         RenderType.cutout(),
-                        manager.getModel(CandleModels.get(type)),
+                        model,
                         state,
                         blockPos,
                         poseStack

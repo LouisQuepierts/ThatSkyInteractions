@@ -17,7 +17,8 @@ public class Models {
     @SubscribeEvent
     public static void onRegisterAdditionalModel(ModelEvent.RegisterAdditional event) {
         for (CandleType value : CandleType.values()) {
-            event.register(CandleModels.get(value));
+            event.register(CandleModels.get(value, false));
+            event.register(CandleModels.get(value, true));
         }
     }
 }

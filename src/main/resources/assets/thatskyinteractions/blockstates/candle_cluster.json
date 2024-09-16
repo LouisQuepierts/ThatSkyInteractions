@@ -1,10 +1,7 @@
 {
   "variants": {
-    "lit=false": {
-      "model": "thatskyinteractions:block/candle"
-    },
-    "lit=true": {
-      "model": "thatskyinteractions:block/candle_lit"
+    "": {
+      "model": "thatskyinteractions:block/candle/t_standard"
     }
   }
 }
