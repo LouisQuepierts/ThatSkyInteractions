@@ -27,7 +27,7 @@ logoFile = "thatskyinteractions.png"
     ordering = "NONE"
     side = "BOTH"
 
-[[dependencies."#{mod_id"]]
+[[dependencies."${mod_id}"]]
     modId = "simple_animator"
     type = "required"
     versionRange = "${simpleanimator_version_range}"

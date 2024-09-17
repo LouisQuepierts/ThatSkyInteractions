@@ -46,7 +46,7 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
     ) {
         TSIUserData userData = ThatSkyInteractions.getInstance().getClient().getCache().getUserData();
 
-        if (userData.isPickedUp(wingOfLightBlockEntity)) {
+        if (userData == null || userData.isPickedUp(wingOfLightBlockEntity)) {
             return;
         }
 

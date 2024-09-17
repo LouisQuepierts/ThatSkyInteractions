@@ -1,27 +1,40 @@
 package net.quepierts.thatskyinteractions.block.entity;
 
+import it.unimi.dsi.fastutil.shorts.AbstractShort2IntFunction;
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.CandleClusterBlock;
 import net.quepierts.thatskyinteractions.block.CandleType;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.PickupCandleW2SButton;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenButton;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import net.quepierts.thatskyinteractions.registry.Blocks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
+public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEntity implements IPickable {
+    public static final ResourceLocation TYPE = ThatSkyInteractions.getLocation("candle_cluster");
     public static final int MAX_ROTATION = 8;
     public static final float UNIT_ROTATION_RAD = Mth.HALF_PI / MAX_ROTATION;
     public static final float UNIT_ROTATION_DEG = 90.0f / MAX_ROTATION;
@@ -44,6 +57,7 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
 
     @Override
     public void toNBT(@NotNull CompoundTag tag) {
+        super.toNBT(tag);
         int[] array = new int[this.candles.size()];
 
         for (int i = 0; i < this.candles.size(); i++) {
@@ -55,6 +69,7 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
 
     @Override
     public void fromNBT(@NotNull CompoundTag tag) {
+        super.fromNBT(tag);
         if (tag.contains(TAG_CANDLES)) {
             Arrays.fill(this.grid, 0);
             this.candles.clear();
@@ -70,6 +85,11 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
                 this.update(level);
             }
         }
+    }
+
+    @Override
+    public ResourceLocation type() {
+        return null;
     }
 
     @Override
@@ -472,5 +492,35 @@ public class CandleClusterBlockEntity extends AbstractUpdatableBlockEntity {
     @NotNull
     public VoxelShape getShape() {
         return lowerShape;
+    }
+
+    @Override
+    public void onPickup(ServerPlayer player) {
+        int sum = this.candles.intStream()
+                .map(new AbstractShort2IntFunction() {
+                    @Override
+                    public int get(short key) {
+                        return CandleClusterBlockEntity.getCandleType(key).getSize();
+                    }
+                })
+                .sum();
+
+        player.addItem(new ItemStack(Items.CANDLE, sum / 4));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Nullable
+    @Override
+    protected World2ScreenButton createButton() {
+        return new PickupCandleW2SButton(this);
+    }
+
+    @Override
+    public boolean isDailyRefresh() {
+        return true;
+    }
+
+    public boolean isLighted() {
+        return !this.lightedCandles.isEmpty();
     }
 }

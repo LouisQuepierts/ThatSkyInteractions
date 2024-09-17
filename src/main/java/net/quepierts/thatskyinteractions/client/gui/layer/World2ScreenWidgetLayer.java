@@ -152,7 +152,6 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
                 cameraSpacePos.x = -cameraSpacePos.x;
             }
 
-
             float x = (int) ((cameraSpacePos.x() / cameraSpacePos.z() * 0.5F + 0.5F) * screenWidth);
             float y = (int) ((1.0F - (cameraSpacePos.y() / cameraSpacePos.z() * 0.5F + 0.5F)) * screenHeight);
 
@@ -172,7 +171,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
 
             float distance = Vector3f.distanceSquared(pos.x, pos.y, pos.z, (float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z);
             object.calculateRenderScale(distance);
-            if (object.scale < 0.1f)
+            if (object.scale < 1.0f)
                 continue;
 
             if (locked == null && object.x > left && object.x < right && object.selectable) {

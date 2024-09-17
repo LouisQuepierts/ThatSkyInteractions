@@ -11,10 +11,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.CandleType;
 import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
+import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.render.section.StaticModelRenderer;
 import net.quepierts.thatskyinteractions.client.util.CandleModels;
+import net.quepierts.thatskyinteractions.data.TSIUserData;
 import net.quepierts.thatskyinteractions.registry.Blocks;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
@@ -76,6 +80,18 @@ public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<Can
             }
 
             poseStack.popPose();
+
+            TSIUserData userData = ThatSkyInteractions.getInstance().getClient().getCache().getUserData();
+            if (userData == null || userData.isPickedUp(cluster)) {
+                return;
+            }
+
+            BlockPos pos = cluster.getBlockPos();
+            if (Minecraft.getInstance().player == null)
+                return;
+            float distanceSqr = (float) Minecraft.getInstance().player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
+
+            World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(cluster.getUUID(), cluster.provideW2SWidget(distanceSqr));
         }
     }
 }

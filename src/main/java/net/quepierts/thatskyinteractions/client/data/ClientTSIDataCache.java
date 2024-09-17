@@ -13,6 +13,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.block.entity.IPickable;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.data.PlayerPair;
@@ -25,6 +26,7 @@ import net.quepierts.thatskyinteractions.network.packet.BatchRelationshipPacket;
 import net.quepierts.thatskyinteractions.network.packet.PickupWingOfLightPacket;
 import net.quepierts.thatskyinteractions.network.packet.UserDataModifyPacket;
 import net.quepierts.thatskyinteractions.network.packet.astrolabe.AstrolabeOperationPacket;
+import net.quepierts.thatskyinteractions.network.packet.block.PickablePickupPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -191,6 +193,24 @@ public class ClientTSIDataCache {
         }
     }
 
+    public void pickup(IPickable pickable, boolean update) {
+        TSIUserData data = this.userData;
+
+        if (data == null) {
+            return;
+        }
+
+        if (!data.isPickedUp(pickable)) {
+            UUID uuid = pickable.getUUID();
+            data.pickup(pickable);
+            World2ScreenWidgetLayer.INSTANCE.remove(uuid);
+
+            if (update) {
+                SimpleAnimator.getNetwork().update(new PickablePickupPacket(pickable));
+            }
+        }
+    }
+
     public void sendLight(UUID target, boolean update) {
         if (this.userData == null) {
             return;
@@ -222,4 +242,5 @@ public class ClientTSIDataCache {
     public boolean unprepared() {
         return this.userData == null;
     }
+
 }

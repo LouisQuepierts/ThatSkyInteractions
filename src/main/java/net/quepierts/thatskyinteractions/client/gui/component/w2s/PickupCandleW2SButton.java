@@ -5,38 +5,42 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
+import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.animate.WaitAnimation;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
-public class PickupWingOfLightW2SButton extends World2ScreenButton {
+public class PickupCandleW2SButton extends World2ScreenButton {
     public static final ResourceLocation TEXTURE = ThatSkyInteractions.getLocation("textures/gui/pickup.png");
-    @NotNull
-    private final WingOfLightBlockEntity bound;
-    public PickupWingOfLightW2SButton(@NotNull WingOfLightBlockEntity bound) {
+    private final CandleClusterBlockEntity bound;
+    public PickupCandleW2SButton(CandleClusterBlockEntity bound) {
         super(TEXTURE);
         this.bound = bound;
         BlockPos position = this.bound.getBlockPos();
-        this.worldPos.set(position.getX() + 0.5f, position.getY() + 1.0f, position.getZ() + 0.5f);
+        this.worldPos.set(position.getX() + 0.5f, position.getY() + 1.2f, position.getZ() + 0.5f);
+        this.limitInScreen = false;
     }
 
     @Override
     public void invoke() {
         ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
         ScreenAnimator.GLOBAL.play(new WaitAnimation(0.5f, () -> {
-                cache.pickup(this.bound, true);
-                PickupWingOfLightW2SButton.this.setRemoved();
+            cache.pickup(this.bound, true);
+            PickupCandleW2SButton.this.setRemoved();
         }));
     }
 
     @Override
+    public boolean shouldRender() {
+        return !this.shouldSkip() && super.shouldRender();
+    }
+
+    @Override
     public boolean shouldRemove() {
-        return this.bound.isRemoved();
+        return this.bound.isRemoved() || !this.bound.isLighted();
     }
 
     @Override
@@ -46,6 +50,6 @@ public class PickupWingOfLightW2SButton extends World2ScreenButton {
 
     @Override
     public void calculateRenderScale(float distance) {
-        this.scale = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - 8, 0) / 4);
+        this.scale = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - 4, 0) / 4);
     }
 }

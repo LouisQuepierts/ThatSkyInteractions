@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public abstract class AbstractUniqueBlockEntity extends AbstractUpdatableBlockEntity {
@@ -14,7 +15,9 @@ public abstract class AbstractUniqueBlockEntity extends AbstractUpdatableBlockEn
 
     public AbstractUniqueBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
-        this.uuid = UUID.randomUUID();
+
+        String name = this.type() + ":" + pos.getX() + "," + pos.getY() + "," + pos.getZ();
+        this.uuid = UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override

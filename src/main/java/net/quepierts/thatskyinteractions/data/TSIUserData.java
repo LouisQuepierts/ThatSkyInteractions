@@ -12,6 +12,7 @@ import net.minecraft.network.codec.StreamDecoder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.block.entity.IPickable;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeMap;
@@ -26,14 +27,14 @@ public class TSIUserData {
     @NotNull private final AstrolabeMap astrolabes;
     @NotNull private final Set<UUID> blackList;
     @NotNull private final Map<UUID, Pair<FriendAstrolabeInstance.NodeData, ResourceLocation>> cache;
-    @NotNull private final Set<UUID> pickedWingOfLight;
+    @NotNull private final Set<UUID> staticPickup;
     @NotNull private final Set<UUID> dailyPickup;
     @NotNull private final Date savedTime;
 
     public TSIUserData(@NotNull AstrolabeMap astrolabes, @NotNull Set<UUID> blackList, @NotNull Set<UUID> pickedWingOfLight, @NotNull Set<UUID> dailyPickup, Date savedTime) {
         this.astrolabes = astrolabes;
         this.blackList = blackList;
-        this.pickedWingOfLight = pickedWingOfLight;
+        this.staticPickup = pickedWingOfLight;
         this.dailyPickup = dailyPickup;
         this.savedTime = savedTime;
 
@@ -66,7 +67,7 @@ public class TSIUserData {
     public static void toNetwork(FriendlyByteBuf byteBuf, TSIUserData data) {
         AstrolabeMap.toNetwork(byteBuf, data.astrolabes);
         byteBuf.writeCollection(data.blackList, (o, uuid) -> o.writeUUID(uuid));
-        byteBuf.writeCollection(data.pickedWingOfLight, (o, uuid) -> o.writeUUID(uuid));
+        byteBuf.writeCollection(data.staticPickup, (o, uuid) -> o.writeUUID(uuid));
         byteBuf.writeCollection(data.dailyPickup, (o, uuid) -> o.writeUUID(uuid));
         byteBuf.writeDate(data.savedTime);
     }
@@ -90,11 +91,11 @@ public class TSIUserData {
         }
         tag.put("blackList", blackList);
 
-        ListTag pickedWingOfLight = new ListTag();
-        for (UUID uuid : data.pickedWingOfLight) {
-            pickedWingOfLight.add(NbtUtils.createUUID(uuid));
+        ListTag staticPickup = new ListTag();
+        for (UUID uuid : data.staticPickup) {
+            staticPickup.add(NbtUtils.createUUID(uuid));
         }
-        tag.put("pickedWingOfLight", pickedWingOfLight);
+        tag.put("staticPickup", staticPickup);
 
         ListTag dailyPickup = new ListTag();
         for (UUID uuid : data.dailyPickup) {
@@ -111,10 +112,10 @@ public class TSIUserData {
         for (Tag uuid : blackListTag) {
             blackList.add(NbtUtils.loadUUID(uuid));
         }
-        ListTag pickedWingOfLightTag = tag.getList("pickedWingOfLight", Tag.TAG_INT_ARRAY);
-        ObjectOpenHashSet<UUID> pickedWingOfLight = new ObjectOpenHashSet<>(pickedWingOfLightTag.size());
-        for (Tag uuid : pickedWingOfLightTag) {
-            pickedWingOfLight.add(NbtUtils.loadUUID(uuid));
+        ListTag staticPickupTag = tag.getList("staticPickup", Tag.TAG_INT_ARRAY);
+        ObjectOpenHashSet<UUID> staticPickup = new ObjectOpenHashSet<>(staticPickupTag.size());
+        for (Tag uuid : staticPickupTag) {
+            staticPickup.add(NbtUtils.loadUUID(uuid));
         }
         ListTag dailyPickupTag = tag.getList("dailyPickup", Tag.TAG_INT_ARRAY);
         ObjectOpenHashSet<UUID> dailyPickup = new ObjectOpenHashSet<>(dailyPickupTag.size());
@@ -123,7 +124,7 @@ public class TSIUserData {
         }
         Date savedTime = new Date(tag.getLong("lastUpdateTime"));
 
-        return new TSIUserData(astrolabes, blackList, pickedWingOfLight, dailyPickup, savedTime);
+        return new TSIUserData(astrolabes, blackList, staticPickup, dailyPickup, savedTime);
     }
 
     @Nullable
@@ -157,17 +158,38 @@ public class TSIUserData {
         return data;
     }
 
-    public boolean isPickedUp(@NotNull WingOfLightBlockEntity wingOfLightBlockEntity) {
+    public boolean isPickedUpWOL(@NotNull WingOfLightBlockEntity wingOfLightBlockEntity) {
         UUID uuid = wingOfLightBlockEntity.getUUID();
-        return this.pickedWingOfLight.contains(uuid);
+        return this.staticPickup.contains(uuid);
     }
 
-    public boolean isPickedUp(UUID wolUUID) {
-        return this.pickedWingOfLight.contains(wolUUID);
+    public boolean isPickedUpWOL(UUID wolUUID) {
+        return this.staticPickup.contains(wolUUID);
+    }
+
+    public boolean isPickedUp(UUID uuid, boolean daily) {
+        if (daily) {
+            return this.dailyPickup.contains(uuid);
+        } else {
+            return this.staticPickup.contains(uuid);
+        }
+    }
+
+    public boolean isPickedUp(@NotNull IPickable pickable) {
+        return isPickedUp(pickable.getUUID(), pickable.isDailyRefresh());
+    }
+
+    public void pickup(@NotNull IPickable pickable) {
+        UUID uuid = pickable.getUUID();
+        if (pickable.isDailyRefresh()) {
+            this.dailyPickup.add(uuid);
+        } else {
+            this.staticPickup.add(uuid);
+        }
     }
 
     public void pickupWingOfLight(@NotNull UUID wolUUID) {
-        this.pickedWingOfLight.add(wolUUID);
+        this.staticPickup.add(wolUUID);
     }
 
     public boolean likeFriend(UUID player) {

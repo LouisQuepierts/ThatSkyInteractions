@@ -28,6 +28,7 @@ public abstract class World2ScreenWidget {
     protected boolean smoothPosition = false;
     private boolean computed = false;
     private boolean inScreen = false;
+    private boolean shouldRemove = false;
 
     protected World2ScreenWidget() {
     }
@@ -48,7 +49,11 @@ public abstract class World2ScreenWidget {
     public void invoke() {}
 
     public boolean shouldRemove() {
-        return false;
+        return this.shouldRemove;
+    }
+
+    public void setRemoved() {
+        this.shouldRemove = true;
     }
 
     public boolean collided(World2ScreenWidget onGrid) {
