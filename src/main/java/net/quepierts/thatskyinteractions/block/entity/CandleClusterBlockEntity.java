@@ -25,7 +25,6 @@ import net.quepierts.thatskyinteractions.block.CandleClusterBlock;
 import net.quepierts.thatskyinteractions.block.CandleType;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.PickupCandleW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenButton;
-import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import net.quepierts.thatskyinteractions.registry.Blocks;
 import org.jetbrains.annotations.NotNull;

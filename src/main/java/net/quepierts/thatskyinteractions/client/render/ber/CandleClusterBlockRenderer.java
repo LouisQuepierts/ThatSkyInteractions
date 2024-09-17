@@ -14,7 +14,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.CandleType;
 import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.render.section.StaticModelRenderer;
 import net.quepierts.thatskyinteractions.client.util.CandleModels;
