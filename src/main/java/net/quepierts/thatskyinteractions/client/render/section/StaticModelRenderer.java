@@ -28,7 +28,7 @@ public class StaticModelRenderer {
         this.context = context;
     }
 
-    public void render(RenderType renderType, BakedModel model, BlockState state, BlockPos blockPos, PoseStack poseStack) {
+    public void render(RenderType renderType, BakedModel model, BlockState state, BlockPos blockPos, PoseStack poseStack, boolean checkSlides) {
         LightPipelineAwareModelBlockRenderer.render(
                 context.getOrCreateChunkBuffer(renderType),
                 context.getQuadLighter(true),
@@ -37,7 +37,7 @@ public class StaticModelRenderer {
                 state,
                 blockPos,
                 poseStack,
-                false,
+                checkSlides,
                 RANDOM,
                 42L,
                 OverlayTexture.NO_OVERLAY,
@@ -52,9 +52,10 @@ public class StaticModelRenderer {
             BlockState state,
             BlockPos blockPos,
             PoseStack poseStack,
-            Matrix4f transformation
+            Matrix4f transformation,
+            boolean checkSlides
     ) {
         BakedModel wrapped = new TransformedBakedModelWrapper(model, transformation);
-        this.render(renderType, wrapped, state, blockPos, poseStack);
+        this.render(renderType, wrapped, state, blockPos, poseStack, checkSlides);
     }
 }

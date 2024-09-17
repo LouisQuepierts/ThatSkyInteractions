@@ -60,7 +60,7 @@ public class CandleClusterItem extends BlockItem {
         if (player.isShiftKeyDown()) {
             BlockState state = level.getBlockState(pos);
             if (state.is(Blocks.CANDLE_CLUSTER)) {
-                BlockEntity entity = Blocks.CANDLE_CLUSTER.get().getBlockEntity(pos, state, level);
+                BlockEntity entity = level.getBlockEntity(pos);
 
                 if (entity instanceof CandleClusterBlockEntity candleClusterBlockEntity) {
                     if (candleClusterBlockEntity.tryRemoveCandle(localX, localZ, player)) {

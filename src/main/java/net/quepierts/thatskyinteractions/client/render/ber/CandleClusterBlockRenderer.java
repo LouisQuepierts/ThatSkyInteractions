@@ -61,7 +61,8 @@ public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<Can
                         state,
                         blockPos,
                         poseStack,
-                        matrix4f
+                        matrix4f,
+                        false
                 );
             } else {
                 renderer.render(
@@ -69,7 +70,8 @@ public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<Can
                         model,
                         state,
                         blockPos,
-                        poseStack
+                        poseStack,
+                        false
                 );
             }
 

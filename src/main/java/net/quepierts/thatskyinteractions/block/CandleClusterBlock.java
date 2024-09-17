@@ -63,7 +63,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
     @NotNull
     @Override
     protected VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
-        if (this.getBlockEntity(pos, state, level) instanceof CandleClusterBlockEntity entity) {
+        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
             return entity.getShape();
         }
         return AABB;
@@ -72,7 +72,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
     @NotNull
     @Override
     public ItemStack getCloneItemStack(@NotNull BlockState state, @NotNull HitResult target, @NotNull LevelReader level, @NotNull BlockPos pos, @NotNull Player player) {
-        if (this.getBlockEntity(pos, state, level) instanceof CandleClusterBlockEntity entity) {
+        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
             Vec3 location = target.getLocation();
             int localX = (int) ((location.x - pos.getX()) * 16);
             int localZ = (int) ((location.z - pos.getZ()) * 16);
@@ -103,7 +103,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
             return ItemInteractionResult.FAIL;
         }
 
-        if (this.getBlockEntity(pos, state, level) instanceof CandleClusterBlockEntity entity) {
+        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
             Vec3 location = hitResult.getLocation();
 
             int localX = (int) ((location.x - pos.getX()) * 16);
@@ -128,7 +128,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
 
     @Override
     public void animateTick(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull RandomSource random) {
-        if (this.getBlockEntity(pos, state, level) instanceof CandleClusterBlockEntity entity) {
+        if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
             ShortArrayList lighted = entity.getLightedCandles();
             for (int i = 0; i < lighted.size(); i++) {
                 short candle = lighted.getShort(i);
@@ -149,21 +149,6 @@ public class CandleClusterBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
         return new CandleClusterBlockEntity(blockPos, blockState);
-    }
-
-    public BlockEntity getBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state, @NotNull BlockGetter level) {
-        return level.getBlockEntity(pos);
-
-    }
-
-    @NotNull
-    protected VoxelShape getVisualShape(
-            @NotNull BlockState state,
-            @NotNull BlockGetter getter,
-            @NotNull BlockPos pos,
-            @NotNull CollisionContext context
-    ) {
-        return Shapes.empty();
     }
 
     protected float getShadeBrightness(
