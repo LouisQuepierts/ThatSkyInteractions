@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.block.entity;
 
-import it.unimi.dsi.fastutil.shorts.AbstractShort2IntFunction;
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -25,6 +24,7 @@ import net.quepierts.thatskyinteractions.block.CandleClusterBlock;
 import net.quepierts.thatskyinteractions.block.CandleType;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.PickupCandleW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenButton;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.registry.BlockEntities;
 import net.quepierts.thatskyinteractions.registry.Blocks;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +43,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
     private final ShortArrayList candles;
     private final ShortArrayList lightedCandles;
     private final int[] grid;
+    private float rewards = 0;
 
     @NotNull
     private VoxelShape lowerShape = Shapes.empty();
@@ -73,6 +74,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
             Arrays.fill(this.grid, 0);
             this.candles.clear();
             this.lightedCandles.clear();
+            this.rewards = 0;
 
             int[] array = tag.getIntArray(TAG_CANDLES);
 
@@ -220,6 +222,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         candle |= LIT_FLAG;
         this.candles.set(index, candle);
         this.lightedCandles.add(candle);
+        this.rewards += getCandleRewards(candle);
         this.markUpdate();
 
         if (this.level != null) {
@@ -242,6 +245,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
             candle |= LIT_FLAG;
             this.candles.set(i, candle);
             this.lightedCandles.add(candle);
+            this.rewards += getCandleRewards(candle);
 
             this.markUpdate();
             if (this.level != null) {
@@ -273,6 +277,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
         candle ^= LIT_FLAG;
         this.candles.set(index, candle);
+        this.rewards = Math.max(0, this.rewards - getCandleRewards(candle));
 
         this.markUpdate();
         if (this.level != null) {
@@ -292,6 +297,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
             this.candles.set(i, (short) (candle ^ LIT_FLAG));
         }
 
+        this.rewards = 0;
         this.markUpdate();
         if (this.level != null) {
             level.playSound(null, this.getBlockPos(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -338,6 +344,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
         if (getCandleLit(bits)) {
             this.lightedCandles.add(bits);
+            this.rewards += getCandleRewards(bits);
         }
 
         for (int i = x; i < Math.min(x + size, 15); i++) {
@@ -373,6 +380,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
         if (getCandleLit(bits)) {
             this.lightedCandles.rem(bits);
+            this.rewards = Math.max(0, this.rewards - getCandleRewards(bits));
         }
 
         CandleType type = getCandleType(bits);
@@ -453,6 +461,10 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         return CandleType.values()[(bits >> 8) & 0xf];
     }
 
+    public static float getCandleRewards(short bits) {
+        return getCandleType(bits).getSize() / 8f;
+    }
+
     public static int getCandleRotation(short bits) {
         return (bits >>> 12) & 0x7;
     }
@@ -495,16 +507,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
     @Override
     public void onPickup(ServerPlayer player) {
-        int sum = this.candles.intStream()
-                .map(new AbstractShort2IntFunction() {
-                    @Override
-                    public int get(short key) {
-                        return CandleClusterBlockEntity.getCandleType(key).getSize();
-                    }
-                })
-                .sum();
-
-        player.addItem(new ItemStack(Items.CANDLE, sum / 4));
+        player.addItem(new ItemStack(Items.CANDLE, (int) this.rewards));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -514,6 +517,16 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         return new PickupCandleW2SButton(this);
     }
 
+    @OnlyIn(Dist.CLIENT)
+    @Nullable
+    @Override
+    public World2ScreenWidget provideW2SWidget(float distanceSqr) {
+        if (!this.isLighted() || !this.canReward()) {
+            return null;
+        }
+        return super.provideW2SWidget(distanceSqr);
+    }
+
     @Override
     public boolean isDailyRefresh() {
         return true;
@@ -521,5 +534,9 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
     public boolean isLighted() {
         return !this.lightedCandles.isEmpty();
+    }
+
+    public boolean canReward() {
+        return (int) this.rewards > 0;
     }
 }
