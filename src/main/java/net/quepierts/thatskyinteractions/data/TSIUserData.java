@@ -17,11 +17,13 @@ import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeMap;
 import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
-import org.apache.commons.lang3.time.DateUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class TSIUserData {
     @NotNull private final AstrolabeMap astrolabes;
@@ -29,14 +31,16 @@ public class TSIUserData {
     @NotNull private final Map<UUID, Pair<FriendAstrolabeInstance.NodeData, ResourceLocation>> cache;
     @NotNull private final Set<UUID> staticPickup;
     @NotNull private final Set<UUID> dailyPickup;
-    @NotNull private final Date savedTime;
 
-    public TSIUserData(@NotNull AstrolabeMap astrolabes, @NotNull Set<UUID> blackList, @NotNull Set<UUID> pickedWingOfLight, @NotNull Set<UUID> dailyPickup, Date savedTime) {
+    private long lastChangedGameDay;
+
+    public TSIUserData(@NotNull AstrolabeMap astrolabes, @NotNull Set<UUID> blackList, @NotNull Set<UUID> pickedWingOfLight, @NotNull Set<UUID> dailyPickup, long lastChangedGameDay) {
         this.astrolabes = astrolabes;
         this.blackList = blackList;
         this.staticPickup = pickedWingOfLight;
         this.dailyPickup = dailyPickup;
-        this.savedTime = savedTime;
+        this.lastChangedGameDay = lastChangedGameDay;
+        
 
         this.cache = new Object2ObjectOpenHashMap<>();
         for (Map.Entry<ResourceLocation, FriendAstrolabeInstance> entry : this.astrolabes.entrySet()) {
@@ -46,8 +50,6 @@ public class TSIUserData {
                 this.cache.put(node.getFriendData().getUuid(), Pair.of(node, entry.getKey()));
             }
         }
-
-        this.refreshDailyPickup();
     }
 
     public static TSIUserData create() {
@@ -62,14 +64,14 @@ public class TSIUserData {
             astrolabeMap.put(astrolabe, new FriendAstrolabeInstance(astrolabe));
         }*/
 
-        return new TSIUserData(astrolabeMap, new HashSet<>(), new HashSet<>(), new HashSet<>(), new Date());
+        return new TSIUserData(astrolabeMap, new HashSet<>(), new HashSet<>(), new HashSet<>(), 0);
     }
     public static void toNetwork(FriendlyByteBuf byteBuf, TSIUserData data) {
         AstrolabeMap.toNetwork(byteBuf, data.astrolabes);
         byteBuf.writeCollection(data.blackList, (o, uuid) -> o.writeUUID(uuid));
         byteBuf.writeCollection(data.staticPickup, (o, uuid) -> o.writeUUID(uuid));
         byteBuf.writeCollection(data.dailyPickup, (o, uuid) -> o.writeUUID(uuid));
-        byteBuf.writeDate(data.savedTime);
+        byteBuf.writeLong(data.lastChangedGameDay);
     }
 
     public static TSIUserData fromNetwork(FriendlyByteBuf byteBuf) {
@@ -78,12 +80,11 @@ public class TSIUserData {
         Set<UUID> blackList = byteBuf.readCollection(ObjectOpenHashSet::new, decoder);
         Set<UUID> pickedWingOfLight = byteBuf.readCollection(ObjectOpenHashSet::new, decoder);
         Set<UUID> dailyPickup = byteBuf.readCollection(ObjectOpenHashSet::new, decoder);
-        Date savedTime = byteBuf.readDate();
-        return new TSIUserData(astrolabes, blackList, pickedWingOfLight, dailyPickup, savedTime);
+        long lastModifiedGameDay = byteBuf.readLong();
+        return new TSIUserData(astrolabes, blackList, pickedWingOfLight, dailyPickup, lastModifiedGameDay);
     }
 
     public static void toNBT(CompoundTag tag, TSIUserData data) {
-        data.savedTime.setTime(System.currentTimeMillis());
         tag.put("astrolabe", AstrolabeMap.toNBT(new CompoundTag(), data.astrolabes));
         ListTag blackList = new ListTag();
         for (UUID uuid : data.blackList) {
@@ -102,7 +103,7 @@ public class TSIUserData {
             dailyPickup.add(NbtUtils.createUUID(uuid));
         }
         tag.put("dailyPickup", dailyPickup);
-        tag.putLong("lastUpdateTime", data.savedTime.getTime());
+        tag.putLong("lastModifiedGameTime", data.lastChangedGameDay);
     }
 
     public static TSIUserData fromNBT(CompoundTag tag) {
@@ -122,9 +123,8 @@ public class TSIUserData {
         for (Tag uuid : dailyPickupTag) {
             dailyPickup.add(NbtUtils.loadUUID(uuid));
         }
-        Date savedTime = new Date(tag.getLong("lastUpdateTime"));
-
-        return new TSIUserData(astrolabes, blackList, staticPickup, dailyPickup, savedTime);
+        long lastModifiedGameTime = tag.getLong("lastModifiedGameTime");
+        return new TSIUserData(astrolabes, blackList, staticPickup, dailyPickup, lastModifiedGameTime);
     }
 
     @Nullable
@@ -221,16 +221,6 @@ public class TSIUserData {
 
         this.transfer(cache.getFirst(), cache.getSecond(), astrolabe);
         return true;
-    }
-
-    public void refreshDailyPickup() {
-        Date current = new Date();
-        if (DateUtils.isSameDay(this.savedTime, current)) {
-            return;
-        }
-
-        this.savedTime.setTime(current.getTime());
-        this.dailyPickup.clear();
     }
 
     private void transfer(@NotNull FriendAstrolabeInstance.NodeData data, @NotNull ResourceLocation srcLocation, @NotNull ResourceLocation destLocation) {
@@ -347,5 +337,14 @@ public class TSIUserData {
     public boolean isLiked(UUID player) {
         Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> pair = this.cache.get(player);
         return pair != null && !pair.getSecond().getPath().startsWith(AstrolabeManager.GENERATED_PREFIX);
+    }
+
+    public boolean tryUpdateDaily(long day) {
+        if (this.lastChangedGameDay != day) {
+            this.lastChangedGameDay = day;
+            this.dailyPickup.clear();
+            return true;
+        }
+        return false;
     }
 }

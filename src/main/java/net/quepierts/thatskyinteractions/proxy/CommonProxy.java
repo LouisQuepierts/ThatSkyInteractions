@@ -59,7 +59,12 @@ public class CommonProxy {
     }
 
     private void onServerTick(final ServerTickEvent.Post event) {
+        ServerLevel level = event.getServer().getLevel(Level.OVERWORLD);
+        assert level != null;
 
+        if (level.getGameTime() % 1000L == 0) {
+            this.userDataManager.tick(level, event.getServer().getPlayerList());
+        }
     }
 
     private void onServerStarted(final ServerStartedEvent event) {

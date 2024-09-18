@@ -22,6 +22,7 @@ public enum Packets {
     BATCH_RELATIONSHIP(BatchRelationshipPacket.class, BatchRelationshipPacket::new, NetworkDirection.PLAY_TO_CLIENT),
     USERDATA_SYNC(UserDataSync.class, UserDataSync::new, NetworkDirection.PLAY_TO_CLIENT),
     ASTROLABE_SYNC(AstrolabeSyncPacket.class, AstrolabeSyncPacket::decode, NetworkDirection.PLAY_TO_CLIENT),
+    UPDATE_DAILY(UpdateDailyPickupPacket.class, UpdateDailyPickupPacket::new, NetworkDirection.PLAY_TO_CLIENT),
     ASTROLABE_IGNITE(AstrolabeOperationPacket.class, AstrolabeOperationPacket::decode, NetworkDirection.ALL),
     UNLOCK_RELATIONSHIP(UnlockRelationshipPacket.class, UnlockRelationshipPacket::decode, NetworkDirection.ALL),
     INTERACT_BUTTON(InteractButtonPacket.class, InteractButtonPacket::decode, NetworkDirection.ALL),

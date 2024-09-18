@@ -7,12 +7,16 @@ import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
+import net.quepierts.simpleanimator.core.network.INetwork;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.network.packet.UpdateDailyPickupPacket;
 import net.quepierts.thatskyinteractions.network.packet.UserDataSync;
 import org.slf4j.Logger;
 
@@ -20,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,6 +36,21 @@ public class TSIUserDataStorage {
     public void saveAndClear() {
         this.dataMap.forEach(this::save);
         this.dataMap.clear();
+    }
+
+    public void tick(ServerLevel level, PlayerList playerList) {
+        long day = level.getGameTime() / 24000L;
+
+        INetwork network = SimpleAnimator.getNetwork();
+        for (Map.Entry<UUID, TSIUserData> entry : this.dataMap.entrySet()) {
+            if (entry.getValue().tryUpdateDaily(day)) {
+                ServerPlayer player = playerList.getPlayer(entry.getKey());
+
+                if (player != null) {
+                    network.sendToPlayer(new UpdateDailyPickupPacket(day), player);
+                }
+            }
+        }
     }
 
     private void save(UUID uuid, TSIUserData data) {
