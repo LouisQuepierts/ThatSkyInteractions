@@ -79,9 +79,10 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
             int[] array = tag.getIntArray(TAG_CANDLES);
 
             for (int bits : array) {
-                this.addCandle((short) bits);
+                this.addCandle((short) bits, false);
             }
 
+            this.buildShape();
             if (this.level != null) {
                 this.update(level);
             }
@@ -168,7 +169,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
         if (this.level != null && !this.level.isClientSide()) {
             short data = makeCandleData(x - half, z - half, type, rotation, false);
-            this.addCandle(data);
+            this.addCandle(data, true);
             this.markUpdate();
         }
         return true;
@@ -334,7 +335,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         }
     }
 
-    private void addCandle(short bits) {
+    private void addCandle(short bits, boolean rebuild) {
         int x = getCandleX(bits);
         int z = getCandleZ(bits);
         CandleType type = getCandleType(bits);
@@ -353,7 +354,9 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
             }
         }
 
-        this.buildShape();
+        if (rebuild) {
+            this.buildShape();
+        }
     }
 
     private boolean removeCandle(int x, int z) {
