@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.client.gui.layer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -30,10 +31,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @OnlyIn(Dist.CLIENT)
 public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
@@ -44,6 +42,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
 
     private final Minecraft minecraft = Minecraft.getInstance();
     private final Map<UUID, World2ScreenWidget> objects = new Object2ObjectOpenHashMap<>();
+    private final Set<UUID> toRemove = new ObjectOpenHashSet<>();
     private final List<World2ScreenWidget> inRange = new ObjectArrayList<>();
     //private final World2ScreenButton[] grid = new World2ScreenButton[64 * 64];
     private final FloatHolder click = new FloatHolder(0.0f);
@@ -113,6 +112,11 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
     public void update(float deltaTicks) {
         if (this.minecraft.level == null)
             return;
+
+        if (!this.toRemove.isEmpty()) {
+            this.toRemove.forEach(this.objects::remove);
+            this.toRemove.clear();;
+        }
 
         final GameRenderer gameRenderer = this.minecraft.gameRenderer;
         final Camera camera = gameRenderer.getMainCamera();
@@ -244,7 +248,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
     }
 
     public void remove(UUID other) {
-        this.objects.remove(other);
+        this.toRemove.add(other);
     }
 
     public void scroll(double mouseY) {
