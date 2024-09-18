@@ -152,4 +152,10 @@ public class AstrolabeMap extends Object2ObjectOpenHashMap<ResourceLocation, Fri
             return null;
         }
     }
+
+    public void update() {
+        for (FriendAstrolabeInstance instance : this.values()) {
+            instance.update();
+        }
+    }
 }

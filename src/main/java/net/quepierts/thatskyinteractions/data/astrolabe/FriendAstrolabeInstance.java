@@ -211,6 +211,17 @@ public class FriendAstrolabeInstance {
         return dirty;
     }
 
+    public void update() {
+        for (NodeData datum : this.data) {
+            if (datum == null) {
+                continue;
+            }
+
+            datum.setFlag(Flag.SENT, false);
+            datum.setFlag(Flag.RECEIVED, false);
+        }
+    }
+
     public static class NodeData {
         private final FriendData friendData;
         private byte flag;

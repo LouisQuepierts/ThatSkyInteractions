@@ -343,6 +343,7 @@ public class TSIUserData {
         if (this.lastChangedGameDay != day) {
             this.lastChangedGameDay = day;
             this.dailyPickup.clear();
+            this.astrolabes.update();
             return true;
         }
         return false;
