@@ -115,7 +115,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
 
         if (!this.toRemove.isEmpty()) {
             this.toRemove.forEach(this.objects::remove);
-            this.toRemove.clear();;
+            this.toRemove.clear();
         }
 
         final GameRenderer gameRenderer = this.minecraft.gameRenderer;
