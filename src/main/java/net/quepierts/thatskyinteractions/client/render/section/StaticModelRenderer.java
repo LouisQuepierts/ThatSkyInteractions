@@ -7,6 +7,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
@@ -17,8 +18,6 @@ import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
 public class StaticModelRenderer {
-    private static final RandomSource RANDOM = RandomSource.createNewThreadLocalInstance();
-
     @NotNull
     private final AddSectionGeometryEvent.SectionRenderingContext context;
 
@@ -38,7 +37,7 @@ public class StaticModelRenderer {
                 blockPos,
                 poseStack,
                 checkSlides,
-                RANDOM,
+                new SingleThreadedRandomSource(0L),
                 42L,
                 OverlayTexture.NO_OVERLAY,
                 ModelData.EMPTY,
