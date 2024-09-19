@@ -33,6 +33,8 @@ public class TSIUserDataStorage {
     private final Object2ObjectMap<UUID, TSIUserData> dataMap = new Object2ObjectOpenHashMap<>();
     private Path root;
 
+    private long day = 0L;
+
     public void saveAndClear() {
         this.dataMap.forEach(this::save);
         this.dataMap.clear();
@@ -40,6 +42,12 @@ public class TSIUserDataStorage {
 
     public void tick(ServerLevel level, PlayerList playerList) {
         long day = level.getGameTime() / 24000L;
+
+        if (this.day == day) {
+            return;
+        }
+
+        this.day = day;
 
         INetwork network = SimpleAnimator.getNetwork();
         for (Map.Entry<UUID, TSIUserData> entry : this.dataMap.entrySet()) {

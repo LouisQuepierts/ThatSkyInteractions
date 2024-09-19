@@ -11,7 +11,7 @@ import net.quepierts.thatskyinteractions.data.TSIUserData;
 import org.jetbrains.annotations.NotNull;
 
 public class UpdateDailyPickupPacket implements ISync {
-    public static final Type<UserDataModifyPacket> TYPE = NetworkPackets.createType(UserDataModifyPacket.class);
+    public static final Type<UpdateDailyPickupPacket> TYPE = NetworkPackets.createType(UpdateDailyPickupPacket.class);
     private final long inGameDay;
 
     public UpdateDailyPickupPacket(long inGameDay) {

@@ -27,6 +27,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
@@ -109,19 +110,23 @@ public class CandleClusterBlock extends BaseEntityBlock {
             int localZ = (int) ((location.z - pos.getZ()) * 16);
 
             if (stack.isEmpty()) {
-                if (player.isShiftKeyDown()) {
-                    if (entity.tryRemoveCandle(localX, localZ, player)) {
-                        return ItemInteractionResult.sidedSuccess(level.isClientSide);
-                    }
-                } if (entity.tryExtinguishCandle(localX, localZ)) {
+                if (player.isShiftKeyDown() && entity.tryRemoveCandle(localX, localZ, player)) {
+                    return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                } if (entity.tryExtinguishCandle(localX, localZ) || entity.tryExtinguishAny()) {
                     return ItemInteractionResult.sidedSuccess(level.isClientSide);
                 }
             } else if (stack.is(Tags.Items.TOOLS_IGNITER)) {
-                if (entity.tryLitCandle(localX, localZ) || entity.tryLitAny()) {
-                    return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                if (!entity.tryLitCandle(localX, localZ)) {
+                    entity.tryLitAny();
                 }
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            } else if (stack.is(net.minecraft.world.item.Items.HONEYCOMB) && entity.tryWax()) {
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            } else if (stack.canPerformAction(ItemAbilities.AXE_WAX_OFF) && entity.tryWaxOff()) {
+                return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
         }
+
         return ItemInteractionResult.FAIL;
     }
 

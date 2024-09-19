@@ -31,6 +31,7 @@ public class ThatSkyInteractions {
         instance = this;
         this.proxy = FMLEnvironment.dist.isClient() ? new ClientProxy(modBus, modContainer) : new CommonProxy(modBus, modContainer);
         //modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
     }
 
     public static ThatSkyInteractions getInstance() {

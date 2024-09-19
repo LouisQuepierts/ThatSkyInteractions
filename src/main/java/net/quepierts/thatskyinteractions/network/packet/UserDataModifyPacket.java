@@ -10,6 +10,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.data.TSIUserData;
 import net.quepierts.thatskyinteractions.data.TSIUserDataStorage;
 import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -51,6 +52,7 @@ public abstract class UserDataModifyPacket implements IUpdate {
         friendlyByteBuf.writeByte(this.code);
     }
 
+    @NotNull
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;

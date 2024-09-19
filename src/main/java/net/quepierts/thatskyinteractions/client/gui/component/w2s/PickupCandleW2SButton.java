@@ -40,7 +40,7 @@ public class PickupCandleW2SButton extends World2ScreenButton {
 
     @Override
     public boolean shouldRemove() {
-        return this.bound.isRemoved() || !this.bound.isLighted();
+        return this.bound.isRemoved() || !this.bound.canReward() || !this.bound.isLighted();
     }
 
     @Override

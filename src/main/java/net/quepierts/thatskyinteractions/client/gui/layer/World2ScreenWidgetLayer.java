@@ -235,7 +235,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
 
     public void addWorldPositionObject(UUID uuid, World2ScreenWidget widget) {
         if (widget == null) {
-            this.objects.remove(uuid);
+            this.toRemove.add(uuid);
             return;
         }
         if (ThatSkyInteractions.getInstance().getClient().blocked(uuid))

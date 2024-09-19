@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.block.entity;
 
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -31,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEntity implements IPickable {
     public static final ResourceLocation TYPE = ThatSkyInteractions.getLocation("candle_cluster");
@@ -40,10 +42,13 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
     private static final int GRID_LENGTH = 256 / 32;
     private static final short LIT_FLAG = (short) 0x8000;
     private static final String TAG_CANDLES = "candles";
+    private static final String TAG_HAS_REWARD = "has_reward";
+    private static final Function<ShortArrayList, VoxelShape> SHAPES;
     private final ShortArrayList candles;
     private final ShortArrayList lightedCandles;
     private final int[] grid;
     private float rewards = 0;
+    private boolean hasRewards = true;
 
     @NotNull
     private VoxelShape lowerShape = Shapes.empty();
@@ -51,8 +56,8 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
     public CandleClusterBlockEntity(BlockPos pos, BlockState blockState) {
         super(BlockEntities.CANDLE_CLUSTER.get(), pos, blockState);
         this.grid = new int[GRID_LENGTH];
-        this.candles = new ShortArrayList();
-        this.lightedCandles = new ShortArrayList();
+        this.candles = new ShortArrayList(32);
+        this.lightedCandles = new ShortArrayList(32);
     }
 
     @Override
@@ -65,6 +70,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         }
 
         tag.putIntArray(TAG_CANDLES, array);
+        tag.putBoolean(TAG_HAS_REWARD, this.hasRewards);
     }
 
     @Override
@@ -86,6 +92,10 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
             if (this.level != null) {
                 this.update(level);
             }
+        }
+
+        if (tag.contains(TAG_HAS_REWARD)) {
+            this.hasRewards = tag.getBoolean(TAG_HAS_REWARD);
         }
     }
 
@@ -232,9 +242,9 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         return true;
     }
 
-    public boolean tryLitAny() {
+    public void tryLitAny() {
         if (this.candles.size() == this.lightedCandles.size()) {
-            return false;
+            return;
         }
 
         for (int i = 0; i < this.candles.size(); i++) {
@@ -253,10 +263,9 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
                 level.playSound(null, this.getBlockPos(), SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
 
-            return true;
+            return;
         }
 
-        return false;
     }
 
     public boolean tryExtinguishCandle(int x, int z) {
@@ -285,6 +294,44 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
             level.playSound(null, this.getBlockPos(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
         return true;
+    }
+
+    public boolean tryExtinguishAny() {
+        if (this.candles.isEmpty() || this.lightedCandles.isEmpty()) {
+            return false;
+        }
+
+        short candle = this.lightedCandles.removeLast();
+        int index = this.candles.indexOf(candle);
+        candle ^= LIT_FLAG;
+        this.candles.set(index, candle);
+        this.rewards = Math.max(0, this.rewards - getCandleRewards(candle));
+
+        this.markUpdate();
+        if (this.level != null) {
+            level.playSound(null, this.getBlockPos(), SoundEvents.CANDLE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.0F);
+        }
+
+        return true;
+    }
+
+    public boolean tryWax() {
+        if (this.hasRewards) {
+            this.hasRewards = false;
+            this.markUpdate();;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean tryWaxOff() {
+        if (!this.hasRewards) {
+            this.hasRewards = true;
+            this.markUpdate();
+            return true;
+        }
+
+        return false;
     }
 
     public boolean tryExtinguishAll() {
@@ -402,10 +449,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         if (this.candles.isEmpty()) {
             this.lowerShape = Shapes.empty();
         } else {
-            this.lowerShape = this.candles.intStream()
-                    .skip(1)
-                    .mapToObj(CandleClusterBlockEntity::getLowerCandleShape)
-                    .reduce(getLowerCandleShape(this.candles.getShort(0)), Shapes::or);
+            this.lowerShape = SHAPES.apply(new ShortArrayList(this.candles));
         }
     }
 
@@ -540,6 +584,13 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
     }
 
     public boolean canReward() {
-        return (int) this.rewards > 0;
+        return this.hasRewards && (int) this.rewards > 0;
+    }
+
+    static {
+        SHAPES = Util.memoize((candles) -> candles.intStream()
+                .skip(1)
+                .mapToObj(CandleClusterBlockEntity::getLowerCandleShape)
+                .reduce(getLowerCandleShape(candles.getShort(0)), Shapes::or));
     }
 }
