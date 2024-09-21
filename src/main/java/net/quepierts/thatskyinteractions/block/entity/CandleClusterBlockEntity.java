@@ -154,7 +154,6 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
         if (this.level != null && type.getHeight() > 16) {
             BlockState above = this.level.getBlockState(this.getBlockPos().above());
-
             if (!above.isAir() || !above.canBeReplaced()) {
                 return false;
             }
@@ -395,8 +394,10 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
             this.rewards += getCandleRewards(bits);
         }
 
-        for (int i = x; i < Math.min(x + size, 15); i++) {
-            for (int j = z; j < Math.min(z + size, 15); j++) {
+        int xRange = Math.min(x + size, 15);
+        int zRange = Math.min(z + size, 15);
+        for (int i = x; i < xRange; i++) {
+            for (int j = z; j < zRange; j++) {
                 this.setOccupy(i, j);
             }
         }
@@ -435,8 +436,10 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
         CandleType type = getCandleType(bits);
         final int size = type.getSize();
-        for (int k = candleX; k < candleX + size; k++) {
-            for (int j = candleZ; j < candleZ + size; j++) {
+        int xRange = Math.min(candleX + size, 15);
+        int zRange = Math.min(candleZ + size, 15);
+        for (int k = candleX; k < xRange; k++) {
+            for (int j = candleZ; j < zRange; j++) {
                 this.setEmpty(k, j);
             }
         }
@@ -451,6 +454,16 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         } else {
             this.lowerShape = SHAPES.apply(new ShortArrayList(this.candles));
         }
+    }
+
+    private ShortArrayList raw() {
+        ShortArrayList raw = new ShortArrayList(this.candles.size());
+        for (int i = 0; i < raw.size(); i++) {
+            short candle = this.candles.getShort(i);
+            candle |= LIT_FLAG | 0x00F0;
+            raw.add(candle);
+        }
+        return raw;
     }
 
     private static VoxelShape getLowerCandleShape(int i) {
@@ -481,6 +494,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         int bit = (z % 2) * 16 + x;
         this.grid[index] ^= (1 << bit);
     }
+
     public boolean isOccupied(int x, int z) {
         if (isPositionInvalid(x) || isPositionInvalid(z)) {
             return false;
@@ -493,7 +507,11 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
     }
 
     public static short makeCandleData(int x, int z, CandleType type, int rotation, boolean lit) {
-        return (short) ((lit ? LIT_FLAG : 0) | (clampRotation(rotation) << 12) | (type.ordinal() << 8) | (x << 4) | z);
+        return (short) ((lit ? LIT_FLAG : 0)
+                | (clampRotation(rotation) << 12)
+                | (type.ordinal() << 8)
+                | (x << 4)
+                | z);
     }
 
     public static int getCandleX(short bits) {
@@ -508,16 +526,16 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         return CandleType.values()[(bits >> 8) & 0xf];
     }
 
-    public static float getCandleRewards(short bits) {
-        return getCandleType(bits).getSize() / 8f;
-    }
-
     public static int getCandleRotation(short bits) {
         return (bits >>> 12) & 0x7;
     }
 
     public static boolean getCandleLit(short bits) {
         return (bits & LIT_FLAG) != 0;
+    }
+
+    public static float getCandleRewards(short bits) {
+        return getCandleType(bits).getSize() / 8f;
     }
 
     public static int clampRotation(int rotation) {
