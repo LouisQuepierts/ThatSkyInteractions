@@ -1,7 +1,8 @@
 {
+  "key.categories.thatskyinteractions": "光遇互动",
   "key.thatskyinteractions.enable_interact": "启用交互",
-
-  "key.categories.thatskyinteractions": "光遇交互",
+  "key.thatskyinteractions.interact_button": "与悬浮按钮互动",
+  "key.thatskyinteractions.friend_astrolabe": "打开好友星盘",
 
   "gui.message.unlock.accept.left": "接受",
   "gui.message.unlock.accept.right": "馈赠",
@@ -37,5 +38,13 @@
   "tab.tsi": "That Sky Interactions",
 
   "candle_cluster.scale": "大小: %d x %d x %d",
-  "candle_cluster.framed": "边框: %s"
+  "candle_cluster.framed": "边框: %s",
+  "candle_cluster.usage0": "使用方法:",
+  "candle_cluster.usage1": "[右键] + [Shift]: 拆除一个蜡烛",
+
+  "cloud.description0": "Do not expand the size by placing a bunch of cloud blocks!!",
+  "cloud.description1": "Use CloudEditor or Expand/Reduce!!",
+  "cloud.usage0": "使用方法:",
+  "cloud.usage1": "通过 [鼠标右键] 与云方块交互，选中编辑的云",
+  "cloud.usage2": "通过 [鼠标右键] 打开编辑器"
 }

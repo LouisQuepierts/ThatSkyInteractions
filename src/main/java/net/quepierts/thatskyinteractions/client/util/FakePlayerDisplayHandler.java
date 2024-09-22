@@ -2,7 +2,9 @@ package net.quepierts.thatskyinteractions.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -40,9 +42,6 @@ public class FakePlayerDisplayHandler {
     }
 
     public void init(ClientLevel level) {
-        this.player = new FakeClientPlayer(level, this);
-        this.light = new FakePlayerLightW2SWidget(this.player, this.enterHolder);
-        this.ignite = new FakePlayerIgniteW2SButton(this.player, this.enterHolder);
     }
 
     public void reset() {
@@ -55,6 +54,9 @@ public class FakePlayerDisplayHandler {
     }
 
     public void show(Vec3 pos, float yRot) {
+        this.player = new FakeClientPlayer(Minecraft.getInstance().level, this);
+        this.light = new FakePlayerLightW2SWidget(this.player, this.enterHolder);
+        this.ignite = new FakePlayerIgniteW2SButton(this.player, this.enterHolder);
         this.player.setPos(pos);
         this.player.setYRot(yRot);
         this.player.setYBodyRot(yRot);
@@ -108,22 +110,26 @@ public class FakePlayerDisplayHandler {
 
     public void onClientTick(final ClientTickEvent.Post event) {
         if (!this.enterAnimation.isRunning()) {
-            if (this.canRepos) {
-                this.player.setPos(0, -128, 0);
+            if (this.canRepos && this.player != null) {
+                this.player.remove(Entity.RemovalReason.DISCARDED);
                 this.canRepos = false;
             }
         }
     }
 
     public void setPlayerSkin(UUID uuid) {
-        this.player.setPlayerSkin(uuid);
+        if (this.player != null) {
+            this.player.setPlayerSkin(uuid);
+        }
     }
 
     private void addButton() {
-        this.ignite.setClicked(false);
-        World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
-        World2ScreenWidgetLayer.INSTANCE.lock(this.ignite);
-        this.canIgnite = false;
+        if (this.player != null) {
+            this.ignite.setClicked(false);
+            World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
+            World2ScreenWidgetLayer.INSTANCE.lock(this.ignite);
+            this.canIgnite = false;
+        }
     }
 
 }

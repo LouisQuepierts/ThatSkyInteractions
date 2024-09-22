@@ -24,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class CandleClusterItem extends BlockItem {
+    private static final Component usage0 = Component.translatable("candle_cluster.usage0").withStyle(ChatFormatting.GRAY);
+    private static final Component usage1 = Component.translatable("candle_cluster.usage1").withStyle(ChatFormatting.GRAY);
     private final CandleType type;
     private final Component scaleDescription;
     private final Component framedDescription;
@@ -37,6 +39,9 @@ public class CandleClusterItem extends BlockItem {
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        tooltipComponents.add(usage0);
+        tooltipComponents.add(usage1);
+        tooltipComponents.add(Component.empty());
         tooltipComponents.add(this.scaleDescription);
         tooltipComponents.add(this.framedDescription);
     }

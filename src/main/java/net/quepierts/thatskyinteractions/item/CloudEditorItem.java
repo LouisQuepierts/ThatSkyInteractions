@@ -1,13 +1,16 @@
 package net.quepierts.thatskyinteractions.item;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,7 +23,12 @@ import net.quepierts.thatskyinteractions.client.gui.screen.blockentity.CloudEdit
 import net.quepierts.thatskyinteractions.registry.DataComponents;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class CloudEditorItem extends Item implements ICloudHighlight {
+    private static final Component usage0 = Component.translatable("cloud.usage0").withStyle(ChatFormatting.GRAY);
+    private static final Component usage1 = Component.translatable("cloud.usage1").withStyle(ChatFormatting.GRAY);
+    private static final Component usage2 = Component.translatable("cloud.usage2").withStyle(ChatFormatting.GRAY);
     public CloudEditorItem() {
         super(new Properties().stacksTo(1));
     }
@@ -45,6 +53,14 @@ public class CloudEditorItem extends Item implements ICloudHighlight {
             }
         }
         return super.useOn(context);
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        tooltipComponents.add(usage0);
+        tooltipComponents.add(usage1);
+        tooltipComponents.add(usage2);
     }
 
     @NotNull

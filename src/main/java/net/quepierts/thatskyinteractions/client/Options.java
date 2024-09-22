@@ -51,5 +51,6 @@ public class Options {
     public void register(final RegisterKeyMappingsEvent event) {
         event.register(keyEnabledInteract.get());
         event.register(keyClickButton.get());
+        event.register(keyOpenFriendAstrolabe.get());
     }
 }

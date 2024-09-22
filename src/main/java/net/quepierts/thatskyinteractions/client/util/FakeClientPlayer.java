@@ -27,7 +27,7 @@ public class FakeClientPlayer extends AbstractClientPlayer {
         this.handler = handler;
         this.displayPlayerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(PLACEHOLDER_UUID);
         clientLevel.addEntity(this);
-        this.setPos(128, 70, 3);
+        this.setPos(0, 0, 0);
         this.noCulling = true;
         this.displayUUID = PLACEHOLDER_UUID;
     }

@@ -1,7 +1,9 @@
 {
-  "key.thatskyinteractions.enable_interact": "Enable TSI Interactions",
 
   "key.categories.thatskyinteractions": "That Sky Interactions",
+  "key.thatskyinteractions.enable_interact": "Enable TSI Interactions",
+  "key.thatskyinteractions.interact_button": "Interact With Button",
+  "key.thatskyinteractions.friend_astrolabe": "Open Astrolabe",
 
   "gui.message.unlock.accept.left": "Receive",
   "gui.message.unlock.accept.right": "gifts",
@@ -38,5 +40,13 @@
   "item.thatskyinteractions.cloud_reduce": "Cloud Reduce",
 
   "candle_cluster.scale": "Scale: %d x %d x %d",
-  "candle_cluster.framed": "Framed: %s"
+  "candle_cluster.framed": "Framed: %s",
+  "candle_cluster.usage0": "Usage:",
+  "candle_cluster.usage1": "[Right Click] + [Shift]: Remove One Candle",
+
+  "cloud.description0": "Do not place lots of this to get a bigger area!!",
+  "cloud.description1": "使用云编辑器修改大小！！",
+  "cloud.usage0": "Usage:",
+  "cloud.usage1": "[Right Click] with cloud block to select",
+  "cloud.usage2": "[Right Click] with empty to open editor"
 }
