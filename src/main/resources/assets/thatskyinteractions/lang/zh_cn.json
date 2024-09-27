@@ -42,8 +42,8 @@
   "candle_cluster.usage0": "使用方法:",
   "candle_cluster.usage1": "[右键] + [Shift]: 拆除一个蜡烛",
 
-  "cloud.description0": "Do not expand the size by placing a bunch of cloud blocks!!",
-  "cloud.description1": "Use CloudEditor or Expand/Reduce!!",
+  "cloud.description0": "不要通过放置一堆云方块扩大云的面积!!",
+  "cloud.description1": "使用云编辑器或扩大/缩小!!",
   "cloud.usage0": "使用方法:",
   "cloud.usage1": "通过 [鼠标右键] 与云方块交互，选中编辑的云",
   "cloud.usage2": "通过 [鼠标右键] 打开编辑器"

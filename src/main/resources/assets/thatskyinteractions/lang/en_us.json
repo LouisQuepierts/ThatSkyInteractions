@@ -44,8 +44,8 @@
   "candle_cluster.usage0": "Usage:",
   "candle_cluster.usage1": "[Right Click] + [Shift]: Remove One Candle",
 
-  "cloud.description0": "Do not place lots of this to get a bigger area!!",
-  "cloud.description1": "使用云编辑器修改大小！！",
+  "cloud.description0": "Do not expand the size by placing a bunch of cloud blocks!!",
+  "cloud.description1": "Use CloudEditor or Expand/Reduce!!",
   "cloud.usage0": "Usage:",
   "cloud.usage1": "[Right Click] with cloud block to select",
   "cloud.usage2": "[Right Click] with empty to open editor"
