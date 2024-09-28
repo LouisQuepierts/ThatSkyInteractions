@@ -4,7 +4,6 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -87,7 +86,7 @@ public class CloudRenderer {
         //this.debug();
     }
 
-    public void renderClouds(PoseStack poseStack, Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick, Vec3 cameraPosition) {
+    public void renderClouds(Matrix4f modelViewMatrix, Matrix4f projectionMatrix, float partialTick, Vec3 cameraPosition) {
         double dx = cameraPosition.x;
         double dy = cameraPosition.y;
         double dz = cameraPosition.z;
@@ -123,9 +122,6 @@ public class CloudRenderer {
             RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
 
             if (this.simpleCloudBuffer != null) {
-                poseStack.pushPose();
-                poseStack.mulPose(frustumMatrix);
-
                 RenderSystem.disableCull();
                 RenderSystem.enableDepthTest();
 
@@ -147,7 +143,7 @@ public class CloudRenderer {
                     this.simpleCloudBuffer.bind();
 
                     this.finalTarget.bindWrite(false);
-                    this.simpleCloudBuffer.drawWithShader(poseStack.last().pose(), projectionMatrix, cloudShader);
+                    this.simpleCloudBuffer.drawWithShader(modelViewMatrix, projectionMatrix, cloudShader);
                 }
 
                 RenderSystem.enableCull();
@@ -157,8 +153,6 @@ public class CloudRenderer {
 //                RenderUtils.blitDepthToScreen(this.finalTarget, width, height);
 
                 this.effect.process(partialTick);
-
-                poseStack.popPose();
             }
 
             VertexBuffer.unbind();

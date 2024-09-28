@@ -3,7 +3,6 @@ package net.quepierts.thatskyinteractions.client.render.bloom;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -12,7 +11,6 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
-import net.minecraft.world.phys.Vec3;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
 import net.quepierts.thatskyinteractions.client.registry.Shaders;
@@ -40,7 +38,7 @@ public class BloomRenderer {
         this.batchRenderer = new BatchRenderer(vertexBufferManager);
     }
 
-    public void drawObjects(PoseStack poseStack, Matrix4f frustumMatrix, Matrix4f projectionMatrix, Vec3 cameraPosition) {
+    public void drawObjects(Matrix4f modelViewMatrix, Matrix4f projectionMatrix) {
         if (!this.shouldApplyBloom) {
             return;
         }
@@ -58,25 +56,20 @@ public class BloomRenderer {
 
         RenderTypes.getBufferSource().endBatch();
 
-        poseStack.pushPose();
-        poseStack.mulPose(frustumMatrix);
-
         RenderSystem.disableCull();
         RenderSystem.enableDepthTest();
 
         this.finalTarget.bindWrite(false);
-        this.batchRenderer.endBatch(projectionMatrix, poseStack.last().pose());
+        this.batchRenderer.endBatch(projectionMatrix, modelViewMatrix);
 
         RenderSystem.enableCull();
         RenderSystem.disableDepthTest();
-
-        poseStack.popPose();
 
         VertexBuffer.unbind();
         mainRenderTarget.bindWrite(false);
     }
 
-    public void processBloom(float deltaTracker, final PoseStack poseStack, final Matrix4f projectionMatrix, final Matrix4f frustumMatrix, Vec3 position) {
+    public void processBloom(float deltaTracker) {
         if (!this.shouldApplyBloom) {
             return;
         }

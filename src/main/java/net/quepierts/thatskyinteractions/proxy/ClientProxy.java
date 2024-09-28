@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.proxy;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -196,42 +195,29 @@ public class ClientProxy extends CommonProxy {
         Camera camera = event.getCamera();
         Vec3 position = camera.getPosition();
 
-
         if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
             this.vertexBufferManager.tick();
         } else {
-            PoseStack poseStack = event.getPoseStack();
             if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
                 this.bloomRenderer.drawObjects(
-                        poseStack,
                         event.getModelViewMatrix(),
-                        event.getProjectionMatrix(),
-                        position
+                        event.getProjectionMatrix()
                 );
             } else if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-                poseStack.pushPose();
                 RenderSystem.disableCull();
-                poseStack.mulPose(event.getModelViewMatrix());
                 this.batchBER.endBatch(
                         event.getProjectionMatrix(),
-                        poseStack.last().pose()
+                        event.getModelViewMatrix()
                 );
                 RenderSystem.enableCull();
-                poseStack.popPose();
                 this.cloudRenderer.renderClouds(
-                        poseStack,
                         event.getModelViewMatrix(),
                         event.getProjectionMatrix(),
                         partialTick,
                         position
                 );
 
-                this.bloomRenderer.processBloom(
-                        partialTick,
-                        poseStack,
-                        event.getProjectionMatrix(),
-                        event.getModelViewMatrix(),
-                        position);
+                this.bloomRenderer.processBloom(partialTick);
                 /*Window window = Minecraft.getInstance().getWindow();
 
                 RenderTarget target = this.cloudRenderer.getFinalTarget();
