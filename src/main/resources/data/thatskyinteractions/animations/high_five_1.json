@@ -100,7 +100,7 @@
 		"waiting": {
 			"loop": true,
 			"animation_length": 0.375,
-			"anim_time_update": "fadeOut = 0.5",
+			"anim_time_update": "fade_in = 0, fade_out = 1.0",
 			"bones": {
 				"requester_root": {
 					"rotation": {

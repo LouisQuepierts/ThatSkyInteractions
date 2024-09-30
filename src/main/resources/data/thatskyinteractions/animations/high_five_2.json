@@ -100,7 +100,7 @@
 		"waiting": {
 			"loop": true,
 			"animation_length": 0.375,
-			"anim_time_update": "fadeOut = 0.5",
+			"anim_time_update": "fade_in = 0, fade_out = 1.0",
 			"bones": {
 				"requester_root": {
 					"rotation": {
@@ -623,13 +623,25 @@
 				"requester_var_bool_hitEffect_vec3_effectPos": {
 					"rotation": {
 						"0.0": [0, 0, 0],
-						"0.7917": {"pre": [0, 0, 0], "post": [1, 0, 0]},
-						"0.9583": {"pre": [1, 0, 0], "post": [0, 0, 0]},
-						"2.625": {"pre": [0, 0, 0], "post": [0, 0, 0]}
+						"0.7917": {
+							"pre": [0, 0, 0],
+							"post": [1, 0, 0]
+						},
+						"0.9583": {
+							"pre": [1, 0, 0],
+							"post": [0, 0, 0]
+						},
+						"2.625": {
+							"pre": [0, 0, 0],
+							"post": [0, 0, 0]
+						}
 					},
 					"position": {
 						"0.0": [0, 24, -10],
-						"2.625": {"pre": [0, 24, -10], "post": [0, 0, 0]}
+						"2.625": {
+							"pre": [0, 24, -10],
+							"post": [0, 0, 0]
+						}
 					}
 				}
 			}
