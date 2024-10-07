@@ -14,7 +14,7 @@
   "gui.message.unlock.interaction.accept": "解锁%s？",
   "gui.message.unlock.lock.request.left": "赠送",
   "gui.message.unlock.lock.request.right": "给这位朋友提高%s吗？",
-  "gui.message.unlock.lock.accept": "提高与这位好友的%？",
+  "gui.message.unlock.lock.accept": "提高与这位好友的%s？",
   "gui.message.unlock.lock.intimacy": "亲密度",
   "gui.message.block.line1": "拉黑这位玩家？",
   "gui.message.block.line2": "你不会再收到来自这位玩家的邀请!",
@@ -26,6 +26,7 @@
   "interaction.thatskyinteractions.hug": "拥抱",
   "interaction.thatskyinteractions.double_high_five": "双击掌",
   "interaction.thatskyinteractions.pat_head": "摸头",
+  "interaction.thatskyinteractions.bear_hug": "熊抱",
 
   "block.thatskyinteractions.cloud": "云",
   "block.thatskyinteractions.wing_of_light": "光翼",

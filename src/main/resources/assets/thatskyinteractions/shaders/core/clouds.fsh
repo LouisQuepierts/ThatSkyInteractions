@@ -10,8 +10,8 @@ out vec4 fragColor;
 
 void main() {
     vec4 color = vertexColor * ColorModulator;
-    vec3 fog = mix(color.rgb, FogColor.rgb * ColorModulator.rgb, 0.8);
+    vec3 fog = mix(color.rgb, FogColor.rgb, FogColor.a * 0.943);
     float mask = step(1, color.a);
     vec3 result = color.rgb * mask + fog * (1 - mask);
-    fragColor = vec4(result * (vertexWave / 4 + 0.75), 1.0);
+    fragColor = vec4(result * (vertexWave / 8 + 0.875), 1.0);
 }

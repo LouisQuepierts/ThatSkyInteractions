@@ -73,13 +73,28 @@
       "type": "interaction",
       "price": 6,
       "interact": "thatskyinteractions:pat_head",
-      "left": "pat_head_2"
+      "left": "pat_head_2",
+      "middle": "bear_hug_1"
     },
     {
       "id": "pat_head_2",
       "type": "interaction",
       "price": 8,
       "interact": "thatskyinteractions:pat_head",
+      "level": 2
+    },
+    {
+      "id": "bear_hug_1",
+      "type": "interaction",
+      "price": 8,
+      "interact": "thatskyinteractions:bear_hug",
+      "middle": "bear_hug_2"
+    },
+    {
+      "id": "bear_hug_2",
+      "type": "interaction",
+      "price": 12,
+      "interact": "thatskyinteractions:bear_hug",
       "level": 2
     }
   ]

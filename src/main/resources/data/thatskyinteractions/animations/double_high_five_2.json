@@ -185,6 +185,7 @@
 		},
 		"main": {
 			"animation_length": 2.7083,
+			"anim_time_update": "fade_out = 1.0",
 			"bones": {
 				"requester_root": {
 					"position": {

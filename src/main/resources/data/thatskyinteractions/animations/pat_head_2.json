@@ -1,5 +1,6 @@
 {
 	"format_version": "1.8.0",
+	"useVanillaRig": false,
 	"abortable": false,
 	"animations": {
 		"invite": {
@@ -153,6 +154,7 @@
 		},
 		"main": {
 			"animation_length": 2.8333,
+			"anim_time_update": "fade_out = 1.0",
 			"bones": {
 				"requester_root": {
 					"position": {
