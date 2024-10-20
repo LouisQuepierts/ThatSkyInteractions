@@ -359,6 +359,7 @@ public class ClientProxy extends CommonProxy {
     private void onWorldUnload(final LevelEvent.Unload event) {
         if (event.getLevel() instanceof ClientLevel) {
             this.cloudRenderer.reset();
+            this.bloomRenderer.cleanup();
         }
     }
 
