@@ -9,5 +9,5 @@ public interface ICloud {
 
     Vector3i getOffset();
 
-    boolean shouldRecompile();
+    boolean isDirty();
 }

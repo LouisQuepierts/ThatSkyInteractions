@@ -13,9 +13,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.ICloud;
 import net.quepierts.thatskyinteractions.registry.Items;
 import net.quepierts.thatskyinteractions.registry.TagKeys;
@@ -26,7 +23,7 @@ import org.joml.Vector3i;
 import java.util.List;
 import java.util.function.Predicate;
 
-public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEntity implements ICloud {
+public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEntity implements ICloud, IUpdateMark {
     private static final Predicate<Entity> CLOUD_IGNORED = (entity) -> {
         if (entity.isSpectator() || entity.isNoGravity()) {
             return false;
@@ -41,23 +38,23 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
     private static final String TAG_SIZE = "size";
     private static final String TAG_OFFSET = "offset";
     private static final String TAG_COLLISIBLE = "collisible";
+    private static final String TAG_VANILLA = "vanilla";
     private final Vector3i offset = new Vector3i(0);
     private final Vector3i size = new Vector3i(16);
-    private boolean collisible;
+    private boolean vanilla;
     private AABB aabb;
-    private boolean recompile = true;
+    private boolean dirty = true;
 
     protected AbstractCloudBlockEntity(BlockEntityType<? extends AbstractCloudBlockEntity> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
         this.aabb = new AABB(pos);
-        this.collisible = true;
     }
 
     @Override
     public void toNBT(@NotNull CompoundTag tag) {
         tag.putIntArray(TAG_SIZE, new int[]{this.size.x, this.size.y, this.size.z});
         tag.putIntArray(TAG_OFFSET, new int[]{this.offset.x, this.offset.y, this.offset.z});
-        tag.putBoolean(TAG_COLLISIBLE, this.collisible);
+        tag.putBoolean(TAG_VANILLA, this.vanilla);
     }
 
     @Override
@@ -76,26 +73,19 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
             }
         }
 
-        if (tag.contains(TAG_COLLISIBLE)) {
-            this.collisible = tag.getBoolean(TAG_COLLISIBLE);
+        if (tag.contains(TAG_VANILLA)) {
+            this.vanilla = tag.getBoolean(TAG_VANILLA);
         }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void setRemoved() {
-        ThatSkyInteractions.getInstance().getClient().getCloudRenderer().removeCloud(this);
-        super.setRemoved();
     }
 
     public void setSize(int x, int y, int z) {
         this.size.set(x, y, z);
-        this.recompile = true;
+        this.dirty = true;
     }
 
     public void setOffset(int x, int y, int z) {
         this.offset.set(x, y, z);
-        this.recompile = true;
+        this.dirty = true;
     }
 
     public void recomputeAABB() {
@@ -127,20 +117,29 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
         return new Vector3f(this.offset);
     }
 
-    public boolean isCollisible() {
-        return collisible;
-    }
-
-    public void setCollisible(boolean collisible) {
-        this.collisible = collisible;
-    }
-
     public int getColor() {
         return 0xffffffff;
     }
 
-    public boolean shouldRecompile() {
-        return this.recompile;
+    @Override
+    public boolean isDirty() {
+        return this.dirty;
+    }
+
+    @Override
+    public void setDirty(boolean recompile) {
+        if (this.dirty) {
+            this.recomputeAABB();
+        }
+        this.dirty = recompile;
+    }
+
+    public boolean isVanilla() {
+        return vanilla;
+    }
+
+    public void setVanilla(boolean vanilla) {
+        this.vanilla = vanilla;
     }
 
     public void expand(Direction direction, int strength) {
@@ -161,7 +160,7 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
                     break;
                 }
             }
-            this.recompile = true;
+            this.dirty = true;
             this.markUpdate();
         }
     }
@@ -198,16 +197,9 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
                 }
             }
             this.size.set(size);
-            this.recompile = true;
+            this.dirty = true;
             this.markUpdate();
         }
-    }
-
-    public void setShouldRecompile(boolean recompile) {
-        if (this.recompile) {
-            this.recomputeAABB();
-        }
-        this.recompile = recompile;
     }
 
     public static void tick(Level level, BlockPos pos, BlockState blockState, AbstractCloudBlockEntity cloud) {

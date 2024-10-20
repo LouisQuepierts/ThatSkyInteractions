@@ -12,7 +12,7 @@ import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 
-public class MuralBlockEntity extends AbstractUpdatableBlockEntity {
+public class MuralBlockEntity extends AbstractUpdatableBlockEntity implements IUpdateMark {
     private static final String TAG_MURAL = "mural";
     private static final String TAG_SIZE = "size";
     private static final String TAG_OFFSET = "offset";
@@ -26,6 +26,8 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity {
     private AABB aabb;
     @NotNull
     private ResourceLocation muralTexture;
+    private boolean recompile = true;
+
     public MuralBlockEntity(BlockPos pos, BlockState blockState) {
         super(BlockEntities.MURAL.get(), pos, blockState);
         this.muralTexture = ResourceLocation.withDefaultNamespace("textures/item/carrot.png");
@@ -96,18 +98,22 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity {
 
     public void setOffset(int x, int y, int z) {
         this.offset.set(x, y, z);
+        this.recompile = true;
     }
 
     public void setRotate(int x, int y, int z) {
         this.rotate.set(x, y, z);
+        this.recompile = true;
     }
 
     public void setSize(int x, int y) {
         this.size.set(x, y);
+        this.recompile = true;
     }
 
     public void setMuralTexture(@NotNull ResourceLocation muralTexture) {
         this.muralTexture = muralTexture;
+        this.recompile = true;
     }
 
     public ResourceLocation getTextureLocation() {
@@ -148,5 +154,13 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity {
     @Override
     public boolean isEditorItem(ItemStack item) {
         return item.is(Items.MURAL);
+    }
+
+    public boolean isDirty() {
+        return this.recompile;
+    }
+
+    public void setDirty(boolean recompile) {
+        this.recompile = recompile;
     }
 }

@@ -1,12 +1,7 @@
 package net.quepierts.thatskyinteractions.client.render.ber;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -19,18 +14,17 @@ import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
 import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
+import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.data.TSIUserData;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
 public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLightBlockEntity> {
-    private final PlayerModel<AbstractClientPlayer> playerModel;
     private final Minecraft minecraft;
     private final BloomRenderer renderer;
 
     public WingOfLightBlockRenderer(BlockEntityRendererProvider.Context context) {
-        this.playerModel = new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER), false);
-        this.playerModel.young = false;
         this.minecraft = Minecraft.getInstance();
         this.renderer = ThatSkyInteractions.getInstance().getClient().getBloomRenderer();
     }
@@ -57,18 +51,29 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
         float distanceSqr = (float) this.minecraft.player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
 
         World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(wingOfLightBlockEntity.getUUID(), wingOfLightBlockEntity.provideW2SWidget(distanceSqr));
-        poseStack.pushPose();
-        poseStack.translate(0.5, 1.45, 0.5);
-        poseStack.scale(-0.95F, -0.95F, 0.95F);
-        poseStack.mulPose(Axis.YP.rotation(wingOfLightBlockEntity.getYRot()));
 
-        this.playerModel.young = false;
-        this.playerModel.head.xRot = wingOfLightBlockEntity.getXRot();
-        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.WOL);
-        this.playerModel.renderToBuffer(poseStack, vertexConsumer, combinedLight, combinedOverlay);
+        Matrix4f transformation = new Matrix4f();
+        transformation.translate(
+                pos.getX() + 0.5f,
+                pos.getY(),
+                pos.getZ() + 0.5f)
+                .scale(0.95f)
+                .rotateY(-wingOfLightBlockEntity.getYRot());
 
-        this.renderer.setApplyBloom();
-        poseStack.popPose();
+        this.renderer.batchRender(
+                VertexBufferManager.BODY,
+                transformation,
+                RenderTypes.TEXTURE
+        );
+
+        transformation.translate(0, 1.5f, 0)
+                .rotateX(-wingOfLightBlockEntity.getXRot());
+
+        this.renderer.batchRender(
+                VertexBufferManager.HEAD,
+                transformation,
+                RenderTypes.TEXTURE
+        );
     }
 
     @NotNull

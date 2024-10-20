@@ -4,7 +4,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import net.neoforged.api.distmarker.Dist;
@@ -46,7 +49,9 @@ public class BatchShaderInstance extends ShaderInstance {
             return;
         }
         RenderSystem.assertOnRenderThread();
-        RenderSystem.setShaderTexture(0, location);
+        TextureManager manager = Minecraft.getInstance().getTextureManager();
+        AbstractTexture texture = manager.getTexture(location);
+        RenderSystem.setShaderTexture(0, texture.getId());
         RenderSystem.bindTexture(RenderSystem.getShaderTexture(0));
         this.lastTexture0 = location;
     }

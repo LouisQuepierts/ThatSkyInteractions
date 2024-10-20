@@ -79,6 +79,10 @@ public class Shaders {
         return Objects.requireNonNull(clouds, "Attempted to call getCloudShader before shaders have finished loading.");
     }
 
+    public static ShaderInstance getVanillaCloudShader() {
+        return Objects.requireNonNull(clouds, "Attempted to call getCloudShader before shaders have finished loading.");
+    }
+
     public static ShaderInstance getBlockEntityShader() {
         return Objects.requireNonNull(blockEntity, "Attempted to call getBlockEntityShader before shaders have finished loading.");
     }

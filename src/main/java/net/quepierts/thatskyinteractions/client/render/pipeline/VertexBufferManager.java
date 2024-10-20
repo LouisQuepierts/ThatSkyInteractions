@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.CubeDefinition;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -33,6 +34,9 @@ public class VertexBufferManager implements PreparableReloadListener {
     public static final ModelResourceLocation QUAD = ThatSkyInteractions.getModelLocation("quad");
 //    public static final ResourceLocation GRID = ThatSkyInteractions.getLocation("grid");
     public static final ModelResourceLocation CUBE = ThatSkyInteractions.getModelLocation("cube");
+    public static final ModelResourceLocation BODY = ThatSkyInteractions.getModelLocation("body");
+    public static final ModelResourceLocation HEAD = ThatSkyInteractions.getModelLocation("head");
+
 
     private static final RandomSource RAND = RandomSource.create(42L);
     private static final PoseStack ZERO = new PoseStack();
@@ -142,7 +146,36 @@ public class VertexBufferManager implements PreparableReloadListener {
         cube.compile(ZERO.last(), cubeBuilder, 15728880, OverlayTexture.NO_OVERLAY, 0xffffffff);
         this.upload(CUBE, Objects.requireNonNull(cubeBuilder.build()));
 
+        this.buildBody(tesselator);
+        this.buildHead(tesselator);
+
         ThatSkyInteractions.getInstance().getClient().onUploadVertexBuffers(this);
+    }
+
+    private void buildBody(final Tesselator tesselator) {
+        final CubeListBuilder builder = CubeListBuilder.create();
+        builder.texOffs(16, 16).addBox(-4.0F, 12.0F, -2.0F, 8.0F, 12.0F, 4.0F);
+        builder.texOffs(40, 16).addBox(-8.0F, 12.0F, -2.0F, 4.0F, 12.0F, 4.0F);
+        builder.texOffs(40, 16).addBox(4.0F, 12.0F, -2.0F, 4.0F, 12.0F, 4.0F);
+        builder.texOffs(0, 16).addBox(-4.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F);
+        builder.texOffs(0, 16).addBox( 0.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F);
+
+        final BufferBuilder cubeBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
+        for (CubeDefinition definition : builder.getCubes()) {
+            definition.bake(64, 64).compile(ZERO.last(), cubeBuilder, 15728880, OverlayTexture.NO_OVERLAY, 0xffffffff);
+        }
+        this.upload(BODY, Objects.requireNonNull(cubeBuilder.build()));
+    }
+
+    private void buildHead(final Tesselator tesselator) {
+        final CubeListBuilder builder = CubeListBuilder.create();
+        builder.addBox(-4.0F, 0.0F, -4.0F, 8.0F, 8.0F, 8.0F);
+
+        final BufferBuilder cubeBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
+        for (CubeDefinition definition : builder.getCubes()) {
+            definition.bake(64, 64).compile(ZERO.last(), cubeBuilder, 15728880, OverlayTexture.NO_OVERLAY, 0xffffffff);
+        }
+        this.upload(HEAD, Objects.requireNonNull(cubeBuilder.build()));
     }
 
     @NotNull

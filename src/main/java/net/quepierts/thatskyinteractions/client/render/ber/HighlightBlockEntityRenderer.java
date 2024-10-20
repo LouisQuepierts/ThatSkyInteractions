@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.client.render.ber;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -11,6 +10,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
 import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
+import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class HighlightBlockEntityRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
@@ -22,13 +22,11 @@ public abstract class HighlightBlockEntityRenderer<T extends BlockEntity> implem
         this.bloomRenderer = ThatSkyInteractions.getInstance().getClient().getBloomRenderer();
     }
 
-    protected void renderHighLight(PoseStack poseStack, int color, int combinedLight, int combinedOverlay) {
+    protected void renderHighLight(Matrix4f transformation) {
 //        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM.apply(RenderTypes.TEXTURE, false));
 //        CUBE.compile(poseStack.last(), vertexConsumer, combinedLight, combinedOverlay, color);
 
-        poseStack.pushPose();
-        this.bloomRenderer.batchRender(VertexBufferManager.CUBE, poseStack.last().pose(), RenderTypes.TEXTURE);
-        poseStack.popPose();
+        this.bloomRenderer.batchRender(VertexBufferManager.CUBE, transformation, RenderTypes.TEXTURE);
     }
 
     static {

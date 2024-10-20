@@ -19,6 +19,7 @@ import net.quepierts.thatskyinteractions.client.render.cloud.CloudData;
 import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
 import net.quepierts.thatskyinteractions.item.ICloudHighlight;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
@@ -51,6 +52,51 @@ public class CloudBlockRenderer extends HighlightBlockEntityRenderer<AbstractClo
             int combinedLight,
             int combinedOverlay
     ) {
+        BlockPos pos = cloud.getBlockPos();
+        if (cloud.isDirty()) {
+            Vector3i size0 = cloud.getSize();
+            Vector3i offset = cloud.getOffset();
+            Vector3f position = new Vector3f(pos.getX(), pos.getY(), pos.getZ()).add(
+                    offset.x / 16.0f - 0.25f,
+                    offset.y / 16.0f - 0.25f,
+                    offset.z / 16.0f - 0.25f
+            );
+            Vector3f size = new Vector3f(
+                    size0.x / 16.0f,
+                    size0.y / 16.0f,
+                    size0.z / 16.0f
+            );
+            if (this.colored) {
+                int color0 = cloud.getColor();
+                Vector3f color = new Vector3f(
+                        FastColor.ARGB32.red(color0),
+                        FastColor.ARGB32.green(color0),
+                        FastColor.ARGB32.blue(color0)
+                );
+                this.cloudRenderer.addCloud(cloud, new CloudData(position, size, color, 0));
+            } else {
+                this.cloudRenderer.addCloud(cloud, new CloudData(position, size, 0));
+            }
+            cloud.setDirty(false);
+        }
+
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null || player.isSpectator()) {
+            return;
+        }
+
+        ItemStack itemStack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        Item item = itemStack.getItem();
+
+        if (item instanceof ICloudHighlight) {
+            Matrix4f transformation = new Matrix4f().translate(pos.getX(), pos.getY(), pos.getZ());
+            this.renderHighLight(transformation);
+        }
+    }
+
+    /*@Override
+    public void renderVBO(@NotNull AbstractCloudBlockEntity cloud, @NotNull PoseStack poseStack) {
         BlockPos pos = cloud.getBlockPos();
         if (cloud.shouldRecompile()) {
             Vector3i size0 = cloud.getSize();
@@ -90,20 +136,21 @@ public class CloudBlockRenderer extends HighlightBlockEntityRenderer<AbstractClo
 
         if (item instanceof ICloudHighlight highlight) {
             int color = highlight.color(itemStack, cloud);
-            this.renderHighLight(poseStack, color, combinedLight, combinedOverlay);
+            Matrix4f transformation = new Matrix4f().translate(pos.getX(), pos.getY(), pos.getZ());
+            this.renderHighLight(transformation);
         }
-    }
+    }*/
 
     @Override
     public int getViewDistance() {
-        return 96;
+        return 128;
     }
 
     @Override
     public boolean shouldRender(@NotNull AbstractCloudBlockEntity blockEntity, @NotNull Vec3 cameraPos) {
         boolean render = super.shouldRender(blockEntity, cameraPos);
         if (!render) {
-            blockEntity.setShouldRecompile(true);
+            blockEntity.setDirty(true);
             this.cloudRenderer.removeCloud(blockEntity);
         }
         return render;

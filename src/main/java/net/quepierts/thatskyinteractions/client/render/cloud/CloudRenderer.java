@@ -63,7 +63,11 @@ public class CloudRenderer {
             return;
         }
 
-        normalClouds.entrySet().removeIf(next -> next.getKey().isRemoved());
+        normalClouds.entrySet().removeIf(next -> {
+            boolean removed = next.getKey().isRemoved();
+            rebuildNormalClouds |= removed;
+            return removed;
+        });
     }
 
     public void addCloud(ICloud iCloud, CloudData data) {
@@ -73,10 +77,24 @@ public class CloudRenderer {
         this.rebuildNormalClouds = true;
     }
 
+    public void addVanillaCloud(ICloud iCloud, CloudData data) {
+        ObjectList<CloudData> list = this.vanillaClouds.computeIfAbsent(iCloud, o -> new ObjectArrayList<>());
+        list.clear();
+        data.split(list);
+        this.rebuildVanillaClouds = true;
+    }
+
     public void removeCloud(ICloud iCloud) {
         if (this.normalClouds.containsKey(iCloud)) {
             this.normalClouds.remove(iCloud);
             this.rebuildNormalClouds = true;
+        }
+    }
+
+    public void removeVanillaCloud(ICloud iCloud) {
+        if (this.vanillaClouds.containsKey(iCloud)) {
+            this.vanillaClouds.remove(iCloud);
+            this.rebuildVanillaClouds = true;
         }
     }
 
@@ -112,6 +130,23 @@ public class CloudRenderer {
             }
         }
 
+        /*if (this.rebuildVanillaClouds) {
+            this.rebuildVanillaClouds = false;
+            if (this.vanillaCloudBuffer != null) {
+                this.vanillaCloudBuffer.close();
+            }
+
+            MeshData meshData = this.buildClouds(Tesselator.getInstance(), dx, dy, dz, cloudColor);
+            if (meshData != null) {
+                this.vanillaCloudBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+                this.vanillaCloudBuffer.bind();
+                this.vanillaCloudBuffer.upload(meshData);
+                VertexBuffer.unbind();
+            } else {
+                this.vanillaCloudBuffer = null;
+            }
+        }*/
+
         if (this.simpleCloudBuffer != null) {
             RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
 
@@ -121,39 +156,35 @@ public class CloudRenderer {
             this.finalTarget.clear(Minecraft.ON_OSX);
             RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
 
-            if (this.simpleCloudBuffer != null) {
-                RenderSystem.disableCull();
-                RenderSystem.enableDepthTest();
+            RenderSystem.disableCull();
+            RenderSystem.enableDepthTest();
 
-                if (this.simpleCloudBuffer != null) {
-                    ShaderInstance cloudShader = Shaders.getCloudShader();
-                    RenderSystem.setupShaderLights(cloudShader);
-                    FogRenderer.levelFogColor();
-                    if (cloudShader.GAME_TIME != null) {
-                        cloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
-                    }
+            ShaderInstance cloudShader = Shaders.getCloudShader();
+            RenderSystem.setupShaderLights(cloudShader);
+            FogRenderer.levelFogColor();
+            if (cloudShader.GAME_TIME != null) {
+                cloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
+            }
 
-                    if (cloudShader.CHUNK_OFFSET != null) {
-                        cloudShader.CHUNK_OFFSET.set(
-                                -fx,
-                                -fy,
-                                -fz
-                        );
-                    }
-                    this.simpleCloudBuffer.bind();
+            if (cloudShader.CHUNK_OFFSET != null) {
+                cloudShader.CHUNK_OFFSET.set(
+                        -fx,
+                        -fy,
+                        -fz
+                );
+            }
+            this.simpleCloudBuffer.bind();
 
-                    this.finalTarget.bindWrite(false);
-                    this.simpleCloudBuffer.drawWithShader(modelViewMatrix, projectionMatrix, cloudShader);
-                }
+            this.finalTarget.bindWrite(false);
+            this.simpleCloudBuffer.drawWithShader(modelViewMatrix, projectionMatrix, cloudShader);
 
-                RenderSystem.enableCull();
-                RenderSystem.disableDepthTest();
+            RenderSystem.enableCull();
+            RenderSystem.disableDepthTest();
 
 //                this.depthTarget.bindWrite(false);
 //                RenderUtils.blitDepthToScreen(this.finalTarget, width, height);
 
-                this.effect.process(partialTick);
-            }
+            this.effect.process(partialTick);
 
             VertexBuffer.unbind();
             mainRenderTarget.bindWrite(false);
@@ -162,6 +193,32 @@ public class CloudRenderer {
 //            this.finalTarget.blitToScreen(width, height);
 //            this.originTarget.blitToScreen(width, height);
         }
+
+        /*if (this.vanillaCloudBuffer != null) {
+            RenderSystem.disableCull();
+            RenderSystem.enableDepthTest();
+
+            ShaderInstance cloudShader = Shaders.getVanillaCloudShader();
+            RenderSystem.setupShaderLights(cloudShader);
+            FogRenderer.levelFogColor();
+            if (cloudShader.GAME_TIME != null) {
+                cloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
+            }
+
+            if (cloudShader.CHUNK_OFFSET != null) {
+                cloudShader.CHUNK_OFFSET.set(
+                        -fx,
+                        -fy,
+                        -fz
+                );
+            }
+            this.vanillaCloudBuffer.bind();
+            this.vanillaCloudBuffer.drawWithShader(modelViewMatrix, projectionMatrix, cloudShader);
+
+            RenderSystem.enableCull();
+            RenderSystem.disableDepthTest();
+            VertexBuffer.unbind();
+        }*/
     }
 
     private MeshData buildClouds(Tesselator tesselator, double x, double y, double z, Vec3 cloudColor) {

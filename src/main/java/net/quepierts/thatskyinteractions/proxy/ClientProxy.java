@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.proxy;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.MeshData;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -55,12 +54,10 @@ import net.quepierts.thatskyinteractions.client.particle.StarParticle;
 import net.quepierts.thatskyinteractions.client.registry.BlockEntityRenderers;
 import net.quepierts.thatskyinteractions.client.registry.CreativeModeTabs;
 import net.quepierts.thatskyinteractions.client.registry.Particles;
-import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
 import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
 import net.quepierts.thatskyinteractions.client.render.layer.CandleLayer;
 import net.quepierts.thatskyinteractions.client.render.layer.PartPoseResolveLayer;
-import net.quepierts.thatskyinteractions.client.render.pipeline.BatchRenderer;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.EffectDistributorManager;
@@ -98,8 +95,6 @@ public class ClientProxy extends CommonProxy {
     private final CloudRenderer cloudRenderer;
     @NotNull
     private final BloomRenderer bloomRenderer;
-    @NotNull
-    private final BatchRenderer batchBER;
 
     @Nullable
     private UUID target;
@@ -116,7 +111,6 @@ public class ClientProxy extends CommonProxy {
         this.vertexBufferManager = new VertexBufferManager();
         this.cloudRenderer = new CloudRenderer();
         this.bloomRenderer = new BloomRenderer(this.vertexBufferManager);
-        this.batchBER = new BatchRenderer(this.vertexBufferManager);
 
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(InputEvent.MouseScrollingEvent.class, this::onMouseScrolling);
@@ -138,7 +132,7 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Pre.class, fakePlayerDisplayHandler::onRenderPlayerPre);
         NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Post.class, fakePlayerDisplayHandler::onRenderPlayerPost);
         NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, fakePlayerDisplayHandler::onClientTick);
-        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, cloudRenderer::onClientTick);
+        //NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, cloudRenderer::onClientTick);
         //NeoForge.EVENT_BUS.addListener(ClientTickEvent.Pre.class, particleDistributorManager::onClientTick);
         NeoForge.EVENT_BUS.addListener(PlayerTickEvent.Pre.class, particleDistributorManager::onPlayerTick);
 
@@ -155,7 +149,6 @@ public class ClientProxy extends CommonProxy {
         modBus.addListener(RegisterKeyMappingsEvent.class, options::register);
         modBus.addListener(EntityRenderersEvent.AddLayers.class, this::onAddLayers);
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, BlockEntityRenderers::onRegisterBER);
-        modBus.addListener(RegisterRenderBuffersEvent.class, RenderTypes::onRegisterRenderBuffers);
         modBus.addListener(BuildCreativeModeTabContentsEvent.class, this::onBuildCreativeTab);
         modBus.addListener(RegisterClientReloadListenersEvent.class, this::onClientReloadListeners);
 
@@ -193,31 +186,24 @@ public class ClientProxy extends CommonProxy {
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
 
         Camera camera = event.getCamera();
-        Vec3 position = camera.getPosition();
+        Vec3 cameraPosition = camera.getPosition();
 
         if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
             this.vertexBufferManager.tick();
         } else {
-            if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-                this.bloomRenderer.drawObjects(
-                        event.getModelViewMatrix(),
-                        event.getProjectionMatrix()
-                );
-            } else if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-                RenderSystem.disableCull();
-                this.batchBER.endBatch(
-                        event.getProjectionMatrix(),
-                        event.getModelViewMatrix()
-                );
-                RenderSystem.enableCull();
+            if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
                 this.cloudRenderer.renderClouds(
                         event.getModelViewMatrix(),
                         event.getProjectionMatrix(),
                         partialTick,
-                        position
+                        cameraPosition
                 );
-
-                this.bloomRenderer.processBloom(partialTick);
+                this.bloomRenderer.drawObjects(
+                        event.getModelViewMatrix(),
+                        event.getProjectionMatrix(),
+                        cameraPosition,
+                        partialTick
+                );
                 /*Window window = Minecraft.getInstance().getWindow();
 
                 RenderTarget target = this.cloudRenderer.getFinalTarget();
@@ -540,11 +526,6 @@ public class ClientProxy extends CommonProxy {
     @NotNull
     public BloomRenderer getBloomRenderer() {
         return this.bloomRenderer;
-    }
-
-    @NotNull
-    public BatchRenderer getBatchBER() {
-        return batchBER;
     }
 
     @NotNull
