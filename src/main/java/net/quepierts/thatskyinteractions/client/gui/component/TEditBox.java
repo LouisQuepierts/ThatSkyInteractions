@@ -54,6 +54,8 @@ public class TEditBox extends AbstractWidget {
     private boolean textShadow;
     private boolean error;
 
+    private int autoConfirm = -1;
+
     public TEditBox(Font font, int x, int y, int width, int height, Component message) {
         super(x, y, width, height, message);
         this.font = font;
@@ -103,6 +105,7 @@ public class TEditBox extends AbstractWidget {
     }
 
     public void insertText(String textToWrite) {
+        this.autoConfirm = 60;
         int i = Math.min(this.cursorPos, this.highlightPos);
         int j = Math.max(this.cursorPos, this.highlightPos);
         int k = this.maxLength - this.value.length() - (i - j);
@@ -135,6 +138,7 @@ public class TEditBox extends AbstractWidget {
     }
 
     private void deleteText(int count) {
+        this.autoConfirm = 60;
         if (Screen.hasControlDown()) {
             this.deleteWords(count);
         } else {
@@ -251,37 +255,6 @@ public class TEditBox extends AbstractWidget {
                     }
 
                     return true;
-                case GLFW.GLFW_KEY_INSERT:
-                case GLFW.GLFW_KEY_DOWN:
-                case GLFW.GLFW_KEY_UP:
-                case GLFW.GLFW_KEY_PAGE_UP:
-                case GLFW.GLFW_KEY_PAGE_DOWN:
-                default:
-                    if (Screen.isSelectAll(keyCode)) {
-                        this.moveCursorToEnd(false);
-                        this.setHighlightPos(0);
-                        return true;
-                    } else if (Screen.isCopy(keyCode)) {
-                        Minecraft.getInstance().keyboardHandler.setClipboard(this.getHighlighted());
-                        return true;
-                    } else if (Screen.isPaste(keyCode)) {
-                        if (this.isEditable()) {
-                            this.insertText(Minecraft.getInstance().keyboardHandler.getClipboard());
-                        }
-
-                        return true;
-                    } else {
-                        if (Screen.isCut(keyCode)) {
-                            Minecraft.getInstance().keyboardHandler.setClipboard(this.getHighlighted());
-                            if (this.isEditable()) {
-                                this.insertText("");
-                            }
-
-                            return true;
-                        }
-
-                        return false;
-                    }
                 case GLFW.GLFW_KEY_DELETE:
                     if (this.isEditable) {
                         this.deleteText(1);
@@ -313,6 +286,37 @@ public class TEditBox extends AbstractWidget {
                 case GLFW.GLFW_KEY_ENTER:
                     this.onConfirm();
                     return true;
+                case GLFW.GLFW_KEY_INSERT:
+                case GLFW.GLFW_KEY_DOWN:
+                case GLFW.GLFW_KEY_UP:
+                case GLFW.GLFW_KEY_PAGE_UP:
+                case GLFW.GLFW_KEY_PAGE_DOWN:
+                default:
+                    if (Screen.isSelectAll(keyCode)) {
+                        this.moveCursorToEnd(false);
+                        this.setHighlightPos(0);
+                        return true;
+                    } else if (Screen.isCopy(keyCode)) {
+                        Minecraft.getInstance().keyboardHandler.setClipboard(this.getHighlighted());
+                        return true;
+                    } else if (Screen.isPaste(keyCode)) {
+                        if (this.isEditable()) {
+                            this.insertText(Minecraft.getInstance().keyboardHandler.getClipboard());
+                        }
+
+                        return true;
+                    } else {
+                        if (Screen.isCut(keyCode)) {
+                            Minecraft.getInstance().keyboardHandler.setClipboard(this.getHighlighted());
+                            if (this.isEditable()) {
+                                this.insertText("");
+                            }
+
+                            return true;
+                        }
+
+                        return false;
+                    }
             }
         } else {
             return false;
@@ -351,6 +355,13 @@ public class TEditBox extends AbstractWidget {
 
     @Override
     public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (this.autoConfirm > 0) {
+            this.autoConfirm --;
+        } else if (this.autoConfirm == 0) {
+            this.onConfirm();
+            this.autoConfirm = -1;
+        }
+
         if (this.isVisible()) {
 
             RenderSystem.enableBlend();

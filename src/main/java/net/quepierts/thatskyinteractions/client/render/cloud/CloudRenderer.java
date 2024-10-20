@@ -20,7 +20,6 @@ import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.block.ICloud;
 import net.quepierts.thatskyinteractions.client.registry.Shaders;
@@ -57,18 +56,6 @@ public class CloudRenderer {
     private RenderTarget maskTarget;
 //    private RenderTarget originTarget;
 //    private RenderTarget depthTarget;
-
-    public void onClientTick(final ClientTickEvent.Post event) {
-        if (normalClouds.isEmpty()) {
-            return;
-        }
-
-        normalClouds.entrySet().removeIf(next -> {
-            boolean removed = next.getKey().isRemoved();
-            rebuildNormalClouds |= removed;
-            return removed;
-        });
-    }
 
     public void addCloud(ICloud iCloud, CloudData data) {
         ObjectList<CloudData> list = this.normalClouds.computeIfAbsent(iCloud, o -> new ObjectArrayList<>());
@@ -112,6 +99,12 @@ public class CloudRenderer {
         float fy = (float)(dy);
         float fz = (float)(dz);
         Vec3 cloudColor = this.level.getCloudColor(partialTick);
+
+        this.normalClouds.entrySet().removeIf(next -> {
+            boolean removed = next.getKey().isRemoved();
+            this.rebuildNormalClouds |= removed;
+            return removed;
+        });
 
         if (this.rebuildNormalClouds) {
             this.rebuildNormalClouds = false;
