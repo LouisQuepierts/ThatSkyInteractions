@@ -18,8 +18,8 @@ import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmMessageUtils;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
-import net.quepierts.thatskyinteractions.data.tree.NodeState;
-import net.quepierts.thatskyinteractions.network.packet.InteractButtonPacket;
+import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.common.network.packet.InteractButtonPacket;
 
 import java.util.UUID;
 

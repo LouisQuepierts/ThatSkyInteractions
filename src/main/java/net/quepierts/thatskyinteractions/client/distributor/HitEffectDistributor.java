@@ -6,7 +6,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.api.animation.keyframe.VariableHolder;
 import net.quepierts.simpleanimator.core.client.ClientAnimator;
-import net.quepierts.thatskyinteractions.registry.Particles;
+import net.quepierts.thatskyinteractions.common.registry.Particles;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 

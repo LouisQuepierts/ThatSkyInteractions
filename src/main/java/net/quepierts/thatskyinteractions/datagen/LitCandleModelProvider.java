@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.CandleType;
+import net.quepierts.thatskyinteractions.common.block.CandleType;
 
 public class LitCandleModelProvider extends BlockModelProvider {
     public LitCandleModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {

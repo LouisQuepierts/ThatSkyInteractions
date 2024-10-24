@@ -12,13 +12,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.CandleType;
-import net.quepierts.thatskyinteractions.block.entity.CandleClusterBlockEntity;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.render.section.StaticModelRenderer;
 import net.quepierts.thatskyinteractions.client.util.CandleModels;
-import net.quepierts.thatskyinteractions.data.TSIUserData;
-import net.quepierts.thatskyinteractions.registry.Blocks;
+import net.quepierts.thatskyinteractions.common.block.CandleType;
+import net.quepierts.thatskyinteractions.common.block.entity.CandleClusterBlockEntity;
+import net.quepierts.thatskyinteractions.common.data.TSIUserData;
+import net.quepierts.thatskyinteractions.common.registry.Blocks;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 

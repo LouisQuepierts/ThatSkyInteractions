@@ -21,9 +21,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.ICloud;
-import net.quepierts.thatskyinteractions.client.registry.Shaders;
+import net.quepierts.thatskyinteractions.client.reference.Shaders;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
+import net.quepierts.thatskyinteractions.common.block.ICloud;
 import org.joml.Matrix4f;
 
 import java.io.IOException;

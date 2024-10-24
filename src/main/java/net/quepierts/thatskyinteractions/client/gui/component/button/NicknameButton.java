@@ -12,7 +12,7 @@ import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.InputScreen;
-import net.quepierts.thatskyinteractions.data.FriendData;
+import net.quepierts.thatskyinteractions.common.data.FriendData;
 
 @OnlyIn(Dist.CLIENT)
 public class NicknameButton extends SqueezeButton {

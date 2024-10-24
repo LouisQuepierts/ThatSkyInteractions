@@ -4,7 +4,7 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.CandleType;
+import net.quepierts.thatskyinteractions.common.block.CandleType;
 
 @OnlyIn(Dist.CLIENT)
 public class CandleModels {

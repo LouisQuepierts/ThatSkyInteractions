@@ -11,8 +11,8 @@ import net.quepierts.simpleanimator.core.PlayerUtils;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.simpleanimator.core.client.ClientPlayerNavigator;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
-import net.quepierts.thatskyinteractions.data.PlayerPair;
-import net.quepierts.thatskyinteractions.network.packet.UnlockRelationshipPacket;
+import net.quepierts.thatskyinteractions.common.data.PlayerPair;
+import net.quepierts.thatskyinteractions.common.network.packet.UnlockRelationshipPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;

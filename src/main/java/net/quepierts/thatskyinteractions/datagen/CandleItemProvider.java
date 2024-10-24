@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.CandleType;
+import net.quepierts.thatskyinteractions.common.block.CandleType;
 
 public class CandleItemProvider extends ItemModelProvider {
     public CandleItemProvider(PackOutput output, ExistingFileHelper existingFileHelper) {

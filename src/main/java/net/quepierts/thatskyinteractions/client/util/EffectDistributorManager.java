@@ -11,7 +11,7 @@ import net.quepierts.simpleanimator.api.animation.ModelBone;
 import net.quepierts.simpleanimator.api.animation.keyframe.VariableHolder;
 import net.quepierts.simpleanimator.core.client.ClientAnimator;
 import net.quepierts.thatskyinteractions.client.distributor.EffectDistributor;
-import net.quepierts.thatskyinteractions.client.registry.EffectDistributors;
+import net.quepierts.thatskyinteractions.client.reference.EffectDistributors;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

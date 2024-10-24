@@ -14,7 +14,7 @@ import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLay
 import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
-import net.quepierts.thatskyinteractions.data.PlayerPair;
+import net.quepierts.thatskyinteractions.common.data.PlayerPair;
 import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)

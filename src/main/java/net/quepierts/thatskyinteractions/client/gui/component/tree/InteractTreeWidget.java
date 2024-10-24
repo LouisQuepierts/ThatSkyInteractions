@@ -27,11 +27,11 @@ import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLay
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
-import net.quepierts.thatskyinteractions.data.tree.InteractTree;
-import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
-import net.quepierts.thatskyinteractions.data.tree.NodeState;
-import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
-import net.quepierts.thatskyinteractions.proxy.Animations;
+import net.quepierts.thatskyinteractions.common.data.tree.InteractTree;
+import net.quepierts.thatskyinteractions.common.data.tree.InteractTreeInstance;
+import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.common.data.tree.node.InteractTreeNode;
+import net.quepierts.thatskyinteractions.common.reference.Animations;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;

@@ -10,8 +10,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.quepierts.thatskyinteractions.proxy.ClientProxy;
-import net.quepierts.thatskyinteractions.proxy.CommonProxy;
+import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.proxy.CommonProxy;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file

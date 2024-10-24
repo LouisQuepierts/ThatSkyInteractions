@@ -3,7 +3,7 @@ package net.quepierts.thatskyinteractions.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.thatskyinteractions.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
 
 @SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)

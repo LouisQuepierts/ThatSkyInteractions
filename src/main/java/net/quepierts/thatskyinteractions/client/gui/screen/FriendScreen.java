@@ -13,8 +13,8 @@ import net.quepierts.thatskyinteractions.client.gui.component.button.NicknameBut
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
-import net.quepierts.thatskyinteractions.data.FriendData;
-import net.quepierts.thatskyinteractions.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.data.FriendData;
+import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 

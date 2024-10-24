@@ -7,7 +7,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
 
 @OnlyIn(Dist.CLIENT)
 public class LockedButton extends TreeNodeButton {

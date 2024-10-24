@@ -14,8 +14,8 @@ import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
-import net.quepierts.thatskyinteractions.data.tree.NodeState;
-import net.quepierts.thatskyinteractions.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 
 import java.util.UUID;
 

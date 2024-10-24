@@ -9,10 +9,10 @@ import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.InputScreen;
-import net.quepierts.thatskyinteractions.data.FriendData;
-import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
-import net.quepierts.thatskyinteractions.data.tree.NodeState;
-import net.quepierts.thatskyinteractions.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.data.FriendData;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 
 import java.util.UUID;
 

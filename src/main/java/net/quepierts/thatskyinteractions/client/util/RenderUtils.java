@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.registry.Shaders;
+import net.quepierts.thatskyinteractions.client.reference.Shaders;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL30C;
 

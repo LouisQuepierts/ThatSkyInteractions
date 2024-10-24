@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
-import net.quepierts.thatskyinteractions.block.entity.MuralBlockEntity;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButton;
 import net.quepierts.thatskyinteractions.client.gui.component.label.MuralPreviewLabel;
@@ -18,7 +17,8 @@ import net.quepierts.thatskyinteractions.client.gui.component.label.Vector3Input
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
-import net.quepierts.thatskyinteractions.network.packet.block.UpdateBlockEntityDataPacket;
+import net.quepierts.thatskyinteractions.common.block.entity.MuralBlockEntity;
+import net.quepierts.thatskyinteractions.common.network.packet.block.UpdateBlockEntityDataPacket;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.joml.Vector3i;

@@ -18,11 +18,11 @@ import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.component.astrolabe.FriendAstrolabeWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
-import net.quepierts.thatskyinteractions.data.astrolabe.Astrolabe;
-import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
-import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeMap;
-import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
-import net.quepierts.thatskyinteractions.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.Astrolabe;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.AstrolabeManager;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.AstrolabeMap;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 

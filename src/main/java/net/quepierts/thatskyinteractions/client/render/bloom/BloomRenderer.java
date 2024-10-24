@@ -15,7 +15,7 @@ import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.registry.Shaders;
+import net.quepierts.thatskyinteractions.client.reference.Shaders;
 import net.quepierts.thatskyinteractions.client.render.pipeline.BatchRenderer;
 import net.quepierts.thatskyinteractions.client.render.pipeline.IRenderAction;
 import net.quepierts.thatskyinteractions.client.render.pipeline.RenderPrepareData;

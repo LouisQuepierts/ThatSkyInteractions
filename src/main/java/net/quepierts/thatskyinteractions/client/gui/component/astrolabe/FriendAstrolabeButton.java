@@ -16,7 +16,7 @@ import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.FriendScreen;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
-import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
 
 @OnlyIn(Dist.CLIENT)
 public class FriendAstrolabeButton extends AstrolabeButton {

@@ -10,12 +10,12 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
-import net.quepierts.thatskyinteractions.client.registry.RenderTypes;
+import net.quepierts.thatskyinteractions.client.reference.RenderTypes;
 import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
-import net.quepierts.thatskyinteractions.data.TSIUserData;
+import net.quepierts.thatskyinteractions.common.block.entity.WingOfLightBlockEntity;
+import net.quepierts.thatskyinteractions.common.data.TSIUserData;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 

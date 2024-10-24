@@ -11,10 +11,10 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.tree.InteractTreeWidget;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
-import net.quepierts.thatskyinteractions.data.tree.InteractTree;
-import net.quepierts.thatskyinteractions.data.tree.InteractTreeInstance;
-import net.quepierts.thatskyinteractions.data.tree.node.InteractTreeNode;
-import net.quepierts.thatskyinteractions.proxy.Animations;
+import net.quepierts.thatskyinteractions.common.data.tree.InteractTree;
+import net.quepierts.thatskyinteractions.common.data.tree.InteractTreeInstance;
+import net.quepierts.thatskyinteractions.common.data.tree.node.InteractTreeNode;
+import net.quepierts.thatskyinteractions.common.reference.Animations;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)

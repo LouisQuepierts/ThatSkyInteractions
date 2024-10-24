@@ -8,7 +8,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.FakeClientPlayer;
-import net.quepierts.thatskyinteractions.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 import org.joml.Vector3f;
 
 import java.util.UUID;

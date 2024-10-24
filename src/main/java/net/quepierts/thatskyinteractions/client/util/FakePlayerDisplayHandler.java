@@ -18,8 +18,8 @@ import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerIgni
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerLightW2SWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
-import net.quepierts.thatskyinteractions.data.astrolabe.FriendAstrolabeInstance;
-import net.quepierts.thatskyinteractions.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 
 import java.util.UUID;
 

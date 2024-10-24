@@ -20,8 +20,8 @@ import net.quepierts.thatskyinteractions.client.gui.component.button.BounceButto
 import net.quepierts.thatskyinteractions.client.gui.holder.DoubleHolder;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
-import net.quepierts.thatskyinteractions.data.Currency;
-import net.quepierts.thatskyinteractions.data.tree.NodeState;
+import net.quepierts.thatskyinteractions.common.data.Currency;
+import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
 import org.joml.Vector4f;
 
 @OnlyIn(Dist.CLIENT)

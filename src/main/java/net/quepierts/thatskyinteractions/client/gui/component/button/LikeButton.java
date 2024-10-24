@@ -7,8 +7,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.data.FriendData;
-import net.quepierts.thatskyinteractions.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.data.FriendData;
+import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;

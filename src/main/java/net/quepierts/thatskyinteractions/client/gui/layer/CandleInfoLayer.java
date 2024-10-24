@@ -21,7 +21,7 @@ import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
-import net.quepierts.thatskyinteractions.data.Currency;
+import net.quepierts.thatskyinteractions.common.data.Currency;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
