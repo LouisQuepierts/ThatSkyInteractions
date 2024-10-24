@@ -53,7 +53,7 @@ import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
 import net.quepierts.thatskyinteractions.client.particle.StarParticle;
 import net.quepierts.thatskyinteractions.client.registry.BlockEntityRenderers;
 import net.quepierts.thatskyinteractions.client.registry.CreativeModeTabs;
-import net.quepierts.thatskyinteractions.client.registry.Particles;
+import net.quepierts.thatskyinteractions.registry.Particles;
 import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
 import net.quepierts.thatskyinteractions.client.render.layer.CandleLayer;
@@ -153,8 +153,6 @@ public class ClientProxy extends CommonProxy {
         modBus.addListener(RegisterClientReloadListenersEvent.class, this::onClientReloadListeners);
 
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-
-        Particles.REGISTER.register(modBus);
         CreativeModeTabs.REGISTER.register(modBus);
     }
 

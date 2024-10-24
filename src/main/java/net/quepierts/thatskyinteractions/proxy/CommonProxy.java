@@ -15,6 +15,7 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.registry.Particles;
 import net.quepierts.thatskyinteractions.data.RelationshipSavedData;
 import net.quepierts.thatskyinteractions.data.TSIUserDataStorage;
 import net.quepierts.thatskyinteractions.data.astrolabe.AstrolabeManager;
@@ -56,6 +57,7 @@ public class CommonProxy {
         Items.REGISTER.register(bus);
         BlockEntities.REGISTER.register(bus);
         DataComponents.REGISTER.register(bus);
+        Particles.REGISTER.register(bus);
     }
 
     private void onServerTick(final ServerTickEvent.Post event) {

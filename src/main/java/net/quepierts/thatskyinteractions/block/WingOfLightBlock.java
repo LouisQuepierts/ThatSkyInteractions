@@ -28,7 +28,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.quepierts.thatskyinteractions.block.entity.WingOfLightBlockEntity;
-import net.quepierts.thatskyinteractions.client.registry.Particles;
+import net.quepierts.thatskyinteractions.registry.Particles;
 import net.quepierts.thatskyinteractions.registry.Items;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
