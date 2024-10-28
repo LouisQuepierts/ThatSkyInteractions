@@ -22,7 +22,6 @@ import net.quepierts.thatskyinteractions.client.render.pipeline.RenderPrepareDat
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 
 import java.io.IOException;
 import java.util.List;
