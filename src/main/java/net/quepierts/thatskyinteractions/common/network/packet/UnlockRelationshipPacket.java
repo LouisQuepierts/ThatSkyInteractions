@@ -38,6 +38,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
     private static final byte ACCEPT = 1;
     private static final byte CANCEL = 2;
     private static final byte FINISH = 3;
+    private static final byte FORCED = 4;
 
     protected final UUID sender;
     protected final PlayerPair pair;
@@ -59,6 +60,8 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
                 return new Cancel(sender, pair, node);
             case FINISH:
                 return new Finish(sender, pair, node);
+            case FORCED:
+                return new Forced(sender, pair, node);
         }
 
         throw new IllegalArgumentException("Packet Code: " + code);
@@ -273,6 +276,33 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
         @Override
         protected void sync() {
             ThatSkyInteractions.getInstance().getClient().getUnlockRelationshipHandler().finish();
+        }
+    }
+
+    public static class Forced extends UnlockRelationshipPacket {
+        public Forced(UUID sender, PlayerPair pair, String node) {
+            super(sender, pair, node, FORCED);
+        }
+
+        @Override
+        protected void update(@NotNull ServerPlayer serverPlayer) {
+
+        }
+
+        @Override
+        protected void sync() {
+            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
+
+            Minecraft minecraft = Minecraft.getInstance();
+            UUID local = minecraft.player.getUUID();
+            UUID other = this.pair.getOther(local);
+
+            InteractTreeInstance instance = cache.get(other);
+            if (this.node.equals("all")) {
+                instance.unlockAll();
+            } else {
+                instance.unlock(this.node, true);
+            }
         }
     }
 }

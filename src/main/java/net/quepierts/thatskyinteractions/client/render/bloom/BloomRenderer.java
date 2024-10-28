@@ -22,6 +22,7 @@ import net.quepierts.thatskyinteractions.client.render.pipeline.RenderPrepareDat
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import java.io.IOException;
 import java.util.List;
@@ -140,12 +141,14 @@ public class BloomRenderer {
     public void batchRender(
             final ModelResourceLocation meshLocation,
             final Matrix4f transformation,
-            final ResourceLocation textureLocation
+            final ResourceLocation textureLocation,
+            final int color
     ) {
         this.batchRenderer.toBatch(meshLocation, new RenderPrepareData(
                 Shaders.Batch.getGlowShader(),
                 new Matrix4f(transformation),
-                textureLocation
+                textureLocation,
+                color
         ));
 
         this.setApplyBloom();
@@ -155,13 +158,15 @@ public class BloomRenderer {
             final BlockEntity blockEntity,
             final ModelResourceLocation meshLocation,
             final Matrix4f transformation,
-            final ResourceLocation textureLocation
+            final ResourceLocation textureLocation,
+            final int color
     ) {
         List<RenderEntry> list = this.renderActions.computeIfAbsent(blockEntity, (b) -> new ObjectArrayList<>());
         IRenderAction action = new RenderPrepareData(
                 Shaders.Batch.getGlowShader(),
                 new Matrix4f(transformation),
-                textureLocation
+                textureLocation,
+                color
         );
         list.add(new RenderEntry(meshLocation, action));
     }

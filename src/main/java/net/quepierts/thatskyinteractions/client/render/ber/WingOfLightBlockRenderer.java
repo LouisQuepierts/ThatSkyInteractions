@@ -63,7 +63,8 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
         this.renderer.batchRender(
                 VertexBufferManager.BODY,
                 transformation,
-                RenderTypes.TEXTURE
+                RenderTypes.TEXTURE,
+                0xFFFFFFFF
         );
 
         transformation.translate(0, 1.5f, 0)
@@ -72,7 +73,8 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
         this.renderer.batchRender(
                 VertexBufferManager.HEAD,
                 transformation,
-                RenderTypes.TEXTURE
+                RenderTypes.TEXTURE,
+                0xFFFFFFFF
         );
     }
 

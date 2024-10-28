@@ -89,9 +89,9 @@ public class CloudBlockRenderer extends HighlightBlockEntityRenderer<AbstractClo
         ItemStack itemStack = player.getItemInHand(InteractionHand.MAIN_HAND);
         Item item = itemStack.getItem();
 
-        if (item instanceof ICloudHighlight) {
+        if (item instanceof ICloudHighlight highlight) {
             Matrix4f transformation = new Matrix4f().translate(pos.getX(), pos.getY(), pos.getZ());
-            this.renderHighLight(transformation);
+            this.renderHighLight(transformation, highlight.color(itemStack, cloud));
         }
     }
 

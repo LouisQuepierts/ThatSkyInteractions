@@ -22,13 +22,14 @@ public enum Packets {
     BATCH_RELATIONSHIP(BatchRelationshipPacket.class, BatchRelationshipPacket::new, NetworkDirection.PLAY_TO_CLIENT),
     USERDATA_SYNC(UserDataSync.class, UserDataSync::new, NetworkDirection.PLAY_TO_CLIENT),
     ASTROLABE_SYNC(AstrolabeSyncPacket.class, AstrolabeSyncPacket::decode, NetworkDirection.PLAY_TO_CLIENT),
+    PICKUP_PICKABLE(PickablePickupPacket.class, PickablePickupPacket::new, NetworkDirection.PLAY_TO_SERVER),
     UPDATE_DAILY(UpdateDailyPickupPacket.class, UpdateDailyPickupPacket::new, NetworkDirection.PLAY_TO_CLIENT),
     ASTROLABE_IGNITE(AstrolabeOperationPacket.class, AstrolabeOperationPacket::decode, NetworkDirection.ALL),
     UNLOCK_RELATIONSHIP(UnlockRelationshipPacket.class, UnlockRelationshipPacket::decode, NetworkDirection.ALL),
     INTERACT_BUTTON(InteractButtonPacket.class, InteractButtonPacket::decode, NetworkDirection.ALL),
     ASTROLABE_MODIFY(UserDataModifyPacket.class, UserDataModifyPacket::decode, NetworkDirection.PLAY_TO_SERVER),
     PICKUP_WING_OF_LIGHT(PickupWingOfLightPacket.class, PickupWingOfLightPacket::new, NetworkDirection.PLAY_TO_SERVER),
-    PICKUP_PICKABLE(PickablePickupPacket.class, PickablePickupPacket::new, NetworkDirection.PLAY_TO_SERVER),
+    UNPICKUP(ResetPickUpPacket.class, ResetPickUpPacket::new, NetworkDirection.PLAY_TO_CLIENT),
     UPDATE_BLOCK_ENTITY(UpdateBlockEntityDataPacket.class, UpdateBlockEntityDataPacket::new, NetworkDirection.PLAY_TO_SERVER)
     ;
 

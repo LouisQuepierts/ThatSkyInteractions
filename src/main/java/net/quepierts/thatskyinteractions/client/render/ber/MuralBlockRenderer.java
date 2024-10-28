@@ -57,7 +57,8 @@ public class MuralBlockRenderer extends HighlightBlockEntityRenderer<MuralBlockE
                     mural,
                     VertexBufferManager.QUAD,
                     transformation,
-                    mural.getTextureLocation()
+                    mural.getTextureLocation(),
+                    0xFFFFFFFF
             );
         }
 

@@ -184,7 +184,7 @@ public class ClientTSIDataCache {
 
         if (!data.isPickedUp(wol)) {
             UUID uuid = wol.getUUID();
-            data.pickupWingOfLight(uuid);
+            data.pickUpWingOfLight(uuid);
             World2ScreenWidgetLayer.INSTANCE.remove(uuid);
 
             if (update) {
@@ -202,7 +202,7 @@ public class ClientTSIDataCache {
 
         if (!data.isPickedUp(pickable)) {
             UUID uuid = pickable.getUUID();
-            data.pickup(pickable);
+            data.pickUp(pickable);
             World2ScreenWidgetLayer.INSTANCE.remove(uuid);
 
             if (update) {

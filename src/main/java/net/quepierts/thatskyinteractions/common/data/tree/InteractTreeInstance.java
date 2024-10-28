@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.common.data.tree;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ByteMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -113,6 +114,14 @@ public class InteractTreeInstance {
         tNode.onUnlock(this.pair, onServer);
 
         return true;
+    }
+
+    public void unlockAll() {
+        for (String node : this.getTree().getNodes().keySet()) {
+            this.states.put(node, (byte) NodeState.UNLOCKED.ordinal());
+        }
+
+        this.update(this.getTree().getRootID());
     }
 
     public NodeState getNodeState(String node) {

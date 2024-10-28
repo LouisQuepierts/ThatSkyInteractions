@@ -56,7 +56,7 @@ public class PickablePickupPacket implements IUpdate {
                 return;
             }
 
-            userData.pickup(iPickable);
+            userData.pickUp(iPickable);
             iPickable.onPickup(serverPlayer);
         }
     }

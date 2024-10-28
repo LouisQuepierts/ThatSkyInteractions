@@ -13,8 +13,7 @@
     "GameRendererMixin",
     "LevelRendererMixin",
     "PlayerRendererMixin",
-    "accessor.GameRendererAccessor",
-    "accessor.LevelRendererAccessor"
+    "accessor.GameRendererAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

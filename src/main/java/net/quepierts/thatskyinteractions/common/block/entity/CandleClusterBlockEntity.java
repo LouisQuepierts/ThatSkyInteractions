@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEntity implements IPickable {
     public static final ResourceLocation TYPE = ThatSkyInteractions.getLocation("candle_cluster");
@@ -43,12 +43,14 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
     private static final short LIT_FLAG = (short) 0x8000;
     private static final String TAG_CANDLES = "candles";
     private static final String TAG_HAS_REWARD = "has_reward";
-    private static final Function<ShortArrayList, VoxelShape> SHAPES;
+    private static final String TAG_ON_SLAB = "on_slab";
+    private static final BiFunction<ShortArrayList, Boolean, VoxelShape> SHAPES;
     private final ShortArrayList candles;
     private final ShortArrayList lightedCandles;
     private final int[] grid;
     private float rewards = 0;
     private boolean hasRewards = true;
+    private boolean onSlab = false;
 
     @NotNull
     private VoxelShape lowerShape = Shapes.empty();
@@ -71,6 +73,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
         tag.putIntArray(TAG_CANDLES, array);
         tag.putBoolean(TAG_HAS_REWARD, this.hasRewards);
+        tag.putBoolean(TAG_ON_SLAB, this.onSlab);
     }
 
     @Override
@@ -96,6 +99,10 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
         if (tag.contains(TAG_HAS_REWARD)) {
             this.hasRewards = tag.getBoolean(TAG_HAS_REWARD);
+        }
+
+        if (tag.contains(TAG_ON_SLAB)) {
+            this.onSlab = tag.getBoolean(TAG_ON_SLAB);
         }
     }
 
@@ -449,10 +456,15 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
     }
 
     private void buildShape() {
+        /*if (this.level != null) {
+            BlockState below = this.level.getBlockState(this.getBlockPos().below());
+            this.onSlab = below.hasProperty(SlabBlock.TYPE) && below.getValue(SlabBlock.TYPE) == SlabType.BOTTOM;
+        }*/
+
         if (this.candles.isEmpty()) {
             this.lowerShape = Shapes.empty();
         } else {
-            this.lowerShape = SHAPES.apply(new ShortArrayList(this.candles));
+            this.lowerShape = SHAPES.apply(new ShortArrayList(this.candles), this.onSlab);
         }
     }
 
@@ -466,18 +478,15 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         return raw;
     }
 
-    private static VoxelShape getLowerCandleShape(int i) {
-        return getLowerCandleShape((short) i);
-    }
-
-    private static VoxelShape getLowerCandleShape(final short candle) {
+    private static VoxelShape getLowerCandleShape(final short candle, final boolean onSlab) {
         final int x = getCandleX(candle);
         final int z = getCandleZ(candle);
         final CandleType type = getCandleType(candle);
         final int size = type.getSize();
+        final int offset = onSlab ? -8 : 0;
         return Block.box(
-                x, 0, z,
-                x + size, type.getHeight(),z + size
+                x, offset, z,
+                x + size, type.getHeight() + offset,z + size
         );
     }
 
@@ -605,10 +614,22 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
         return this.hasRewards && (int) this.rewards > 0;
     }
 
+    public boolean isOnSlab() {
+        return onSlab;
+    }
+
     static {
-        SHAPES = Util.memoize((candles) -> candles.intStream()
+        SHAPES = Util.memoize((candles, onSlab) -> candles.intStream()
                 .skip(1)
-                .mapToObj(CandleClusterBlockEntity::getLowerCandleShape)
-                .reduce(getLowerCandleShape(candles.getShort(0)), Shapes::or));
+                .mapToObj(value -> getLowerCandleShape((short) value, onSlab))
+                .reduce(getLowerCandleShape(candles.getShort(0), onSlab), Shapes::or));
+    }
+
+    public void setOnSlab(boolean onSlab) {
+        if (this.onSlab != onSlab) {
+            this.setChanged();
+            this.onSlab = onSlab;
+            this.buildShape();
+        }
     }
 }

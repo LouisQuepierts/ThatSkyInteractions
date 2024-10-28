@@ -13,7 +13,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.common.block.ICloud;
+import net.quepierts.thatskyinteractions.common.network.packet.block.UpdateBlockEntityDataPacket;
 import net.quepierts.thatskyinteractions.common.reference.TagKeys;
 import net.quepierts.thatskyinteractions.common.registry.Items;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +44,7 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
     private final Vector3i offset = new Vector3i(0);
     private final Vector3i size = new Vector3i(16);
     private boolean vanilla;
+    private boolean collisible = true;
     private AABB aabb;
     private boolean dirty = true;
 
@@ -55,6 +58,7 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
         tag.putIntArray(TAG_SIZE, new int[]{this.size.x, this.size.y, this.size.z});
         tag.putIntArray(TAG_OFFSET, new int[]{this.offset.x, this.offset.y, this.offset.z});
         tag.putBoolean(TAG_VANILLA, this.vanilla);
+        tag.putBoolean(TAG_COLLISIBLE, this.collisible);
     }
 
     @Override
@@ -76,6 +80,10 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
         if (tag.contains(TAG_VANILLA)) {
             this.vanilla = tag.getBoolean(TAG_VANILLA);
         }
+
+        if (tag.contains(TAG_COLLISIBLE)) {
+            this.collisible = tag.getBoolean(TAG_COLLISIBLE);
+        }
     }
 
     public void setSize(int x, int y, int z) {
@@ -86,6 +94,17 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
     public void setOffset(int x, int y, int z) {
         this.offset.set(x, y, z);
         this.dirty = true;
+    }
+
+    public boolean isCollisible() {
+        return collisible;
+    }
+
+    public void setCollisible(boolean collisible) {
+        if (collisible != this.collisible) {
+            this.markUpdate();
+            this.collisible = collisible;
+        }
     }
 
     public void recomputeAABB() {
@@ -203,7 +222,7 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
     }
 
     public static void tick(Level level, BlockPos pos, BlockState blockState, AbstractCloudBlockEntity cloud) {
-        if (cloud.aabb == null) {
+        if (cloud.aabb == null || !cloud.collisible) {
             return;
         }
 

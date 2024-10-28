@@ -45,6 +45,11 @@ public class PickupCandleW2SButton extends World2ScreenButton {
 
     @Override
     public void getWorldPos(Vector3f out) {
+        BlockPos position = this.bound.getBlockPos();
+        this.worldPos.y = position.getY() + 1.2f;
+        if (this.bound.isOnSlab()) {
+            this.worldPos.y -= 0.5f;
+        }
         out.set(this.worldPos);
     }
 

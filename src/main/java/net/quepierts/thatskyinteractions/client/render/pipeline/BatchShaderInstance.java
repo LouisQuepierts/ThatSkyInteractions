@@ -10,9 +10,11 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
+import net.minecraft.util.FastColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector4f;
 
 import java.io.IOException;
 
@@ -21,11 +23,13 @@ public class BatchShaderInstance extends ShaderInstance {
     public final Uniform TRANSFORMATION_MATRIX;
     public final int SAMPLER_0;
 
+    private final Vector4f color;
     private ResourceLocation lastTexture0;
 
     public BatchShaderInstance(ResourceProvider resourceProvider, ResourceLocation shaderLocation, VertexFormat format) throws IOException {
         super(resourceProvider, shaderLocation, format);
 
+        this.color = new Vector4f(1.0f);
         this.TRANSFORMATION_MATRIX = this.getUniform("TransMat");
         this.SAMPLER_0 = Uniform.glGetUniformLocation(this.getId(), "Sampler0");
     }
@@ -54,5 +58,21 @@ public class BatchShaderInstance extends ShaderInstance {
         RenderSystem.setShaderTexture(0, texture.getId());
         RenderSystem.bindTexture(RenderSystem.getShaderTexture(0));
         this.lastTexture0 = location;
+    }
+
+    public void refreshColor(int color) {
+        float alpha = FastColor.ARGB32.alpha(color) / 255f;
+        float red = FastColor.ARGB32.red(color) / 255f;
+        float green = FastColor.ARGB32.green(color) / 255f;
+        float blue = FastColor.ARGB32.blue(color) / 255f;
+
+        if (this.color.x != alpha || this.color.y != red || this.color.z != green || this.color.w != blue) {
+            this.color.set(alpha, red, green, blue);
+
+            if (COLOR_MODULATOR != null) {
+                COLOR_MODULATOR.set(this.color.y, this.color.z, this.color.w, this.color.x);
+                COLOR_MODULATOR.upload();
+            }
+        }
     }
 }

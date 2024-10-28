@@ -34,7 +34,7 @@ public class PickupWingOfLightPacket implements IUpdate {
         TSIUserData userData = userDataManager.getUserData(serverPlayer.getUUID());
 
         if (!userData.isPickedUp(this.wolUUID, false)) {
-            userData.pickupWingOfLight(this.wolUUID);
+            userData.pickUpWingOfLight(this.wolUUID);
             serverPlayer.addItem(new ItemStack(Items.RED_CANDLE));
         }
     }

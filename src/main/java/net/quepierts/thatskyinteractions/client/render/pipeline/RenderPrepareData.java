@@ -11,7 +11,8 @@ import org.joml.Matrix4f;
 public record RenderPrepareData(
         @NotNull BatchShaderInstance shader,
         @NotNull Matrix4f transformationMatrix,
-        @NotNull ResourceLocation texture
+        @NotNull ResourceLocation texture,
+        int color
 ) implements IRenderAction {
     @Override
     public void apply(
@@ -24,6 +25,7 @@ public record RenderPrepareData(
             this.shader.TRANSFORMATION_MATRIX.upload();
         }
 
+        this.shader.refreshColor(this.color);
         this.shader.refreshTexture(this.texture);
 
         buffer.draw();

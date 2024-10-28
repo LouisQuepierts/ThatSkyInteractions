@@ -29,16 +29,16 @@ public class TSIUserData {
     @NotNull private final AstrolabeMap astrolabes;
     @NotNull private final Set<UUID> blackList;
     @NotNull private final Map<UUID, Pair<FriendAstrolabeInstance.NodeData, ResourceLocation>> cache;
-    @NotNull private final Set<UUID> staticPickup;
-    @NotNull private final Set<UUID> dailyPickup;
+    @NotNull private final Set<UUID> staticPickUp;
+    @NotNull private final Set<UUID> dailyPickUp;
 
     private long lastChangedGameDay;
 
     public TSIUserData(@NotNull AstrolabeMap astrolabes, @NotNull Set<UUID> blackList, @NotNull Set<UUID> pickedWingOfLight, @NotNull Set<UUID> dailyPickup, long lastChangedGameDay) {
         this.astrolabes = astrolabes;
         this.blackList = blackList;
-        this.staticPickup = pickedWingOfLight;
-        this.dailyPickup = dailyPickup;
+        this.staticPickUp = pickedWingOfLight;
+        this.dailyPickUp = dailyPickup;
         this.lastChangedGameDay = lastChangedGameDay;
         
 
@@ -69,8 +69,8 @@ public class TSIUserData {
     public static void toNetwork(FriendlyByteBuf byteBuf, TSIUserData data) {
         AstrolabeMap.toNetwork(byteBuf, data.astrolabes);
         byteBuf.writeCollection(data.blackList, (o, uuid) -> o.writeUUID(uuid));
-        byteBuf.writeCollection(data.staticPickup, (o, uuid) -> o.writeUUID(uuid));
-        byteBuf.writeCollection(data.dailyPickup, (o, uuid) -> o.writeUUID(uuid));
+        byteBuf.writeCollection(data.staticPickUp, (o, uuid) -> o.writeUUID(uuid));
+        byteBuf.writeCollection(data.dailyPickUp, (o, uuid) -> o.writeUUID(uuid));
         byteBuf.writeLong(data.lastChangedGameDay);
     }
 
@@ -93,13 +93,13 @@ public class TSIUserData {
         tag.put("blackList", blackList);
 
         ListTag staticPickup = new ListTag();
-        for (UUID uuid : data.staticPickup) {
+        for (UUID uuid : data.staticPickUp) {
             staticPickup.add(NbtUtils.createUUID(uuid));
         }
         tag.put("staticPickup", staticPickup);
 
         ListTag dailyPickup = new ListTag();
-        for (UUID uuid : data.dailyPickup) {
+        for (UUID uuid : data.dailyPickUp) {
             dailyPickup.add(NbtUtils.createUUID(uuid));
         }
         tag.put("dailyPickup", dailyPickup);
@@ -160,18 +160,18 @@ public class TSIUserData {
 
     public boolean isPickedUpWOL(@NotNull WingOfLightBlockEntity wingOfLightBlockEntity) {
         UUID uuid = wingOfLightBlockEntity.getUUID();
-        return this.staticPickup.contains(uuid);
+        return this.staticPickUp.contains(uuid);
     }
 
     public boolean isPickedUpWOL(UUID wolUUID) {
-        return this.staticPickup.contains(wolUUID);
+        return this.staticPickUp.contains(wolUUID);
     }
 
     public boolean isPickedUp(UUID uuid, boolean daily) {
         if (daily) {
-            return this.dailyPickup.contains(uuid);
+            return this.dailyPickUp.contains(uuid);
         } else {
-            return this.staticPickup.contains(uuid);
+            return this.staticPickUp.contains(uuid);
         }
     }
 
@@ -179,17 +179,25 @@ public class TSIUserData {
         return isPickedUp(pickable.getUUID(), pickable.isDailyRefresh());
     }
 
-    public void pickup(@NotNull IPickable pickable) {
+    public void pickUp(@NotNull IPickable pickable) {
         UUID uuid = pickable.getUUID();
         if (pickable.isDailyRefresh()) {
-            this.dailyPickup.add(uuid);
+            this.dailyPickUp.add(uuid);
         } else {
-            this.staticPickup.add(uuid);
+            this.staticPickUp.add(uuid);
         }
     }
 
-    public void pickupWingOfLight(@NotNull UUID wolUUID) {
-        this.staticPickup.add(wolUUID);
+    public void pickUpWingOfLight(@NotNull UUID wolUUID) {
+        this.staticPickUp.add(wolUUID);
+    }
+
+    public void resetStaticPickUp() {
+        this.staticPickUp.clear();
+    }
+
+    public void resetDailyPickUp() {
+        this.dailyPickUp.clear();
     }
 
     public boolean likeFriend(UUID player) {
@@ -342,7 +350,7 @@ public class TSIUserData {
     public boolean tryUpdateDaily(long day) {
         if (this.lastChangedGameDay != day) {
             this.lastChangedGameDay = day;
-            this.dailyPickup.clear();
+            this.dailyPickUp.clear();
             this.astrolabes.update();
             return true;
         }

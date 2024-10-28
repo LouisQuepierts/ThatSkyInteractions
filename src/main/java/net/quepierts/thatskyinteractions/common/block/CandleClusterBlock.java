@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.common.block;
 import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -14,14 +15,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -67,6 +71,25 @@ public class CandleClusterBlock extends BaseEntityBlock {
             return entity.getShape();
         }
         return AABB;
+    }
+
+    @NotNull
+    @Override
+    protected BlockState updateShape(
+            @NotNull BlockState state,
+            @NotNull Direction direction,
+            @NotNull BlockState neighborState,
+            @NotNull LevelAccessor level,
+            @NotNull BlockPos pos,
+            @NotNull BlockPos neighborPos
+    ) {
+        if (direction == Direction.DOWN) {
+            if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
+                entity.setOnSlab(neighborState.hasProperty(SlabBlock.TYPE) && neighborState.getValue(SlabBlock.TYPE) == SlabType.BOTTOM);
+            }
+        }
+
+        return state;
     }
 
     @NotNull
@@ -134,6 +157,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
     public void animateTick(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull RandomSource random) {
         if (level.getBlockEntity(pos) instanceof CandleClusterBlockEntity entity) {
             ShortArrayList lighted = entity.getLightedCandles();
+            double y = pos.getY() + 0.125 - (entity.isOnSlab() ? 0.5 : 0.0);
             for (int i = 0; i < lighted.size(); i++) {
                 short candle = lighted.getShort(i);
                 CandleType type = CandleClusterBlockEntity.getCandleType(candle);
@@ -141,7 +165,7 @@ public class CandleClusterBlock extends BaseEntityBlock {
                 this.addParticlesAndSound(
                         level,
                         pos.getX() + half + CandleClusterBlockEntity.getCandleX(candle) / 16.0,
-                        pos.getY() + 0.125 + type.getHeight() / 16.0,
+                        y + type.getHeight() / 16.0,
                         pos.getZ() + half + CandleClusterBlockEntity.getCandleZ(candle) / 16.0,
                         random
                 );
@@ -196,6 +220,6 @@ public class CandleClusterBlock extends BaseEntityBlock {
         LEVEL = BlockStateProperties.LEVEL;
         LIGHT_EMISSION = (state) -> state.getValue(LEVEL);
 
-        AABB = Block.box(0, 0, 0, 16, 32, 16);
+        AABB = Block.box(0, -16, 0, 16, 32, 16);
     }
 }

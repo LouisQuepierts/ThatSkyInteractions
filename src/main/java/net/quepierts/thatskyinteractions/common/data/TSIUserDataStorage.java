@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.common.data;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -50,13 +51,18 @@ public class TSIUserDataStorage {
         this.day = day;
 
         INetwork network = SimpleAnimator.getNetwork();
-        for (Map.Entry<UUID, TSIUserData> entry : this.dataMap.entrySet()) {
-            if (entry.getValue().tryUpdateDaily(day)) {
-                ServerPlayer player = playerList.getPlayer(entry.getKey());
+        ObjectIterator<Map.Entry<UUID, TSIUserData>> iterator = this.dataMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<UUID, TSIUserData> entry = iterator.next();
+            ServerPlayer player = playerList.getPlayer(entry.getKey());
 
-                if (player != null) {
-                    network.sendToPlayer(new UpdateDailyPickupPacket(day), player);
-                }
+            if (player == null) {
+                iterator.remove();
+                continue;
+            }
+
+            if (entry.getValue().tryUpdateDaily(day)) {
+                network.sendToPlayer(new UpdateDailyPickupPacket(day), player);
             }
         }
     }

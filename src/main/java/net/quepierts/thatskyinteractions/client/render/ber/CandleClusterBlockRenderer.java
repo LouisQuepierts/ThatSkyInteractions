@@ -8,7 +8,9 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.SlabType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
@@ -40,7 +42,8 @@ public class CandleClusterBlockRenderer implements StaticBlockEntityRenderer<Can
         BlockState state = Blocks.CANDLE_CLUSTER.get().defaultBlockState();
         ShortArrayList candles = cluster.getCandles();
 
-        poseStack.translate(-0.5f, 0, -0.5f);
+        poseStack.translate(-0.5f, cluster.isOnSlab() ? -0.5f : 0, -0.5f);
+
         for (Short candle : candles) {
             CandleType type = CandleClusterBlockEntity.getCandleType(candle);
             float half = type.getSize() / 2f;

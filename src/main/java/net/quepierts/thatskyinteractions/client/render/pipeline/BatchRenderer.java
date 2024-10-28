@@ -73,10 +73,6 @@ public class BatchRenderer {
                     using.PROJECTION_MATRIX.set(projectionMatrix);
                 }
 
-                if (using.COLOR_MODULATOR != null) {
-                    using.COLOR_MODULATOR.set(RenderSystem.getShaderColor());
-                }
-
                 using.apply();
             }
 

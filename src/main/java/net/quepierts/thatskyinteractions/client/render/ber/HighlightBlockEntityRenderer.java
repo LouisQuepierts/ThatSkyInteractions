@@ -22,11 +22,11 @@ public abstract class HighlightBlockEntityRenderer<T extends BlockEntity> implem
         this.bloomRenderer = ThatSkyInteractions.getInstance().getClient().getBloomRenderer();
     }
 
-    protected void renderHighLight(Matrix4f transformation) {
+    protected void renderHighLight(Matrix4f transformation, int color) {
 //        VertexConsumer vertexConsumer = RenderTypes.getBufferSource().getBuffer(RenderTypes.BLOOM.apply(RenderTypes.TEXTURE, false));
 //        CUBE.compile(poseStack.last(), vertexConsumer, combinedLight, combinedOverlay, color);
 
-        this.bloomRenderer.batchRender(VertexBufferManager.CUBE, transformation, RenderTypes.TEXTURE);
+        this.bloomRenderer.batchRender(VertexBufferManager.CUBE, transformation, RenderTypes.TEXTURE, color);
     }
 
     static {
