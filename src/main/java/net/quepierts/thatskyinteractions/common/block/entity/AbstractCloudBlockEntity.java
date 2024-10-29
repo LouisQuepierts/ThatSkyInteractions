@@ -255,12 +255,4 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
     public boolean isEditorItem(ItemStack item) {
         return item.is(Items.CLOUD_EDITOR);
     }
-
-    private static Vec3 clampAABB(Vec3 pos, AABB aabb) {
-        return new Vec3(
-                Mth.clamp(pos.x, aabb.minX, aabb.maxX),
-                Mth.clamp(pos.y, aabb.minY, aabb.maxY),
-                Mth.clamp(pos.z, aabb.minZ, aabb.maxZ)
-        );
-    }
 }
