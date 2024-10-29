@@ -325,7 +325,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
     public boolean tryWax() {
         if (this.hasRewards) {
             this.hasRewards = false;
-            this.markUpdate();;
+            this.markUpdate();
             return true;
         }
         return false;
