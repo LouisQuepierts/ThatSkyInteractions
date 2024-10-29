@@ -79,6 +79,11 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
     @Override
     public void fromNBT(@NotNull CompoundTag tag) {
         super.fromNBT(tag);
+
+        if (tag.contains(TAG_ON_SLAB)) {
+            this.onSlab = tag.getBoolean(TAG_ON_SLAB);
+        }
+
         if (tag.contains(TAG_CANDLES)) {
             Arrays.fill(this.grid, 0);
             this.candles.clear();
@@ -99,10 +104,6 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
         if (tag.contains(TAG_HAS_REWARD)) {
             this.hasRewards = tag.getBoolean(TAG_HAS_REWARD);
-        }
-
-        if (tag.contains(TAG_ON_SLAB)) {
-            this.onSlab = tag.getBoolean(TAG_ON_SLAB);
         }
     }
 

@@ -12,9 +12,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.phys.Vec3;
 import net.quepierts.thatskyinteractions.common.block.CandleType;
 import net.quepierts.thatskyinteractions.common.block.entity.CandleClusterBlockEntity;
@@ -114,6 +116,8 @@ public class CandleClusterItem extends BlockItem {
 
         boolean success = entity.tryAddCandle(localX, localZ, type, rotation);
         if (success) {
+            BlockState below = level.getBlockState(pos);
+            entity.setOnSlab(below.hasProperty(SlabBlock.TYPE) && below.getValue(SlabBlock.TYPE) == SlabType.BOTTOM);
             context.getItemInHand().consume(1, player);
             SoundType soundtype = SoundType.CANDLE;
             level.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
