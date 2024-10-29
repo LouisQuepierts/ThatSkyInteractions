@@ -236,14 +236,17 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
             Vec3 movement = entity.getDeltaMovement();
 
             double distance = cloud.aabb.maxY - position.y;
-            double oscillationForce = Mth.cos((float) Mth.clamp(distance, 0, 1) * Mth.PI + Mth.PI) * 0.1;
 
-            if (distance > 2) {
-                oscillationForce = Math.min(0.5f, oscillationForce + (distance - 1.8) / 8);
+            double deltaY = movement.y;
+            if (distance < 1.5 && deltaY < 0) {
+                deltaY = Math.min(deltaY + distance / 19.43, 0);
+            } else {
+                deltaY = Math.max(deltaY + Mth.cos((float) (distance - 1.5) * Mth.PI + Mth.PI) / 94.3, 0.5);
             }
+
             entity.setDeltaMovement(
                     movement.x,
-                    movement.y + oscillationForce,
+                    deltaY,
                     movement.z);
         }
     }
