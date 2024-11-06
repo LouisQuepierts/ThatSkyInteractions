@@ -106,6 +106,25 @@ public class RenderUtils {
         RenderSystem.disableBlend();
     }
 
+    public static void drawLightSpot(GuiGraphics guiGraphics, float x, float y, int size, float intensity, int color) {
+        float x2 = x + size;
+        float y2 = y + size;
+
+        RenderSystem.enableBlend();
+        RenderSystem.setShader(Shaders::getCrossLightSpotShader);
+        ShaderInstance shader = Shaders.getCrossLightSpotShader();
+        Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
+
+        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(color);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        RenderSystem.disableBlend();
+    }
+
     public static void drawCrossLightSpot(GuiGraphics guiGraphics, float x, float y, int size, float intensity, float width, int color) {
         float x2 = x + size;
         float y2 = y + size;

@@ -98,16 +98,39 @@ public class FriendAstrolabeButton extends AstrolabeButton {
             }
 
             if (data.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
+                pose.translate(9.0f, 9.0f, 0.0f);
                 Palette.mulShaderAlpha(this.alpha.getValue());
-                float intensity = Mth.sin((rand + ScreenAnimator.GLOBAL.time()) * 12) * 0.05f + this.alpha.getValue() * 0.2f;
-                RenderUtils.drawCrossLightSpot(guiGraphics, 2, 2, 6, 0.7f + intensity, 1.2f, 0xffa4e5f7);
-                RenderUtils.drawCrossLightSpot(guiGraphics, 6, 16, 8, 0.65f + intensity, 1.2f, 0xffa4e5f7);
-                RenderUtils.drawCrossLightSpot(guiGraphics, 16, 4, 9, 0.55f + intensity, 1.2f, 0xffa4e5f7);
+                float delta = rand + ScreenAnimator.GLOBAL.time();
+                final float p8 = Mth.PI / 8f;
+                final float d00 = 6f;
+                final float d45 = 6f * Mth.sin(p8 * 2);
+                final float dv = 5f;
+
+                drawParticle(guiGraphics, delta + p8, 0, -d00, 0, -dv, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + p8 * 15f, d45, -d45, dv, -dv, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + p8 * 8f, d00, 0, dv, 0, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + p8 * 12f, d45, d45, dv, dv, 0xffa4e5f7);
+
+                drawParticle(guiGraphics, delta + p8 * 5f, 0, d00, 0, dv, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + p8 * 3f, -d45, d45, -dv, dv, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + p8 * 10f, -d00, 0, -dv, 0, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + p8 * 14f, -d45, -d45, -dv, -dv, 0xffa4e5f7);
+
+
+                pose.translate(-9.0f, -9.0f, 0.0f);
             }
 
             Palette.setShaderAlpha(alpha);
         }
 
         pose.popPose();
+    }
+
+    private void drawParticle(GuiGraphics guiGraphics, float delta, float x0, float y0, float dx, float dy, int color) {
+        float sin = Mth.sin(delta);
+        if (sin > 0) {
+            float dp = Mth.abs(Mth.sin(delta / 2.0f));
+            RenderUtils.drawLightSpot(guiGraphics, x0 + dx * dp, y0 + dy * dp, 6, sin, color);
+        }
     }
 }

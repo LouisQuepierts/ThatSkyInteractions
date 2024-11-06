@@ -30,6 +30,9 @@ public class Shaders {
     private static ShaderInstance glowingRing;
 
     @Nullable
+    private static ShaderInstance lightSpot;
+
+    @Nullable
     private static ShaderInstance crossLightSpot;
 
     @Nullable
@@ -57,6 +60,10 @@ public class Shaders {
 
     public static ShaderInstance getGlowingRingShader() {
         return Objects.requireNonNull(glowingRing, "Attempted to call getGlowingRingShader before shaders have finished loading.");
+    }
+
+    public static ShaderInstance getLightSpotShader() {
+        return Objects.requireNonNull(lightSpot, "Attempted to call getLightSpotShader before shaders have finished loading.");
     }
 
     public static ShaderInstance getCrossLightSpotShader() {
@@ -115,6 +122,16 @@ public class Shaders {
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
                 (shader) -> glowingRing = shader
+        );
+
+        event.registerShader(
+
+                new ShaderInstance(
+                        provider,
+                        ThatSkyInteractions.getLocation("light_spot"),
+                        DefaultVertexFormat.POSITION_TEX_COLOR
+                ),
+                (shader) -> lightSpot = shader
         );
 
         event.registerShader(
