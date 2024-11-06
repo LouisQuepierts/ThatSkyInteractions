@@ -32,6 +32,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @OnlyIn(Dist.CLIENT)
 public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
@@ -70,8 +71,8 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         update(deltaTicks);
 
         //Arrays.fill(grid, null);
-        for (Iterator<World2ScreenWidget> iterator = objects.values().iterator(); iterator.hasNext(); ) {
-            World2ScreenWidget object = iterator.next();
+        for (Map.Entry<UUID, World2ScreenWidget> entry : objects.entrySet()) {
+            World2ScreenWidget object = entry.getValue();
             if (!object.isComputed())
                 continue;
 
@@ -84,7 +85,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
                 if (object == locked) {
                     locked = null;
                 }
-                iterator.remove();
+                this.toRemove.add(entry.getKey());
                 continue;
             }
             float d0 = object.x;
@@ -116,6 +117,13 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         if (!this.toRemove.isEmpty()) {
             this.toRemove.forEach(this.objects::remove);
             this.toRemove.clear();
+        }
+
+        if (this.objects.isEmpty()) {
+            this.highlight = null;
+            this.locked = null;
+            this.inRange.clear();
+            return;
         }
 
         final GameRenderer gameRenderer = this.minecraft.gameRenderer;

@@ -99,7 +99,10 @@ public class FriendAstrolabeButton extends AstrolabeButton {
 
             if (data.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
                 Palette.mulShaderAlpha(this.alpha.getValue());
-                RenderUtils.blit(guiGraphics, RECEIVED_OVERLAY, 0, 0, 24, 24);
+                float intensity = Mth.sin((rand + ScreenAnimator.GLOBAL.time()) * 12) * 0.05f + this.alpha.getValue() * 0.2f;
+                RenderUtils.drawCrossLightSpot(guiGraphics, 2, 2, 6, 0.7f + intensity, 1.2f, 0xffa4e5f7);
+                RenderUtils.drawCrossLightSpot(guiGraphics, 6, 16, 8, 0.65f + intensity, 1.2f, 0xffa4e5f7);
+                RenderUtils.drawCrossLightSpot(guiGraphics, 16, 4, 9, 0.55f + intensity, 1.2f, 0xffa4e5f7);
             }
 
             Palette.setShaderAlpha(alpha);

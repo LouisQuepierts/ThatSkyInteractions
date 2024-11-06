@@ -118,7 +118,7 @@ public abstract class AstrolabeOperationPacket extends BiPacket {
             }
 
             FriendAstrolabeInstance.NodeData nodeData = data.getNodeData(this.target);
-            if (nodeData != null && !nodeData.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
+            if (nodeData != null && nodeData.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
                 manager.gainLight(sender, this.target);
                 serverPlayer.addItem(new ItemStack(Items.CANDLE));
             }
@@ -126,7 +126,6 @@ public abstract class AstrolabeOperationPacket extends BiPacket {
 
         @Override
         protected void sync() {
-
         }
     }
 }

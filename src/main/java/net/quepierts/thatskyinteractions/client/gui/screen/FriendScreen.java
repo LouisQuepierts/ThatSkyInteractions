@@ -33,7 +33,6 @@ public class FriendScreen extends RightPoopScreen {
         this.friendData = friendData;
         this.client = ThatSkyInteractions.getInstance().getClient();
         this.fakePlayerDisplayHandler = client.getFakePlayerDisplayHandler();
-        this.fakePlayerDisplayHandler.setPlayerSkin(friendData.getUuid());
 
         this.cameraHandler = client.getCameraHandler();
 
@@ -83,7 +82,7 @@ public class FriendScreen extends RightPoopScreen {
 
         Vec3 forward = new Vec3(-sin * 2, 0, cos * 2).add(camera.position());
         float rot = camera.getYHeadRot() - 180;
-        this.fakePlayerDisplayHandler.show(forward, rot);
+        this.fakePlayerDisplayHandler.show(forward, rot, friendData);
         this.shown = true;
     }
 

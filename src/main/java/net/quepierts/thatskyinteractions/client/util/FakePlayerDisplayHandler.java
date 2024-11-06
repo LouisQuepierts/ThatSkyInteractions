@@ -18,6 +18,7 @@ import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerIgni
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerLightW2SWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
+import net.quepierts.thatskyinteractions.common.data.FriendData;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 
@@ -53,7 +54,7 @@ public class FakePlayerDisplayHandler {
         this.ignite = null;
     }
 
-    public void show(Vec3 pos, float yRot) {
+    public void show(Vec3 pos, float yRot, FriendData friendData) {
         this.player = new FakeClientPlayer(Minecraft.getInstance().level, this);
         this.light = new FakePlayerLightW2SWidget(this.player, this.enterHolder);
         this.ignite = new FakePlayerIgniteW2SButton(this.player, this.enterHolder);
@@ -64,8 +65,8 @@ public class FakePlayerDisplayHandler {
         this.enterAnimation.reset(0, 1);
         World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), light);
 
-        UUID uuid = this.player.getDisplayUUID();
-        FriendAstrolabeInstance.NodeData data = client.getCache().getUserData().getNodeData(uuid);
+        this.player.setPlayerSkin(friendData.getUuid());
+        FriendAstrolabeInstance.NodeData data = client.getCache().getUserData().getNodeData(friendData.getUuid());
         this.canIgnite = (data != null && !data.hasFlag(FriendAstrolabeInstance.Flag.SENT));
 
         ScreenAnimator.GLOBAL.play(this.enterAnimation);
@@ -114,12 +115,6 @@ public class FakePlayerDisplayHandler {
                 this.player.remove(Entity.RemovalReason.DISCARDED);
                 this.canRepos = false;
             }
-        }
-    }
-
-    public void setPlayerSkin(UUID uuid) {
-        if (this.player != null) {
-            this.player.setPlayerSkin(uuid);
         }
     }
 
