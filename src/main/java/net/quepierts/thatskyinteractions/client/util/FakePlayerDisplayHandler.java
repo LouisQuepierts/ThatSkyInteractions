@@ -22,8 +22,6 @@ import net.quepierts.thatskyinteractions.common.data.FriendData;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 
-import java.util.UUID;
-
 @SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class FakePlayerDisplayHandler {
@@ -55,7 +53,7 @@ public class FakePlayerDisplayHandler {
     }
 
     public void show(Vec3 pos, float yRot, FriendData friendData) {
-        this.player = new FakeClientPlayer(Minecraft.getInstance().level, this);
+        this.player = new FakeClientPlayer(Minecraft.getInstance().level, this, friendData);
         this.light = new FakePlayerLightW2SWidget(this.player, this.enterHolder);
         this.ignite = new FakePlayerIgniteW2SButton(this.player, this.enterHolder);
         this.player.setPos(pos);
@@ -65,7 +63,6 @@ public class FakePlayerDisplayHandler {
         this.enterAnimation.reset(0, 1);
         World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), light);
 
-        this.player.setPlayerSkin(friendData.getUuid());
         FriendAstrolabeInstance.NodeData data = client.getCache().getUserData().getNodeData(friendData.getUuid());
         this.canIgnite = (data != null && !data.hasFlag(FriendAstrolabeInstance.Flag.SENT));
 
@@ -113,6 +110,7 @@ public class FakePlayerDisplayHandler {
         if (!this.enterAnimation.isRunning()) {
             if (this.canRepos && this.player != null) {
                 this.player.remove(Entity.RemovalReason.DISCARDED);
+                this.player = null;
                 this.canRepos = false;
             }
         }

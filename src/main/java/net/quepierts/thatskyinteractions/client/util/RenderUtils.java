@@ -111,8 +111,8 @@ public class RenderUtils {
         float y2 = y + size;
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(Shaders::getCrossLightSpotShader);
-        ShaderInstance shader = Shaders.getCrossLightSpotShader();
+        RenderSystem.setShader(Shaders::getLightSpotShader);
+        ShaderInstance shader = Shaders.getLightSpotShader();
         Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
 
         Matrix4f matrix4f = guiGraphics.pose().last().pose();

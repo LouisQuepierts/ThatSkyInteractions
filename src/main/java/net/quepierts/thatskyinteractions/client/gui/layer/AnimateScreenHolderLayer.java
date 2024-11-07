@@ -49,6 +49,7 @@ public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
                         / (double)minecraft.getWindow().getScreenHeight()
         );
 
+//        guiGraphics.fill(0, 0, minecraft.getWindow().getScreenWidth(), minecraft.getWindow().getScreenHeight(), 0xFF96DCF8);
         ObjectIterator<AnimatableScreen> iterator = screens.iterator();
         float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
         while (iterator.hasNext()) {

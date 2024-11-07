@@ -53,6 +53,11 @@ public class TSICommand {
             ServerPlayer sender = source.getPlayer();
             ServerPlayer player = EntityArgument.getPlayer(context, "player");
 
+            if (sender.getUUID().equals(player.getUUID())) {
+                source.sendFailure(Component.literal("you cannot unlock with yourself"));
+                return 0;
+            }
+
             final RelationshipSavedData data = RelationshipSavedData.getRelationTree(source.getLevel());
             PlayerPair pair = new PlayerPair(sender.getUUID(), player.getUUID());
             InteractTreeInstance instance = data.getRelationTree(pair);

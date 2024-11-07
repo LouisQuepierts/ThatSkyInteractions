@@ -3,14 +3,14 @@ package net.quepierts.thatskyinteractions.client.util;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.client.resources.SkinManager;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.quepierts.thatskyinteractions.common.data.FriendData;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -18,32 +18,22 @@ import java.util.UUID;
 public class FakeClientPlayer extends AbstractClientPlayer {
     public static final String PLACEHOLDER_NAME = "";
     public static final UUID PLACEHOLDER_UUID = new UUID(42, -42);
+
     private final FakePlayerDisplayHandler handler;
-    private PlayerInfo displayPlayerInfo;
-    private UUID displayUUID;
-    private boolean changed = false;
-    public FakeClientPlayer(ClientLevel clientLevel, FakePlayerDisplayHandler handler) {
+    private final ResolvableProfile profile;
+    public FakeClientPlayer(ClientLevel clientLevel, FakePlayerDisplayHandler handler, FriendData friendData) {
         super(clientLevel, new GameProfile(PLACEHOLDER_UUID, PLACEHOLDER_NAME));
         this.handler = handler;
-        this.displayPlayerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(PLACEHOLDER_UUID);
+        this.profile = friendData.getProfile();
         clientLevel.addEntity(this);
-        this.setPos(0, 0, 0);
+
+        this.getEntityData().set(DATA_PLAYER_MODE_CUSTOMISATION, (byte) 0b11111111);
         this.noCulling = true;
-        this.displayUUID = PLACEHOLDER_UUID;
     }
 
     @Override
     public boolean shouldRender(double x, double y, double z) {
         return this.handler.isVisible();
-    }
-
-    public void setPlayerSkin(@NotNull UUID uuid) {
-        if (uuid.equals(this.displayUUID))
-            return;
-
-        this.changed = true;
-        this.displayUUID = uuid;
-        this.getDisplayPlayerInfo();
     }
 
     @Override
@@ -66,21 +56,14 @@ public class FakeClientPlayer extends AbstractClientPlayer {
 
     }
 
+    public UUID getDisplayUUID() {
+        return this.profile.gameProfile().getId();
+    }
+
+    @NotNull
     @Override
     public PlayerSkin getSkin() {
-        PlayerInfo playerinfo = this.getDisplayPlayerInfo();
-        return playerinfo == null ? DefaultPlayerSkin.get(this.getUUID()) : playerinfo.getSkin();
-    }
-
-    public UUID getDisplayUUID() {
-        return displayUUID;
-    }
-
-    @Nullable
-    protected PlayerInfo getDisplayPlayerInfo() {
-        if (changed || this.displayPlayerInfo == null) {
-            this.displayPlayerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(this.displayUUID);
-        }
-        return this.displayPlayerInfo;
+        SkinManager skinManager = Minecraft.getInstance().getSkinManager();
+        return skinManager.getInsecureSkin(this.profile.gameProfile());
     }
 }

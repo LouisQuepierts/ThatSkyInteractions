@@ -19,7 +19,7 @@ import org.joml.Vector2f;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class AstrolabeButton extends AbstractButton implements CulledRenderable {
-    private final ScreenAnimator animator;
+    protected final ScreenAnimator animator;
     protected final LerpNumberAnimation clickAnimation;
     protected final FloatHolder alpha;
     private final FloatHolder click = new FloatHolder(0.0f);

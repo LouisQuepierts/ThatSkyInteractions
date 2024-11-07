@@ -115,9 +115,8 @@ public class FriendAstrolabeInstance {
         if (this.isFulled())
             return null;
 
-        String name = player.getName().getString();
         NodeData add = new NodeData(
-                new FriendData(player.getUUID(), name, name),
+                new FriendData(player),
                 (byte) 0
         );
         this.put(add);

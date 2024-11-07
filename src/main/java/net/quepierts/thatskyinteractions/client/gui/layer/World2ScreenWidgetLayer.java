@@ -31,8 +31,10 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 public class World2ScreenWidgetLayer implements LayeredDraw.Layer {

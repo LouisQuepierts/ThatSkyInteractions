@@ -4,13 +4,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
+import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
@@ -20,9 +21,19 @@ import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeIn
 
 @OnlyIn(Dist.CLIENT)
 public class FriendAstrolabeButton extends AstrolabeButton {
-    private static final ResourceLocation RECEIVED_OVERLAY = ThatSkyInteractions.getLocation("textures/gui/astrolabe_received.png");
+    private static final float D00 = 6f;
+    private static final float D45 = 6f * Mth.sin(Mth.HALF_PI / 2);
+    private static final float DV = 4f;
+    private static final float DV1 = 6f;
+    private static final float PI8 = Mth.HALF_PI * 1.6f;
+
     private final FriendAstrolabeWidget parent;
     private final float rand;
+    private final float[] amplifier = new float[8];
+
+    private final LerpNumberAnimation claimAnimation;
+    private final FloatHolder claim;
+
     private FriendAstrolabeInstance.NodeData data;
     public FriendAstrolabeButton(
             int x, int y,
@@ -36,6 +47,15 @@ public class FriendAstrolabeButton extends AstrolabeButton {
         this.parent = parent;
         this.data = data;
         this.rand = ThatSkyInteractions.RANDOM.nextFloat();
+
+        this.claim = new FloatHolder(0.0f);
+        this.claimAnimation = new LerpNumberAnimation(this.claim, AnimateUtils.Lerp::linear, 0, Mth.PI, 1);
+
+        if (data != null) {
+            for (int i = 0; i < this.amplifier.length; i++) {
+                this.amplifier[i] = 1 + ThatSkyInteractions.RANDOM.nextFloat();
+            }
+        }
     }
 
     public void setData(FriendAstrolabeInstance.NodeData data) {
@@ -52,6 +72,7 @@ public class FriendAstrolabeButton extends AstrolabeButton {
                     this.data.getFriendData()
             ));
         } else {
+            this.animator.play(this.claimAnimation);
             ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
             cache.gainLight(this.data.getFriendData().getUuid(), true);
         }
@@ -100,22 +121,32 @@ public class FriendAstrolabeButton extends AstrolabeButton {
             if (data.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
                 pose.translate(9.0f, 9.0f, 0.0f);
                 Palette.mulShaderAlpha(this.alpha.getValue());
-                float delta = rand + ScreenAnimator.GLOBAL.time();
-                final float p8 = Mth.PI / 8f;
-                final float d00 = 6f;
-                final float d45 = 6f * Mth.sin(p8 * 2);
-                final float dv = 5f;
+                float delta = rand * Mth.HALF_PI + ScreenAnimator.GLOBAL.time();
 
-                drawParticle(guiGraphics, delta + p8, 0, -d00, 0, -dv, 0xffa4e5f7);
-                drawParticle(guiGraphics, delta + p8 * 15f, d45, -d45, dv, -dv, 0xffa4e5f7);
-                drawParticle(guiGraphics, delta + p8 * 8f, d00, 0, dv, 0, 0xffa4e5f7);
-                drawParticle(guiGraphics, delta + p8 * 12f, d45, d45, dv, dv, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + this.amplifier[0] * PI8, 0, -D00, 0, -DV, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + this.amplifier[1] * PI8, D45, -D45, DV, -DV, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + this.amplifier[2] * PI8, D00, 0, DV, 0, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + this.amplifier[3] * PI8, D45, D45, DV, DV, 0xffa4e5f7);
 
-                drawParticle(guiGraphics, delta + p8 * 5f, 0, d00, 0, dv, 0xffa4e5f7);
-                drawParticle(guiGraphics, delta + p8 * 3f, -d45, d45, -dv, dv, 0xffa4e5f7);
-                drawParticle(guiGraphics, delta + p8 * 10f, -d00, 0, -dv, 0, 0xffa4e5f7);
-                drawParticle(guiGraphics, delta + p8 * 14f, -d45, -d45, -dv, -dv, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + this.amplifier[4] * PI8, 0, D00, 0, DV, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + this.amplifier[5] * PI8, -D45, D45, -DV, DV, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + this.amplifier[6] * PI8, -D00, 0, -DV, 0, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta + this.amplifier[7] * PI8, -D45, -D45, -DV, -DV, 0xffa4e5f7);
 
+                pose.translate(-9.0f, -9.0f, 0.0f);
+            } else if (claimAnimation.isRunning()) {
+
+                float delta = this.claim.getValue();
+                pose.translate(9.0f, 9.0f, 0.0f);
+                drawParticle(guiGraphics, delta * this.amplifier[0], 0, -D00, 0, -DV1 * 2f, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta * this.amplifier[1], D45, -D45, DV1, -DV1, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta * this.amplifier[2], D00, 0, DV1 * 2f, 0, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta * this.amplifier[3], D45, D45, DV1, DV1, 0xffa4e5f7);
+
+                drawParticle(guiGraphics, delta * this.amplifier[4], 0, D00, 0, DV1 * 2f, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta * this.amplifier[5], -D45, D45, -DV1, DV1, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta * this.amplifier[6], -D00, 0, -DV1 * 2f, 0, 0xffa4e5f7);
+                drawParticle(guiGraphics, delta * this.amplifier[7], -D45, -D45, -DV1, -DV1, 0xffa4e5f7);
 
                 pose.translate(-9.0f, -9.0f, 0.0f);
             }

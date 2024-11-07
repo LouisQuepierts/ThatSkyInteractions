@@ -1,13 +1,17 @@
 package net.quepierts.thatskyinteractions.common.data;
 
+import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.common.network.packet.UserDataModifyPacket;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class FriendData {
@@ -15,14 +19,28 @@ public class FriendData {
     @NotNull private final String username;
     @NotNull private String nickname;
 
+    @NotNull private ResolvableProfile profile;
+
+    public FriendData(@NotNull Player player) {
+        this(player.getUUID(), player.getName().getString(), player.getName().getString());
+    }
+
     public FriendData(@NotNull UUID uuid, @NotNull String username, @NotNull String nickname) {
         this.uuid = uuid;
         this.username = username;
         this.nickname = nickname;
+
+        this.profile = new ResolvableProfile(Optional.of(username), Optional.empty(), new PropertyMap());
+        this.profile.resolve()
+                .thenAcceptAsync(profile -> this.profile = profile);
     }
 
     public @NotNull UUID getUuid() {
         return uuid;
+    }
+
+    public @NotNull ResolvableProfile getProfile() {
+        return profile;
     }
 
     public void setNickname(@NotNull String nickname) {
