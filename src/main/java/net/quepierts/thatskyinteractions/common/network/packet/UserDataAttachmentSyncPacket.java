@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.quepierts.simpleanimator.core.network.ISync;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import org.jetbrains.annotations.NotNull;
 
 public class UserDataAttachmentSyncPacket implements ISync {
     public static final Type<UserDataAttachmentSyncPacket> TYPE = NetworkPackets.createType(UserDataAttachmentSyncPacket.class);
@@ -37,6 +38,7 @@ public class UserDataAttachmentSyncPacket implements ISync {
     }
 
     @Override
+    @NotNull
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }

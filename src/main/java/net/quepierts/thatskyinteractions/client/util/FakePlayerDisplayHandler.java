@@ -22,12 +22,10 @@ import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLaye
 import net.quepierts.thatskyinteractions.common.data.FriendData;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
 import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
-import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 
 @SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class FakePlayerDisplayHandler {
-    private final ClientProxy client;
     private final FloatHolder enterHolder = new FloatHolder(0.0f);
     private final LerpNumberAnimation enterAnimation = new LerpNumberAnimation(this.enterHolder, AnimateUtils.Lerp::smooth, 0, 1, 1.0f);
     private final WaitAnimation addButtonLater = new WaitAnimation(0.8f, this::addButton);
@@ -38,8 +36,7 @@ public class FakePlayerDisplayHandler {
     private boolean canRepos = false;
     private boolean canIgnite = false;
 
-    public FakePlayerDisplayHandler(ClientProxy clientProxy) {
-        this.client = clientProxy;
+    public FakePlayerDisplayHandler() {
     }
 
     public void init(ClientLevel level) {

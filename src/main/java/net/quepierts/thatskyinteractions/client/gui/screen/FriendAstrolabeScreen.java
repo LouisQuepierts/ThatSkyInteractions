@@ -29,6 +29,8 @@ import net.quepierts.thatskyinteractions.common.data.manager.AstrolabeManager;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Objects;
+
 @OnlyIn(Dist.CLIENT)
 public class FriendAstrolabeScreen extends AnimatedScreen {
     private static final int MAX_ASTROLABE_AMOUNT = 16;
@@ -50,7 +52,7 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
     protected void init() {
         AstrolabeManager astrolabeManager = AstrolabeManager.INSTANCE;
 
-        LocalPlayer player = Minecraft.getInstance().player;
+        LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
 
         AstrolabeComponent component = UserDataAttachment.getAttachment(player).getAstrolabe();
         AstrolabeMap astrolabes = component.getAstrolabes();
@@ -194,11 +196,6 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
 
         RenderSystem.disableDepthTest();
         RenderSystem.enableCull();
-    }
-
-    @Override
-    public boolean isPauseScreen() {
-        return false;
     }
 
     @Override

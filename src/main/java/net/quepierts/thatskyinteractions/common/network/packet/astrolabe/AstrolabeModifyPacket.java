@@ -32,20 +32,15 @@ public abstract class AstrolabeModifyPacket implements IUpdate {
     public static AstrolabeModifyPacket decode(FriendlyByteBuf byteBuf) {
         byte code = byteBuf.readByte();
 
-        switch (code) {
-            case LIKE:
-                return new Like(byteBuf);
-            case UNLIKE:
-                return new Unlike(byteBuf);
-            case MOVE:
-                return new Move(byteBuf);
-            case CREATE:
-                return new Create(byteBuf);
-            case NICKNAME:
-                return new Nickname(byteBuf);
-        }
+        return switch (code) {
+            case LIKE -> new Like(byteBuf);
+            case UNLIKE -> new Unlike(byteBuf);
+            case MOVE -> new Move(byteBuf);
+            case CREATE -> new Create(byteBuf);
+            case NICKNAME -> new Nickname(byteBuf);
+            default -> throw new IllegalArgumentException("Packet Code: " + code);
+        };
 
-        throw new IllegalArgumentException("Packet Code: " + code);
     }
 
     @Override

@@ -117,8 +117,4 @@ public abstract class AnimatedScreen extends Screen implements AnimatableScreen 
         return false;
     }
 
-    @Override
-    public boolean isHiding() {
-        return this.hide.isRunning();
-    }
 }

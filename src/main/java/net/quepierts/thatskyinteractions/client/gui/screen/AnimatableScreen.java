@@ -15,5 +15,4 @@ public interface AnimatableScreen {
 
     default void irender(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {}
 
-    boolean isHiding();
 }

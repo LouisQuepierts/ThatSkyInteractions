@@ -40,6 +40,7 @@ public abstract class AstrolabeSyncPacket implements ISync {
     }
 
     @Override
+    @NotNull
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }

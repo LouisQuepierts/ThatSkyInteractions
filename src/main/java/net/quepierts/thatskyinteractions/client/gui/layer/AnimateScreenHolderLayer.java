@@ -13,6 +13,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
@@ -24,7 +25,7 @@ public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
     AnimateScreenHolderLayer() {}
 
     @Override
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public void render(@NotNull GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         //guiGraphics.drawString(Minecraft.getInstance().font, "thatskyinteraction-dev-1.1.0 Teacon 2024", 1, 1, 0xffffffff);
         if (!open.isEmpty()) {
             for (AnimatableScreen screen : open) {

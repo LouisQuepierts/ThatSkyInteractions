@@ -18,7 +18,7 @@ public class AttachmentSystem {
     @SubscribeEvent
     public static void onPlayerJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Player player) {
-            UserDataAttachment attachment = UserDataAttachment.getAttachment(player);
+            UserDataAttachment.getAttachment(player);
         }
     }
 

@@ -117,5 +117,5 @@ public class UniqueBlockEntitySavedData extends SavedData {
                     new BlockPos(array[0], array[1], array[2])
             );
         }
-    };
+    }
 }

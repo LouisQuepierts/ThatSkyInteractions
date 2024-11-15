@@ -212,7 +212,7 @@ public class AstrolabeComponent implements IComponent<AstrolabeComponent> {
         this.astrolabes.clear();
         this.astrolabes.putAll(component.astrolabes);
 
-        this.cache.clear();;
+        this.cache.clear();
         for (Map.Entry<ResourceLocation, FriendAstrolabeInstance> entry : this.astrolabes.entrySet()) {
             for (FriendAstrolabeInstance.NodeData node : entry.getValue().getNodes()) {
                 if (node == null)

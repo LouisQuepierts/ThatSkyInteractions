@@ -1,6 +1,9 @@
 package net.quepierts.thatskyinteractions.common.data.astrolabe;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -53,8 +56,6 @@ public class Astrolabe {
         JsonObject object = JsonParser.parseReader(reader).getAsJsonObject();
         return serialize(object);
     }
-
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static Astrolabe serialize(JsonObject object) {
         JsonArray nodeArray = object.getAsJsonArray("nodes");

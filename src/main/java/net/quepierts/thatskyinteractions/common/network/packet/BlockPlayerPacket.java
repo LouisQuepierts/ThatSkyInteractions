@@ -7,6 +7,7 @@ import net.quepierts.simpleanimator.core.network.IUpdate;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
 import net.quepierts.thatskyinteractions.common.data.attachment.component.RelationshipComponent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -44,6 +45,7 @@ public class BlockPlayerPacket implements IUpdate {
     }
 
     @Override
+    @NotNull
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }

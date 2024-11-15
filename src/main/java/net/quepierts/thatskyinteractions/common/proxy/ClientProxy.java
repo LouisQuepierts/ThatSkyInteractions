@@ -107,7 +107,7 @@ public class ClientProxy extends CommonProxy {
 
         this.options = new Options();
         this.unlockRelationshipHandler = new UnlockRelationshipHandler();
-        this.fakePlayerDisplayHandler = new FakePlayerDisplayHandler(this);
+        this.fakePlayerDisplayHandler = new FakePlayerDisplayHandler();
         this.cameraHandler = new CameraHandler();
         this.particleDistributorManager = new EffectDistributorManager();
         this.vertexBufferManager = new VertexBufferManager();
