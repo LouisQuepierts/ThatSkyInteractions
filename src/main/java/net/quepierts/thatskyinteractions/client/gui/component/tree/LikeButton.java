@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.client.gui.component.tree;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -8,8 +9,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
+import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.AstrolabeComponent;
 import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
 import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +25,15 @@ public class LikeButton extends TreeNodeButton {
     private boolean on = false;
     public LikeButton(String id, int x, int y, ScreenAnimator animator, NodeState state) {
         super(id, x, 0, Component.literal("like"), y, ICON_LIKE_OFF, animator, state);
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null) {
+            return;
+        }
+
+        AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(player).getAstrolabe();
         ClientProxy client = ThatSkyInteractions.getInstance().getClient();
-        this.on = client.getCache().isLikedFriend(client.getTarget());
+        this.on = astrolabe.isLiked(client.getTarget());
     }
 
     @Override
@@ -38,11 +48,10 @@ public class LikeButton extends TreeNodeButton {
 
         this.on = !this.on;
         ClientProxy client = ThatSkyInteractions.getInstance().getClient();
-        ClientTSIDataCache cache = client.getCache();
         if (this.on) {
-            cache.likeFriend(client.getTarget(), true);
+            ClientHelper.likeFriend(client.getTarget());
         } else {
-            cache.unlikeFriend(client.getTarget(), true);
+            ClientHelper.unlikeFriend(client.getTarget());
         }
     }
 

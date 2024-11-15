@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.common.network.packet.block;
+package net.quepierts.thatskyinteractions.common.network.packet.blockentity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -8,10 +8,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.quepierts.simpleanimator.core.network.IUpdate;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.common.block.entity.IPickable;
-import net.quepierts.thatskyinteractions.common.data.TSIUserData;
-import net.quepierts.thatskyinteractions.common.data.TSIUserDataStorage;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.PickupComponent;
+import net.quepierts.thatskyinteractions.common.registry.TriggerTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -41,23 +41,27 @@ public class PickablePickupPacket implements IUpdate {
             return;
         }
 
-        TSIUserDataStorage userDataManager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
-        TSIUserData userData = userDataManager.getUserData(serverPlayer.getUUID());
-
         Level level = serverPlayer.level();
         BlockEntity entity = level.getBlockEntity(blockPos);
 
         if (entity instanceof IPickable iPickable) {
+            UserDataAttachment attachment = UserDataAttachment.getAttachment(serverPlayer);
+            PickupComponent pickupComponent = attachment.getPickup();
+
             if (!iPickable.getUUID().equals(this.uuid)) {
                 return;
             }
 
-            if (userData.isPickedUp(iPickable)) {
+            if (pickupComponent.isPickedUp(iPickable)) {
                 return;
             }
 
-            userData.pickUp(iPickable);
+            pickupComponent.pickUp(iPickable);
             iPickable.onPickup(serverPlayer);
+
+            if (!iPickable.isDailyRefresh()) {
+                TriggerTypes.PICKUP_PERMANENT.get().trigger(serverPlayer);
+            }
         }
     }
 

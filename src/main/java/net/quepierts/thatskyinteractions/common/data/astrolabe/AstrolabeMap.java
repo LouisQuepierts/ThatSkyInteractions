@@ -2,13 +2,19 @@ package net.quepierts.thatskyinteractions.common.data.astrolabe;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.common.data.Codecs;
+import net.quepierts.thatskyinteractions.common.data.manager.AstrolabeManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,8 +24,22 @@ import java.util.Set;
 import java.util.UUID;
 
 public class AstrolabeMap extends Object2ObjectOpenHashMap<ResourceLocation, FriendAstrolabeInstance> {
+    public static final Codec<AstrolabeMap> CODEC = Codecs.map(ResourceLocation.CODEC, FriendAstrolabeInstance.CODEC, AstrolabeMap::new);
+
+    public static final StreamCodec<ByteBuf, AstrolabeMap> STREAM_CODEC = ByteBufCodecs.map(AstrolabeMap::new, ResourceLocation.STREAM_CODEC, FriendAstrolabeInstance.STREAM_CODED);
+
     public AstrolabeMap() {
         super(5);
+        AstrolabeManager manager = AstrolabeManager.INSTANCE;
+
+        if (manager.getBestFriendAstrolabes().isEmpty()) {
+            return;
+        }
+
+        ResourceLocation first = manager.getBestFriendAstrolabes().getFirst();
+        ResourceLocation generated = manager.getGeneratedLocation(0);
+        this.put(first, new FriendAstrolabeInstance(first));
+        this.put(generated, new FriendAstrolabeInstance(generated));
     }
 
     protected AstrolabeMap(int size) {
@@ -116,7 +136,7 @@ public class AstrolabeMap extends Object2ObjectOpenHashMap<ResourceLocation, Fri
     }
 
     public ResourceLocation getOrCreateBestFriendAstrolabe() {
-        ObjectList<ResourceLocation> bestFriendAstrolabes = ThatSkyInteractions.getInstance().getProxy().getAstrolabeManager().getBestFriendAstrolabes();
+        ObjectList<ResourceLocation> bestFriendAstrolabes = AstrolabeManager.INSTANCE.getBestFriendAstrolabes();
         return this.innerGet(bestFriendAstrolabes);
     }
 

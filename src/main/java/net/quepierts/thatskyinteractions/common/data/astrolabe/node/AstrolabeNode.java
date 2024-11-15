@@ -2,16 +2,46 @@ package net.quepierts.thatskyinteractions.common.data.astrolabe.node;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ByIdMap;
+import net.minecraft.util.StringRepresentable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 public class AstrolabeNode {
+    public static final Codec<AstrolabeNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("type").forGetter(AstrolabeNode::type),
+            Codec.INT.fieldOf("x").forGetter(AstrolabeNode::getX),
+            Codec.INT.fieldOf("y").forGetter(AstrolabeNode::getY),
+            DescriptionPosition.CODEC.optionalFieldOf("position").forGetter(node -> Optional.of(node.namePosition))
+    ).apply(instance, (type, x, y, position) -> construct(type, x, y, position.orElse(DescriptionPosition.DOWN))));
+
+    public static final StreamCodec<ByteBuf, AstrolabeNode> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8,
+            AstrolabeNode::type,
+            ByteBufCodecs.VAR_INT,
+            AstrolabeNode::getX,
+            ByteBufCodecs.VAR_INT,
+            AstrolabeNode::getY,
+            DescriptionPosition.STREAM_CODEC,
+            AstrolabeNode::getNamePosition,
+            AstrolabeNode::construct
+    );
+
     private static final Factory DEFAULT_FACTORY = new Factory(AstrolabeNode::new, AstrolabeNode::new);
     private static final Object2ObjectMap<String, Factory> FACTORIES = new Object2ObjectOpenHashMap<>();
+    private static final Object2ObjectMap<String, Constructor> CONSTRUCTORS = new Object2ObjectOpenHashMap<>();
     public final int x;
     public final int y;
     public final DescriptionPosition namePosition;
@@ -22,18 +52,29 @@ public class AstrolabeNode {
         this.namePosition = descriptionPosition;
     }
 
+    private static AstrolabeNode construct(String type, int x, int y, DescriptionPosition position) {
+        return CONSTRUCTORS.getOrDefault(type, AstrolabeNode::new).construct(x, y, position);
+    }
+
     public static AstrolabeNode serialize(JsonObject obj) {
         String type = obj.get("type").getAsString();
         return FACTORIES.getOrDefault(type, DEFAULT_FACTORY).fromJson.apply(obj);
     }
 
-    public static AstrolabeNode fromNetwork(FriendlyByteBuf byteBuf) {
-        String type = byteBuf.readUtf();
-        return FACTORIES.getOrDefault(type, DEFAULT_FACTORY).fromNetwork.apply(byteBuf);
+    protected String type() {
+        return "";
     }
 
-    protected String typ() {
-        return "";
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public DescriptionPosition getNamePosition() {
+        return namePosition;
     }
 
     public AstrolabeNode(JsonObject jsonObject) {
@@ -53,13 +94,6 @@ public class AstrolabeNode {
         this.namePosition = byteBuf.readEnum(DescriptionPosition.class);
     }
 
-    public static void toNetwork(FriendlyByteBuf byteBuf, AstrolabeNode node) {
-        byteBuf.writeUtf(node.typ());
-        byteBuf.writeVarInt(node.x);
-        byteBuf.writeVarInt(node.y);
-        byteBuf.writeEnum(node.namePosition);
-    }
-
     protected record Factory(
             Function<JsonObject, AstrolabeNode> fromJson,
             Function<FriendlyByteBuf, AstrolabeNode> fromNetwork
@@ -68,13 +102,29 @@ public class AstrolabeNode {
     public static void register() {
         FACTORIES.put("", DEFAULT_FACTORY);
         FACTORIES.put("friend", new Factory(FriendNode::new, FriendNode::new));
+
+        CONSTRUCTORS.put("", AstrolabeNode::new);
+        CONSTRUCTORS.put("friend", FriendNode::new);
     }
 
-    public enum DescriptionPosition {
+    @FunctionalInterface
+    public interface Constructor {
+        AstrolabeNode construct(int x, int y, DescriptionPosition position);
+    }
+
+    public enum DescriptionPosition implements StringRepresentable {
         UP,
         DOWN,
         LEFT,
         RIGHT;
+
+        public static final IntFunction<DescriptionPosition> BY_ID = ByIdMap.continuous(
+                DescriptionPosition::ordinal,
+                DescriptionPosition.values(),
+                ByIdMap.OutOfBoundsStrategy.ZERO
+        );
+        public static final Codec<DescriptionPosition> CODEC = StringRepresentable.fromEnum(DescriptionPosition::values);
+        public static final StreamCodec<ByteBuf, DescriptionPosition> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, DescriptionPosition::ordinal);
 
         public static DescriptionPosition fromString(String value) {
             return REF.getOrDefault(value.toLowerCase(Locale.ROOT), DOWN);
@@ -88,6 +138,12 @@ public class AstrolabeNode {
                 builder.put(value.name().toLowerCase(Locale.ROOT), value);
             }
             REF = builder.build();
+        }
+
+        @Override
+        @NotNull
+        public String getSerializedName() {
+            return name().toLowerCase();
         }
     }
 }

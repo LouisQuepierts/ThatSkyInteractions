@@ -4,9 +4,12 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+
+import java.util.List;
 
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGenerationHandler {
@@ -24,6 +27,11 @@ public class DataGenerationHandler {
         generator.addProvider(
                 event.includeClient(),
                 new LitCandleModelProvider(output, existingFileHelper)
+        );
+
+        generator.addProvider(
+                event.includeServer(),
+                new AdvancementProvider(output, event.getLookupProvider(), existingFileHelper, List.of(new TSIAdvancementGenerator()))
         );
     }
 }

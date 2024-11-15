@@ -4,22 +4,25 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.ClientHelper;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerRenderer.class)
 public class PlayerRendererMixin {
-    private static final ResourceLocation BLOCKED = ThatSkyInteractions.getLocation("textures/entity/blocked.png");
+    @Unique
+    private static final ResourceLocation thatSkyInteractions$BLOCKED = ThatSkyInteractions.getLocation("textures/entity/blocked.png");
     @Inject(
-            method = "getTextureLocation",
+            method = "getTextureLocation*",
             at = @At("HEAD"),
             cancellable = true
     )
     public void tsi$blockedSkin(AbstractClientPlayer player, CallbackInfoReturnable<ResourceLocation> ci) {
-        if (ThatSkyInteractions.getInstance().getClient().blocked(player.getUUID())) {
-            ci.setReturnValue(BLOCKED);
+        if (ClientHelper.blocked(player.getUUID())) {
+            ci.setReturnValue(thatSkyInteractions$BLOCKED);
             ci.cancel();
         }
     }

@@ -1,20 +1,42 @@
 package net.quepierts.thatskyinteractions.common.data;
 
 import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
-import net.quepierts.thatskyinteractions.common.network.packet.UserDataModifyPacket;
+import net.quepierts.thatskyinteractions.common.network.packet.astrolabe.AstrolabeModifyPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public class FriendData {
+    public static final Codec<FriendData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            UUIDUtil.CODEC.fieldOf("uuid").forGetter(FriendData::getUuid),
+            Codec.STRING.fieldOf("username").forGetter(FriendData::getUsername),
+            Codec.STRING.fieldOf("nickname").forGetter(FriendData::getNickname)
+    ).apply(instance, FriendData::new));
+
+    public static final StreamCodec<ByteBuf, FriendData> STREAM_CODEC = StreamCodec.composite(
+            UUIDUtil.STREAM_CODEC,
+            FriendData::getUuid,
+            ByteBufCodecs.STRING_UTF8,
+            FriendData::getUsername,
+            ByteBufCodecs.STRING_UTF8,
+            FriendData::getNickname,
+            FriendData::new
+    );
+
     @NotNull private final UUID uuid;
     @NotNull private final String username;
     @NotNull private String nickname;
@@ -50,7 +72,7 @@ public class FriendData {
     @OnlyIn(Dist.CLIENT)
     public void updateNickname(@NotNull String nickname) {
         this.nickname = nickname;
-        SimpleAnimator.getNetwork().update(new UserDataModifyPacket.Nickname(this.uuid, this.nickname));
+        SimpleAnimator.getNetwork().update(new AstrolabeModifyPacket.Nickname(this.uuid, this.nickname));
     }
 
     public @NotNull String getNickname() {

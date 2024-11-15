@@ -1,5 +1,7 @@
 package net.quepierts.thatskyinteractions.common.network.packet.astrolabe;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
@@ -11,19 +13,22 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.simpleanimator.core.network.BiPacket;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
-import net.quepierts.thatskyinteractions.common.data.TSIUserData;
-import net.quepierts.thatskyinteractions.common.data.TSIUserDataStorage;
+import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.AstrolabeComponent;
+import net.quepierts.thatskyinteractions.common.data.global.TSIGlobalData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 public abstract class AstrolabeOperationPacket extends BiPacket {
     public static final Type<AstrolabeOperationPacket> TYPE = NetworkPackets.createType(AstrolabeOperationPacket.class);
+    private static final UUID DUMMY = new UUID(42, 42);
+
     private static final byte IGNITE = 0;
     private static final byte GAIN = 1;
+    private static final byte REFRESH = 2;
     private final byte code;
     protected final UUID target;
 
@@ -36,6 +41,9 @@ public abstract class AstrolabeOperationPacket extends BiPacket {
             }
             case GAIN -> {
                 return new Gain(target);
+            }
+            case REFRESH -> {
+                return new Refresh();
             }
         }
         throw new IllegalArgumentException("Packet Code: " + code);
@@ -70,31 +78,28 @@ public abstract class AstrolabeOperationPacket extends BiPacket {
 
             UUID sender = serverPlayer.getUUID();
 
-            TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
-            TSIUserData data = manager.getUserData(sender);
-            if (!data.isFriend(this.target)) {
+            AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(serverPlayer).getAstrolabe();
+
+            if (!astrolabe.isFriend(this.target)) {
                 return;
             }
 
-            FriendAstrolabeInstance.NodeData nodeData = data.getNodeData(this.target);
+            FriendAstrolabeInstance.NodeData nodeData = astrolabe.getNodeData(this.target);
             if (nodeData != null && nodeData.hasFlag(FriendAstrolabeInstance.Flag.SENT)) {
                 return;
             }
 
-            manager.litLight(sender, target);
-
+            TSIGlobalData data = TSIGlobalData.getGlobalRelationData(server);
             ServerPlayer other = server.getPlayerList().getPlayer(this.target);
-            if (other == null) {
-                return;
+            if (data.lit(serverPlayer, target, server)) {
+                SimpleAnimator.getNetwork().sendToPlayer(new AstrolabeOperationPacket.Ignite(sender), other);
             }
-            SimpleAnimator.getNetwork().sendToPlayer(new AstrolabeOperationPacket.Ignite(sender), other);
         }
 
         @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
-            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
-            cache.awardLight(this.target);
+            ClientHelper.awardLight(this.target);
         }
     }
 
@@ -109,17 +114,15 @@ public abstract class AstrolabeOperationPacket extends BiPacket {
             if (server == null)
                 return;
 
-            UUID sender = serverPlayer.getUUID();
+            AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(serverPlayer).getAstrolabe();
 
-            TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
-            TSIUserData data = manager.getUserData(sender);
-            if (!data.isFriend(this.target)) {
+            if (!astrolabe.isFriend(this.target)) {
                 return;
             }
 
-            FriendAstrolabeInstance.NodeData nodeData = data.getNodeData(this.target);
+            FriendAstrolabeInstance.NodeData nodeData = astrolabe.getNodeData(this.target);
             if (nodeData != null && nodeData.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
-                manager.gainLight(sender, this.target);
+                astrolabe.gainLight(this.target);
                 serverPlayer.addItem(new ItemStack(Items.CANDLE));
             }
         }
@@ -128,4 +131,28 @@ public abstract class AstrolabeOperationPacket extends BiPacket {
         protected void sync() {
         }
     }
+
+    public static class Refresh extends AstrolabeOperationPacket {
+        public Refresh() {
+            super(DUMMY, REFRESH);
+        }
+
+        @Override
+        protected void update(@NotNull ServerPlayer serverPlayer) {
+        }
+
+        @Override
+        protected void sync() {
+            LocalPlayer player = Minecraft.getInstance().player;
+
+            if (player == null) {
+                return;
+            }
+
+            UserDataAttachment attachment = UserDataAttachment.getAttachment(player);
+            attachment.getAstrolabe().getAstrolabes().update();
+        }
+    }
+
+
 }

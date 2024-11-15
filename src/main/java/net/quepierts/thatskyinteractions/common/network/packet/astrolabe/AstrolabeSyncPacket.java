@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.common.network.packet.astrolabe;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
@@ -8,8 +9,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.network.ISync;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.AstrolabeComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -69,8 +70,13 @@ public abstract class AstrolabeSyncPacket implements ISync {
             if (friend == null)
                 return;
 
-            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
-            cache.getUserData().addFriend(friend);
+            LocalPlayer player = Minecraft.getInstance().player;
+
+            if (player == null)
+                return;
+
+            AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(player).getAstrolabe();
+            astrolabe.addFriend(friend);
         }
     }
 }

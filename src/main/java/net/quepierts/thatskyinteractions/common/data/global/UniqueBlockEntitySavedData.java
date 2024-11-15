@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.common.data;
+package net.quepierts.thatskyinteractions.common.data.global;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;

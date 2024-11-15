@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.common.data.astrolabe;
+package net.quepierts.thatskyinteractions.common.data.manager;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
@@ -19,6 +19,7 @@ import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.simpleanimator.core.network.packet.batch.PacketCache;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.Astrolabe;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.node.AstrolabeNode;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.node.FriendNode;
 import net.quepierts.thatskyinteractions.common.network.packet.BatchAstrolabePacket;
@@ -36,10 +37,13 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 public class AstrolabeManager implements PreparableReloadListener {
+    public static final AstrolabeManager INSTANCE = new AstrolabeManager();
+
     public static final FileToIdConverter ASTROLABE_LISTER = FileToIdConverter.json("astrolabes");
     public static final int GENERATED_ASTROLABES_AMOUNT = 8;
     public static final String GENERATED_PREFIX = "builtin_";
     public static final ImmutableList<ResourceLocation> GENERATED_ASTROLABES;
+
     private static final int MAX_ASTROLABE_NODES = 10;
     private static final int GENERATED_SIZE = 20;
     private static final int GRID_UNIT = 20;
@@ -51,10 +55,12 @@ public class AstrolabeManager implements PreparableReloadListener {
     private static final String FRIEND_ASTROLABES_PATH = "friend_astrolabes.json";
     private static final Logger LOGGER = LogUtils.getLogger();
     private final PacketCache cache = new PacketCache();
-    private ObjectList<ResourceLocation> bestFriendAstrolabes;
-    private ObjectList<ResourceLocation> friendAstrolabes;
+    private ObjectList<ResourceLocation> bestFriendAstrolabes = new ObjectArrayList<>();
+    private ObjectList<ResourceLocation> friendAstrolabes = new ObjectArrayList<>();
     private Object2ObjectMap<ResourceLocation, Astrolabe> byPath;
     private ObjectList<Astrolabe> generated;
+
+    private AstrolabeManager() {}
 
     @Nullable
     public Astrolabe get(ResourceLocation location) {
@@ -189,7 +195,7 @@ public class AstrolabeManager implements PreparableReloadListener {
                     list.add(CompletableFuture.supplyAsync(() -> {
                         try (Reader reader = resource.openAsReader()) {
                             return Pair.of(resourceLocation, Astrolabe.fromStream(reader));
-                        } catch (IOException e) {
+                        } catch (IOException | IllegalStateException e) {
                             LOGGER.warn("Couldn't read astrolabe {} from {} in data pack {}", resourceLocation, location, resource.sourcePackId());
                             return null;
                         }

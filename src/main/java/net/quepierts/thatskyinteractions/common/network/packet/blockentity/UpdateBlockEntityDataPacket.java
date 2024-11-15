@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.common.network.packet.block;
+package net.quepierts.thatskyinteractions.common.network.packet.blockentity;
 
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;

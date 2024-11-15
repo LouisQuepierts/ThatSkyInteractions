@@ -38,6 +38,7 @@ public class AnimateScreenHolderLayer implements LayeredDraw.Layer {
             return;
 
         Minecraft minecraft = Minecraft.getInstance();
+
         int i = (int)(
                 minecraft.mouseHandler.xpos()
                         * (double)minecraft.getWindow().getGuiScaledWidth()

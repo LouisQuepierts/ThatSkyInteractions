@@ -1,13 +1,16 @@
 package net.quepierts.thatskyinteractions.common.data.astrolabe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.node.AstrolabeNode;
 import org.apache.commons.lang3.stream.Streams;
 import org.apache.logging.log4j.core.util.Integers;
@@ -17,6 +20,19 @@ import java.util.List;
 import java.util.Map;
 
 public class Astrolabe {
+    public static final Codec<Astrolabe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            AstrolabeNode.CODEC.listOf().fieldOf("nodes").forGetter(Astrolabe::getNodes),
+            Connection.CODEC.listOf().fieldOf("connections").forGetter(Astrolabe::getConnections)
+    ).apply(instance, Astrolabe::new));
+
+    public static final StreamCodec<ByteBuf, Astrolabe> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.collection(ObjectArrayList::new, AstrolabeNode.STREAM_CODEC),
+            Astrolabe::getNodes,
+            ByteBufCodecs.collection(ObjectArrayList::new, Connection.STREAM_CODEC),
+            Astrolabe::getConnections,
+            Astrolabe::new
+    );
+
     private final ObjectList<AstrolabeNode> nodes;
     private final ObjectList<Connection> connections;
 
@@ -38,6 +54,8 @@ public class Astrolabe {
         return serialize(object);
     }
 
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
     private static Astrolabe serialize(JsonObject object) {
         JsonArray nodeArray = object.getAsJsonArray("nodes");
         List<AstrolabeNode> nodes = Streams.of(nodeArray.iterator())
@@ -54,14 +72,11 @@ public class Astrolabe {
     }
 
     public static void toNetwork(FriendlyByteBuf byteBuf, Astrolabe astrolabe) {
-        byteBuf.writeCollection(astrolabe.nodes, AstrolabeNode::toNetwork);
-        byteBuf.writeCollection(astrolabe.connections, Connection::toNetwork);
+        Astrolabe.STREAM_CODEC.encode(byteBuf, astrolabe);
     }
 
     public static Astrolabe fromNetwork(FriendlyByteBuf byteBuf) {
-        List<AstrolabeNode> nodes = byteBuf.readList(AstrolabeNode::fromNetwork);
-        List<Connection> connections = byteBuf.readList(Connection::fromNetwork);
-        return new Astrolabe(nodes, connections);
+        return Astrolabe.STREAM_CODEC.decode(byteBuf);
     }
 
     public int size() {
@@ -69,6 +84,20 @@ public class Astrolabe {
     }
 
     public record Connection(int a, int b) {
+        public static final Codec<Connection> CODEC = Codec.pair(Codec.INT, Codec.INT)
+                .xmap(
+                        pair -> new Connection(pair.getFirst(), pair.getSecond()),
+                        connection -> Pair.of(connection.a, connection.b)
+                );
+
+        public static final StreamCodec<ByteBuf, Connection> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT,
+                Connection::a,
+                ByteBufCodecs.VAR_INT,
+                Connection::b,
+                Connection::new
+        );
+
         public static Connection serialize(JsonObject jsonObject) {
             for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 int src = Integers.parseInt(entry.getKey());
@@ -77,15 +106,6 @@ public class Astrolabe {
             }
 
             throw new IllegalArgumentException();
-        }
-
-        public static void toNetwork(FriendlyByteBuf byteBuf, Connection connection) {
-            byteBuf.writeVarInt(connection.a);
-            byteBuf.writeVarInt(connection.b);
-        }
-
-        public static Connection fromNetwork(FriendlyByteBuf byteBuf) {
-            return new Connection(byteBuf.readVarInt(), byteBuf.readVarInt());
         }
     }
 }

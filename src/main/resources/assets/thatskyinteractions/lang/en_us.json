@@ -19,6 +19,8 @@
   "gui.message.unlock.lock.intimacy": "intimacy",
   "gui.message.block.line1": "Block this player?",
   "gui.message.block.line2": "You won't get that player any invitation!",
+  "gui.message.unblock.line1": "Unblock this player?",
+  "gui.message.unblock.line2": "You can get that player again!",
   "gui.message.nickname.change": "Change this friend's nickname?",
 
   "gui.tree.node.interaction.level": "Level %s",
@@ -49,5 +51,14 @@
   "cloud.description1": "Use CloudEditor or Expand/Reduce!!",
   "cloud.usage0": "Usage:",
   "cloud.usage1": "[Right Click] with cloud block to select",
-  "cloud.usage2": "[Right Click] with empty to open editor"
+  "cloud.usage2": "[Right Click] with empty to open editor",
+
+  "advancements.thatskyinteractions.root.title": "Lighting the Way",
+  "advancements.thatskyinteractions.root.description": "Picked up a candle",
+  "advancements.thatskyinteractions.wing_of_light.title": "Lost and Found",
+  "advancements.thatskyinteractions.wing_of_light.description": "Found a Wing of Light",
+  "advancements.thatskyinteractions.friendship.title": "Shall We Play",
+  "advancements.thatskyinteractions.friendship.description": "Present a candle with other players to become friends",
+  "advancements.thatskyinteractions.intimate.title": "Diving In",
+  "advancements.thatskyinteractions.intimate.description": "Unlock every node in a friend's interaction tree"
 }

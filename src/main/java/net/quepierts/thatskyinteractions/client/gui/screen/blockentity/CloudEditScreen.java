@@ -18,7 +18,7 @@ import net.quepierts.thatskyinteractions.client.gui.screen.AnimatedScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
 import net.quepierts.thatskyinteractions.common.block.entity.AbstractCloudBlockEntity;
 import net.quepierts.thatskyinteractions.common.block.entity.ColoredCloudBlockEntity;
-import net.quepierts.thatskyinteractions.common.network.packet.block.UpdateBlockEntityDataPacket;
+import net.quepierts.thatskyinteractions.common.network.packet.blockentity.UpdateBlockEntityDataPacket;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3i;
 

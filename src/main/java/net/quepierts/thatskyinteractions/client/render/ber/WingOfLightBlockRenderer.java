@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.client.render.ber;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -15,7 +16,8 @@ import net.quepierts.thatskyinteractions.client.reference.RenderTypes;
 import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.common.block.entity.WingOfLightBlockEntity;
-import net.quepierts.thatskyinteractions.common.data.TSIUserData;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.PickupComponent;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
@@ -38,17 +40,22 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
             int combinedLight,
             int combinedOverlay
     ) {
-        TSIUserData userData = ThatSkyInteractions.getInstance().getClient().getCache().getUserData();
+        LocalPlayer player = this.minecraft.player;
 
-        if (userData == null || userData.isPickedUp(wingOfLightBlockEntity)) {
+        if (player == null) {
+            return;
+        }
+
+        UserDataAttachment attachment = UserDataAttachment.getAttachment(player);
+        PickupComponent pickupComponent = attachment.getPickup();
+
+        if (pickupComponent.isPickedUp(wingOfLightBlockEntity)) {
             return;
         }
 
         BlockPos pos = wingOfLightBlockEntity.getBlockPos();
 
-        if (this.minecraft.player == null)
-            return;
-        float distanceSqr = (float) this.minecraft.player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
+        float distanceSqr = (float) player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
 
         World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(wingOfLightBlockEntity.getUUID(), wingOfLightBlockEntity.provideW2SWidget(distanceSqr));
 

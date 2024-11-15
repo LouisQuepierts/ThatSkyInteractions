@@ -18,6 +18,8 @@
   "gui.message.unlock.lock.intimacy": "亲密度",
   "gui.message.block.line1": "拉黑这位玩家？",
   "gui.message.block.line2": "你不会再收到来自这位玩家的邀请!",
+  "gui.message.unblock.line1": "取消拉黑这位玩家?",
+  "gui.message.unblock.line2": "你可以再次收到来自这位玩家的邀请!",
   "gui.message.nickname.change": "修改这位好友的昵称？",
 
   "gui.tree.node.interaction.level": "%s级",
@@ -47,5 +49,14 @@
   "cloud.description1": "使用云编辑器或扩大/缩小!!",
   "cloud.usage0": "使用方法:",
   "cloud.usage1": "通过 [鼠标右键] 与云方块交互，选中编辑的云",
-  "cloud.usage2": "通过 [鼠标右键] 打开编辑器"
+  "cloud.usage2": "通过 [鼠标右键] 打开编辑器",
+
+  "advancements.thatskyinteractions.root.title": "Lighting the Way",
+  "advancements.thatskyinteractions.root.description": "获得一根蜡烛",
+  "advancements.thatskyinteractions.wing_of_light.title": "Lost and Found",
+  "advancements.thatskyinteractions.wing_of_light.description": "找到遗失的光之翼",
+  "advancements.thatskyinteractions.friendship.title": "Shall We Play",
+  "advancements.thatskyinteractions.friendship.description": "赠与他人一根蜡烛成为好友",
+  "advancements.thatskyinteractions.intimate.title": "Diving In",
+  "advancements.thatskyinteractions.intimate.description": "解锁一位好友的互动树上每一个节点"
 }

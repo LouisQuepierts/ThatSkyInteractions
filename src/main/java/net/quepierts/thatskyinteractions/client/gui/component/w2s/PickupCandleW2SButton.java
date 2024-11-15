@@ -1,15 +1,21 @@
 package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.animate.WaitAnimation;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.common.block.entity.CandleClusterBlockEntity;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.PickupComponent;
+import net.quepierts.thatskyinteractions.common.network.packet.blockentity.PickablePickupPacket;
 import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
@@ -26,10 +32,22 @@ public class PickupCandleW2SButton extends World2ScreenButton {
 
     @Override
     public void invoke() {
-        ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
         ScreenAnimator.GLOBAL.play(new WaitAnimation(0.5f, () -> {
-            cache.pickup(this.bound, true);
-            PickupCandleW2SButton.this.setRemoved();
+            LocalPlayer player = Minecraft.getInstance().player;
+
+            if (player == null) {
+                return;
+            }
+
+            UserDataAttachment attachment = UserDataAttachment.getAttachment(player);
+            PickupComponent pickupComponent = attachment.getPickup();
+
+            CandleClusterBlockEntity pickable = this.bound;
+            if (pickupComponent.tryPickUp(pickable)) {
+                this.setRemoved();
+                World2ScreenWidgetLayer.INSTANCE.remove(pickable.getUUID());
+                SimpleAnimator.getNetwork().update(new PickablePickupPacket(pickable));
+            }
         }));
     }
 

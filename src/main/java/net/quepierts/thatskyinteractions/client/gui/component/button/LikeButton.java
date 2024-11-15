@@ -1,14 +1,17 @@
 package net.quepierts.thatskyinteractions.client.gui.component.button;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
+import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.common.data.FriendData;
-import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.AstrolabeComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -22,21 +25,25 @@ public class LikeButton extends SqueezeButton {
     private boolean on;
     public LikeButton(int x, int y, ScreenAnimator animator, FriendData friendData) {
         super(x, y, 32, Component.empty(), animator, TEXTURE_OFF);
-        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
         this.friendData = friendData;
-        this.on = client.getCache().getUserData().isLiked(this.friendData.getUuid());
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null) {
+            return;
+        }
+
+        AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(player).getAstrolabe();
+        this.on = astrolabe.isLiked(friendData.getUuid());
     }
 
     @Override
     public void onPress() {
         this.on = !this.on;
-        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
-        ClientTSIDataCache cache = client.getCache();
         UUID friendUUID = this.friendData.getUuid();
         if (this.on) {
-            cache.likeFriend(friendUUID, true);
+            ClientHelper.likeFriend(friendUUID);
         } else {
-            cache.unlikeFriend(friendUUID, true);
+            ClientHelper.unlikeFriend(friendUUID);
         }
     }
 

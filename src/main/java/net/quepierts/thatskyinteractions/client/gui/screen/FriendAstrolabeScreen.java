@@ -4,8 +4,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.objects.ObjectList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -19,10 +21,11 @@ import net.quepierts.thatskyinteractions.client.gui.component.astrolabe.FriendAs
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.Astrolabe;
-import net.quepierts.thatskyinteractions.common.data.astrolabe.AstrolabeManager;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.AstrolabeMap;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
-import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.AstrolabeComponent;
+import net.quepierts.thatskyinteractions.common.data.manager.AstrolabeManager;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
@@ -45,9 +48,12 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
 
     @Override
     protected void init() {
-        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
-        AstrolabeManager astrolabeManager = client.getAstrolabeManager();
-        AstrolabeMap astrolabes = client.getCache().getUserData().astrolabes();
+        AstrolabeManager astrolabeManager = AstrolabeManager.INSTANCE;
+
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        AstrolabeComponent component = UserDataAttachment.getAttachment(player).getAstrolabe();
+        AstrolabeMap astrolabes = component.getAstrolabes();
 
         ObjectList<ResourceLocation> friendAstrolabes = astrolabeManager.getFriendAstrolabes();
         int i = 0;

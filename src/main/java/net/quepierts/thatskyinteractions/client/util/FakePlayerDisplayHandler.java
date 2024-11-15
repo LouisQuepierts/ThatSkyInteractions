@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -20,6 +21,7 @@ import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.common.data.FriendData;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
 import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 
 @SuppressWarnings("unused")
@@ -63,7 +65,8 @@ public class FakePlayerDisplayHandler {
         this.enterAnimation.reset(0, 1);
         World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), light);
 
-        FriendAstrolabeInstance.NodeData data = client.getCache().getUserData().getNodeData(friendData.getUuid());
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        FriendAstrolabeInstance.NodeData data = UserDataAttachment.getAttachment(localPlayer).getAstrolabe().getNodeData(friendData.getUuid());
         this.canIgnite = (data != null && !data.hasFlag(FriendAstrolabeInstance.Flag.SENT));
 
         ScreenAnimator.GLOBAL.play(this.enterAnimation);

@@ -69,6 +69,7 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity implements IU
             this.muralTexture = ResourceLocation.parse(tag.getString(TAG_MURAL));
         }
 
+        this.recompile = true;
         this.updateAABB();
     }
 

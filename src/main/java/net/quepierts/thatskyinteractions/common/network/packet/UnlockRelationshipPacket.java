@@ -1,13 +1,13 @@
 package net.quepierts.thatskyinteractions.common.network.packet;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -17,17 +17,19 @@ import net.quepierts.simpleanimator.core.network.BiPacket;
 import net.quepierts.simpleanimator.core.network.INetwork;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.UnlockRequestW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.common.PlayerUtils;
 import net.quepierts.thatskyinteractions.common.data.PlayerPair;
-import net.quepierts.thatskyinteractions.common.data.RelationshipSavedData;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.RelationshipComponent;
+import net.quepierts.thatskyinteractions.common.data.manager.InteractTreeManager;
 import net.quepierts.thatskyinteractions.common.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.common.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
 import net.quepierts.thatskyinteractions.common.data.tree.node.InteractTreeNode;
 import net.quepierts.thatskyinteractions.common.reference.Animations;
+import net.quepierts.thatskyinteractions.common.registry.TriggerTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -39,6 +41,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
     private static final byte CANCEL = 2;
     private static final byte FINISH = 3;
     private static final byte FORCED = 4;
+    private static final byte RESET = 5;
 
     protected final UUID sender;
     protected final PlayerPair pair;
@@ -51,20 +54,16 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
         String node = friendlyByteBuf.readUtf();
         byte code = friendlyByteBuf.readByte();
 
-        switch (code) {
-            case INVITE:
-                return new Invite(sender, pair, node);
-            case ACCEPT:
-                return new Accept(sender, pair, node);
-            case CANCEL:
-                return new Cancel(sender, pair, node);
-            case FINISH:
-                return new Finish(sender, pair, node);
-            case FORCED:
-                return new Forced(sender, pair, node);
-        }
+        return switch (code) {
+            case INVITE -> new Invite(sender, pair, node);
+            case ACCEPT -> new Accept(sender, pair, node);
+            case CANCEL -> new Cancel(sender, pair, node);
+            case FINISH -> new Finish(sender, pair, node);
+            case FORCED -> new Forced(sender, pair, node);
+            case RESET -> new Reset(sender, pair);
+            default -> throw new IllegalArgumentException("Packet Code: " + code);
+        };
 
-        throw new IllegalArgumentException("Packet Code: " + code);
     }
 
     protected UnlockRelationshipPacket(UUID sender, PlayerPair pair, String node, byte code) {
@@ -95,7 +94,6 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
         @Override
         protected void update(@NotNull ServerPlayer sender) {
             final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            final ServerLevel level = server.getLevel(Level.OVERWORLD);
 
             UUID other = this.pair.getOther(sender.getUUID());
             ServerPlayer player = server.getPlayerList().getPlayer(other);
@@ -105,8 +103,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
             if (!this.pair.getOther(other).equals(sender.getUUID()))
                 return;
 
-            final RelationshipSavedData data = RelationshipSavedData.getRelationTree(level);
-            final InteractTree tree = data.getTree();
+            final InteractTree tree = InteractTreeManager.INSTANCE.get(RelationshipComponent.FRIEND_INTERACT_TREE);
 
             if (!tree.contains(this.node))
                 return;
@@ -127,13 +124,15 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
         @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
-            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
-
             Minecraft minecraft = Minecraft.getInstance();
-            UUID local = minecraft.player.getUUID();
+            LocalPlayer localPlayer = minecraft.player;
+
+            RelationshipComponent relationship = UserDataAttachment.getAttachment(localPlayer).getRelationship();
+
+            UUID local = localPlayer.getUUID();
 
             if (local.equals(this.sender)) {
-                ((IAnimateHandler) minecraft.player).simpleanimator$playAnimate(Animations.UNLOCK_INVITE, true);
+                ((IAnimateHandler) localPlayer).simpleanimator$playAnimate(Animations.UNLOCK_INVITE, true);
             } else {
                 UUID other = this.pair.getOther(local);
                 Player player = minecraft.level.getPlayerByUUID(other);
@@ -141,7 +140,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
                 if (player == null)
                     return;
 
-                InteractTreeInstance instance = cache.get(other);
+                InteractTreeInstance instance = relationship.get(other);
                 World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(other, new UnlockRequestW2SButton(
                         instance.getTree().get(this.node).asButton(null, NodeState.UNLOCKABLE),
                         this.pair,
@@ -160,7 +159,6 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
         @Override
         protected void update(@NotNull ServerPlayer sender) {
             final MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            final ServerLevel level = server.getLevel(Level.OVERWORLD);
 
             UUID other = this.pair.getOther(sender.getUUID());
             ServerPlayer player = server.getPlayerList().getPlayer(other);
@@ -170,12 +168,17 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
             if (!this.pair.getOther(other).equals(sender.getUUID()))
                 return;
 
-            final RelationshipSavedData data = RelationshipSavedData.getRelationTree(level);
-            final InteractTreeInstance instance = data.getRelationTree(pair);
-            final InteractTree tree = data.getTree();
+            Pair<InteractTreeInstance, InteractTreeInstance> relevantInstance = RelationshipComponent.getRelevantInstance(pair, player.serverLevel());
 
-            if (!tree.contains(this.node))
+            if (relevantInstance == null) {
                 return;
+            }
+
+            final InteractTree tree = relevantInstance.getFirst().getTree();
+
+            if (!tree.contains(this.node)) {
+                return;
+            }
 
             InteractTreeNode tNode = tree.get(this.node);
 
@@ -185,7 +188,8 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
             if (count < tNode.getPrice())
                 return;
 
-            if (!instance.unlock(node, true)) {
+
+            if (InteractTreeInstance.unlock(relevantInstance, node, true)) {
                 return;
             }
 
@@ -193,23 +197,29 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
 
             network.sendToPlayer(this, sender);
             network.sendToPlayer(this, player);
+
+            TriggerTypes.UNLOCK_RELATIONSHIP.get().trigger(sender, node);
+            TriggerTypes.UNLOCK_RELATIONSHIP.get().trigger(player, node);
+            TriggerTypes.COMPLETED_RELATIONSHIP.get().trigger(sender, player.getUUID());
+            TriggerTypes.COMPLETED_RELATIONSHIP.get().trigger(player, sender.getUUID());
         }
 
         @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
-            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
-
             Minecraft minecraft = Minecraft.getInstance();
             UUID local = minecraft.player.getUUID();
+
+            RelationshipComponent relationship = UserDataAttachment.getAttachment(minecraft.player).getRelationship();
+
             UUID other = this.pair.getOther(local);
             Player player = minecraft.level.getPlayerByUUID(other);
 
             if (player == null)
                 return;
 
-            InteractTreeInstance instance = cache.get(other);
-            instance.unlock(this.node, false);
+            InteractTreeInstance instance = relationship.get(other);
+            instance.unlock(this.node);
 
             InteractTreeNode tNode = instance.getTree().get(this.node);
 
@@ -291,18 +301,43 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
 
         @Override
         protected void sync() {
-            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
-
             Minecraft minecraft = Minecraft.getInstance();
+
+            RelationshipComponent relationship = UserDataAttachment.getAttachment(minecraft.player).getRelationship();
+
             UUID local = minecraft.player.getUUID();
             UUID other = this.pair.getOther(local);
 
-            InteractTreeInstance instance = cache.get(other);
+            InteractTreeInstance instance = relationship.get(other);
             if (this.node.equals("all")) {
                 instance.unlockAll();
             } else {
-                instance.unlock(this.node, true);
+                instance.unlock(this.node);
             }
+        }
+    }
+
+    public static class Reset extends UnlockRelationshipPacket {
+        public Reset(UUID sender, PlayerPair pair) {
+            super(sender, pair, "", RESET);
+        }
+
+        @Override
+        protected void update(@NotNull ServerPlayer serverPlayer) {
+
+        }
+
+        @Override
+        protected void sync() {
+            Minecraft minecraft = Minecraft.getInstance();
+
+            RelationshipComponent relationship = UserDataAttachment.getAttachment(minecraft.player).getRelationship();
+
+            UUID local = minecraft.player.getUUID();
+            UUID other = this.pair.getOther(local);
+
+            InteractTreeInstance instance = relationship.get(other);
+            instance.reset();
         }
     }
 }

@@ -10,6 +10,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.network.ISync;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.common.data.manager.InteractTreeManager;
 import net.quepierts.thatskyinteractions.common.data.tree.InteractTree;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +34,7 @@ public class BatchInteractTreePacket implements ISync {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void sync() {
-        ThatSkyInteractions.getInstance().getProxy().getInteractTreeManager().handleUpdateInteractTree(this);
+        InteractTreeManager.INSTANCE.handleUpdateInteractTree(this);
     }
 
     @Override

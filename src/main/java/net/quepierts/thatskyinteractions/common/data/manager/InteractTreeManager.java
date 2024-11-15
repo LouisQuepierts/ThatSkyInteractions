@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.common.data.tree;
+package net.quepierts.thatskyinteractions.common.data.manager;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
@@ -16,6 +16,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.simpleanimator.core.network.packet.batch.PacketCache;
+import net.quepierts.thatskyinteractions.common.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.common.network.packet.BatchInteractTreePacket;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -31,10 +32,14 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 public class InteractTreeManager implements PreparableReloadListener {
+    public static final InteractTreeManager INSTANCE = new InteractTreeManager();
     public static final FileToIdConverter INTERACT_TREE_LISTER = FileToIdConverter.json("interact_trees");
+
     private static final Logger LOGGER = LogUtils.getLogger();
     private final PacketCache cache = new PacketCache();
     private Object2ObjectMap<ResourceLocation, InteractTree> byPath;
+
+    private InteractTreeManager() {}
 
     public InteractTree get(ResourceLocation location) {
         return byPath.get(location);

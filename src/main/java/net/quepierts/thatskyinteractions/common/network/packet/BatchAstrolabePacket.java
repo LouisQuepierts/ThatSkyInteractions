@@ -11,6 +11,7 @@ import net.quepierts.simpleanimator.core.network.ISync;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.Astrolabe;
+import net.quepierts.thatskyinteractions.common.data.manager.AstrolabeManager;
 import org.jetbrains.annotations.NotNull;
 
 public class BatchAstrolabePacket implements ISync {
@@ -19,7 +20,6 @@ public class BatchAstrolabePacket implements ISync {
     private final Object2ObjectMap<ResourceLocation, Astrolabe> map;
     private final ObjectList<ResourceLocation> bestFriendAstrolabes;
     private final ObjectList<ResourceLocation> friendAstrolabes;
-
 
     public BatchAstrolabePacket(FriendlyByteBuf byteBuf) {
         this.map = byteBuf.readMap(
@@ -46,7 +46,7 @@ public class BatchAstrolabePacket implements ISync {
 
     @Override
     public void sync() {
-        ThatSkyInteractions.getInstance().getProxy().getAstrolabeManager().handleUpdateAstrolabe(this);
+        AstrolabeManager.INSTANCE.handleUpdateAstrolabe(this);
     }
 
     @Override

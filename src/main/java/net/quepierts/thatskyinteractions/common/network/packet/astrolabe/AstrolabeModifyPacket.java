@@ -1,21 +1,22 @@
-package net.quepierts.thatskyinteractions.common.network.packet;
+package net.quepierts.thatskyinteractions.common.network.packet.astrolabe;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.quepierts.simpleanimator.core.network.IUpdate;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.common.data.TSIUserData;
-import net.quepierts.thatskyinteractions.common.data.TSIUserDataStorage;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.AstrolabeMap;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.AstrolabeComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public abstract class UserDataModifyPacket implements IUpdate {
-    public static final Type<UserDataModifyPacket> TYPE = NetworkPackets.createType(UserDataModifyPacket.class);
+public abstract class AstrolabeModifyPacket implements IUpdate {
+    public static final Type<AstrolabeModifyPacket> TYPE = NetworkPackets.createType(AstrolabeModifyPacket.class);
     private static final byte LIKE = 0;
     private static final byte UNLIKE = 1;
     private static final byte MOVE = 2;
@@ -24,11 +25,11 @@ public abstract class UserDataModifyPacket implements IUpdate {
 
     protected final byte code;
 
-    public UserDataModifyPacket(byte code) {
+    public AstrolabeModifyPacket(byte code) {
         this.code = code;
     }
 
-    public static UserDataModifyPacket decode(FriendlyByteBuf byteBuf) {
+    public static AstrolabeModifyPacket decode(FriendlyByteBuf byteBuf) {
         byte code = byteBuf.readByte();
 
         switch (code) {
@@ -58,7 +59,7 @@ public abstract class UserDataModifyPacket implements IUpdate {
         return TYPE;
     }
 
-    public static final class Like extends UserDataModifyPacket {
+    public static final class Like extends AstrolabeModifyPacket {
         private final UUID friendUUID;
         public Like(FriendlyByteBuf byteBuf) {
             super(LIKE);
@@ -72,9 +73,11 @@ public abstract class UserDataModifyPacket implements IUpdate {
 
         @Override
         public void update(ServerPlayer serverPlayer) {
-            TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
+            AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(serverPlayer).getAstrolabe();
+            astrolabe.likeFriend(this.friendUUID);
+            /*TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
             TSIUserData userData = manager.getUserData(serverPlayer.getUUID());
-            userData.likeFriend(this.friendUUID);
+            userData.likeFriend(this.friendUUID);*/
         }
 
         @Override
@@ -84,7 +87,7 @@ public abstract class UserDataModifyPacket implements IUpdate {
         }
     }
 
-    public static final class Unlike extends UserDataModifyPacket {
+    public static final class Unlike extends AstrolabeModifyPacket {
         private final UUID friendUUID;
         public Unlike(FriendlyByteBuf byteBuf) {
             super(UNLIKE);
@@ -98,9 +101,8 @@ public abstract class UserDataModifyPacket implements IUpdate {
 
         @Override
         public void update(ServerPlayer serverPlayer) {
-            TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
-            TSIUserData userData = manager.getUserData(serverPlayer.getUUID());
-            userData.unlikeFriend(this.friendUUID);
+            AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(serverPlayer).getAstrolabe();
+            astrolabe.unlikeFriend(this.friendUUID);
         }
 
         @Override
@@ -110,7 +112,7 @@ public abstract class UserDataModifyPacket implements IUpdate {
         }
     }
 
-    public static final class Move extends UserDataModifyPacket {
+    public static final class Move extends AstrolabeModifyPacket {
 
         private final UUID friendUUID;
         private final ResourceLocation destLocation;
@@ -130,11 +132,21 @@ public abstract class UserDataModifyPacket implements IUpdate {
             this.destLocation = byteBuf.readResourceLocation();
             this.destIndex = byteBuf.readVarInt();
         }
+
         @Override
         public void update(ServerPlayer serverPlayer) {
-            TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
-            TSIUserData userData = manager.getUserData(serverPlayer.getUUID());
-            userData.move(this.friendUUID, this.destLocation, this.destIndex);
+            AstrolabeComponent component = UserDataAttachment.getAttachment(serverPlayer).getAstrolabe();
+            AstrolabeMap astrolabes = component.getAstrolabes();
+
+            Pair<FriendAstrolabeInstance.NodeData, ResourceLocation> cache = component.getCache().get(friendUUID);
+            if (cache == null)
+                return;
+            ResourceLocation srcLocation = cache.getSecond();
+            FriendAstrolabeInstance src = astrolabes.get(srcLocation);
+            int srcIndex = src.indexOf(cache.getFirst());
+            if (astrolabes.move(srcLocation, destLocation, srcIndex, destIndex)) {
+                component.getCache().put(friendUUID, Pair.of(cache.getFirst(), destLocation));
+            }
         }
 
         @Override
@@ -146,7 +158,7 @@ public abstract class UserDataModifyPacket implements IUpdate {
         }
     }
 
-    public static final class Create extends UserDataModifyPacket {
+    public static final class Create extends AstrolabeModifyPacket {
         private final ResourceLocation createLocation;
         public Create(FriendlyByteBuf byteBuf) {
             super(CREATE);
@@ -160,13 +172,12 @@ public abstract class UserDataModifyPacket implements IUpdate {
 
         @Override
         public void update(ServerPlayer serverPlayer) {
-            TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
-            TSIUserData userData = manager.getUserData(serverPlayer.getUUID());
-            userData.createAstrolabe(this.createLocation);
+            AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(serverPlayer).getAstrolabe();
+            astrolabe.createAstrolabe(this.createLocation);
         }
     }
 
-    public static final class Nickname extends UserDataModifyPacket {
+    public static final class Nickname extends AstrolabeModifyPacket {
         private final UUID friendUUID;
         private final String nickname;
 
@@ -191,12 +202,12 @@ public abstract class UserDataModifyPacket implements IUpdate {
 
         @Override
         public void update(ServerPlayer serverPlayer) {
-            TSIUserDataStorage manager = ThatSkyInteractions.getInstance().getProxy().getUserDataManager();
-            TSIUserData userData = manager.getUserData(serverPlayer.getUUID());
-            if (!userData.isFriend(this.friendUUID)) {
+            AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(serverPlayer).getAstrolabe();
+
+            if (!astrolabe.isFriend(this.friendUUID)) {
                 return;
             }
-            FriendAstrolabeInstance.NodeData data = userData.getNodeData(this.friendUUID);
+            FriendAstrolabeInstance.NodeData data = astrolabe.getNodeData(this.friendUUID);
             if (data == null) {
                 return;
             }

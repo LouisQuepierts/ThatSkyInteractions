@@ -5,10 +5,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
+import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.FakeClientPlayer;
-import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 import org.joml.Vector3f;
 
 import java.util.UUID;
@@ -33,10 +32,9 @@ public final class FakePlayerIgniteW2SButton extends World2ScreenButton {
 
     @Override
     public void invoke() {
-        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
-        ClientTSIDataCache cache = client.getCache();
         UUID friendUUID = this.bound.getDisplayUUID();
-        cache.sendLight(friendUUID, true);
+
+        ClientHelper.sendLight(friendUUID);
         this.clicked = true;
     }
 

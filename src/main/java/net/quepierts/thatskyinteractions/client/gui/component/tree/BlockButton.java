@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
@@ -24,6 +25,8 @@ public class BlockButton extends TreeNodeButton {
     private static final ResourceLocation ICON_BLOCK = ThatSkyInteractions.getLocation("textures/gui/block.png");
     private static final Component MESSAGE_BLOCK_1 = Component.translatable("gui.message.block.line1").withColor(Palette.NORMAL_TEXT_COLOR);
     private static final Component MESSAGE_BLOCK_2 = Component.translatable("gui.message.block.line2").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_UNBLOCK_1 = Component.translatable("gui.message.unblock.line1").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_UNBLOCK_2 = Component.translatable("gui.message.unblock.line2").withColor(Palette.NORMAL_TEXT_COLOR);
     public BlockButton(String id, int x, int y, ScreenAnimator animator) {
         super(id, x, 0, Component.empty(), y, ICON_BLOCK, animator, NodeState.UNLOCKED);
     }
@@ -43,13 +46,7 @@ public class BlockButton extends TreeNodeButton {
                                 public void confirm() {
                                     ClientProxy client = ThatSkyInteractions.getInstance().getClient();
                                     UUID target = client.getTarget();
-                                    if (target != null) {
-                                        if (client.blocked(target)) {
-                                            client.unblock(target);
-                                        } else {
-                                            client.block(target);
-                                        }
-                                    }
+                                    ClientHelper.toggleBlock(target);
                                     screen.enter();
                                 }
 
@@ -67,7 +64,15 @@ public class BlockButton extends TreeNodeButton {
     @Override
     public void renderUnlockMessageInvite(GuiGraphics guiGraphics, PoseStack pose, int width, int height) {
         Font font = Minecraft.getInstance().font;
-        guiGraphics.drawCenteredString(font, MESSAGE_BLOCK_1, 0, -12, 0xffffffff);
-        guiGraphics.drawCenteredString(font, MESSAGE_BLOCK_2, 0, -4, 0xffffffff);
+        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
+        UUID target = client.getTarget();
+
+        if (target != null && ClientHelper.blocked(target)) {
+            guiGraphics.drawCenteredString(font, MESSAGE_UNBLOCK_1, 0, -12, 0xffffffff);
+            guiGraphics.drawCenteredString(font, MESSAGE_UNBLOCK_2, 0, -4, 0xffffffff);
+        } else {
+            guiGraphics.drawCenteredString(font, MESSAGE_BLOCK_1, 0, -12, 0xffffffff);
+            guiGraphics.drawCenteredString(font, MESSAGE_BLOCK_2, 0, -4, 0xffffffff);
+        }
     }
 }

@@ -1,12 +1,30 @@
 package net.quepierts.thatskyinteractions.common.data;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 public class PlayerPair {
+    public static final Codec<PlayerPair> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            UUIDUtil.CODEC.fieldOf("left").forGetter(PlayerPair::getLeft),
+            UUIDUtil.CODEC.fieldOf("right").forGetter(PlayerPair::getRight)
+    ).apply(instance, PlayerPair::new));
+
+    public static final StreamCodec<ByteBuf, PlayerPair> STREAM_CODEC = StreamCodec.composite(
+            UUIDUtil.STREAM_CODEC,
+            PlayerPair::getLeft,
+            UUIDUtil.STREAM_CODEC,
+            PlayerPair::getRight,
+            PlayerPair::new
+    );
+
     @NotNull private final UUID left;
     @NotNull private final UUID right;
 

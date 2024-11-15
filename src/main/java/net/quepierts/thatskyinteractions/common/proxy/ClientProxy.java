@@ -39,8 +39,8 @@ import net.quepierts.simpleanimator.api.event.client.ClientAnimatorStateEvent;
 import net.quepierts.simpleanimator.api.event.common.*;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.client.Options;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
@@ -63,6 +63,10 @@ import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
 import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.common.data.FriendData;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.AstrolabeComponent;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.RelationshipComponent;
+import net.quepierts.thatskyinteractions.common.data.manager.InteractTreeManager;
 import net.quepierts.thatskyinteractions.common.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.common.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.common.item.CandleClusterItem;
@@ -80,8 +84,6 @@ import java.util.UUID;
 public class ClientProxy extends CommonProxy {
     private static final ResourceLocation EMPTY_LOCATION = ResourceLocation.withDefaultNamespace("empty");
     public final Options options;
-    @NotNull
-    private final ClientTSIDataCache dataCache;
     @NotNull
     private final UnlockRelationshipHandler unlockRelationshipHandler;
     @NotNull
@@ -104,7 +106,6 @@ public class ClientProxy extends CommonProxy {
         super(modBus, modContainer);
 
         this.options = new Options();
-        this.dataCache = new ClientTSIDataCache();
         this.unlockRelationshipHandler = new UnlockRelationshipHandler();
         this.fakePlayerDisplayHandler = new FakePlayerDisplayHandler(this);
         this.cameraHandler = new CameraHandler();
@@ -214,16 +215,17 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onChatReceivedPlayer(final ClientChatReceivedEvent.Player event) {
-        if (this.dataCache.unprepared()) {
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null) {
             return;
         }
 
+        AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(player).getAstrolabe();
+
         UUID sender = event.getSender();
-        if (this.dataCache.isFriend(sender)) {
-            if (this.dataCache.unprepared()) {
-                return;
-            }
-            FriendAstrolabeInstance.NodeData data = this.dataCache.getUserData().getNodeData(sender);
+        if (astrolabe.isFriend(sender)) {
+            FriendAstrolabeInstance.NodeData data = astrolabe.getNodeData(sender);
             if (data == null) {
                 return;
             }
@@ -234,21 +236,20 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onRenderNameTag(final RenderNameTagEvent event) {
-        if (this.dataCache.unprepared()) {
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null) {
             return;
         }
 
+        AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(player).getAstrolabe();
         Entity entity = event.getEntity();
         UUID uuid = entity.getUUID();
 
-        if (this.blocked(uuid)) {
+        if (ClientHelper.blocked(uuid)) {
             event.setCanRender(TriState.FALSE);
-        } else if (this.dataCache.isFriend(uuid)) {
-            if (this.dataCache.unprepared()) {
-                return;
-            }
-            assert this.dataCache.getUserData() != null;
-            FriendAstrolabeInstance.NodeData data = this.dataCache.getUserData().getNodeData(uuid);
+        } else if (astrolabe.isFriend(uuid)) {
+            FriendAstrolabeInstance.NodeData data = astrolabe.getNodeData(uuid);
 
             if (data == null) {
                 return;
@@ -266,23 +267,18 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onPlayerLoggedIn(final PlayerEvent.PlayerLoggedInEvent event) {
-        if (this.dataCache.unprepared())
-            return;
-        this.dataCache.setOnline(event.getEntity(), true);
+
     }
 
     private void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
-        if (this.dataCache.unprepared())
-            return;
-
         Player player = event.getEntity();
         UUID uuid = player.getUUID();
         World2ScreenWidgetLayer.INSTANCE.remove(uuid);
         this.particleDistributorManager.remove(uuid);
 
-        this.dataCache.setOnline(player, false);
         Minecraft minecraft = Minecraft.getInstance();
-        if (this.target != null && this.target.equals(uuid) && minecraft.screen instanceof PlayerInteractScreen) {
+        if (this.target != null && this.target.equals(uuid) && minecraft.screen instanceof PlayerInteractScreen animatable) {
+            AnimateScreenHolderLayer.INSTANCE.close(animatable);
             this.target = null;
         }
     }
@@ -366,7 +362,6 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onLoggingOut(final ClientPlayerNetworkEvent.LoggingOut event) {
-        this.dataCache.clear();
         this.unlockRelationshipHandler.reset();
         this.cameraHandler.cleanup();
         this.fakePlayerDisplayHandler.reset();
@@ -400,10 +395,12 @@ public class ClientProxy extends CommonProxy {
 
         Entity target = event.getTarget();
         if (target instanceof Player) {
-            InteractTree tree = this.dataCache.getTree();
+            RelationshipComponent relationship = UserDataAttachment.getAttachment(player).getRelationship();
+
+            InteractTree tree = InteractTreeManager.INSTANCE.get(RelationshipComponent.FRIEND_INTERACT_TREE);
             UUID uuid = target.getUUID();
             this.setTarget(uuid);
-            InteractTreeInstance instance = this.dataCache.get(uuid);
+            InteractTreeInstance instance = relationship.get(uuid);
             AnimateScreenHolderLayer.INSTANCE.push(new PlayerInteractScreen(target, tree, instance));
             event.setCanceled(true);
         }
@@ -438,8 +435,9 @@ public class ClientProxy extends CommonProxy {
             return;
         }
 
-        World2ScreenWidgetLayer.INSTANCE.scroll(event.getMouseY());
-        event.setCanceled(true);
+        if (World2ScreenWidgetLayer.INSTANCE.scroll(event.getMouseY())) {
+            event.setCanceled(true);
+        }
     }
 
     private void onKey(final InputEvent.Key event) {
@@ -461,7 +459,7 @@ public class ClientProxy extends CommonProxy {
 
     }
 
-    public boolean blocked(UUID player) {
+    /*public boolean blocked(UUID player) {
         if (this.dataCache.unprepared()) {
             return false;
         }
@@ -481,7 +479,7 @@ public class ClientProxy extends CommonProxy {
             return;
         }
         this.dataCache.getUserData().unblock(player);
-    }
+    }*/
 
 
     public void setTarget(@Nullable UUID target) {
@@ -491,10 +489,6 @@ public class ClientProxy extends CommonProxy {
     @Nullable
     public UUID getTarget() {
         return this.target;
-    }
-
-    public ClientTSIDataCache getCache() {
-        return this.dataCache;
     }
 
     @NotNull

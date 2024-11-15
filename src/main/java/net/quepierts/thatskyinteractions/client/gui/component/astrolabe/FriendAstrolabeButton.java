@@ -8,7 +8,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.client.data.ClientTSIDataCache;
+import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
@@ -73,8 +73,7 @@ public class FriendAstrolabeButton extends AstrolabeButton {
             ));
         } else {
             this.animator.play(this.claimAnimation);
-            ClientTSIDataCache cache = ThatSkyInteractions.getInstance().getClient().getCache();
-            cache.gainLight(this.data.getFriendData().getUuid(), true);
+            ClientHelper.gainLight(this.data.getFriendData().getUuid());
         }
     }
 

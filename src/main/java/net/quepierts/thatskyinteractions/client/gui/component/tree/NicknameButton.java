@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.client.gui.component.tree;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
@@ -11,9 +12,12 @@ import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLay
 import net.quepierts.thatskyinteractions.client.gui.screen.InputScreen;
 import net.quepierts.thatskyinteractions.common.data.FriendData;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
+import net.quepierts.thatskyinteractions.common.data.attachment.component.AstrolabeComponent;
 import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
 import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class NicknameButton extends TreeNodeButton {
@@ -23,9 +27,12 @@ public class NicknameButton extends TreeNodeButton {
     public NicknameButton(String id, int x, int y, ScreenAnimator animator) {
         super(id, x, 0, Component.empty(), y, ICON_NICKNAME, animator, NodeState.UNLOCKED);
 
+        LocalPlayer player = Objects.requireNonNull(Minecraft.getInstance().player);
+        AstrolabeComponent astrolabe = UserDataAttachment.getAttachment(player).getAstrolabe();
+
         ClientProxy client = ThatSkyInteractions.getInstance().getClient();
         UUID target = client.getTarget();
-        FriendAstrolabeInstance.NodeData nodeData = client.getCache().getUserData().getNodeData(target);
+        FriendAstrolabeInstance.NodeData nodeData = astrolabe.getNodeData(target);
         if (nodeData == null) {
             this.friendData = null;
         } else {

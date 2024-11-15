@@ -6,7 +6,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.quepierts.thatskyinteractions.common.block.entity.AbstractUniqueBlockEntity;
-import net.quepierts.thatskyinteractions.common.data.UniqueBlockEntitySavedData;
+import net.quepierts.thatskyinteractions.common.data.global.UniqueBlockEntitySavedData;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractUniqueEntityBlock extends BaseEntityBlock {

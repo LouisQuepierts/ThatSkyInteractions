@@ -23,11 +23,20 @@ public abstract class AnimatedScreen extends Screen implements AnimatableScreen 
     protected final ScreenAnimator animator;
     protected final FloatHolder enter;
 
+    private final LerpNumberAnimation hide;
+
     protected AnimatedScreen(Component title) {
         super(title);
 
         this.enter = new FloatHolder(0);
         this.animator = new ScreenAnimator();
+
+        this.hide = new LerpNumberAnimation(
+                this.enter,
+                AnimateUtils.Lerp::smooth,
+                1.0, 0.01, 0.5f,
+                false
+        );
     }
 
     @Override
@@ -41,12 +50,12 @@ public abstract class AnimatedScreen extends Screen implements AnimatableScreen 
 
     @Override
     public void hide() {
-        this.animator.play(new LerpNumberAnimation(
-                this.enter,
-                AnimateUtils.Lerp::smooth,
-                1.0, 0.01, 0.5f,
-                false
-        ));
+        if (this.hide.isRunning()) {
+            return;
+        }
+
+        this.hide.reset(1.0, 0.01);
+        this.animator.play(this.hide);
     }
 
     @Override
@@ -106,5 +115,10 @@ public abstract class AnimatedScreen extends Screen implements AnimatableScreen 
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Override
+    public boolean isHiding() {
+        return this.hide.isRunning();
     }
 }

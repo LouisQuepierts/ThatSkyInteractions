@@ -19,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -248,7 +249,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             this.toRemove.add(uuid);
             return;
         }
-        if (ThatSkyInteractions.getInstance().getClient().blocked(uuid))
+        if (ClientHelper.blocked(uuid))
             return;
         this.objects.put(uuid, widget);
     }
@@ -261,11 +262,13 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         this.toRemove.add(other);
     }
 
-    public void scroll(double mouseY) {
+    public boolean scroll(double mouseY) {
         if (this.inRange.isEmpty()) {
             this.scroll = 0;
+            return false;
         } else {
             this.scroll = (this.scroll + mouseY) % this.inRange.size();
+            return true;
         }
     }
 

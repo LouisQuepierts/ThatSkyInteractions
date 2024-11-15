@@ -109,7 +109,7 @@ public class CandleClusterBlockEntity extends AbstractW2SWidgetProviderBlockEnti
 
     @Override
     public ResourceLocation type() {
-        return null;
+        return TYPE;
     }
 
     @Override

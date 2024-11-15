@@ -13,7 +13,6 @@ public interface IPickable {
 
     UUID getUUID();
 
-
     BlockPos getBlockPos();
 
     void onPickup(ServerPlayer player);

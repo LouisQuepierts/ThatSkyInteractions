@@ -1,13 +1,14 @@
 package net.quepierts.thatskyinteractions.common.network.packet;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.network.ISync;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.common.data.TSIUserData;
+import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
 import org.jetbrains.annotations.NotNull;
 
 public class UpdateDailyPickupPacket implements ISync {
@@ -25,9 +26,11 @@ public class UpdateDailyPickupPacket implements ISync {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void sync() {
-        TSIUserData userData = ThatSkyInteractions.getInstance().getClient().getCache().getUserData();
-        if (userData != null) {
-            userData.tryUpdateDaily(this.inGameDay);
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+
+        if (localPlayer != null) {
+            UserDataAttachment attachment = UserDataAttachment.getAttachment(localPlayer);
+            attachment.tryUpdateDaily(this.inGameDay);
         }
     }
 
