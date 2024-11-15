@@ -86,8 +86,8 @@ public class TSICommand {
 
             PlayerPair pair = new PlayerPair(sender.getUUID(), player.getUUID());
 
-            InteractTreeInstance instance1 = UserDataAttachment.getAttachment(sender).getRelationship().get(player.getUUID());
-            InteractTreeInstance instance2 = UserDataAttachment.getAttachment(player).getRelationship().get(sender.getUUID());
+            InteractTreeInstance instance1 = UserDataAttachment.getAttachment(sender).getRelationship().get(sender, player.getUUID());
+            InteractTreeInstance instance2 = UserDataAttachment.getAttachment(player).getRelationship().get(player, sender.getUUID());
 
             if (node.equals("all")) {
                 instance1.unlockAll();
@@ -138,8 +138,8 @@ public class TSICommand {
                 return 0;
             }
 
-            relationship.get(targetUuid).reset();
-            UserDataAttachment.getAttachment(player).getRelationship().get(sender.getUUID()).reset();
+            relationship.get(sender, targetUuid).reset();
+            UserDataAttachment.getAttachment(player).getRelationship().get(player, sender.getUUID()).reset();
 
             INetwork network = SimpleAnimator.getNetwork();
             network.sendToPlayer(new UnlockRelationshipPacket.Reset(sender.getUUID(), pair), player);

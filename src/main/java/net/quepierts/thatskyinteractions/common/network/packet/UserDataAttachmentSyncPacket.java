@@ -5,6 +5,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.network.ISync;
 import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
@@ -23,6 +25,7 @@ public class UserDataAttachmentSyncPacket implements ISync {
         this.attachment = UserDataAttachment.STREAM_CODEC.decode(byteBuf);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void sync() {
         LocalPlayer player = Minecraft.getInstance().player;

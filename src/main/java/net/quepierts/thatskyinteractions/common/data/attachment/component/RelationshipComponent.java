@@ -12,6 +12,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.common.data.Codecs;
 import net.quepierts.thatskyinteractions.common.data.PlayerPair;
@@ -56,8 +58,8 @@ public record RelationshipComponent(
         }
 
         return Pair.of(
-                UserDataAttachment.getAttachment(left).getRelationship().get(pair.getRight()),
-                UserDataAttachment.getAttachment(right).getRelationship().get(pair.getLeft())
+                UserDataAttachment.getAttachment(left).getRelationship().get(left, pair.getRight()),
+                UserDataAttachment.getAttachment(right).getRelationship().get(right, pair.getLeft())
         );
     }
 
@@ -77,8 +79,7 @@ public record RelationshipComponent(
         return this.friends.containsKey(player);
     }
 
-    public InteractTreeInstance get(UUID other) {
-        LocalPlayer player = Minecraft.getInstance().player;
+    public InteractTreeInstance get(Player player, UUID other) {
         PlayerPair pair = new PlayerPair(other, player.getUUID());
         return friends.computeIfAbsent(other, key -> new InteractTreeInstance(pair, FRIEND_INTERACT_TREE));
     }

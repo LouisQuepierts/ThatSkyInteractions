@@ -140,7 +140,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
                 if (player == null)
                     return;
 
-                InteractTreeInstance instance = relationship.get(other);
+                InteractTreeInstance instance = relationship.get(localPlayer, other);
                 World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(other, new UnlockRequestW2SButton(
                         instance.getTree().get(this.node).asButton(null, NodeState.UNLOCKABLE),
                         this.pair,
@@ -218,7 +218,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
             if (player == null)
                 return;
 
-            InteractTreeInstance instance = relationship.get(other);
+            InteractTreeInstance instance = relationship.get(minecraft.player, other);
             instance.unlock(this.node);
 
             InteractTreeNode tNode = instance.getTree().get(this.node);
@@ -299,6 +299,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
 
         }
 
+        @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
             Minecraft minecraft = Minecraft.getInstance();
@@ -308,7 +309,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
             UUID local = minecraft.player.getUUID();
             UUID other = this.pair.getOther(local);
 
-            InteractTreeInstance instance = relationship.get(other);
+            InteractTreeInstance instance = relationship.get(minecraft.player, other);
             if (this.node.equals("all")) {
                 instance.unlockAll();
             } else {
@@ -327,6 +328,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
 
         }
 
+        @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
             Minecraft minecraft = Minecraft.getInstance();
@@ -336,7 +338,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
             UUID local = minecraft.player.getUUID();
             UUID other = this.pair.getOther(local);
 
-            InteractTreeInstance instance = relationship.get(other);
+            InteractTreeInstance instance = relationship.get(minecraft.player, other);
             instance.reset();
         }
     }

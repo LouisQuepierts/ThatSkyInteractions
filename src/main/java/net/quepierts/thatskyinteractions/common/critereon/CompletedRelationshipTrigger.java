@@ -43,7 +43,7 @@ public class CompletedRelationshipTrigger extends SimpleCriterionTrigger<Complet
                 return false;
             }
 
-            InteractTreeInstance instance = relationship.get(other);
+            InteractTreeInstance instance = relationship.get(player, other);
             return instance.isCompleted();
         }
     }

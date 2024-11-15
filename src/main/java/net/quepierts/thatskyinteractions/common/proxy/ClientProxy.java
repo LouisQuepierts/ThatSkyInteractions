@@ -400,7 +400,7 @@ public class ClientProxy extends CommonProxy {
             InteractTree tree = InteractTreeManager.INSTANCE.get(RelationshipComponent.FRIEND_INTERACT_TREE);
             UUID uuid = target.getUUID();
             this.setTarget(uuid);
-            InteractTreeInstance instance = relationship.get(uuid);
+            InteractTreeInstance instance = relationship.get(Minecraft.getInstance().player, uuid);
             AnimateScreenHolderLayer.INSTANCE.push(new PlayerInteractScreen(target, tree, instance));
             event.setCanceled(true);
         }

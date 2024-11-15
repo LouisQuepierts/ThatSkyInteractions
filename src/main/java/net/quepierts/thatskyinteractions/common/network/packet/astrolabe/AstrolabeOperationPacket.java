@@ -141,6 +141,7 @@ public abstract class AstrolabeOperationPacket extends BiPacket {
         protected void update(@NotNull ServerPlayer serverPlayer) {
         }
 
+        @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
             LocalPlayer player = Minecraft.getInstance().player;
