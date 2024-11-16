@@ -1,0 +1,33 @@
+{
+  "criteria": {
+    "item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:candle"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/block/white_concrete.png",
+    "description": {
+      "translate": "advancements.thatskyinteractions.root.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "thatskyinteractions:simple_cloud"
+    },
+    "title": {
+      "translate": "advancements.thatskyinteractions.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "item"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

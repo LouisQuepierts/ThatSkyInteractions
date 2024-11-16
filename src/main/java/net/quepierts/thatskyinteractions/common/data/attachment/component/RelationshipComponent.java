@@ -89,6 +89,9 @@ public record RelationshipComponent(
     public void setInfo(@NotNull RelationshipComponent relationship) {
         this.friends.clear();
         this.friends.putAll(relationship.friends);
+
+        this.blackList.clear();
+        this.blackList.addAll(relationship.blackList);
     }
 
     @Override

@@ -1,0 +1,32 @@
+{
+  "parent": "thatskyinteractions:root",
+  "criteria": {
+    "pickup": {
+      "conditions": {
+        "predicate": {
+          "amount": 1
+        }
+      },
+      "trigger": "thatskyinteractions:pickup_permanent"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.thatskyinteractions.wing_of_light.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "thatskyinteractions:wing_of_light"
+    },
+    "title": {
+      "translate": "advancements.thatskyinteractions.wing_of_light.title"
+    }
+  },
+  "requirements": [
+    [
+      "pickup"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

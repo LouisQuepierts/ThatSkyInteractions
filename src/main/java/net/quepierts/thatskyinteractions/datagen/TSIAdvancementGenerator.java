@@ -48,7 +48,7 @@ public class TSIAdvancementGenerator implements AdvancementProvider.AdvancementG
                     null, AdvancementType.GOAL,
                     true, true, false
                 )
-                .addCriterion("pickup", PickupPermanentTrigger.TriggerInstance.requiredAmount(2))
+                .addCriterion("pickup", PickupPermanentTrigger.TriggerInstance.requiredAmount(1))
                 .requirements(AdvancementRequirements.allOf(List.of("pickup")))
                 .save(saver, ThatSkyInteractions.getLocation("wing_of_light"), existingFileHelper);
         Advancement.Builder.advancement().parent(AdvancementSubProvider.createPlaceholder("thatskyinteractions:root"))

@@ -1,0 +1,32 @@
+{
+  "parent": "thatskyinteractions:root",
+  "criteria": {
+    "unlock": {
+      "conditions": {
+        "predicate": {
+          "node": "root"
+        }
+      },
+      "trigger": "thatskyinteractions:unlock_relationship"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.thatskyinteractions.friendship.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:candle"
+    },
+    "title": {
+      "translate": "advancements.thatskyinteractions.friendship.title"
+    }
+  },
+  "requirements": [
+    [
+      "unlock"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

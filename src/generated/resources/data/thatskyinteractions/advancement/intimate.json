@@ -1,0 +1,27 @@
+{
+  "parent": "thatskyinteractions:friendship",
+  "criteria": {
+    "completed": {
+      "trigger": "thatskyinteractions:completed_relationship"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.thatskyinteractions.intimate.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:red_candle"
+    },
+    "title": {
+      "translate": "advancements.thatskyinteractions.intimate.title"
+    }
+  },
+  "requirements": [
+    [
+      "completed"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
