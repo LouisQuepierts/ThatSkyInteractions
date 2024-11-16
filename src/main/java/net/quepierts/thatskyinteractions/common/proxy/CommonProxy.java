@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.common.proxy;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -52,8 +53,7 @@ public class CommonProxy {
 
     private long day = 0L;
     private void onServerTick(final ServerTickEvent.Post event) {
-        ServerLevel level = event.getServer().getLevel(Level.OVERWORLD);
-        assert level != null;
+        ServerLevel level = event.getServer().overworld();
 
         if (level.getGameTime() % 1000L == 0) {
             long day = level.getGameTime() / 24000L;
@@ -93,11 +93,9 @@ public class CommonProxy {
     }
 
     public void onDatapackSync(final OnDatapackSyncEvent event) {
-        ServerLevel level = event.getPlayerList().getServer().getLevel(Level.OVERWORLD);
-        if (level == null)
-            return;
+        MinecraftServer server = event.getPlayerList().getServer();
 
-        TSIGlobalData data = TSIGlobalData.getGlobalRelationData(level);
+        TSIGlobalData data = TSIGlobalData.getGlobalRelationData(server);
         if (data == null) {
             ThatSkyInteractions.LOGGER.warn("TSI Data Error");
             return;

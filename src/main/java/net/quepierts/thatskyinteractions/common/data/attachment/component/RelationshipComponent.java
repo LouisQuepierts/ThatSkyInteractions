@@ -80,12 +80,6 @@ public record RelationshipComponent(
         return friends.computeIfAbsent(other, key -> new InteractTreeInstance(pair, FRIEND_INTERACT_TREE));
     }
 
-    private List<Pair<UUID, InteractTreeInstance>> toList() {
-        return this.friends().entrySet().stream()
-                .map(entry -> Pair.of(entry.getKey(), entry.getValue()))
-                .toList();
-    }
-
     public void setInfo(@NotNull RelationshipComponent relationship) {
         this.friends.clear();
         this.friends.putAll(relationship.friends);

@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.common.data.attachment;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -26,10 +27,12 @@ public class AttachmentSystem {
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
         if (player instanceof ServerPlayer serverPlayer) {
-            ServerLevel level = serverPlayer.serverLevel();
+            MinecraftServer server = serverPlayer.getServer();
 
-            TSIGlobalData data = TSIGlobalData.getGlobalRelationData(level);
-            data.tryAward(serverPlayer);
+            if (server != null) {
+                TSIGlobalData data = TSIGlobalData.getGlobalRelationData(server);
+                data.tryAward(serverPlayer);
+            }
 
             SimpleAnimator.getNetwork().sendToPlayer(new UserDataAttachmentSyncPacket(serverPlayer), serverPlayer);
         }

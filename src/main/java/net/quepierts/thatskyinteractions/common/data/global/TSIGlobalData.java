@@ -18,7 +18,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.common.data.Codecs;
@@ -30,7 +29,6 @@ import net.quepierts.thatskyinteractions.common.data.tree.InteractTree;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -62,11 +60,11 @@ public class TSIGlobalData extends SavedData {
     }
 
     public static TSIGlobalData getGlobalRelationData(MinecraftServer server) {
-        return Objects.requireNonNull(server.getLevel(Level.OVERWORLD)).getDataStorage().get(FACTORY, ID);
+        return server.overworld().getDataStorage().get(FACTORY, ID);
     }
 
     @NotNull
-    private SerializableData data;
+    private SerializableData data = SerializableData.empty();
     private final InteractTree tree;
 
     public static void init(ServerLevel level) {
@@ -75,8 +73,6 @@ public class TSIGlobalData extends SavedData {
 
     private TSIGlobalData() {
         this.setDirty(true);
-        data = SerializableData.empty();
-
         this.tree = InteractTreeManager.INSTANCE.get(FRIEND_INTERACT_TREE);
     }
 
@@ -135,7 +131,7 @@ public class TSIGlobalData extends SavedData {
     }
 
     public boolean lit(@NotNull ServerPlayer sender, @NotNull UUID target, @NotNull MinecraftServer server) {
-        ServerLevel level = server.getLevel(Level.OVERWORLD);
+        ServerLevel level = server.overworld();
         PlayerList playerList = server.getPlayerList();
         ServerPlayer targetPlayer = playerList.getPlayer(target);
 
@@ -160,7 +156,6 @@ public class TSIGlobalData extends SavedData {
         }
 
         DataResult<Pair<SerializableData, Tag>> decode = SerializableData.CODEC.decode(NbtOps.INSTANCE, tag);
-
         decode.ifSuccess(pair -> this.data = pair.getFirst());
     }
 }
