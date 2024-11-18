@@ -4,7 +4,7 @@
       "model": "thatskyinteractions:block/candle_huge"
     },
     "lit=true": {
-      "model": "thatskyinteractions:block/candle_lit"
+      "model": "thatskyinteractions:block/candle_huge_lit"
     }
   }
 }

@@ -53,7 +53,8 @@ public class CommonProxy {
 
     private long day = 0L;
     private void onServerTick(final ServerTickEvent.Post event) {
-        ServerLevel level = event.getServer().overworld();
+        MinecraftServer server = event.getServer();
+        ServerLevel level = server.overworld();
 
         if (level.getGameTime() % 1000L == 0) {
             long day = level.getGameTime() / 24000L;
@@ -65,13 +66,13 @@ public class CommonProxy {
             this.day = day;
 
             INetwork network = SimpleAnimator.getNetwork();
-            for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                 if (UserDataAttachment.getAttachment(player).tryUpdateDaily(day)) {
                     network.sendToPlayer(new UpdateDailyPickupPacket(day), player);
                 }
             }
 
-            TSIGlobalData.getGlobalRelationData(level).update(day);
+            TSIGlobalData.getGlobalRelationData(server).update(day);
         }
     }
 

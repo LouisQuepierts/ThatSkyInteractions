@@ -55,10 +55,19 @@ public class AstrolabeManager implements PreparableReloadListener {
     private static final String FRIEND_ASTROLABES_PATH = "friend_astrolabes.json";
     private static final Logger LOGGER = LogUtils.getLogger();
     private final PacketCache cache = new PacketCache();
-    private ObjectList<ResourceLocation> bestFriendAstrolabes = new ObjectArrayList<>();
-    private ObjectList<ResourceLocation> friendAstrolabes = new ObjectArrayList<>();
-    private Object2ObjectMap<ResourceLocation, Astrolabe> byPath;
-    private ObjectList<Astrolabe> generated;
+
+    @NotNull
+    private ObjectList<ResourceLocation> bestFriendAstrolabes = ObjectLists.emptyList();
+
+    @NotNull
+    private ObjectList<ResourceLocation> friendAstrolabes = ObjectLists.emptyList();
+
+
+    @NotNull
+    private Object2ObjectMap<ResourceLocation, Astrolabe> byPath = Object2ObjectMaps.emptyMap();
+
+    @NotNull
+    private ObjectList<Astrolabe> generated = ObjectLists.emptyList();
 
     private AstrolabeManager() {}
 
@@ -78,12 +87,15 @@ public class AstrolabeManager implements PreparableReloadListener {
         return ThatSkyInteractions.getLocation(GENERATED_PREFIX + i);
     }
 
-    public ObjectSet<Map.Entry<ResourceLocation, Astrolabe>> getAll() {
-        return this.byPath.entrySet();
-    }
-
     @Override
-    public @NotNull CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager, ProfilerFiller profilerFiller, ProfilerFiller profilerFiller1, Executor executor, Executor executor1) {
+    public @NotNull CompletableFuture<Void> reload(
+            PreparationBarrier preparationBarrier,
+            @NotNull ResourceManager resourceManager,
+            @NotNull ProfilerFiller profilerFiller,
+            @NotNull ProfilerFiller profilerFiller1,
+            @NotNull Executor executor,
+            @NotNull Executor executor1
+    ) {
         CompletableFuture<List<Pair<ResourceLocation, Astrolabe>>> load = this.load(resourceManager, executor);
         CompletableFuture<List<ResourceLocation>> listFriendAstrolabes = loadFriendAstrolabeList(resourceManager, executor);
         LOGGER.info("Reload Astrolabes Data...");
@@ -230,10 +242,12 @@ public class AstrolabeManager implements PreparableReloadListener {
         this.friendAstrolabes = ObjectLists.unmodifiable(packet.getFriendAstrolabes());
     }
 
+    @NotNull
     public ObjectList<ResourceLocation> getBestFriendAstrolabes() {
         return bestFriendAstrolabes;
     }
 
+    @NotNull
     public ObjectList<ResourceLocation> getFriendAstrolabes() {
         return friendAstrolabes;
     }
@@ -251,8 +265,9 @@ public class AstrolabeManager implements PreparableReloadListener {
     }
 
     public void clear() {
-        this.byPath = null;
-        this.bestFriendAstrolabes = null;
-        this.friendAstrolabes = null;
+        this.byPath = Object2ObjectMaps.emptyMap();
+        this.bestFriendAstrolabes = ObjectLists.emptyList();
+        this.friendAstrolabes = ObjectLists.emptyList();
+        this.generated = ObjectLists.emptyList();
     }
 }

@@ -55,10 +55,6 @@ public class TSIGlobalData extends SavedData {
 
     public static final ResourceLocation FRIEND_INTERACT_TREE = ThatSkyInteractions.getLocation("friend");
 
-    public static TSIGlobalData getGlobalRelationData(ServerLevel level) {
-        return level.getDataStorage().get(FACTORY, ID);
-    }
-
     public static TSIGlobalData getGlobalRelationData(MinecraftServer server) {
         return server.overworld().getDataStorage().get(FACTORY, ID);
     }
