@@ -220,7 +220,8 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
     }
 
     public static void tick(Level level, BlockPos pos, BlockState blockState, AbstractCloudBlockEntity cloud) {
-        if (cloud.aabb == null || !cloud.collisible) {
+        AABB aabb = cloud.aabb;
+        if (aabb == null || !cloud.collisible) {
             return;
         }
 
@@ -229,24 +230,28 @@ public abstract class AbstractCloudBlockEntity extends AbstractUpdatableBlockEnt
             return;
         }
 
-        List<Entity> entities = level.getEntitiesOfClass(Entity.class, cloud.aabb, CLOUD_IGNORED);
+        List<Entity> entities = level.getEntitiesOfClass(Entity.class, aabb, CLOUD_IGNORED);
+
+        double origin = aabb.minY;
+        double depth = aabb.maxY - origin;
 
         for (Entity entity : entities) {
+            AABB box = entity.getBoundingBox();
             Vec3 position = entity.position();
+            double middle = box.maxY - box.minY + position.y;
+
             Vec3 movement = entity.getDeltaMovement();
 
-            double distance = cloud.aabb.maxY - position.y;
+            double diff = middle - origin;
+            double delta = Math.max((depth - diff) / 9.43, 0.1);
 
-            double deltaY = movement.y;
-            if (distance < 1.5 && deltaY < 0) {
-                deltaY = Math.min(deltaY + distance / 19.43, 0);
-            } else {
-                deltaY = Math.max(deltaY + Mth.cos((float) (distance - 1.5) * Mth.PI + Mth.PI) / 94.3, 0.5);
+            if (movement.y > 0 && movement.y < 0.3) {
+                delta += Math.min(depth / 19.43, 1.0);
             }
 
             entity.setDeltaMovement(
                     movement.x,
-                    deltaY,
+                    Mth.clamp(movement.y + delta, -2.0, 2.0),
                     movement.z);
         }
     }

@@ -44,6 +44,7 @@ import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
+import net.quepierts.thatskyinteractions.client.gui.layer.PromptMessageLayer;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.FriendAstrolabeScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.PlayerInteractScreen;
@@ -77,6 +78,7 @@ import net.quepierts.thatskyinteractions.common.registry.Items;
 import net.quepierts.thatskyinteractions.common.registry.Particles;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -117,7 +119,8 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(InputEvent.MouseScrollingEvent.class, this::onMouseScrolling);
         NeoForge.EVENT_BUS.addListener(InputEvent.Key.class, this::onKey);
-        NeoForge.EVENT_BUS.addListener(InputEvent.MouseButton.Post.class, this::onMouseButton);
+        NeoForge.EVENT_BUS.addListener(InputEvent.MouseButton.Pre.class, this::onMouseButton);
+        NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.RightClickEmpty.class, this::onRightClickEmpty);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingIn.class, this::onLoggingIn);
         NeoForge.EVENT_BUS.addListener(ClientPlayerNetworkEvent.LoggingOut.class, this::onLoggingOut);
         NeoForge.EVENT_BUS.addListener(PlayerEvent.PlayerLoggedInEvent.class, this::onPlayerLoggedIn);
@@ -127,7 +130,6 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Pre.class, this::onRenderGUI);
         NeoForge.EVENT_BUS.addListener(RenderNameTagEvent.class, this::onRenderNameTag);
         NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.class, this::onRenderLevelStage);
-        NeoForge.EVENT_BUS.addListener(RenderHandEvent.class, this::onRenderHand);
         NeoForge.EVENT_BUS.addListener(ClientChatReceivedEvent.Player.class, this::onChatReceivedPlayer);
         NeoForge.EVENT_BUS.addListener(GameShuttingDownEvent.class, this::onGameShuttingDown);
         NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, cameraHandler::onComputeCameraAngles);
@@ -209,9 +211,6 @@ public class ClientProxy extends CommonProxy {
                 RenderUtils.blitDepthToScreen(target, window.getScreenWidth(), window.getScreenHeight());*/
             }
         }
-    }
-
-    private void onRenderHand(final RenderHandEvent event) {
     }
 
     private void onChatReceivedPlayer(final ClientChatReceivedEvent.Player event) {
@@ -373,6 +372,7 @@ public class ClientProxy extends CommonProxy {
     private void onRegisterGuiLayers(final RegisterGuiLayersEvent event) {
         event.registerAboveAll(CandleInfoLayer.LOCATION, CandleInfoLayer.INSTANCE);
         event.registerBelow(CandleInfoLayer.LOCATION, AnimateScreenHolderLayer.LOCATION, AnimateScreenHolderLayer.INSTANCE);
+        event.registerBelow(AnimateScreenHolderLayer.LOCATION, PromptMessageLayer.LOCATION, PromptMessageLayer.INSTANCE);
         event.registerBelow(VanillaGuiLayers.DEBUG_OVERLAY, World2ScreenWidgetLayer.LOCATION, World2ScreenWidgetLayer.INSTANCE);
     }
 
@@ -455,32 +455,29 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    private void onMouseButton(final InputEvent.MouseButton.Post event) {
-
-    }
-
-    /*public boolean blocked(UUID player) {
-        if (this.dataCache.unprepared()) {
-            return false;
-        }
-        return this.dataCache.getUserData().isBlocked(player);
-    }
-
-    public void block(UUID player) {
-        if (this.dataCache.unprepared()) {
+    private void onMouseButton(final InputEvent.MouseButton.Pre event) {
+        if (Minecraft.getInstance().screen != null) {
             return;
         }
-        this.dataCache.getUserData().block(player);
-        World2ScreenWidgetLayer.INSTANCE.remove(player);
-    }
-
-    public void unblock(UUID player) {
-        if (this.dataCache.unprepared()) {
+        if (event.getButton() != GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             return;
         }
-        this.dataCache.getUserData().unblock(player);
-    }*/
 
+        if (event.getAction() != 1) {
+            return;
+        }
+
+        if (options.keyEnabledInteract.get().isDown()) {
+            if (World2ScreenWidgetLayer.INSTANCE.click()) {
+                ThatSkyInteractions.LOGGER.info("click");
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    public void onRightClickEmpty(final PlayerInteractEvent.RightClickEmpty event) {
+
+    }
 
     public void setTarget(@Nullable UUID target) {
         this.target = target;

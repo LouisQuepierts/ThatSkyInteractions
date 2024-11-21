@@ -50,6 +50,21 @@ public class RenderUtils {
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
+    public static void drawCircle(GuiGraphics guiGraphics, int x, int y, int radius, int color) {
+        int x2 = x + radius * 2;
+        int y2 = y + radius * 2;
+
+        RenderSystem.setShader(Shaders::getCircleShader);
+
+        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix4f, (float)x, (float)y, 0).setUv(0, 0).setColor(color);
+        bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y2, 0).setUv(1, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y, 0).setUv(1, 0).setColor(color);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+    }
+
     public static void drawRing(GuiGraphics guiGraphics, int x, int y, int radius, float width, int color) {
         int x2 = x + radius * 2;
         int y2 = y + radius * 2;

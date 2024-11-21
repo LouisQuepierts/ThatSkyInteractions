@@ -27,6 +27,9 @@ public class Shaders {
     private static ShaderInstance ring;
 
     @Nullable
+    private static ShaderInstance circle;
+
+    @Nullable
     private static ShaderInstance glowingRing;
 
     @Nullable
@@ -52,6 +55,10 @@ public class Shaders {
     
     public static ShaderInstance getRoundRectShader() {
         return Objects.requireNonNull(roundRect, "Attempted to call getRoundRectShader before shaders have finished loading.");
+    }
+
+    public static ShaderInstance getCircleShader() {
+        return Objects.requireNonNull(circle, "Attempted to call getCircleShader before shaders have finished loading.");
     }
 
     public static ShaderInstance getRingShader() {
@@ -104,6 +111,15 @@ public class Shaders {
                         DefaultVertexFormat.POSITION_TEX_COLOR
                 ),
                 (shader) -> roundRect = shader
+        );
+
+        event.registerShader(
+                new ShaderInstance(
+                        provider,
+                        ThatSkyInteractions.getLocation("circle"),
+                        DefaultVertexFormat.POSITION_TEX_COLOR
+                ),
+                (shader) -> circle = shader
         );
 
         event.registerShader(

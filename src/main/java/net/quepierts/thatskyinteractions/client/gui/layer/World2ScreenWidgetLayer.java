@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -27,15 +28,13 @@ import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWi
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.mixin.accessor.GameRendererAccessor;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
 public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
@@ -52,9 +51,16 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
     private final FloatHolder click = new FloatHolder(0.0f);
     private final LerpNumberAnimation animation = new LerpNumberAnimation(this.click, AnimateUtils.Lerp::smooth, 0, 1, 0.5f);
 
+    private final Supplier<Component> prompt = () -> Component.translatable(
+            "gui.prompt.pickup",
+            ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getDisplayName()
+    );
+
     private World2ScreenWidget highlight;
     private World2ScreenWidget locked;
     private double scroll = 0;
+    private int hints = 0;
+
     World2ScreenWidgetLayer() {
         reset();
     }
@@ -72,6 +78,16 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
 
         float deltaTicks = deltaTracker.getGameTimeDeltaTicks();
         update(deltaTicks);
+
+        if (this.highlight != null) {
+            this.hints ++;
+        } else {
+            this.hints = 0;
+        }
+
+        if (this.hints > 40) {
+            PromptMessageLayer.INSTANCE.setOrContinue(this.prompt, "w2s_prompt", 60);
+        }
 
         //Arrays.fill(grid, null);
         for (Map.Entry<UUID, World2ScreenWidget> entry : objects.entrySet()) {
@@ -148,6 +164,11 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         final float left = half - 32;
         final float right = half + 32;
 
+        final Vector2f center = new Vector2f(
+                screenWidth / 2f,
+                screenHeight / 2f
+        );
+
         inRange.clear();
         //Arrays.fill(grid, null);
 
@@ -189,7 +210,8 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             if (object.scale < 1.0f)
                 continue;
 
-            if (locked == null && object.x > left && object.x < right && object.selectable) {
+            if (locked == null && object.selectable
+                    && center.distanceSquared(object.x, object.y) < 16 * 16) {
                 inRange.add(object);
             }
         }
@@ -272,9 +294,9 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         }
     }
 
-    public void click() {
+    public boolean click() {
         if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
-            return;
+            return false;
 
         if (this.locked != null) {
             this.minecraft.getSoundManager().play(
@@ -285,6 +307,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             );
             ScreenAnimator.GLOBAL.play(this.animation);
             this.locked.invoke();
+            return true;
         } else if (this.highlight != null) {
             this.minecraft.getSoundManager().play(
                     SimpleSoundInstance.forUI(
@@ -294,7 +317,10 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             );
             ScreenAnimator.GLOBAL.play(this.animation);
             this.highlight.invoke();
+            return true;
         }
+
+        return false;
     }
 
     public void lock(World2ScreenWidget locked) {

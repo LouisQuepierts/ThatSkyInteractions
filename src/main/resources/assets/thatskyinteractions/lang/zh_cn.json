@@ -58,5 +58,7 @@
   "advancements.thatskyinteractions.friendship.title": "Shall We Play",
   "advancements.thatskyinteractions.friendship.description": "赠与他人一根蜡烛成为好友",
   "advancements.thatskyinteractions.intimate.title": "Diving In",
-  "advancements.thatskyinteractions.intimate.description": "解锁一位好友的互动树上每一个节点"
+  "advancements.thatskyinteractions.intimate.description": "解锁一位好友的互动树上每一个节点",
+
+  "gui.prompt.pickup": "点击 [%s] + [鼠标右键] 进行交互"
 }

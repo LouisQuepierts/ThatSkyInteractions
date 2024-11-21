@@ -60,5 +60,7 @@
   "advancements.thatskyinteractions.friendship.title": "Shall We Play",
   "advancements.thatskyinteractions.friendship.description": "Present a candle with other players to become friends",
   "advancements.thatskyinteractions.intimate.title": "Diving In",
-  "advancements.thatskyinteractions.intimate.description": "Unlock every node in a friend's interaction tree"
+  "advancements.thatskyinteractions.intimate.description": "Unlock every node in a friend's interaction tree",
+
+  "gui.prompt.pickup": "Press [%s] + [Right Click] to interact"
 }

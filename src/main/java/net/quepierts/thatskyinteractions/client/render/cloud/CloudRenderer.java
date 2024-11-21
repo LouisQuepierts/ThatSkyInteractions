@@ -155,6 +155,9 @@ public class CloudRenderer {
             ShaderInstance cloudShader = Shaders.getCloudShader();
             RenderSystem.setupShaderLights(cloudShader);
             FogRenderer.levelFogColor();
+
+            Vec3 color = this.level.getCloudColor(0);
+            RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1.0f);
             if (cloudShader.GAME_TIME != null) {
                 cloudShader.GAME_TIME.set(RenderSystem.getShaderGameTime());
             }
@@ -186,6 +189,7 @@ public class CloudRenderer {
 //            this.finalTarget.blitToScreen(width, height);
 //            this.originTarget.blitToScreen(width, height);
         }
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         /*if (this.vanillaCloudBuffer != null) {
             RenderSystem.disableCull();
