@@ -95,13 +95,13 @@ public class HaloEffectW2SWidget extends World2ScreenWidget {
 
     @Override
     public void calculateRenderScale(float distanceSqr) {
-        if (distanceSqr < 8 || distanceSqr > 4096) {
+        if (distanceSqr < 16 || distanceSqr > 8192) {
             this.scale = 0;
         } else if (distanceSqr < 64) {
-            this.scale = (distanceSqr - 8) / 56f;
+            this.scale = (distanceSqr - 16) / 56f;
         } else {
-            float v = distanceSqr - 64;
-            this.scale = 1 - (v * v) / (4032 * 4032);
+            float v = distanceSqr - 128;
+            this.scale = 1 - (v * v) / (8064 * 8064);
         }
     }
 

@@ -13,8 +13,8 @@ import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 
 @OnlyIn(Dist.CLIENT)
 public class ConfirmMessageUtils {
-    private static final Component MESSAGE_UNLOCK_ACCEPT_LEFT = Component.translatable("gui.message.unlock.accept.left").withColor(Palette.NORMAL_TEXT_COLOR);
-    private static final Component MESSAGE_UNLOCK_ACCEPT_RIGHT = Component.translatable("gui.message.unlock.accept.right").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_UNLOCK_ACCEPT_LEFT = Component.translatable("gui.thatskyinteractions.message.unlock.accept.left").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_UNLOCK_ACCEPT_RIGHT = Component.translatable("gui.thatskyinteractions.message.unlock.accept.right").withColor(Palette.NORMAL_TEXT_COLOR);
 
     public static void renderUnlockAcceptMessage(GuiGraphics guiGraphics, PoseStack pose, int y, ResourceLocation currency) {
         pose.pushPose();

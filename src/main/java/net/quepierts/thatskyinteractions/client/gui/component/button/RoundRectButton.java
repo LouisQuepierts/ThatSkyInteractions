@@ -66,7 +66,7 @@ public abstract class RoundRectButton extends AbstractButton {
         pose.translate(this.getX() + xMid, this.getY() + yMid, 0.0f);
         float scale = 1.0f - (AnimateUtils.Time.bounce((float) click.get()) * 0.3f);
         pose.scale(scale, scale, 1.0f);
-        RenderUtils.fillRoundRect(guiGraphics, -xMid, -yMid, width, height, 0.25f * height / width, this.isHovered() ? 0xb0101010 : 0x80101010);
+        RenderUtils.fillRoundRect(guiGraphics, -xMid, -yMid, width, height, 0.25f, this.isHovered() ? 0xb0101010 : 0x80101010);
         guiGraphics.drawCenteredString(Minecraft.getInstance().font, this.getMessage(), 0, -4, Palette.NORMAL_TEXT_COLOR);
         pose.popPose();
 

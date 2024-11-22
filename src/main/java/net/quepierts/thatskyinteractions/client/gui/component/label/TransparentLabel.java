@@ -45,7 +45,7 @@ public class TransparentLabel extends AbstractWidget implements Renderable, Widg
     protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         float alpha = Palette.getShaderAlpha();
         RenderSystem.enableBlend();
-        RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0.1f * this.getHeight() / this.getWidth(), 0x80000000);
+        RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0.1f, 0x80000000);
         guiGraphics.drawCenteredString(this.minecraft.font, this.getMessage(), this.getX() + this.getWidth() / 2, this.getY() + 10, Palette.NORMAL_TEXT_COLOR);
         RenderSystem.disableBlend();
         Palette.setShaderAlpha(alpha);

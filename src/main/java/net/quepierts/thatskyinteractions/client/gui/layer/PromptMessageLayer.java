@@ -10,6 +10,7 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.animate.WaitAnimation;
@@ -25,7 +26,7 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
     public static final PromptMessageLayer INSTANCE = new PromptMessageLayer();
     public static final ResourceLocation LOCATION = ThatSkyInteractions.getLocation("prompt_message");
 
-    private static final float TRANSITION_TIME = 0.8f;
+    private static final float TRANSITION_TIME = 0.6f;
 
     private int time = 60;
     private int timer = 0;
@@ -35,8 +36,7 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
     private String src = "";
 
     private final FloatHolder scale = new FloatHolder(0.0f);
-    private final LerpNumberAnimation fadeIn = new LerpNumberAnimation(scale, PromptMessageLayer::lerp, 0, 1, TRANSITION_TIME);
-    private final LerpNumberAnimation fadeOut = new LerpNumberAnimation(scale, PromptMessageLayer::invlerp, 0, 1, TRANSITION_TIME);
+    private final LerpNumberAnimation transition = new LerpNumberAnimation(scale, PromptMessageLayer::lerp, 0, 1, TRANSITION_TIME);
     private final WaitAnimation enter = new WaitAnimation(TRANSITION_TIME, this::begin);
     private final WaitAnimation clear = new WaitAnimation(TRANSITION_TIME, this::cleanup);
 
@@ -56,7 +56,8 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
 
             if (this.timer > time) {
                 this.started = false;
-                ScreenAnimator.GLOBAL.play(this.fadeOut);
+                this.transition.reset(1, 0);
+                ScreenAnimator.GLOBAL.play(this.transition);
                 ScreenAnimator.GLOBAL.play(this.clear);
             }
         }
@@ -74,8 +75,9 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
         pose.translate(halfWidth, height - 48, 0);
         pose.scale(scale, scale, scale);
         RenderSystem.enableBlend();
-        RenderUtils.fillRoundRect(guiGraphics, -this.length, -16, this.length * 2, 20, 0.025f, BG_COLOR);
-        guiGraphics.drawString(minecraft.font, this.component, -this.length + 16, -10, 0xffffffff);
+        int width1 = this.length * 2;
+        RenderUtils.fillRoundRect(guiGraphics, -this.length, -16, width1, 20, 0.25f, BG_COLOR);
+        guiGraphics.drawString(minecraft.font, this.component, -this.length + 12, -10, 0xffffffff);
         RenderSystem.disableBlend();
         pose.popPose();
     }
@@ -93,9 +95,9 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
     }
 
     public void setMessage(@NotNull Component component, @NotNull String src, int time) {
+        this.transition.reset(0, 1);
         ScreenAnimator.GLOBAL.remove(this.clear);
-        ScreenAnimator.GLOBAL.remove(this.fadeOut);
-        ScreenAnimator.GLOBAL.play(this.fadeIn);
+        ScreenAnimator.GLOBAL.play(this.transition);
         ScreenAnimator.GLOBAL.play(this.enter);
         this.src = src;
         this.component = component;
@@ -117,9 +119,10 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
     }
 
     private static double lerp(double src, double dest, float time) {
-        float t2 = time * time;
-        float delta = 8.4f * time -17.9f * t2 + 14.6f * t2 * time - 4.1f * t2 * t2;
-        return src * (1.0F - delta) + dest * delta;
+        float t = (float) AnimateUtils.Lerp.linear(src, dest, time);
+        float t2 = t * t;
+        float delta = 8.4f * t -17.9f * t2 + 14.6f * t2 * t - 4.1f * t2 * t2;
+        return delta;
     }
 
     private static double invlerp(double src, double dest, float time) {

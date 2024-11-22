@@ -43,14 +43,14 @@ public class Slider extends AbstractWidget {
         float alpha = Palette.getShaderAlpha();
 
         if (this.isFocused()) {
-            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), 16, 0.5f * 16 / this.getWidth(), Palette.HIGHLIGHT_COLOR ^ 0x40000000);
-            RenderUtils.fillRoundRect(guiGraphics, this.getX() + 1, this.getY() + 1, this.getWidth() - 2, 14, 0.5f * 14 / (this.getWidth() - 2), 0x80101010);
+            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), 16, 0.5f, Palette.HIGHLIGHT_COLOR ^ 0x40000000);
+            RenderUtils.fillRoundRect(guiGraphics, this.getX() + 1, this.getY() + 1, this.getWidth() - 2, 14, 0.5f, 0x80101010);
         } else {
-            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), 16, 0.5f * 16 / this.getWidth(), 0xa0101010);
+            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), 16, 0.5f, 0xa0101010);
         }
 
         int i = (int) (this.display * (double) (this.width - 16));
-        RenderUtils.fillRoundRect(guiGraphics, this.getX() + 2, this.getY() + 2, i + 12, 12, 0.5f * 12 / (i + 12), 0xa0404040);
+        RenderUtils.fillRoundRect(guiGraphics, this.getX() + 2, this.getY() + 2, i + 12, 12, 0.5f, 0xa0404040);
         RenderUtils.fillRoundRect(guiGraphics, this.getX() + i + 3, this.getY() + 3, 10, 10, 0.5f, Palette.HIGHLIGHT_COLOR ^ (this.isFocused() ? 0x40000000 : 0x80000000));
         Minecraft minecraft = Minecraft.getInstance();
         this.renderScrollingString(guiGraphics, minecraft.font, 2, Palette.NORMAL_TEXT_COLOR);

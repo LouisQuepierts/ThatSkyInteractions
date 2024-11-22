@@ -365,12 +365,12 @@ public class TEditBox extends AbstractWidget {
         if (this.isVisible()) {
 
             RenderSystem.enableBlend();
-            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0.5f * this.getHeight() / this.getWidth(), this.isFocused() ? Palette.HIGHLIGHT_COLOR : 0xa0101010);
+            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0.5f, this.isFocused() ? Palette.HIGHLIGHT_COLOR : 0xa0101010);
 
             if (this.isFocused()) {
                 int width = this.getWidth() - 2;
                 int height = this.getHeight() - 2;
-                RenderUtils.fillRoundRect(guiGraphics, this.getX() + 1, this.getY() + 1, width, height, 0.5f * height / width, 0xff101010);
+                RenderUtils.fillRoundRect(guiGraphics, this.getX() + 1, this.getY() + 1, width, height, 0.5f, 0xff101010);
             }
 
             int textColor = this.isEditable ? this.textColor : this.textColorUneditable;
@@ -414,7 +414,7 @@ public class TEditBox extends AbstractWidget {
             }
 
             if (this.error) {
-                guiGraphics.drawCenteredString(Minecraft.getInstance().font, Component.translatable("gui.message.illegal_argument"), this.getX() + this.getWidth() / 2, this.getY() + this.getHeight() + 4, 0xffaa0000);
+                guiGraphics.drawCenteredString(Minecraft.getInstance().font, Component.translatable("gui.thatskyinteractions.message.illegal_argument"), this.getX() + this.getWidth() / 2, this.getY() + this.getHeight() + 4, 0xffaa0000);
             }
 
             RenderSystem.disableBlend();

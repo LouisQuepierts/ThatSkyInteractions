@@ -1,22 +1,24 @@
 package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 import static net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer.FADE_BEGIN_DISTANCE;
 import static net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer.FADE_DISTANCE;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class World2ScreenWidget {
-    protected static final ResourceLocation TEXTURE_NORMAL = ThatSkyInteractions.getLocation("textures/gui/w2s_button_normal.png");
-    protected static final ResourceLocation TEXTURE_HIGHLIGHT = ThatSkyInteractions.getLocation("textures/gui/w2s_button_highlight.png");
     protected final Vector3f worldPos = new Vector3f();
     public float xO;
     public float x;
@@ -105,5 +107,19 @@ public abstract class World2ScreenWidget {
 
     public boolean isInScreen() {
         return inScreen;
+    }
+
+    @NotNull
+    public Component getPrompt() {
+        return Component.translatable(
+                "gui.thatskyinteractions.prompt.w2s.general",
+                Component.translatable(ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
+                Component.translatable(InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_RIGHT).getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR)
+        ).withColor(Palette.NORMAL_TEXT_COLOR);
+    }
+
+    @NotNull
+    public String getPromptType() {
+        return "general";
     }
 }

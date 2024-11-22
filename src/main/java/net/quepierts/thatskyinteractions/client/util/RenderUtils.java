@@ -39,7 +39,7 @@ public class RenderUtils {
         RenderSystem.setShader(Shaders::getRoundRectShader);
         ShaderInstance shader = Shaders.getRoundRectShader();
         shader.safeGetUniform("Ratio").set(ratio);
-        shader.safeGetUniform("Radius").set(radius);
+        shader.safeGetUniform("Radius").set(radius * ratio);
 
         Matrix4f matrix4f = guiGraphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);

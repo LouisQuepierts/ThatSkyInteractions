@@ -23,10 +23,10 @@ import java.util.UUID;
 @OnlyIn(Dist.CLIENT)
 public class BlockButton extends TreeNodeButton {
     private static final ResourceLocation ICON_BLOCK = ThatSkyInteractions.getLocation("textures/gui/block.png");
-    private static final Component MESSAGE_BLOCK_1 = Component.translatable("gui.message.block.line1").withColor(Palette.NORMAL_TEXT_COLOR);
-    private static final Component MESSAGE_BLOCK_2 = Component.translatable("gui.message.block.line2").withColor(Palette.NORMAL_TEXT_COLOR);
-    private static final Component MESSAGE_UNBLOCK_1 = Component.translatable("gui.message.unblock.line1").withColor(Palette.NORMAL_TEXT_COLOR);
-    private static final Component MESSAGE_UNBLOCK_2 = Component.translatable("gui.message.unblock.line2").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_BLOCK_1 = Component.translatable("gui.thatskyinteractions.message.block.line1").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_BLOCK_2 = Component.translatable("gui.thatskyinteractions.message.block.line2").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_UNBLOCK_1 = Component.translatable("gui.thatskyinteractions.message.unblock.line1").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_UNBLOCK_2 = Component.translatable("gui.thatskyinteractions.message.unblock.line2").withColor(Palette.NORMAL_TEXT_COLOR);
     public BlockButton(String id, int x, int y, ScreenAnimator animator) {
         super(id, x, 0, Component.empty(), y, ICON_BLOCK, animator, NodeState.UNLOCKED);
     }

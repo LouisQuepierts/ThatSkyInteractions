@@ -4,23 +4,23 @@
   "key.thatskyinteractions.interact_button": "与悬浮按钮互动",
   "key.thatskyinteractions.friend_astrolabe": "打开好友星盘",
 
-  "gui.message.unlock.accept.left": "接受",
-  "gui.message.unlock.accept.right": "馈赠",
-  "gui.message.unlock.friend.request.left": "是否送一支",
-  "gui.message.unlock.friend.request.right": "和这个玩家成为朋友？",
-  "gui.message.unlock.friend.accept": "和这位玩家成为朋友？",
-  "gui.message.unlock.interaction.request.left": "赠送",
-  "gui.message.unlock.interaction.request.right": "给好友解锁%s吗？",
-  "gui.message.unlock.interaction.accept": "解锁%s？",
-  "gui.message.unlock.lock.request.left": "赠送",
-  "gui.message.unlock.lock.request.right": "给这位朋友提高%s吗？",
-  "gui.message.unlock.lock.accept": "提高与这位好友的%s？",
-  "gui.message.unlock.lock.intimacy": "亲密度",
-  "gui.message.block.line1": "拉黑这位玩家？",
-  "gui.message.block.line2": "你不会再收到来自这位玩家的邀请!",
-  "gui.message.unblock.line1": "取消拉黑这位玩家?",
-  "gui.message.unblock.line2": "你可以再次收到来自这位玩家的邀请!",
-  "gui.message.nickname.change": "修改这位好友的昵称？",
+  "gui.thatskyinteractions.message.unlock.accept.left": "接受",
+  "gui.thatskyinteractions.message.unlock.accept.right": "馈赠",
+  "gui.thatskyinteractions.message.unlock.friend.request.left": "是否送一支",
+  "gui.thatskyinteractions.message.unlock.friend.request.right": "和这个玩家成为朋友？",
+  "gui.thatskyinteractions.message.unlock.friend.accept": "和这位玩家成为朋友？",
+  "gui.thatskyinteractions.message.unlock.interaction.request.left": "赠送",
+  "gui.thatskyinteractions.message.unlock.interaction.request.right": "给好友解锁%s吗？",
+  "gui.thatskyinteractions.message.unlock.interaction.accept": "解锁%s？",
+  "gui.thatskyinteractions.message.unlock.lock.request.left": "赠送",
+  "gui.thatskyinteractions.message.unlock.lock.request.right": "给这位朋友提高%s吗？",
+  "gui.thatskyinteractions.message.unlock.lock.accept": "提高与这位好友的%s？",
+  "gui.thatskyinteractions.message.unlock.lock.intimacy": "亲密度",
+  "gui.thatskyinteractions.message.block.line1": "拉黑这位玩家？",
+  "gui.thatskyinteractions.message.block.line2": "你不会再收到来自这位玩家的邀请!",
+  "gui.thatskyinteractions.message.unblock.line1": "取消拉黑这位玩家?",
+  "gui.thatskyinteractions.message.unblock.line2": "你可以再次收到来自这位玩家的邀请!",
+  "gui.thatskyinteractions.message.nickname.change": "修改这位好友的昵称？",
 
   "gui.tree.node.interaction.level": "%s级",
 
@@ -38,7 +38,7 @@
   "item.thatskyinteractions.cloud_editor": "云编辑器",
   "item.thatskyinteractions.cloud_expand": "云放大",
   "item.thatskyinteractions.cloud_reduce": "云缩小",
-  "tab.tsi": "That Sky Interactions",
+  "tab.thatskyinteractions": "That Sky Interactions",
 
   "candle_cluster.scale": "大小: %d x %d x %d",
   "candle_cluster.framed": "边框: %s",
@@ -60,5 +60,5 @@
   "advancements.thatskyinteractions.intimate.title": "Diving In",
   "advancements.thatskyinteractions.intimate.description": "解锁一位好友的互动树上每一个节点",
 
-  "gui.prompt.pickup": "点击 [%s] + [鼠标右键] 进行交互"
+  "gui.thatskyinteractions.prompt.w2s.general": "点击 [%s] + [%s] 进行交互"
 }

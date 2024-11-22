@@ -91,4 +91,9 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
         BlockPos pos = blockEntity.getBlockPos();
         return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 2, pos.getZ() + 1);
     }
+
+    @Override
+    public int getViewDistance() {
+        return 128;
+    }
 }

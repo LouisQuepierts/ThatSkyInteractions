@@ -19,9 +19,9 @@ import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
 
 @OnlyIn(Dist.CLIENT)
 public class LockButton extends TreeNodeButton {
-    private static final Component MESSAGE_LEFT = Component.translatable("gui.message.unlock.lock.request.left").withColor(Palette.NORMAL_TEXT_COLOR);
-    private static final Component MESSAGE_RIGHT = Component.translatable("gui.message.unlock.lock.request.right", Component.translatable("gui.message.unlock.lock.intimacy").withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD)).withColor(Palette.NORMAL_TEXT_COLOR);
-    private static final Component MESSAGE_ACCEPT = Component.translatable("gui.message.unlock.lock.accept", Component.translatable("gui.message.unlock.lock.intimacy").withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD)).withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_LEFT = Component.translatable("gui.thatskyinteractions.message.unlock.lock.request.left").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_RIGHT = Component.translatable("gui.thatskyinteractions.message.unlock.lock.request.right", Component.translatable("gui.thatskyinteractions.message.unlock.lock.intimacy").withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD)).withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final Component MESSAGE_ACCEPT = Component.translatable("gui.thatskyinteractions.message.unlock.lock.accept", Component.translatable("gui.thatskyinteractions.message.unlock.lock.intimacy").withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD)).withColor(Palette.NORMAL_TEXT_COLOR);
     public static final ResourceLocation ICON_LOCK = ThatSkyInteractions.getLocation("textures/gui/lock.png");
     public LockButton(String id, int x, int y, int price, Component message, ScreenAnimator animator, NodeState state) {
         super(id, x, y, price, animator, ICON_LOCK, message, Currency.RED_CANDLE, state);

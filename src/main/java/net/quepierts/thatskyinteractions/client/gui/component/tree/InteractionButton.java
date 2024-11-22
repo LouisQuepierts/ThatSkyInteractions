@@ -37,10 +37,10 @@ public class InteractionButton extends TreeNodeButton {
         this.leveledInteraction = interaction.withSuffix("_" + level);
 
         this.levelComponent = level > 1 ? Component.translatable("gui.tree.node.interaction.level", level) : Component.empty();
-        this.left = Component.translatable("gui.message.unlock.interaction.request.left", this.getPrice()).withColor(Palette.NORMAL_TEXT_COLOR);
+        this.left = Component.translatable("gui.thatskyinteractions.message.unlock.interaction.request.left", this.getPrice()).withColor(Palette.NORMAL_TEXT_COLOR);
         MutableComponent name = Component.translatable(ThatSkyInteractions.getInteractionTranslateKey(interaction)).withColor(Palette.HIGHLIGHT_TEXT_COLOR).withStyle(ChatFormatting.BOLD);
-        this.right = Component.translatable("gui.message.unlock.interaction.request.right", name).withColor(Palette.NORMAL_TEXT_COLOR);
-        this.accept = Component.translatable("gui.message.unlock.interaction.accept", name).withColor(Palette.NORMAL_TEXT_COLOR);
+        this.right = Component.translatable("gui.thatskyinteractions.message.unlock.interaction.request.right", name).withColor(Palette.NORMAL_TEXT_COLOR);
+        this.accept = Component.translatable("gui.thatskyinteractions.message.unlock.interaction.accept", name).withColor(Palette.NORMAL_TEXT_COLOR);
     }
 
     @Override

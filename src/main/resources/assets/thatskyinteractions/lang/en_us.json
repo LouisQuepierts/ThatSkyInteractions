@@ -5,27 +5,27 @@
   "key.thatskyinteractions.interact_button": "Interact With Button",
   "key.thatskyinteractions.friend_astrolabe": "Open Astrolabe",
 
-  "gui.message.unlock.accept.left": "Receive",
-  "gui.message.unlock.accept.right": "gifts",
-  "gui.message.unlock.friend.request.left": "Send an",
-  "gui.message.unlock.friend.request.right": "to befriend this player?",
-  "gui.message.unlock.friend.accept": "Become friends with this player?",
-  "gui.message.unlock.interaction.request.left": "Give",
-  "gui.message.unlock.interaction.request.right": "to this friend to unlock %s?",
-  "gui.message.unlock.interaction.accept": "Unlock %s?",
-  "gui.message.unlock.lock.request.left": "Give",
-  "gui.message.unlock.lock.request.right": "to this friend to increase %s?",
-  "gui.message.unlock.lock.accept": "Increase %s with this friend?",
-  "gui.message.unlock.lock.intimacy": "intimacy",
-  "gui.message.block.line1": "Block this player?",
-  "gui.message.block.line2": "You won't get that player any invitation!",
-  "gui.message.unblock.line1": "Unblock this player?",
-  "gui.message.unblock.line2": "You can get that player again!",
-  "gui.message.nickname.change": "Change this friend's nickname?",
+  "gui.thatskyinteractions.message.unlock.accept.left": "Receive",
+  "gui.thatskyinteractions.message.unlock.accept.right": "gifts",
+  "gui.thatskyinteractions.message.unlock.friend.request.left": "Send an",
+  "gui.thatskyinteractions.message.unlock.friend.request.right": "to befriend this player?",
+  "gui.thatskyinteractions.message.unlock.friend.accept": "Become friends with this player?",
+  "gui.thatskyinteractions.message.unlock.interaction.request.left": "Give",
+  "gui.thatskyinteractions.message.unlock.interaction.request.right": "to this friend to unlock %s?",
+  "gui.thatskyinteractions.message.unlock.interaction.accept": "Unlock %s?",
+  "gui.thatskyinteractions.message.unlock.lock.request.left": "Give",
+  "gui.thatskyinteractions.message.unlock.lock.request.right": "to this friend to increase %s?",
+  "gui.thatskyinteractions.message.unlock.lock.accept": "Increase %s with this friend?",
+  "gui.thatskyinteractions.message.unlock.lock.intimacy": "intimacy",
+  "gui.thatskyinteractions.message.block.line1": "Block this player?",
+  "gui.thatskyinteractions.message.block.line2": "You won't get that player any invitation!",
+  "gui.thatskyinteractions.message.unblock.line1": "Unblock this player?",
+  "gui.thatskyinteractions.message.unblock.line2": "You can get that player again!",
+  "gui.thatskyinteractions.message.nickname.change": "Change this friend's nickname?",
 
   "gui.tree.node.interaction.level": "Level %s",
 
-  "tab.tsi": "That Sky Interactions",
+  "tab.thatskyinteractions": "That Sky Interactions",
 
   "interaction.thatskyinteractions.high_five": "High Five",
   "interaction.thatskyinteractions.hug": "Hug",
@@ -62,5 +62,5 @@
   "advancements.thatskyinteractions.intimate.title": "Diving In",
   "advancements.thatskyinteractions.intimate.description": "Unlock every node in a friend's interaction tree",
 
-  "gui.prompt.pickup": "Press [%s] + [Right Click] to interact"
+  "gui.thatskyinteractions.prompt.w2s.general": "Press [%s] + [%s] to interact"
 }

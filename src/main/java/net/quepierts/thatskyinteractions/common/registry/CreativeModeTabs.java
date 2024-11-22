@@ -15,7 +15,7 @@ public class CreativeModeTabs {
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TSI = REGISTER.register(
             "tsi", () -> CreativeModeTab.builder()
-                    .title(Component.translatable("tab.tsi"))
+                    .title(Component.translatable("tab.thatskyinteractions"))
                     .icon(() -> new ItemStack(Items.SIMPLE_CLOUD))
                     .build()
     );

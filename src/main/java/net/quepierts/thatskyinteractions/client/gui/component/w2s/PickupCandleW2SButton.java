@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -20,10 +21,10 @@ import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
 public class PickupCandleW2SButton extends World2ScreenButton {
-    public static final ResourceLocation TEXTURE = ThatSkyInteractions.getLocation("textures/gui/pickup.png");
+    public static final ResourceLocation SPRITE = ThatSkyInteractions.getLocation("fire");
     private final CandleClusterBlockEntity bound;
     public PickupCandleW2SButton(CandleClusterBlockEntity bound) {
-        super(TEXTURE);
+        super(SPRITE);
         this.bound = bound;
         BlockPos position = this.bound.getBlockPos();
         this.worldPos.set(position.getX() + 0.5f, position.getY() + 1.2f, position.getZ() + 0.5f);
@@ -74,5 +75,10 @@ public class PickupCandleW2SButton extends World2ScreenButton {
     @Override
     public void calculateRenderScale(float distance) {
         this.scale = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - 4, 0) / 4);
+    }
+
+    @Override
+    protected void renderInner(GuiGraphics guiGraphics, boolean highlight, float deltaTicks) {
+        guiGraphics.blitSprite(SPRITE, -12, -12, 24, 24);
     }
 }

@@ -35,7 +35,7 @@ public class ColorInputLabel extends Vector3InputLabel {
                 this.ySlider.getIntValue(),
                 this.zSlider.getIntValue()
         );
-        RenderUtils.fillRoundRect(guiGraphics, left, top, width, height, 0.1f * height / width, color);
+        RenderUtils.fillRoundRect(guiGraphics, left, top, width, height, 0.1f, color);
         RenderSystem.disableBlend();
     }
 }

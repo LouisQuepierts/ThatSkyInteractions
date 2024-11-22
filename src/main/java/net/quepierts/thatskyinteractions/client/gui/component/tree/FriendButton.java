@@ -20,9 +20,9 @@ import org.jetbrains.annotations.NotNull;
 @OnlyIn(Dist.CLIENT)
 public class FriendButton extends TreeNodeButton {
     public static final ResourceLocation ICON_FRIEND = ThatSkyInteractions.getLocation("textures/gui/be_friend.png");
-    private static final FormattedCharSequence INVITE_MESSAGE_LEFT = Component.translatable("gui.message.unlock.friend.request.left").withColor(Palette.NORMAL_TEXT_COLOR).getVisualOrderText();
-    private static final FormattedCharSequence INVITE_MESSAGE_RIGHT = Component.translatable("gui.message.unlock.friend.request.right").withColor(Palette.NORMAL_TEXT_COLOR).getVisualOrderText();
-    private static final Component ACCEPT_MESSAGE = Component.translatable("gui.message.unlock.friend.accept").withColor(Palette.NORMAL_TEXT_COLOR);
+    private static final FormattedCharSequence INVITE_MESSAGE_LEFT = Component.translatable("gui.thatskyinteractions.message.unlock.friend.request.left").withColor(Palette.NORMAL_TEXT_COLOR).getVisualOrderText();
+    private static final FormattedCharSequence INVITE_MESSAGE_RIGHT = Component.translatable("gui.thatskyinteractions.message.unlock.friend.request.right").withColor(Palette.NORMAL_TEXT_COLOR).getVisualOrderText();
+    private static final Component ACCEPT_MESSAGE = Component.translatable("gui.thatskyinteractions.message.unlock.friend.accept").withColor(Palette.NORMAL_TEXT_COLOR);
 
     public FriendButton(String id, int x, int y, ScreenAnimator animator, NodeState state) {
         super(id, x, 1, Component.literal("friend"), y, ICON_FRIEND, animator, state);

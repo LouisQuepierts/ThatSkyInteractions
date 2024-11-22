@@ -11,7 +11,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -34,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
 public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
@@ -51,15 +49,10 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
     private final FloatHolder click = new FloatHolder(0.0f);
     private final LerpNumberAnimation animation = new LerpNumberAnimation(this.click, AnimateUtils.Lerp::smooth, 0, 1, 0.5f);
 
-    private final Supplier<Component> prompt = () -> Component.translatable(
-            "gui.prompt.pickup",
-            ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getDisplayName()
-    );
-
     private World2ScreenWidget highlight;
     private World2ScreenWidget locked;
     private double scroll = 0;
-    private int hints = 0;
+    private int prompt = 0;
 
     World2ScreenWidgetLayer() {
         reset();
@@ -80,13 +73,13 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         update(deltaTicks);
 
         if (this.highlight != null) {
-            this.hints ++;
-        } else {
-            this.hints = 0;
-        }
+            this.prompt++;
 
-        if (this.hints > 40) {
-            PromptMessageLayer.INSTANCE.setOrContinue(this.prompt, "w2s_prompt", 60);
+            if (this.prompt > 40) {
+                PromptMessageLayer.INSTANCE.setOrContinue(this.highlight::getPrompt, this.highlight.getPromptType(), 60);
+            }
+        } else {
+            this.prompt = 0;
         }
 
         //Arrays.fill(grid, null);
@@ -159,11 +152,6 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         final Matrix4f mat = new Matrix4f().mul(projectionMatrix).mul(viewMatrix);
         final int screenWidth = this.minecraft.getWindow().getGuiScaledWidth();
         final int screenHeight = this.minecraft.getWindow().getGuiScaledHeight();
-
-        final float half = screenWidth / 2f;
-        final float left = half - 32;
-        final float right = half + 32;
-
         final Vector2f center = new Vector2f(
                 screenWidth / 2f,
                 screenHeight / 2f
@@ -225,46 +213,51 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         }
     }
 
-//    private void tryMove(Vector4i gridPos, World2ScreenButton button) {
-//        for (int x = gridPos.x; x < gridPos.y; x ++) {
-//            for (int y = gridPos.z; y < gridPos.w; y++) {
-//                final World2ScreenButton btn = get(x, y);
-//
-//                if (btn == null)
-//                    continue;
-//                button.moveIfOverlapped(btn);
-//            }
-//        }
-//    }
-//
-//    private void apply(Vector4i gridPos, World2ScreenButton button) {
-//        for (int x = gridPos.x; x < gridPos.y; x ++) {
-//            for (int y = gridPos.z; y < gridPos.w; y++) {
-//                set(x, y, button);
-//            }
-//        }
-//    }
-//
-//    private Vector4i getGridPosition(float x, float y) {
-//        return new Vector4i(
-//                (int) ((x - 16) / 32),
-//                (int) ((x + 15) / 32),
-//                (int) ((y - 16) / 32),
-//                (int) ((y + 15) / 32)
-//        );
-//    }
-//
-//    private World2ScreenButton get(int x, int y) {
-//        if (x < 0 || y < 0 || x > 64 || y > 64)
-//            return null;
-//        return grid[x + y * 64];
-//    }
-//
-//    private void set(int x, int y, World2ScreenButton button) {
-//        if (x < 0 || y < 0 || x > 64 || y > 64)
-//            return;
-//        grid[x + y * 64] = button;
-//    }
+    private void updateSingle(World2ScreenWidget object) {
+        final GameRenderer gameRenderer = this.minecraft.gameRenderer;
+        final Camera camera = gameRenderer.getMainCamera();
+        final Vec3 cameraPos = camera.getPosition();
+
+        final double fov = ((GameRendererAccessor) gameRenderer).tsi$getFov(camera, 0.0f, true);
+        final Matrix4f projectionMatrix = gameRenderer.getProjectionMatrix(fov);
+
+        final Matrix4f viewMatrix = new Matrix4f()
+                .rotation(camera.rotation().conjugate(new Quaternionf()))
+                .translate((float) -cameraPos.x, (float) -cameraPos.y, (float) -cameraPos.z);
+
+        final Matrix4f mat = new Matrix4f().mul(projectionMatrix).mul(viewMatrix);
+        final int screenWidth = this.minecraft.getWindow().getGuiScaledWidth();
+        final int screenHeight = this.minecraft.getWindow().getGuiScaledHeight();
+
+        final Vector3f pos = new Vector3f();
+        object.setComputed();
+        object.getWorldPos(pos);
+
+        Vector4f cameraSpacePos = new Vector4f(pos, 1.0f)
+                .mul(mat);
+
+        if (cameraSpacePos.w < 0.0f) {
+            cameraSpacePos.y = screenHeight;
+            cameraSpacePos.x = -cameraSpacePos.x;
+        }
+
+        float x = (int) ((cameraSpacePos.x() / cameraSpacePos.z() * 0.5F + 0.5F) * screenWidth);
+        float y = (int) ((1.0F - (cameraSpacePos.y() / cameraSpacePos.z() * 0.5F + 0.5F)) * screenHeight);
+
+        if (object.limitInScreen()) {
+            x = Mth.clamp(x, 16, screenWidth - 16);
+            y = Mth.clamp(y, 16, screenHeight - 16);
+        }
+
+        object.setInScreen(
+                x > 0 && y > 0 && x < screenWidth && y < screenHeight
+        );
+
+        object.setScreenPos(x, y);
+
+        float distance = Vector3f.distanceSquared(pos.x, pos.y, pos.z, (float) cameraPos.x, (float) cameraPos.y, (float) cameraPos.z);
+        object.calculateRenderScale(distance);
+    }
 
     public void addWorldPositionObject(UUID uuid, World2ScreenWidget widget) {
         if (widget == null) {
@@ -273,10 +266,18 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         }
         if (ClientHelper.blocked(uuid))
             return;
+
+        if (!this.objects.containsKey(uuid)) {
+            this.updateSingle(widget);
+        }
         this.objects.put(uuid, widget);
     }
 
     public void addWorldPositionObjectForced(UUID uuid, World2ScreenWidget widget) {
+        if (!this.objects.containsKey(uuid)) {
+            this.objects.put(uuid, widget);
+        }
+
         this.objects.put(uuid, widget);
     }
 
