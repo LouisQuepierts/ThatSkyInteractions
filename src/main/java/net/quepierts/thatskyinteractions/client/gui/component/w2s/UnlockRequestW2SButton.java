@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,7 +16,9 @@ import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.common.data.PlayerPair;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
 public class UnlockRequestW2SButton extends World2ScreenButton {
@@ -45,32 +48,45 @@ public class UnlockRequestW2SButton extends World2ScreenButton {
         out.set(this.position);
     }
 
+    @Override
+    public @NotNull Component getPrompt(boolean byMouse) {
+        return byMouse ?
+                Component.translatable("gui.thatskyinteractions.prompt.w2s.mouse.unlock").withColor(Palette.NORMAL_TEXT_COLOR) :
+                Component.translatable(
+                        "gui.thatskyinteractions.prompt.w2s.world.unlock",
+                        Component.translatable(ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
+                        Component.translatable(InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_RIGHT).getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR)
+                ).withColor(Palette.NORMAL_TEXT_COLOR);
+    }
+
+    @NotNull
+    public String getPromptType() {
+        return "unlock";
+    }
+
     private record UnlockNodeAcceptConfirmProvider(UnlockRequestW2SButton button) implements ConfirmProvider {
+        @Override
+        public void render(GuiGraphics guiGraphics, int width, int height) {
+            RenderSystem.enableBlend();
+            Palette.useUnlockedIconColor();
+            RenderUtils.blitIcon(guiGraphics, this.button.parent.getIcon(), -20, 20 - height / 2, 40, 40);
+            Palette.reset();
+
+            PoseStack pose = guiGraphics.pose();
+            pose.pushPose();
+            pose.scale(1.25f, 1.25f, 1.25f);
+            this.button.parent.renderUnlockMessageAccept(guiGraphics, pose, width, height);
+            pose.popPose();
+
+            Palette.reset();
+        }
 
         @Override
-            public void render(GuiGraphics guiGraphics, int width, int height) {
-                RenderSystem.enableBlend();
-                Palette.useUnlockedIconColor();
-                RenderUtils.blitIcon(guiGraphics, this.button.parent.getIcon(), -20, 20 - height / 2, 40, 40);
-                Palette.reset();
-
-                PoseStack pose = guiGraphics.pose();
-                pose.pushPose();
-                pose.scale(1.25f, 1.25f, 1.25f);
-                this.button.parent.renderUnlockMessageAccept(guiGraphics, pose, width, height);
-                pose.popPose();
-
-                Palette.reset();
-            }
-
-            @Override
-            public void confirm() {
-                ThatSkyInteractions.getInstance().getClient().getUnlockRelationshipHandler().accept(this.button.pair, this.button.node);
-            }
-
-            @Override
-            public void cancel() {
-
-            }
+        public void confirm() {
+            ThatSkyInteractions.getInstance().getClient().getUnlockRelationshipHandler().accept(this.button.pair, this.button.node);
         }
+
+        @Override
+        public void cancel() {}
+    }
 }

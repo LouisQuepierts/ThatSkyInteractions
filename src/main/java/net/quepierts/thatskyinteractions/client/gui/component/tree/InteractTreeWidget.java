@@ -74,8 +74,7 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
         this.widgets.clear();
         this.renderables.clear();
 
-        this.clickUnlockable = null;
-        this.clickUnlockableTimes = 0;
+        this.clearClickCounter();
         this.clickUnlockableTimer = 0.0f;
         final int middle = this.width / 2;
 
@@ -247,6 +246,11 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
 
     private void clearClickCounter() {
         this.clickUnlockableTimes = 0;
+
+        if (this.clickUnlockable == null) {
+            return;
+        }
+
         CandleInfoLayer.INSTANCE.refund(this.clickUnlockable.getCurrency());
         this.clickUnlockable = null;
     }

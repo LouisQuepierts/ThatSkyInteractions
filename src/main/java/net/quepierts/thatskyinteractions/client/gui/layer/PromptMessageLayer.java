@@ -124,11 +124,4 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
         float delta = 8.4f * t -17.9f * t2 + 14.6f * t2 * t - 4.1f * t2 * t2;
         return delta;
     }
-
-    private static double invlerp(double src, double dest, float time) {
-        time = 1 - time;
-        float t2 = time * time;
-        float delta = 8.4f * time -17.9f * t2 + 14.6f * t2 * time - 4.1f * t2 * t2;
-        return src * (1.0F - delta) + dest * delta;
-    }
 }

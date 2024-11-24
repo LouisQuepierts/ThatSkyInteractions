@@ -6,6 +6,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.resources.SkinManager;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -21,10 +22,12 @@ public class FakeClientPlayer extends AbstractClientPlayer {
 
     private final FakePlayerDisplayHandler handler;
     private final ResolvableProfile profile;
+    private final Component name;
     public FakeClientPlayer(ClientLevel clientLevel, FakePlayerDisplayHandler handler, FriendData friendData) {
         super(clientLevel, new GameProfile(PLACEHOLDER_UUID, PLACEHOLDER_NAME));
         this.handler = handler;
         this.profile = friendData.getProfile();
+        this.name = Component.literal(friendData.getUsername());
         clientLevel.addEntity(this);
 
         this.getEntityData().set(DATA_PLAYER_MODE_CUSTOMISATION, (byte) 0b11111111);
@@ -54,6 +57,12 @@ public class FakeClientPlayer extends AbstractClientPlayer {
     @Override
     public void aiStep() {
 
+    }
+
+    @NotNull
+    @Override
+    public Component getName() {
+        return this.name;
     }
 
     public UUID getDisplayUUID() {

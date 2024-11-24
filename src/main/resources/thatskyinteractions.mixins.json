@@ -12,6 +12,7 @@
     "FogRendererMixin",
     "GameRendererMixin",
     "LevelRendererMixin",
+    "MinecraftClientMixin",
     "PlayerRendererMixin",
     "accessor.GameRendererAccessor"
   ],

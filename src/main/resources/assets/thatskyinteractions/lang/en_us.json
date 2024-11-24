@@ -62,5 +62,16 @@
   "advancements.thatskyinteractions.intimate.title": "Diving In",
   "advancements.thatskyinteractions.intimate.description": "Unlock every node in a friend's interaction tree",
 
-  "gui.thatskyinteractions.prompt.w2s.general": "Press [%s] + [%s] to interact"
+  "word.thatskyinteractions.candlelight": "candlelight",
+  "word.thatskyinteractions.missing_wol": "missing wing of light",
+
+  "gui.thatskyinteractions.prompt.w2s.mouse.general": "Press [%s] to interact",
+  "gui.thatskyinteractions.prompt.w2s.world.general": "Press [%s] + [%s] to interact",
+  "gui.thatskyinteractions.prompt.w2s.mouse.collect": "Collect %s",
+  "gui.thatskyinteractions.prompt.w2s.world.collect": "Press [%s] + [%s] to collect %s",
+  "gui.thatskyinteractions.prompt.w2s.mouse.astrolabe_ignite": "Light up the a friend's star",
+  "gui.thatskyinteractions.prompt.w2s.mouse.request": "Accept your friend's invite?",
+  "gui.thatskyinteractions.prompt.w2s.world.request": "Press [%s] + [%s] to accept invite",
+  "gui.thatskyinteractions.prompt.w2s.mouse.unlock": "Accepting a gift from a friend?",
+  "gui.thatskyinteractions.prompt.w2s.world.unlock": "Press [%s] + [%s] to accept gift"
 }

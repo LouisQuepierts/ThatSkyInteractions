@@ -1,14 +1,19 @@
 package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.ClientHelper;
+import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.FakeClientPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.UUID;
 
@@ -46,6 +51,19 @@ public final class FakePlayerIgniteW2SButton extends World2ScreenButton {
                 position.y() + 7.5f - enterHolder.getValue() * 5f,
                 position.z()
         );
+    }
+
+    @Override
+    @NotNull
+    public Component getPrompt(boolean byMouse) {
+        return byMouse ?
+                Component.translatable("gui.thatskyinteractions.prompt.w2s.mouse.astrolabe_ignite").withColor(Palette.NORMAL_TEXT_COLOR) :
+                super.getPrompt(false);
+    }
+
+    @NotNull
+    public String getPromptType() {
+        return "astrolabe_ignite";
     }
 
     public void setClicked(boolean clicked) {

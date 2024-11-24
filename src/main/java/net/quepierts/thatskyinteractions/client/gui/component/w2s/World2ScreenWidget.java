@@ -110,12 +110,17 @@ public abstract class World2ScreenWidget {
     }
 
     @NotNull
-    public Component getPrompt() {
-        return Component.translatable(
-                "gui.thatskyinteractions.prompt.w2s.general",
-                Component.translatable(ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
-                Component.translatable(InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_RIGHT).getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR)
-        ).withColor(Palette.NORMAL_TEXT_COLOR);
+    public Component getPrompt(boolean byMouse) {
+        return byMouse ?
+                Component.translatable(
+                        "gui.thatskyinteractions.prompt.w2s.mouse.general",
+                        Component.translatable(InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_LEFT).getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR)
+                ).withColor(Palette.NORMAL_TEXT_COLOR) :
+                Component.translatable(
+                        "gui.thatskyinteractions.prompt.w2s.world.general",
+                        Component.translatable(ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
+                        Component.translatable(InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_RIGHT).getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR)
+                ).withColor(Palette.NORMAL_TEXT_COLOR);
     }
 
     @NotNull

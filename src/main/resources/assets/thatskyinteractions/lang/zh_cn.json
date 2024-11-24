@@ -60,5 +60,16 @@
   "advancements.thatskyinteractions.intimate.title": "Diving In",
   "advancements.thatskyinteractions.intimate.description": "解锁一位好友的互动树上每一个节点",
 
-  "gui.thatskyinteractions.prompt.w2s.general": "点击 [%s] + [%s] 进行交互"
+  "word.thatskyinteractions.candlelight": "烛火",
+  "word.thatskyinteractions.missing_wol": "遗失的光翼",
+
+  "gui.thatskyinteractions.prompt.w2s.mouse.general": "点击 [%s] 进行交互",
+  "gui.thatskyinteractions.prompt.w2s.world.general": "点击 [%s] + [%s] 进行交互",
+  "gui.thatskyinteractions.prompt.w2s.mouse.collect": "收集 %s",
+  "gui.thatskyinteractions.prompt.w2s.world.collect": "点击 [%s] + [%s] 收集 %s",
+  "gui.thatskyinteractions.prompt.w2s.mouse.astrolabe_ignite": "点亮好友的星星",
+  "gui.thatskyinteractions.prompt.w2s.mouse.request": "接受来自好友的邀请?",
+  "gui.thatskyinteractions.prompt.w2s.world.request": "点击 [%s] + [%s] 接受邀请",
+  "gui.thatskyinteractions.prompt.w2s.mouse.unlock": "接受来自好友的馈赠?",
+  "gui.thatskyinteractions.prompt.w2s.world.unlock": "点击 [%s] + [%s] 接受馈赠"
 }

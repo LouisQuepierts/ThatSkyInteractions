@@ -17,6 +17,7 @@ import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.animate.WaitAnimation;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerIgniteW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.FakePlayerLightW2SWidget;
+import net.quepierts.thatskyinteractions.client.gui.component.w2s.World2ScreenWidget;
 import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.common.data.FriendData;
@@ -60,7 +61,7 @@ public class FakePlayerDisplayHandler {
         this.player.setYBodyRot(yRot);
         this.player.setYHeadRot(yRot);
         this.enterAnimation.reset(0, 1);
-        World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), light);
+        //World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), light);
 
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         FriendAstrolabeInstance.NodeData data = UserDataAttachment.getAttachment(localPlayer).getAstrolabe().getNodeData(friendData.getUuid());
@@ -76,7 +77,8 @@ public class FakePlayerDisplayHandler {
         this.enterAnimation.reset(1, 0);
         this.canRepos = true;
         ScreenAnimator.GLOBAL.play(this.enterAnimation);
-        World2ScreenWidgetLayer.INSTANCE.lock(null);
+        World2ScreenWidgetLayer.INSTANCE.remove(this.player.getUUID());
+        //World2ScreenWidgetLayer.INSTANCE.lock(null);
     }
 
     public boolean isVisible() {
@@ -120,7 +122,7 @@ public class FakePlayerDisplayHandler {
         if (this.player != null) {
             this.ignite.setClicked(false);
             World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
-            World2ScreenWidgetLayer.INSTANCE.lock(this.ignite);
+            //World2ScreenWidgetLayer.INSTANCE.lock(this.ignite);
             this.canIgnite = false;
         }
     }

@@ -72,16 +72,6 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         float deltaTicks = deltaTracker.getGameTimeDeltaTicks();
         update(deltaTicks);
 
-        if (this.highlight != null) {
-            this.prompt++;
-
-            if (this.prompt > 40) {
-                PromptMessageLayer.INSTANCE.setOrContinue(this.highlight::getPrompt, this.highlight.getPromptType(), 60);
-            }
-        } else {
-            this.prompt = 0;
-        }
-
         //Arrays.fill(grid, null);
         for (Map.Entry<UUID, World2ScreenWidget> entry : objects.entrySet()) {
             World2ScreenWidget object = entry.getValue();
@@ -152,12 +142,9 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         final Matrix4f mat = new Matrix4f().mul(projectionMatrix).mul(viewMatrix);
         final int screenWidth = this.minecraft.getWindow().getGuiScaledWidth();
         final int screenHeight = this.minecraft.getWindow().getGuiScaledHeight();
-        final Vector2f center = new Vector2f(
-                screenWidth / 2f,
-                screenHeight / 2f
-        );
+        final Vector2f center = this.getCenter();
 
-        inRange.clear();
+        this.inRange.clear();
         //Arrays.fill(grid, null);
 
         final Vector3f pos = new Vector3f();
@@ -211,6 +198,41 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
                 this.highlight = null;
             }
         }
+
+        if (this.highlight != null) {
+            this.prompt++;
+
+            if (this.prompt > 40) {
+                PromptMessageLayer.INSTANCE.setOrContinue(
+                        () -> this.highlight.getPrompt(this.minecraft.screen != null),
+                        this.highlight.getPromptType() + "$" + (this.minecraft.screen != null),
+                        60
+                );
+            }
+        } else {
+            this.prompt = 0;
+        }
+    }
+
+    private Vector2f getCenter() {
+        if (this.minecraft.screen == null) {
+            return new Vector2f(
+                    this.minecraft.getWindow().getGuiScaledWidth() / 2f,
+                    this.minecraft.getWindow().getGuiScaledHeight() / 2f
+            );
+        } else if (!this.minecraft.screen.isPauseScreen()) {
+            return new Vector2f((float) (
+                    minecraft.mouseHandler.xpos()
+                            * (double)minecraft.getWindow().getGuiScaledWidth()
+                            / (double)minecraft.getWindow().getScreenWidth()),
+                    (float)(
+                    minecraft.mouseHandler.ypos()
+                            * (double)minecraft.getWindow().getGuiScaledHeight()
+                            / (double)minecraft.getWindow().getScreenHeight())
+            );
+        }
+
+        return new Vector2f(-128);
     }
 
     private void updateSingle(World2ScreenWidget object) {
@@ -296,6 +318,10 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
     }
 
     public boolean click() {
+        if (this.minecraft.level == null) {
+            return false;
+        }
+
         if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
             return false;
 

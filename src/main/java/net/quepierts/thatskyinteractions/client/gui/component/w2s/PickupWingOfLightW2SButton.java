@@ -1,13 +1,16 @@
 package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.animate.WaitAnimation;
@@ -18,6 +21,7 @@ import net.quepierts.thatskyinteractions.common.data.attachment.component.Pickup
 import net.quepierts.thatskyinteractions.common.network.packet.blockentity.PickablePickupPacket;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
 public class PickupWingOfLightW2SButton extends World2ScreenButton {
@@ -65,5 +69,26 @@ public class PickupWingOfLightW2SButton extends World2ScreenButton {
     @Override
     public void calculateRenderScale(float distance) {
         this.scale = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - 8, 0) / 4);
+    }
+
+    @Override
+    @NotNull
+    public Component getPrompt(boolean byMouse) {
+        return byMouse ?
+                Component.translatable(
+                        "gui.thatskyinteractions.prompt.w2s.mouse.collect",
+                        Component.translatable("word.thatskyinteractions.missing_wol").withColor(Palette.HIGHLIGHT_TEXT_COLOR)
+                ).withColor(Palette.NORMAL_TEXT_COLOR) :
+                Component.translatable(
+                        "gui.thatskyinteractions.prompt.w2s.world.collect",
+                        Component.translatable(ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
+                        Component.translatable(InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_RIGHT).getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
+                        Component.translatable("word.thatskyinteractions.missing_wol").withColor(Palette.HIGHLIGHT_TEXT_COLOR)
+                ).withColor(Palette.NORMAL_TEXT_COLOR);
+    }
+
+    @NotNull
+    public String getPromptType() {
+        return "collect_wol";
     }
 }

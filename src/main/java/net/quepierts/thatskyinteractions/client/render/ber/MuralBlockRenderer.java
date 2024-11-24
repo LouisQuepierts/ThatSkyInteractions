@@ -116,6 +116,7 @@ public class MuralBlockRenderer extends HighlightBlockEntityRenderer<MuralBlockE
         boolean b = super.shouldRender(blockEntity, cameraPos);
         if (!b) {
             this.bloomRenderer.removeRenderAction(blockEntity);
+            blockEntity.setDirty(true);
         }
         return b;
     }

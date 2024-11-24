@@ -3,10 +3,12 @@ package net.quepierts.thatskyinteractions.common.proxy;
 import com.mojang.blaze3d.vertex.MeshData;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.network.chat.ChatType;
@@ -42,10 +44,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
-import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
-import net.quepierts.thatskyinteractions.client.gui.layer.PromptMessageLayer;
-import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
+import net.quepierts.thatskyinteractions.client.gui.layer.*;
 import net.quepierts.thatskyinteractions.client.gui.screen.FriendAstrolabeScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.PlayerInteractScreen;
 import net.quepierts.thatskyinteractions.client.particle.CircleParticle;
@@ -117,6 +116,7 @@ public class ClientProxy extends CommonProxy {
         this.bloomRenderer = new BloomRenderer(this.vertexBufferManager);
 
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
+        NeoForge.EVENT_BUS.addListener(ScreenEvent.MouseButtonPressed.Post.class, this::onMousePressed);
         NeoForge.EVENT_BUS.addListener(InputEvent.MouseScrollingEvent.class, this::onMouseScrolling);
         NeoForge.EVENT_BUS.addListener(InputEvent.Key.class, this::onKey);
         NeoForge.EVENT_BUS.addListener(InputEvent.MouseButton.Pre.class, this::onMouseButton);
@@ -370,9 +370,11 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onRegisterGuiLayers(final RegisterGuiLayersEvent event) {
-        event.registerAboveAll(CandleInfoLayer.LOCATION, CandleInfoLayer.INSTANCE);
-        event.registerBelow(CandleInfoLayer.LOCATION, AnimateScreenHolderLayer.LOCATION, AnimateScreenHolderLayer.INSTANCE);
-        event.registerBelow(AnimateScreenHolderLayer.LOCATION, PromptMessageLayer.LOCATION, PromptMessageLayer.INSTANCE);
+        event.registerAboveAll(CombineLayer.UI, new CombineLayer(
+                PromptMessageLayer.INSTANCE,
+                AnimateScreenHolderLayer.INSTANCE,
+                CandleInfoLayer.INSTANCE
+        ));
         event.registerBelow(VanillaGuiLayers.DEBUG_OVERLAY, World2ScreenWidgetLayer.LOCATION, World2ScreenWidgetLayer.INSTANCE);
     }
 
@@ -389,6 +391,10 @@ public class ClientProxy extends CommonProxy {
             return;
         }
 
+        if (!player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty()) {
+            return;
+        }
+
         if (!this.options.keyEnabledInteract.get().isDown()) {
             return;
         }
@@ -401,7 +407,7 @@ public class ClientProxy extends CommonProxy {
             UUID uuid = target.getUUID();
             this.setTarget(uuid);
             InteractTreeInstance instance = relationship.get(Minecraft.getInstance().player, uuid);
-            AnimateScreenHolderLayer.INSTANCE.push(new PlayerInteractScreen(target, tree, instance));
+                    AnimateScreenHolderLayer.INSTANCE.push(new PlayerInteractScreen(target, tree, instance));
             event.setCanceled(true);
         }
         /*InteractTree tree = this.dataCache.getTree();
@@ -424,6 +430,29 @@ public class ClientProxy extends CommonProxy {
             playerRenderer.addLayer(new PartPoseResolveLayer(playerRenderer));
             playerRenderer.addLayer(new CandleLayer(playerRenderer, dispatcher));
         }
+    }
+
+    private void onMousePressed(final ScreenEvent.MouseButtonPressed.Post event) {
+        if (Minecraft.getInstance().level == null) {
+            return;
+        }
+
+        if (event.getScreen().isPauseScreen()) {
+            return;
+        }
+
+        if (event.wasClickHandled()) {
+            return;
+        }
+
+        if (event.getButton() != GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            return;
+        }
+
+//        if (!this.options.keyEnabledInteract.get().isDown()) {
+//            return;
+//        }
+        World2ScreenWidgetLayer.INSTANCE.click();
     }
 
     private void onMouseScrolling(final InputEvent.MouseScrollingEvent event) {
