@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -13,7 +12,6 @@ import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.util.FakeClientPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.UUID;
 
