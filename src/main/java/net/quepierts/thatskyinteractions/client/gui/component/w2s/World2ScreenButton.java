@@ -32,7 +32,7 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
         pose.scale(scale, scale, 1.0f);
         pose.mulPose(Axis.YP.rotation(value * Mth.TWO_PI));
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, scale);
-        RenderUtils.drawCircle(guiGraphics, -16, -16, 16, BG_COLOR);
+        RenderUtils.fillCircle(guiGraphics, -16, -16, 16, BG_COLOR);
 
         if (highlight) {
             RenderUtils.drawRing(guiGraphics, -16, -16, 16, 1f/32f, HL_COLOR);

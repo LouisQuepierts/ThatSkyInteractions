@@ -8,8 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -24,7 +22,6 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
     public static final int BG_COLOR = 0xc0101010;
 
     public static final PromptMessageLayer INSTANCE = new PromptMessageLayer();
-    public static final ResourceLocation LOCATION = ThatSkyInteractions.getLocation("prompt_message");
 
     private static final float TRANSITION_TIME = 0.6f;
 
@@ -121,7 +118,6 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
     private static double lerp(double src, double dest, float time) {
         float t = (float) AnimateUtils.Lerp.linear(src, dest, time);
         float t2 = t * t;
-        float delta = 8.4f * t -17.9f * t2 + 14.6f * t2 * t - 4.1f * t2 * t2;
-        return delta;
+        return 8.4f * t -17.9f * t2 + 14.6f * t2 * t - 4.1f * t2 * t2;
     }
 }

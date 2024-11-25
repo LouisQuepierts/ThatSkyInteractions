@@ -113,7 +113,7 @@ public class HaloEffectW2SWidget extends World2ScreenWidget {
         if (computeList.isEmpty())
             return;
 
-        RenderTarget renderTarget = ThatSkyInteractions.getInstance().getClient().getBloomRenderer().getFinalTarget();
+        RenderTarget renderTarget = ThatSkyInteractions.getInstance().getClient().getBloomRenderDispatch().getFinalTarget();
         if (renderTarget == null)
             return;
 

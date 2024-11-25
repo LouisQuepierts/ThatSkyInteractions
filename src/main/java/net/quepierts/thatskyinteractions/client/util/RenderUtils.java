@@ -50,7 +50,7 @@ public class RenderUtils {
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
-    public static void drawCircle(GuiGraphics guiGraphics, int x, int y, int radius, int color) {
+    public static void fillCircle(GuiGraphics guiGraphics, int x, int y, int radius, int color) {
         int x2 = x + radius * 2;
         int y2 = y + radius * 2;
 

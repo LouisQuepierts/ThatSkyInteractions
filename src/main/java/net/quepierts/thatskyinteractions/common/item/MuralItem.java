@@ -13,8 +13,11 @@ import net.quepierts.thatskyinteractions.common.registry.Blocks;
 import org.jetbrains.annotations.NotNull;
 
 public class MuralItem extends BlockItem {
-    public MuralItem() {
+    private final boolean blooming;
+
+    public MuralItem(boolean blooming) {
         super(Blocks.MURAL.get(), new Properties().stacksTo(1));
+        this.blooming = blooming;
     }
 
     @NotNull
@@ -28,11 +31,29 @@ public class MuralItem extends BlockItem {
             return InteractionResult.SUCCESS;
         }
 
-        return super.useOn(context);
+        InteractionResult result = super.useOn(context);
+
+
+        if (context.getLevel().getBlockEntity(context.getClickedPos().above()) instanceof MuralBlockEntity mural) {
+            mural.setBloom(this.blooming);
+        }
+
+        return result;
     }
 
     @OnlyIn(Dist.CLIENT)
     private void openEditorUI(MuralBlockEntity mural) {
         AnimateScreenHolderLayer.INSTANCE.push(new MuralEditScreen(mural));
+    }
+
+    @NotNull
+    public String getDescriptionId() {
+        String descriptionId = super.getDescriptionId();
+
+        if (this.blooming) {
+            descriptionId += "_blooming";
+        }
+
+        return descriptionId;
     }
 }

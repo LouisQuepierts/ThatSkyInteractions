@@ -202,14 +202,14 @@ public class Shaders {
         //PostEffects.setup(provider);
         ClientProxy client = ThatSkyInteractions.getInstance().getClient();
         client.getCloudRenderer().setup(provider);
-        client.getBloomRenderer().setup(provider);
+        client.getBloomRenderDispatch().setup(provider);
     }
 
     public static void resize(int width, int height) {
         //PostEffects.resize(width, height);
         ClientProxy client = ThatSkyInteractions.getInstance().getClient();
         client.getCloudRenderer().resize(width, height);
-        client.getBloomRenderer().resize(width, height);
+        client.getBloomRenderDispatch().resize(width, height);
     }
 
     public static final class Batch {

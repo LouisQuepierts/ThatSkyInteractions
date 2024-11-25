@@ -125,7 +125,7 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float v) {
+    protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float v) {
         if (this.scroll0.get() < 0.0 && this.animation.getDest() < 0.0f) {
             this.animation.reset(this.scroll0.get(), 0.0f);
             this.animator.play(this.animation);
@@ -228,7 +228,7 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
 
     }
 

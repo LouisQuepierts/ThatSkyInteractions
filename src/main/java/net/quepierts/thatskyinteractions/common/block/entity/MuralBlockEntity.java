@@ -17,6 +17,7 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity implements IU
     private static final String TAG_SIZE = "size";
     private static final String TAG_OFFSET = "offset";
     private static final String TAG_ROTATE = "rotate";
+    private static final String TAG_BLOOM = "bloom";
 
     private final Vector3i offset = new Vector3i(0);
     private final Vector3i rotate = new Vector3i(0);
@@ -26,6 +27,8 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity implements IU
     private AABB aabb;
     @NotNull
     private ResourceLocation muralTexture;
+
+    private boolean bloom = true;
     private boolean recompile = true;
 
     public MuralBlockEntity(BlockPos pos, BlockState blockState) {
@@ -40,6 +43,7 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity implements IU
         tag.putIntArray(TAG_OFFSET, new int[]{this.offset.x, this.offset.y, this.offset.z});
         tag.putIntArray(TAG_ROTATE, new int[]{this.rotate.x, this.rotate.y, this.rotate.z});
         tag.putString(TAG_MURAL, muralTexture.toString());
+        tag.putBoolean(TAG_BLOOM, bloom);
     }
 
     @Override
@@ -67,6 +71,10 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity implements IU
 
         if (tag.contains(TAG_MURAL)) {
             this.muralTexture = ResourceLocation.parse(tag.getString(TAG_MURAL));
+        }
+
+        if (tag.contains(TAG_BLOOM)) {
+            this.bloom = tag.getBoolean(TAG_BLOOM);
         }
 
         this.recompile = true;
@@ -119,6 +127,17 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity implements IU
 
     public ResourceLocation getTextureLocation() {
         return this.muralTexture;
+    }
+
+    public void setBloom(boolean bloom) {
+        this.bloom = bloom;
+        this.recompile = true;
+
+        this.markUpdate();
+    }
+
+    public boolean shouldBloom() {
+        return this.bloom;
     }
 
     public void updateAABB() {

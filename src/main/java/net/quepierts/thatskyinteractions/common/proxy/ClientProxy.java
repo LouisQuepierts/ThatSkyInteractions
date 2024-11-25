@@ -50,10 +50,11 @@ import net.quepierts.thatskyinteractions.client.particle.HeartParticle;
 import net.quepierts.thatskyinteractions.client.particle.ShorterFlameParticle;
 import net.quepierts.thatskyinteractions.client.particle.StarParticle;
 import net.quepierts.thatskyinteractions.client.reference.BlockEntityRenderers;
-import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
 import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
 import net.quepierts.thatskyinteractions.client.render.layer.CandleLayer;
 import net.quepierts.thatskyinteractions.client.render.layer.PartPoseResolveLayer;
+import net.quepierts.thatskyinteractions.client.render.pipeline.BloomRenderDispatch;
+import net.quepierts.thatskyinteractions.client.render.pipeline.VboRenderDispatch;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.EffectDistributorManager;
@@ -96,7 +97,9 @@ public class ClientProxy extends CommonProxy {
     @NotNull
     private final CloudRenderer cloudRenderer;
     @NotNull
-    private final BloomRenderer bloomRenderer;
+    private final BloomRenderDispatch bloomRenderDispatch;
+    @NotNull
+    private final VboRenderDispatch vboRenderDispatch;
 
     @Nullable
     private UUID target;
@@ -111,7 +114,8 @@ public class ClientProxy extends CommonProxy {
         this.particleDistributorManager = new EffectDistributorManager();
         this.vertexBufferManager = new VertexBufferManager();
         this.cloudRenderer = new CloudRenderer();
-        this.bloomRenderer = new BloomRenderer(this.vertexBufferManager);
+        this.bloomRenderDispatch = new BloomRenderDispatch(this.vertexBufferManager);
+        this.vboRenderDispatch = new VboRenderDispatch(this.vertexBufferManager);
 
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(ScreenEvent.MouseButtonPressed.Post.class, this::onMousePressed);
@@ -173,6 +177,7 @@ public class ClientProxy extends CommonProxy {
             event.accept(new ItemStack(Items.CLOUD_REDUCE));
             event.accept(new ItemStack(Items.WING_OF_LIGHT));
             event.accept(new ItemStack(Items.MURAL));
+            event.accept(new ItemStack(Items.MURAL_BLOOMING));
 
             for (DeferredHolder<Item, CandleClusterItem> candle : Items.CANDLES) {
                 event.accept(new ItemStack(candle));
@@ -187,7 +192,14 @@ public class ClientProxy extends CommonProxy {
         Camera camera = event.getCamera();
         Vec3 cameraPosition = camera.getPosition();
 
-        if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
+        if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+            this.vboRenderDispatch.drawObjects(
+                    event.getModelViewMatrix(),
+                    event.getProjectionMatrix(),
+                    cameraPosition,
+                    partialTick
+            );
+        } else if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
             this.vertexBufferManager.tick();
         } else {
             if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
@@ -197,7 +209,7 @@ public class ClientProxy extends CommonProxy {
                         partialTick,
                         cameraPosition
                 );
-                this.bloomRenderer.drawObjects(
+                this.bloomRenderDispatch.drawObjects(
                         event.getModelViewMatrix(),
                         event.getProjectionMatrix(),
                         cameraPosition,
@@ -350,7 +362,8 @@ public class ClientProxy extends CommonProxy {
     private void onWorldUnload(final LevelEvent.Unload event) {
         if (event.getLevel() instanceof ClientLevel) {
             this.cloudRenderer.reset();
-            this.bloomRenderer.cleanup();
+            this.bloomRenderDispatch.cleanup();
+            this.vboRenderDispatch.cleanup();
         }
     }
 
@@ -541,8 +554,13 @@ public class ClientProxy extends CommonProxy {
     }
 
     @NotNull
-    public BloomRenderer getBloomRenderer() {
-        return this.bloomRenderer;
+    public BloomRenderDispatch getBloomRenderDispatch() {
+        return this.bloomRenderDispatch;
+    }
+
+    @NotNull
+    public VboRenderDispatch getVboRenderDispatch() {
+        return vboRenderDispatch;
     }
 
     @NotNull

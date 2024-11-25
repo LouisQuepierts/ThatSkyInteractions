@@ -8,7 +8,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.reference.RenderTypes;
-import net.quepierts.thatskyinteractions.client.render.bloom.BloomRenderer;
+import net.quepierts.thatskyinteractions.client.render.pipeline.BloomRenderDispatch;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import org.joml.Matrix4f;
 
@@ -16,10 +16,10 @@ import org.joml.Matrix4f;
 public abstract class HighlightBlockEntityRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
     protected static final ModelPart.Cube CUBE;
 
-    protected final BloomRenderer bloomRenderer;
+    protected final BloomRenderDispatch bloomRenderer;
 
     protected HighlightBlockEntityRenderer() {
-        this.bloomRenderer = ThatSkyInteractions.getInstance().getClient().getBloomRenderer();
+        this.bloomRenderer = ThatSkyInteractions.getInstance().getClient().getBloomRenderDispatch();
     }
 
     protected void renderHighLight(Matrix4f transformation, int color) {

@@ -27,6 +27,8 @@ public class WingOfLightBlockEntity extends AbstractW2SWidgetProviderBlockEntity
     private HaloEffectW2SWidget halo;
     private float xRot;
     private float yRot;
+
+    private boolean dirty = false;
     public WingOfLightBlockEntity(BlockPos pos, BlockState blockState) {
         super(BlockEntities.WING_OF_LIGHT.get(), pos, blockState);
     }
@@ -48,6 +50,8 @@ public class WingOfLightBlockEntity extends AbstractW2SWidgetProviderBlockEntity
         if (tag.contains(TAG_YROT)) {
             this.yRot = tag.getFloat(TAG_YROT);
         }
+
+        this.setDirty(true);
     }
 
     @Override
@@ -88,5 +92,14 @@ public class WingOfLightBlockEntity extends AbstractW2SWidgetProviderBlockEntity
         this.xRot = xRot;
         this.yRot = yRot;
         this.markUpdate();
+        this.setDirty(true);
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 }

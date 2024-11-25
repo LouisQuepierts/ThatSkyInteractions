@@ -1,7 +1,7 @@
 package net.quepierts.thatskyinteractions.client.gui.layer;
 
+import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.client.Camera;
@@ -42,7 +42,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
     public static final int FADE_DISTANCE = 8;
 
     private final Minecraft minecraft = Minecraft.getInstance();
-    private final Map<UUID, World2ScreenWidget> objects = new Object2ObjectOpenHashMap<>();
+    private final Map<UUID, World2ScreenWidget> objects = Maps.newHashMap();
     private final Set<UUID> toRemove = new ObjectOpenHashSet<>();
     private final List<World2ScreenWidget> inRange = new ObjectArrayList<>();
     //private final World2ScreenButton[] grid = new World2ScreenButton[64 * 64];

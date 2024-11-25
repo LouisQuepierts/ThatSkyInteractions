@@ -39,7 +39,11 @@ public class Items {
     );
 
     public static final DeferredHolder<Item, MuralItem> MURAL = REGISTER.register(
-            "mural", MuralItem::new
+            "mural", () -> new MuralItem(false)
+    );
+
+    public static final DeferredHolder<Item, MuralItem> MURAL_BLOOMING = REGISTER.register(
+            "mural_blooming", () -> new MuralItem(true)
     );
 
     @SuppressWarnings("unchecked")
