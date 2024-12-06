@@ -44,7 +44,7 @@ public abstract class RenderDispatch<T> {
             final int color
     ) {
         this.batchRenderer.toBatch(meshLocation, new RenderPrepareData(
-                Shaders.Batch.getGlowShader(),
+                Shaders.Batch::getGlowShader,
                 new Matrix4f(transformation),
                 textureLocation,
                 color
@@ -62,7 +62,7 @@ public abstract class RenderDispatch<T> {
     ) {
         List<RenderEntry> list = this.renderActions.computeIfAbsent(t, (b) -> new ObjectArrayList<>());
         IRenderAction action = new RenderPrepareData(
-                Shaders.Batch.getGlowShader(),
+                Shaders.Batch::getGlowShader,
                 new Matrix4f(transformation),
                 textureLocation,
                 color

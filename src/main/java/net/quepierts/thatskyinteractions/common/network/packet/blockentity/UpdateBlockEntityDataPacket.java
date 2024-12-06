@@ -38,6 +38,10 @@ public class UpdateBlockEntityDataPacket implements IUpdate {
             return;
         }
 
+        if (serverPlayer.distanceToSqr(this.position.getX(), this.position.getY(), this.position.getZ()) > 64 * 64) {
+            return;
+        }
+
         if (serverPlayer.isCreative() && serverPlayer.hasPermissions(Commands.LEVEL_GAMEMASTERS)) {
             ItemStack item = serverPlayer.getMainHandItem();
 

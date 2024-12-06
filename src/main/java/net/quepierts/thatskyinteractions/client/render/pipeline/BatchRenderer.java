@@ -57,12 +57,16 @@ public class BatchRenderer {
 
         BatchShaderInstance using = null;
         for (IRenderAction action : batch) {
-            if (action.shader() != using) {
+            BatchShaderInstance shader = action.shader();
+            if (shader == null) {
+                continue;
+            }
+            if (shader != using) {
                 if (using != null) {
                     using.clear();
                 }
 
-                using = action.shader();
+                using = shader;
 
                 if (using.MODEL_VIEW_MATRIX != null) {
                     using.MODEL_VIEW_MATRIX.set(frustumMatrix);

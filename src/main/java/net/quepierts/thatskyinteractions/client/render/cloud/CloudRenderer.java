@@ -92,6 +92,9 @@ public class CloudRenderer {
     }
 
     public void renderClouds(Matrix4f modelViewMatrix, Matrix4f projectionMatrix, float partialTick, Vec3 cameraPosition) {
+        if (true) {
+            return;
+        }
         double dx = cameraPosition.x;
         double dy = cameraPosition.y;
         double dz = cameraPosition.z;

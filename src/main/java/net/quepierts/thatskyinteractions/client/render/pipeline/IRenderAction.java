@@ -10,6 +10,5 @@ import org.joml.Matrix4f;
 public interface IRenderAction {
     void apply(final VertexBuffer buffer, final Matrix4f projectionMatrix, final Matrix4f frustumMatrix);
 
-    @NotNull
     BatchShaderInstance shader();
 }

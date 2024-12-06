@@ -41,6 +41,10 @@ public class PickablePickupPacket implements IUpdate {
             return;
         }
 
+        if (serverPlayer.distanceToSqr(blockPos.getX(), blockPos.getY(), blockPos.getZ()) > 64 * 64) {
+            return;
+        }
+
         Level level = serverPlayer.level();
         BlockEntity entity = level.getBlockEntity(blockPos);
 
