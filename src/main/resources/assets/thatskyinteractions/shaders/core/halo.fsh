@@ -22,8 +22,5 @@ void main() {
     vec4 color = vertexColor;
 
     color.a *= max(innerEdge * expand, core);
-    if (color.a == 0.0) {
-        discard;
-    }
     fragColor = color * ColorModulator;
 }

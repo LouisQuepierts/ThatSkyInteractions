@@ -16,8 +16,5 @@ void main() {
     float alpha = max(step(leng, 0.5) * step(0.5 - Width, leng), glow);
     vec4 color = vertexColor;
     color.a *= alpha;
-    if (color.a == 0.0) {
-        discard;
-    }
     fragColor = color * ColorModulator;
 }

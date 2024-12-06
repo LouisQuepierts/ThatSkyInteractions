@@ -17,8 +17,5 @@ void main() {
     float alpha = min(1.0, edgeX + edgeY + dist);
     vec4 color = vertexColor;
     color.a *= alpha;
-    if (color.a == 0.0) {
-        discard;
-    }
     fragColor = color * ColorModulator;
 }
