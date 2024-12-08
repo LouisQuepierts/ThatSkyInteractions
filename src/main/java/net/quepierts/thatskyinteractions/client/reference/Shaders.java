@@ -208,11 +208,13 @@ public class Shaders {
 
     public static void resize(int width, int height) {
         //PostEffects.resize(width, height);
-        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
+        ThatSkyInteractions instance = ThatSkyInteractions.getInstance();
 
-        if (client == null) {
+        if (instance == null) {
             return;
         }
+
+        ClientProxy client = instance.getClient();
 
         client.getCloudRenderer().resize(width, height);
         client.getBloomRenderDispatch().resize(width, height);
