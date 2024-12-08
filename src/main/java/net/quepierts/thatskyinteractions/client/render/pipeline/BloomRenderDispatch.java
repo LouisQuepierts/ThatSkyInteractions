@@ -33,8 +33,7 @@ public class BloomRenderDispatch extends RenderDispatch<BlockEntity> {
         return key.isRemoved();
     }
 
-    @Override
-    protected void prepareRender(float partialTick) {
+    public void prepareBuffer() {
         this.finalTarget.clear(Minecraft.ON_OSX);
         this.surroundTarget.clear(Minecraft.ON_OSX);
 
@@ -44,7 +43,11 @@ public class BloomRenderDispatch extends RenderDispatch<BlockEntity> {
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
         RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
+        mainRenderTarget.bindWrite(false);
+    }
 
+    @Override
+    protected void prepareRender(float partialTick) {
         this.finalTarget.bindWrite(false);
 
         RenderSystem.disableCull();

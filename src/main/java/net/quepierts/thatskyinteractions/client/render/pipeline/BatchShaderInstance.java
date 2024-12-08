@@ -15,6 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL13;
 
 import java.io.IOException;
 
@@ -41,10 +42,11 @@ public class BatchShaderInstance extends ShaderInstance {
 
         if (this.SAMPLER_0 != -1) {
             RenderSystem.assertOnRenderThread();
-            int i = GlStateManager._getActiveTexture();
             Uniform.uploadInteger(SAMPLER_0, 0);
-            RenderSystem.activeTexture(i);
-            GlStateManager._activeTexture(i);
+
+            if (GlStateManager._getActiveTexture() != GL13.GL_TEXTURE0) {
+                GlStateManager._activeTexture(GL13.GL_TEXTURE0);
+            }
         }
     }
 

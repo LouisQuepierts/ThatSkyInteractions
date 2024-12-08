@@ -146,9 +146,6 @@ public class CloudRenderer {
             final int width = this.finalTarget.viewWidth;
             final int height = this.finalTarget.viewHeight;
 
-            this.finalTarget.clear(Minecraft.ON_OSX);
-            RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
-
             RenderSystem.disableCull();
             RenderSystem.enableDepthTest();
 
@@ -269,5 +266,18 @@ public class CloudRenderer {
 
     public RenderTarget getFinalTarget() {
         return this.finalTarget;
+    }
+
+    public void prepareBuffer() {
+        if (this.simpleCloudBuffer != null) {
+            RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
+
+            final int width = this.finalTarget.viewWidth;
+            final int height = this.finalTarget.viewHeight;
+
+            this.finalTarget.clear(Minecraft.ON_OSX);
+            RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
+            mainRenderTarget.bindWrite(false);
+        }
     }
 }

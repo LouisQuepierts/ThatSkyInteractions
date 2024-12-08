@@ -201,6 +201,9 @@ public class ClientProxy extends CommonProxy {
             );
         } else if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
             this.vertexBufferManager.tick();
+        } else if (stage == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
+            this.cloudRenderer.prepareBuffer();
+            this.bloomRenderDispatch.prepareBuffer();
         } else {
             if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
                 this.cloudRenderer.renderClouds(
