@@ -82,7 +82,7 @@ public class RenderUtils {
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
-    public static void drawGlowingRing(GuiGraphics guiGraphics, int x, int y, int radius, float width, int color) {
+    public static void drawGlowingRing(GuiGraphics guiGraphics, float x, float y, int radius, float width, int color) {
         float x1 = x - radius * 0.5f;
         float y1 = y - radius * 0.5f;
         float x2 = x1 + radius * 3;

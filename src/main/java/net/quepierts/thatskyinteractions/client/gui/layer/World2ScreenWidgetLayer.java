@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.client.gui.layer;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -72,6 +73,12 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         float deltaTicks = deltaTracker.getGameTimeDeltaTicks();
         update(deltaTicks);
 
+        RenderSystem.disableDepthTest();
+        RenderSystem.enableBlend();
+        PoseStack pose = guiGraphics.pose();
+        pose.pushPose();
+        pose.translate(0, 0, 100);
+
         //Arrays.fill(grid, null);
         for (Map.Entry<UUID, World2ScreenWidget> entry : objects.entrySet()) {
             World2ScreenWidget object = entry.getValue();
@@ -110,6 +117,8 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
+
+        pose.popPose();
     }
 
     public void update(float deltaTicks) {

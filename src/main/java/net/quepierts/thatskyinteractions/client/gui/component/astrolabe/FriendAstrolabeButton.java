@@ -1,7 +1,10 @@
 package net.quepierts.thatskyinteractions.client.gui.component.astrolabe;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -17,7 +20,10 @@ import net.quepierts.thatskyinteractions.client.gui.holder.FloatHolder;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.FriendScreen;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
+import net.quepierts.thatskyinteractions.common.data.FriendData;
 import net.quepierts.thatskyinteractions.common.data.astrolabe.FriendAstrolabeInstance;
+import net.quepierts.thatskyinteractions.common.data.astrolabe.node.AstrolabeNode;
+import org.joml.Vector2f;
 
 @OnlyIn(Dist.CLIENT)
 public class FriendAstrolabeButton extends AstrolabeButton {
@@ -33,10 +39,12 @@ public class FriendAstrolabeButton extends AstrolabeButton {
 
     private final LerpNumberAnimation claimAnimation;
     private final FloatHolder claim;
+    private final AstrolabeNode.DescriptionPosition descriptionPosition;
 
     private FriendAstrolabeInstance.NodeData data;
     public FriendAstrolabeButton(
             int x, int y,
+            AstrolabeNode.DescriptionPosition descriptionPosition,
             Component message,
             ScreenAnimator animator,
             FriendAstrolabeWidget parent,
@@ -45,6 +53,7 @@ public class FriendAstrolabeButton extends AstrolabeButton {
     ) {
         super(x, y, 12, message, animator, alpha);
         this.parent = parent;
+        this.descriptionPosition = descriptionPosition;
         this.data = data;
         this.rand = ThatSkyInteractions.RANDOM.nextFloat();
 
@@ -92,7 +101,7 @@ public class FriendAstrolabeButton extends AstrolabeButton {
                 Palette.setShaderAlpha(alpha);
             }
         } else {
-            boolean sent = data.hasFlag(FriendAstrolabeInstance.Flag.SENT);
+            boolean sent = this.data.hasFlag(FriendAstrolabeInstance.Flag.SENT);
             if (sent) {
                 pose.translate(6.0f, 6.0f, 0.0f);
                 pose.mulPose(Axis.ZN.rotationDegrees(parent.getRotate()));
@@ -117,7 +126,7 @@ public class FriendAstrolabeButton extends AstrolabeButton {
                 Palette.setShaderAlpha(alpha);
             }
 
-            if (data.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
+            if (this.data.hasFlag(FriendAstrolabeInstance.Flag.RECEIVED)) {
                 pose.translate(9.0f, 9.0f, 0.0f);
                 Palette.mulShaderAlpha(this.alpha.getValue());
                 float delta = rand * Mth.HALF_PI + ScreenAnimator.GLOBAL.time();
@@ -148,6 +157,31 @@ public class FriendAstrolabeButton extends AstrolabeButton {
                 drawParticle(guiGraphics, delta * this.amplifier[7], -D45, -D45, -DV1, -DV1, 0xffa4e5f7);
 
                 pose.translate(-9.0f, -9.0f, 0.0f);
+            }
+
+            Font font = Minecraft.getInstance().font;
+            FriendData data = this.data.getFriendData();
+            String nickname = data.getNickname();
+            Palette.mulShaderAlpha(this.alpha.getValue());
+            switch (this.descriptionPosition) {
+                case UP:
+                    guiGraphics.drawCenteredString(font, nickname, 12, -4, Palette.NORMAL_TEXT_COLOR);
+                    break;
+                case DOWN:
+                    guiGraphics.drawCenteredString(font, nickname, 12, 20, Palette.NORMAL_TEXT_COLOR);
+                    break;
+                case LEFT:
+                    int textWidth = font.width(nickname);
+                    guiGraphics.drawString(font, nickname, -textWidth, 4, Palette.NORMAL_TEXT_COLOR);
+                    break;
+                case RIGHT:
+                    guiGraphics.drawString(font, nickname, 24, 4, Palette.NORMAL_TEXT_COLOR);
+                    break;
+            }
+
+            if (Vector2f.distanceSquared(this.getX(), this.getY(), mouseX, mouseY) < 32) {
+                RenderSystem.enableBlend();
+                RenderUtils.drawRing(guiGraphics, 6, 6, 6, 0.05f, Palette.NORMAL_TEXT_COLOR);
             }
 
             Palette.setShaderAlpha(alpha);

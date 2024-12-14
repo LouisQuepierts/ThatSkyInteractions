@@ -64,7 +64,11 @@ public class FriendAstrolabeWidget extends AbstractWidget implements Resizable {
         int i = 0;
         for (AstrolabeNode node : nodes) {
             FriendAstrolabeInstance.NodeData data = nodeData.get(i);
-            FriendAstrolabeButton button = new FriendAstrolabeButton(node.x, node.y, Component.empty(), this.parent.getAnimator(), this, this.alpha, data);
+            FriendAstrolabeButton button = new FriendAstrolabeButton(
+                    node.x, node.y, node.namePosition,
+                    data == null ? Component.empty() : Component.literal(data.getFriendData().getNickname()),
+                    this.parent.getAnimator(),
+                    this, this.alpha, data);
             this.buttons.add(button);
             i++;
         }

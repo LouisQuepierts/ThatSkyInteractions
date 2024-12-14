@@ -24,7 +24,7 @@ public class AstrolabeNode {
             Codec.STRING.fieldOf("type").forGetter(AstrolabeNode::type),
             Codec.INT.fieldOf("x").forGetter(AstrolabeNode::getX),
             Codec.INT.fieldOf("y").forGetter(AstrolabeNode::getY),
-            DescriptionPosition.CODEC.optionalFieldOf("position").forGetter(node -> Optional.of(node.namePosition))
+            DescriptionPosition.CODEC.optionalFieldOf("name_position").forGetter(node -> Optional.of(node.namePosition))
     ).apply(instance, (type, x, y, position) -> construct(type, x, y, position.orElse(DescriptionPosition.DOWN))));
 
     public static final StreamCodec<ByteBuf, AstrolabeNode> STREAM_CODEC = StreamCodec.composite(

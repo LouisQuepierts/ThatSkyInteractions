@@ -79,7 +79,7 @@ public class PickupCandleW2SButton extends World2ScreenButton {
 
     @Override
     public void calculateRenderScale(float distance) {
-        this.scale = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - 4, 0) / 4);
+        this.scale = (float) AnimateUtils.Lerp.smooth(0, 1, 1.0f - Math.max(distance - 8, 0) / 4);
     }
 
     @Override

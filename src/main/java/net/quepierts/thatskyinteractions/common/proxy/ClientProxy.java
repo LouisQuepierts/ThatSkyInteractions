@@ -42,7 +42,8 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.ClientHelper;
 import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.client.gui.layer.*;
+import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
+import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.FriendAstrolabeScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.PlayerInteractScreen;
 import net.quepierts.thatskyinteractions.client.particle.CircleParticle;
@@ -384,11 +385,6 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onRegisterGuiLayers(final RegisterGuiLayersEvent event) {
-        event.registerAboveAll(CombineLayer.UI, new CombineLayer(
-                PromptMessageLayer.INSTANCE,
-                AnimateScreenHolderLayer.INSTANCE,
-                CandleInfoLayer.INSTANCE
-        ));
         event.registerBelow(VanillaGuiLayers.DEBUG_OVERLAY, World2ScreenWidgetLayer.LOCATION, World2ScreenWidgetLayer.INSTANCE);
     }
 

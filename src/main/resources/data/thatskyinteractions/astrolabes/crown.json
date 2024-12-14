@@ -3,52 +3,62 @@
     {
       "type": "friend",
       "x": 0,
-      "y": -14
+      "y": -14,
+      "name_position": "UP"
     },
     {
       "type": "friend",
       "x": 30,
-      "y": 19
+      "y": 19,
+      "name_position": "LEFT"
     },
     {
       "type": "friend",
       "x": 56,
-      "y": 36
+      "y": 36,
+      "name_position": "RIGHT"
     },
     {
       "type": "friend",
       "x": 70,
-      "y": -2
+      "y": -2,
+      "name_position": "RIGHT"
     },
     {
       "type": "friend",
       "x": 90,
-      "y": -26
+      "y": -26,
+      "name_position": "RIGHT"
     },
     {
       "type": "friend",
       "x": -48,
-      "y": 0
+      "y": 0,
+      "name_position": "LEFT"
     },
     {
       "type": "friend",
       "x": -72,
-      "y": -22
+      "y": -22,
+      "name_position": "LEFT"
     },
     {
       "type": "friend",
       "x": -96,
-      "y": -56
+      "y": -56,
+      "name_position": "LEFT"
     },
     {
       "type": "friend",
       "x": 76,
-      "y": -84
+      "y": -84,
+      "name_position": "DOWN"
     },
     {
       "type": "friend",
       "x": -122,
-      "y": 32
+      "y": 32,
+      "name_position": "DOWN"
     }
   ],
   "connections": [

@@ -169,7 +169,7 @@ public class AstrolabeManager implements PreparableReloadListener {
     }
 
     private AstrolabeNode.DescriptionPosition testDescriptionPosition(boolean[] grid, int x, int y) {
-        return AstrolabeNode.DescriptionPosition.UP;
+        return (x + y % 2 == 0) ? AstrolabeNode.DescriptionPosition.DOWN : AstrolabeNode.DescriptionPosition.UP;
     }
 
     private CompletableFuture<List<ResourceLocation>> loadFriendAstrolabeList(ResourceManager pResourceManager, Executor pBackgroundExecutor) {
