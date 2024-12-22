@@ -173,7 +173,7 @@ public class MuralBlockEntity extends AbstractUpdatableBlockEntity implements IU
 
     @Override
     public boolean isEditorItem(ItemStack item) {
-        return item.is(Items.MURAL);
+        return item.is(Items.MURAL) || item.is(Items.MURAL_BLOOMING);
     }
 
     public boolean isDirty() {
