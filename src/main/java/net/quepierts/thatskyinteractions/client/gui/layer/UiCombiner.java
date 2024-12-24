@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 public class UiCombiner {
     public static final ResourceLocation UI = ThatSkyInteractions.getLocation("ui");
     public static final UiCombiner TOP = new UiCombiner(
-            PromptMessageLayer.INSTANCE,
             AnimateScreenHolderLayer.INSTANCE,
             CandleInfoLayer.INSTANCE
     );

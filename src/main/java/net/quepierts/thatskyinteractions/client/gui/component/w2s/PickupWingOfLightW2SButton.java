@@ -31,6 +31,7 @@ public class PickupWingOfLightW2SButton extends World2ScreenButton {
     public PickupWingOfLightW2SButton(@NotNull WingOfLightBlockEntity bound) {
         super(TEXTURE);
         this.bound = bound;
+        this.limitInScreen = false;
         BlockPos position = this.bound.getBlockPos();
         this.worldPos.set(position.getX() + 0.5f, position.getY() + 1.0f, position.getZ() + 0.5f);
     }

@@ -51,9 +51,11 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
     private final LerpNumberAnimation animation = new LerpNumberAnimation(this.click, AnimateUtils.Lerp::smooth, 0, 1, 0.5f);
 
     private World2ScreenWidget highlight;
+    private World2ScreenWidget nearest;
     private World2ScreenWidget locked;
     private double scroll = 0;
     private int prompt = 0;
+    private int lastFrameCount = 0;
 
     World2ScreenWidgetLayer() {
         reset();
@@ -63,6 +65,8 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         objects.clear();
         inRange.clear();
         highlight = null;
+        locked = null;
+        nearest = null;
     }
 
     @Override
@@ -80,6 +84,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         pose.translate(0, 0, 100);
 
         //Arrays.fill(grid, null);
+        this.lastFrameCount = 0;
         for (Map.Entry<UUID, World2ScreenWidget> entry : objects.entrySet()) {
             World2ScreenWidget object = entry.getValue();
             if (!object.isComputed())
@@ -88,7 +93,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             if (!object.shouldRender())
                 continue;
 
-            boolean highlight1 = locked != null ? object == locked : object == highlight;
+            boolean highlight1 = locked != null ? object == locked : object == nearest;
             boolean shouldRemove = object.shouldRemove();
             if (shouldRemove && (!highlight1 || !this.animation.isRunning())) {
                 if (object == locked) {
@@ -153,10 +158,13 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         final int screenHeight = this.minecraft.getWindow().getGuiScaledHeight();
         final Vector2f center = this.getCenter();
 
+        float minDistance = Float.MAX_VALUE;
         this.inRange.clear();
         //Arrays.fill(grid, null);
 
         final Vector3f pos = new Vector3f();
+        this.highlight = null;
+        this.nearest = null;
         for (World2ScreenWidget object : objects.values()) {
             if (object.shouldSkip())
                 continue;
@@ -167,7 +175,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             Vector4f cameraSpacePos = new Vector4f(pos, 1.0f)
                     .mul(mat);
 
-            if (cameraSpacePos.w < 0.0f) {
+            if (cameraSpacePos.w <= 0.0f) {
                 cameraSpacePos.y = screenHeight;
                 cameraSpacePos.x = -cameraSpacePos.x;
             }
@@ -181,7 +189,10 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             }
 
             object.setInScreen(
-                    x > 0 && y > 0 && x < screenWidth && y < screenHeight
+                    x > -object.scale
+                            && y > -object.scale
+                            && x < screenWidth + object.scale
+                            && y < screenHeight + object.scale
             );
 
             object.setScreenPos(x, y);
@@ -194,17 +205,16 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             if (object.scale < 1.0f)
                 continue;
 
-            if (locked == null && object.selectable
-                    && center.distanceSquared(object.x, object.y) < 16 * 16) {
-                inRange.add(object);
-            }
-        }
+            float distanceSquared = center.distanceSquared(object.x, object.y);
+            if (distanceSquared < 64 * 64 && object.selectable && !this.animation.isRunning()) {
+                if (distanceSquared < minDistance) {
+                    minDistance = distanceSquared;
+                    this.nearest = object;
 
-        if (!this.animation.isRunning()) {
-            if (!inRange.isEmpty()) {
-                this.highlight = inRange.get((int) scroll % inRange.size());
-            } else {
-                this.highlight = null;
+                    if (distanceSquared < 16 * 16) {
+                        this.highlight = object;
+                    }
+                }
             }
         }
 
