@@ -5,8 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "thatskyinteractions.refmap.json",
   "mixins": [
-    "animata.CommonEventListenerMixin",
-    "hugme.HugCommandHandlerMixin"
+    "animata.CommonEventListenerMixin"
   ],
   "client": [
     "CameraMixin",
