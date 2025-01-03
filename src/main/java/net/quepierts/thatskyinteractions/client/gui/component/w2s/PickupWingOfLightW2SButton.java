@@ -51,6 +51,7 @@ public class PickupWingOfLightW2SButton extends World2ScreenButton {
             WingOfLightBlockEntity pickable = this.bound;
             if (pickupComponent.tryPickUp(pickable)) {
                 this.setRemoved();
+                pickable.setDirty(true);
                 World2ScreenWidgetLayer.INSTANCE.remove(pickable.getUUID());
                 SimpleAnimator.getNetwork().update(new PickablePickupPacket(pickable));
             }

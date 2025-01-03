@@ -50,18 +50,21 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
         UserDataAttachment attachment = UserDataAttachment.getAttachment(player);
         PickupComponent pickupComponent = attachment.getPickup();
 
-        if (pickupComponent.isPickedUp(wingOfLightBlockEntity)) {
-            return;
-        }
-
+        boolean picked = pickupComponent.isPickedUp(wingOfLightBlockEntity);
         BlockPos pos = wingOfLightBlockEntity.getBlockPos();
 
-        float distanceSqr = (float) player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
-
-        World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(wingOfLightBlockEntity.getUUID(), wingOfLightBlockEntity.provideW2SWidget(distanceSqr));
+        if (!picked) {
+            float distanceSqr = (float) player.distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
+            World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(wingOfLightBlockEntity.getUUID(), wingOfLightBlockEntity.provideW2SWidget(distanceSqr));
+        }
 
         if (wingOfLightBlockEntity.isDirty()) {
             this.renderer.removeRenderAction(wingOfLightBlockEntity);
+
+            if (picked) {
+                return;
+            }
+
             Matrix4f transformation = new Matrix4f();
             transformation.translate(
                             pos.getX() + 0.5f,

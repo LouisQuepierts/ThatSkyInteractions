@@ -52,10 +52,9 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
 
     private World2ScreenWidget highlight;
     private World2ScreenWidget nearest;
-    private World2ScreenWidget locked;
+    private World2ScreenWidget clicked;
     private double scroll = 0;
     private int prompt = 0;
-    private int lastFrameCount = 0;
 
     World2ScreenWidgetLayer() {
         reset();
@@ -65,8 +64,8 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         objects.clear();
         inRange.clear();
         highlight = null;
-        locked = null;
         nearest = null;
+        clicked = null;
     }
 
     @Override
@@ -84,7 +83,6 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         pose.translate(0, 0, 100);
 
         //Arrays.fill(grid, null);
-        this.lastFrameCount = 0;
         for (Map.Entry<UUID, World2ScreenWidget> entry : objects.entrySet()) {
             World2ScreenWidget object = entry.getValue();
             if (!object.isComputed())
@@ -93,12 +91,9 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             if (!object.shouldRender())
                 continue;
 
-            boolean highlight1 = locked != null ? object == locked : object == nearest;
+            boolean highlight1 = object == nearest || object == clicked;
             boolean shouldRemove = object.shouldRemove();
             if (shouldRemove && (!highlight1 || !this.animation.isRunning())) {
-                if (object == locked) {
-                    locked = null;
-                }
                 this.toRemove.add(entry.getKey());
                 continue;
             }
@@ -137,7 +132,6 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
 
         if (this.objects.isEmpty()) {
             this.highlight = null;
-            this.locked = null;
             this.inRange.clear();
             return;
         }
@@ -165,6 +159,13 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         final Vector3f pos = new Vector3f();
         this.highlight = null;
         this.nearest = null;
+
+        boolean notAnimating = !this.animation.isRunning();
+
+        if (notAnimating) {
+            this.clicked = null;
+        }
+
         for (World2ScreenWidget object : objects.values()) {
             if (object.shouldSkip())
                 continue;
@@ -206,7 +207,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
                 continue;
 
             float distanceSquared = center.distanceSquared(object.x, object.y);
-            if (distanceSquared < 64 * 64 && object.selectable && !this.animation.isRunning()) {
+            if (distanceSquared < 64 * 64 && object.selectable && notAnimating) {
                 if (distanceSquared < minDistance) {
                     minDistance = distanceSquared;
                     this.nearest = object;
@@ -344,17 +345,7 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
         if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR)
             return false;
 
-        if (this.locked != null) {
-            this.minecraft.getSoundManager().play(
-                    SimpleSoundInstance.forUI(
-                            SoundEvents.EXPERIENCE_ORB_PICKUP,
-                            (ThatSkyInteractions.RANDOM.nextFloat() - ThatSkyInteractions.RANDOM.nextFloat()) * 0.35F + 0.9F
-                    )
-            );
-            ScreenAnimator.GLOBAL.play(this.animation);
-            this.locked.invoke();
-            return true;
-        } else if (this.highlight != null) {
+        if (this.highlight != null) {
             this.minecraft.getSoundManager().play(
                     SimpleSoundInstance.forUI(
                             SoundEvents.EXPERIENCE_ORB_PICKUP,
@@ -363,13 +354,10 @@ public class World2ScreenWidgetLayer implements LayeredDraw.Layer {
             );
             ScreenAnimator.GLOBAL.play(this.animation);
             this.highlight.invoke();
+            this.clicked = this.highlight;
             return true;
         }
 
         return false;
-    }
-
-    public void lock(World2ScreenWidget locked) {
-        this.locked = locked;
     }
 }
