@@ -41,6 +41,7 @@ public class TSICommand {
     public static void register(RegisterCommandsEvent event) {
         event.getDispatcher().register(
                 Commands.literal("thatskyinteractions")
+                        .requires(stack -> stack.hasPermission(2))
                         .then(Commands.literal("reset")
                                 .then(Commands.literal("permanent").executes(context -> unclaim(context.getSource(), false)))
                                 .then(Commands.literal("daily").executes(context -> unclaim(context.getSource(), true)))
