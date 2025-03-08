@@ -5,7 +5,7 @@
         "dstrgb": "1-srcalpha"
     },
     "vertex": "thatskyinteractions:uv_color",
-    "fragment": "thatskyinteractions:round_rect",
+    "fragment": "thatskyinteractions:sector_stroke",
     "attributes": [
         "Color",
         "UV0"
@@ -32,13 +32,19 @@
             "values": [ 1.0, 1.0, 1.0, 1.0 ]
         },
         {
-            "name": "Rect",
+            "name": "Radians",
             "type": "float",
             "count": 2,
-            "values": [ 1.0, 1.0 ]
+            "values": [ 0.1, 0.1 ]
         },
         {
-            "name": "Radius",
+            "name": "Radii",
+            "type": "float",
+            "count": 3,
+            "values": [ 0.1, 0.1, 0.0 ]
+        },
+        {
+            "name": "Stroke",
             "type": "float",
             "count": 1,
             "values": [ 0.1 ]

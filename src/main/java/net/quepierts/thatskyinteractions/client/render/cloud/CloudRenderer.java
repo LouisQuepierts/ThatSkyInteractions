@@ -32,6 +32,7 @@ import java.util.Map;
 @SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class CloudRenderer {
+    public static final CloudRenderer INSTANCE = new CloudRenderer();
     public static final ResourceLocation CLOUD_EFFECT_LOCATION = ThatSkyInteractions.getLocation("shaders/post/cloud.json");
 
     public static final int CULL_XP = 1;
@@ -149,7 +150,7 @@ public class CloudRenderer {
             RenderSystem.disableCull();
             RenderSystem.enableDepthTest();
 
-            ShaderInstance cloudShader = Shaders.getCloudShader();
+            ShaderInstance cloudShader = Shaders.CLOUDS.getInstance();
             RenderSystem.setupShaderLights(cloudShader);
             FogRenderer.levelFogColor();
 

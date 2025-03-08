@@ -12,7 +12,8 @@ public class UiCombiner {
     public static final ResourceLocation UI = ThatSkyInteractions.getLocation("ui");
     public static final UiCombiner TOP = new UiCombiner(
             AnimateScreenHolderLayer.INSTANCE,
-            CandleInfoLayer.INSTANCE
+            CandleInfoLayer.INSTANCE,
+            RouletteLayer.INSTANCE
     );
 
     private final ImmutableList<LayeredDraw.Layer> layers;

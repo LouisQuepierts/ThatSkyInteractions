@@ -3,7 +3,10 @@ package net.quepierts.thatskyinteractions.client.util;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.AbstractScreenAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -13,10 +16,12 @@ import org.joml.Vector3f;
 import java.util.EnumMap;
 
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(modid = ThatSkyInteractions.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class CameraHandler {
+    public static final CameraHandler INSTANCE = new CameraHandler();
     private final EnumMap<Property, Entry> properties;
 
-    public CameraHandler() {
+    CameraHandler() {
         properties = new EnumMap<>(Property.class);
         for (Property value : Property.values()) {
             properties.put(value, Entry.create());
@@ -35,8 +40,9 @@ public class CameraHandler {
         }
     }
 
-    public void onComputeCameraAngles(final ViewportEvent.ComputeCameraAngles event) {
-        Entry rotation = this.properties.get(Property.ROTATION);
+    @SubscribeEvent
+    public static void onComputeCameraAngles(final ViewportEvent.ComputeCameraAngles event) {
+        Entry rotation = INSTANCE.properties.get(Property.ROTATION);
         rotation.setUnmodified(event.getPitch(), event.getYaw(), event.getRoll());
         Vector3f modified = rotation.modified;
         event.setPitch(event.getPitch() + modified.x);

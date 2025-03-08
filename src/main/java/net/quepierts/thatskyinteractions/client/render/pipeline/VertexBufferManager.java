@@ -18,6 +18,9 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +33,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD, modid = ThatSkyInteractions.MODID)
 public class VertexBufferManager implements PreparableReloadListener {
+    public static final VertexBufferManager INSTANCE = new VertexBufferManager();
+
     public static final ModelResourceLocation QUAD = ThatSkyInteractions.getModelLocation("quad");
 //    public static final ResourceLocation GRID = ThatSkyInteractions.getLocation("grid");
     public static final ModelResourceLocation CUBE = ThatSkyInteractions.getModelLocation("cube");
@@ -187,6 +193,11 @@ public class VertexBufferManager implements PreparableReloadListener {
 
     public void setReload() {
         this.shouldReload = true;
+    }
+
+    @SubscribeEvent
+    private static void onClientReloadListeners(RegisterClientReloadListenersEvent event) {
+        VertexBufferManager.INSTANCE.setReload();
     }
 
     private void reload() {

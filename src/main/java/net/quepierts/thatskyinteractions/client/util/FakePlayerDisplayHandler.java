@@ -9,8 +9,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -25,7 +28,10 @@ import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachme
 
 @SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME, modid = ThatSkyInteractions.MODID)
 public class FakePlayerDisplayHandler {
+    public static final FakePlayerDisplayHandler INSTANCE = new FakePlayerDisplayHandler();
+
     private final FloatHolder enterHolder = new FloatHolder(0.0f);
     private final LerpNumberAnimation enterAnimation = new LerpNumberAnimation(this.enterHolder, AnimateUtils.Lerp::smooth, 0, 1, 1.0f);
     private final WaitAnimation addButtonLater = new WaitAnimation(0.8f, this::addButton);
@@ -36,8 +42,7 @@ public class FakePlayerDisplayHandler {
     private boolean canRepos = false;
     private boolean canIgnite = false;
 
-    public FakePlayerDisplayHandler() {
-    }
+    FakePlayerDisplayHandler() {}
 
     public void init(ClientLevel level) {
     }
@@ -84,41 +89,44 @@ public class FakePlayerDisplayHandler {
         return this.enterHolder.getValue() != 0.0f;
     }
 
-    public void onRenderPlayerPre(final RenderPlayerEvent.Pre event) {
-        if (!event.getEntity().equals(this.player))
+    @SubscribeEvent
+    public static void onRenderPlayerPre(final RenderPlayerEvent.Pre event) {
+        if (!event.getEntity().equals(INSTANCE.player))
             return;
 
         PoseStack poseStack = event.getPoseStack();
         poseStack.pushPose();
 
-        float value = this.enterHolder.getValue();
+        float value = INSTANCE.enterHolder.getValue();
         poseStack.translate(0, 5 - 5 * value, 0);
         poseStack.scale(value, value, value);
 
-        pushed = true;
+        INSTANCE.pushed = true;
     }
 
-    public void onRenderPlayerPost(final RenderPlayerEvent.Post event) {
-        if (!pushed)
+    @SubscribeEvent
+    public static void onRenderPlayerPost(final RenderPlayerEvent.Post event) {
+        if (!INSTANCE.pushed)
             return;
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
         event.getPoseStack().popPose();
-        pushed = false;
+        INSTANCE.pushed = false;
     }
 
-    public void onClientTick(final ClientTickEvent.Post event) {
-        if (!this.enterAnimation.isRunning()) {
-            if (this.canRepos && this.player != null) {
-                this.player.remove(Entity.RemovalReason.DISCARDED);
-                this.player = null;
-                this.canRepos = false;
+    @SubscribeEvent
+    public static void onClientTick(final ClientTickEvent.Post event) {
+        if (!INSTANCE.enterAnimation.isRunning()) {
+            if (INSTANCE.canRepos && INSTANCE.player != null) {
+                INSTANCE.player.remove(Entity.RemovalReason.DISCARDED);
+                INSTANCE.player = null;
+                INSTANCE.canRepos = false;
             }
         }
     }
 
     private void addButton() {
-        if (this.player != null) {
+        if (INSTANCE.player != null) {
             this.ignite.setClicked(false);
             World2ScreenWidgetLayer.INSTANCE.addWorldPositionObject(this.player.getUUID(), this.ignite);
             //World2ScreenWidgetLayer.INSTANCE.lock(this.ignite);

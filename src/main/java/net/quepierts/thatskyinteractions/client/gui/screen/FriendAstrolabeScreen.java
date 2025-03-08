@@ -45,7 +45,7 @@ public class FriendAstrolabeScreen extends AnimatedScreen {
 
     public FriendAstrolabeScreen() {
         super(Component.empty());
-        this.cameraHandler = ThatSkyInteractions.getInstance().getClient().getCameraHandler();
+        this.cameraHandler = CameraHandler.INSTANCE;
     }
 
     @Override

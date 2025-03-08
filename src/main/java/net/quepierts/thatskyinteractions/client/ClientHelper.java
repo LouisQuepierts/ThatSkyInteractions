@@ -105,4 +105,8 @@ public class ClientHelper {
             SimpleAnimator.getNetwork().update(new AstrolabeOperationPacket.Gain(uuid));
         }
     }
+
+    public static boolean isRouletteOpen() {
+        return Options.KEY_OPEN_ROULETTE.get().isDown();
+    }
 }

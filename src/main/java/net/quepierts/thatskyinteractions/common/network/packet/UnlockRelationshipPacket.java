@@ -19,6 +19,7 @@ import net.quepierts.simpleanimator.core.network.NetworkPackets;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.component.w2s.UnlockRequestW2SButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
+import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.common.PlayerUtils;
 import net.quepierts.thatskyinteractions.common.data.PlayerPair;
 import net.quepierts.thatskyinteractions.common.data.attachment.UserDataAttachment;
@@ -285,7 +286,7 @@ public abstract class UnlockRelationshipPacket extends BiPacket {
         @OnlyIn(Dist.CLIENT)
         @Override
         protected void sync() {
-            ThatSkyInteractions.getInstance().getClient().getUnlockRelationshipHandler().finish();
+            UnlockRelationshipHandler.INSTANCE.finish();
         }
     }
 

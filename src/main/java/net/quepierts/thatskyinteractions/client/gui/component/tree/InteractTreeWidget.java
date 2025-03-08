@@ -27,6 +27,7 @@ import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLay
 import net.quepierts.thatskyinteractions.client.gui.layer.CandleInfoLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.AnimatableScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
+import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.common.data.tree.InteractTree;
 import net.quepierts.thatskyinteractions.common.data.tree.InteractTreeInstance;
 import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
@@ -263,7 +264,7 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
         @Override
         public void confirm() {
             UUID other = treeInstance.getPair().getOther(minecraft.player.getUUID());
-            ThatSkyInteractions.getInstance().getClient().getUnlockRelationshipHandler().invite(
+            UnlockRelationshipHandler.INSTANCE.invite(
                     other,
                     button.id,
                     this::onAccepted,

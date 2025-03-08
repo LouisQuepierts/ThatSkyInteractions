@@ -7,14 +7,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.gui.component.button.LikeButton;
 import net.quepierts.thatskyinteractions.client.gui.component.button.NicknameButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.World2ScreenWidgetLayer;
 import net.quepierts.thatskyinteractions.client.util.CameraHandler;
 import net.quepierts.thatskyinteractions.client.util.FakePlayerDisplayHandler;
 import net.quepierts.thatskyinteractions.common.data.FriendData;
-import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -22,20 +21,13 @@ import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class FriendScreen extends RightPoopScreen {
-    private final FakePlayerDisplayHandler fakePlayerDisplayHandler;
-    private final CameraHandler cameraHandler;
     private final FriendData friendData;
-    private final ClientProxy client;
     private boolean shown = false;
+
     public FriendScreen(@NotNull FriendData friendData) {
         super(Component.literal(friendData.getUsername()), 72);
 
         this.friendData = friendData;
-        this.client = ThatSkyInteractions.getInstance().getClient();
-        this.fakePlayerDisplayHandler = client.getFakePlayerDisplayHandler();
-
-        this.cameraHandler = client.getCameraHandler();
-
     }
 
     @Override
@@ -53,7 +45,7 @@ public class FriendScreen extends RightPoopScreen {
         if (shown)
             return;
 
-        CameraHandler.Entry rotation = this.cameraHandler.get(CameraHandler.Property.ROTATION);
+        CameraHandler.Entry rotation = CameraHandler.INSTANCE.get(CameraHandler.Property.ROTATION);
         Vector3f rotationUnmodified = rotation.getUnmodified(new Vector3f());
         assert minecraft != null;
         CameraType cameraType = minecraft.options.getCameraType();
@@ -68,7 +60,7 @@ public class FriendScreen extends RightPoopScreen {
         rotation.toTarget(new Vector3f(0 - rotationUnmodified.x, rotY, 0), 1.0f);
 
         Entity camera = Objects.requireNonNull(minecraft.cameraEntity);
-        CameraHandler.Entry position = this.cameraHandler.get(CameraHandler.Property.POSITION);
+        CameraHandler.Entry position = CameraHandler.INSTANCE.get(CameraHandler.Property.POSITION);
         float yRot = camera.getYRot() * Mth.DEG_TO_RAD;
         float cos = Mth.cos(yRot);
         float sin = Mth.sin(yRot);
@@ -82,13 +74,13 @@ public class FriendScreen extends RightPoopScreen {
 
         Vec3 forward = new Vec3(-sin * 2, 0, cos * 2).add(camera.position());
         float rot = camera.getYHeadRot() - 180;
-        this.fakePlayerDisplayHandler.show(forward, rot, friendData);
+        FakePlayerDisplayHandler.INSTANCE.show(forward, rot, friendData);
         this.shown = true;
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == client.options.keyClickButton.get().getKey().getValue()) {
+        if (keyCode == Options.KEY_OPEN_ROULETTE.get().getKey().getValue()) {
             World2ScreenWidgetLayer.INSTANCE.click();
             return true;
         }
@@ -98,6 +90,6 @@ public class FriendScreen extends RightPoopScreen {
     @Override
     public void onClose() {
         super.onClose();
-        this.fakePlayerDisplayHandler.hide();
+        FakePlayerDisplayHandler.INSTANCE.hide();
     }
 }

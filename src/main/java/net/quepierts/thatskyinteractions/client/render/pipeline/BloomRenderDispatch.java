@@ -15,7 +15,8 @@ import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 
 import java.io.IOException;
 
-public class BloomRenderDispatch extends RenderDispatch<BlockEntity> {
+public final class BloomRenderDispatch extends RenderDispatch<BlockEntity> {
+    public static final BloomRenderDispatch INSTANCE = new BloomRenderDispatch(VertexBufferManager.INSTANCE);
     public static final ResourceLocation EFFECT_LOCATION = ThatSkyInteractions.getLocation("shaders/post/bloom.json");
 
     private PostChain effect;
@@ -24,7 +25,7 @@ public class BloomRenderDispatch extends RenderDispatch<BlockEntity> {
 
     private boolean shouldApplyBloom = false;
 
-    public BloomRenderDispatch(VertexBufferManager vertexBufferManager) {
+    BloomRenderDispatch(VertexBufferManager vertexBufferManager) {
         super(vertexBufferManager);
     }
 

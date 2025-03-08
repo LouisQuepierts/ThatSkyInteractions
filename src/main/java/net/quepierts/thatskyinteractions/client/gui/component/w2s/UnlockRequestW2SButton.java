@@ -9,12 +9,14 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.component.tree.TreeNodeButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.ConfirmScreen;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
+import net.quepierts.thatskyinteractions.client.util.UnlockRelationshipHandler;
 import net.quepierts.thatskyinteractions.common.data.PlayerPair;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
@@ -54,7 +56,7 @@ public class UnlockRequestW2SButton extends World2ScreenButton {
                 Component.translatable("gui.thatskyinteractions.prompt.w2s.mouse.unlock").withColor(Palette.NORMAL_TEXT_COLOR) :
                 Component.translatable(
                         "gui.thatskyinteractions.prompt.w2s.world.unlock",
-                        Component.translatable(ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
+                        Component.translatable(Options.KEY_ENABLED_INTERACT.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
                         Component.translatable(InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_RIGHT).getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR)
                 ).withColor(Palette.NORMAL_TEXT_COLOR);
     }
@@ -83,7 +85,7 @@ public class UnlockRequestW2SButton extends World2ScreenButton {
 
         @Override
         public void confirm() {
-            ThatSkyInteractions.getInstance().getClient().getUnlockRelationshipHandler().accept(this.button.pair, this.button.node);
+            UnlockRelationshipHandler.INSTANCE.accept(this.button.pair, this.button.node);
         }
 
         @Override

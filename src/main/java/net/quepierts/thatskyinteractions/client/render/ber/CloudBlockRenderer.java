@@ -39,7 +39,7 @@ public class CloudBlockRenderer extends HighlightBlockEntityRenderer<AbstractClo
     }
 
     public CloudBlockRenderer(boolean colored) {
-        this.cloudRenderer = ThatSkyInteractions.getInstance().getClient().getCloudRenderer();
+        this.cloudRenderer = CloudRenderer.INSTANCE;
         this.colored = colored;
     }
 

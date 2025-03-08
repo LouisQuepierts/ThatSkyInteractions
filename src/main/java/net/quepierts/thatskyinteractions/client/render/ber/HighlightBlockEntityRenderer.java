@@ -19,7 +19,7 @@ public abstract class HighlightBlockEntityRenderer<T extends BlockEntity> implem
     protected final BloomRenderDispatch bloomRenderer;
 
     protected HighlightBlockEntityRenderer() {
-        this.bloomRenderer = ThatSkyInteractions.getInstance().getClient().getBloomRenderDispatch();
+        this.bloomRenderer = BloomRenderDispatch.INSTANCE;
     }
 
     protected void renderHighLight(Matrix4f transformation, int color) {

@@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import org.jetbrains.annotations.NotNull;
@@ -118,7 +119,7 @@ public abstract class World2ScreenWidget {
                 ).withColor(Palette.NORMAL_TEXT_COLOR) :
                 Component.translatable(
                         "gui.thatskyinteractions.prompt.w2s.world.general",
-                        Component.translatable(ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
+                        Component.translatable(Options.KEY_ENABLED_INTERACT.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
                         Component.translatable(InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_RIGHT).getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR)
                 ).withColor(Palette.NORMAL_TEXT_COLOR);
     }

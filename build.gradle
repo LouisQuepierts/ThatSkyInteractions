@@ -116,6 +116,8 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     api "maven.modrinth:simpleanimator:$simpleanimator_maven_version"
 
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: lombok_version
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombok_version
 //    runtimeOnly "maven.modrinth:sodium:$sodium_maven_version"
 //    runtimeOnly "maven.modrinth:iris:$iris_maven_version"
 

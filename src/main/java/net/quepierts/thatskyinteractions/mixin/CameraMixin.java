@@ -21,7 +21,7 @@ public class CameraMixin {
             at = @At("RETURN")
     )
     public void tsi$recomputePosition(Vec3 pPos, CallbackInfo ci) {
-        CameraHandler handler = ThatSkyInteractions.getInstance().getClient().getCameraHandler();
+        CameraHandler handler = CameraHandler.INSTANCE;
         Vec3 recomputed = handler.recomputeCameraPosition(pPos);
         this.position = recomputed;
         this.blockPosition.set(recomputed.x, recomputed.y, recomputed.z);

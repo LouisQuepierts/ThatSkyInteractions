@@ -1,7 +1,13 @@
 package net.quepierts.thatskyinteractions.client.reference;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -9,201 +15,58 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
 import net.quepierts.thatskyinteractions.client.render.pipeline.BatchShaderInstance;
-import net.quepierts.thatskyinteractions.common.proxy.ClientProxy;
+import net.quepierts.thatskyinteractions.client.render.pipeline.BloomRenderDispatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class Shaders {
-    @Nullable
-    private static ShaderInstance roundRect;
 
-    @Nullable
-    private static ShaderInstance ring;
+    public static final ShaderHolder ROUND_RECT;
 
-    @Nullable
-    private static ShaderInstance circle;
+    public static final ShaderHolder SECTOR;
+    public static final ShaderHolder SECTOR_STROKE;
 
-    @Nullable
-    private static ShaderInstance glowingRing;
+    public static final ShaderHolder RING;
+    public static final ShaderHolder CIRCLE;
+    public static final ShaderHolder GLOWING_RING;
+    public static final ShaderHolder LIGHT_SPOT;
+    public static final ShaderHolder CROSS_LIGHT_SPOT;
+    public static final ShaderHolder DOUBLE_CROSS_LIGHT_SPOT;
+    public static final ShaderHolder HALO;
+    public static final ShaderHolder BLOOM_BLIT;
+    public static final ShaderHolder CLOUDS;
 
-    @Nullable
-    private static ShaderInstance lightSpot;
-
-    @Nullable
-    private static ShaderInstance crossLightSpot;
-
-    @Nullable
-    private static ShaderInstance doubleCrossLightSpot;
-
-    @Nullable
-    private static ShaderInstance halo;
-
-    @Nullable
-    private static ShaderInstance bloomBlit;
-
-    @Nullable
-    private static ShaderInstance clouds;
-
-    @Nullable
-    private static ShaderInstance blockEntity;
-    
-    public static ShaderInstance getRoundRectShader() {
-        return Objects.requireNonNull(roundRect, "Attempted to call getRoundRectShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getCircleShader() {
-        return Objects.requireNonNull(circle, "Attempted to call getCircleShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getRingShader() {
-        return Objects.requireNonNull(ring, "Attempted to call getRingShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getGlowingRingShader() {
-        return Objects.requireNonNull(glowingRing, "Attempted to call getGlowingRingShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getLightSpotShader() {
-        return Objects.requireNonNull(lightSpot, "Attempted to call getLightSpotShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getCrossLightSpotShader() {
-        return Objects.requireNonNull(crossLightSpot, "Attempted to call getCrossLightSpotShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getDoubleCrossLightSpotShader() {
-        return Objects.requireNonNull(doubleCrossLightSpot, "Attempted to call getDoubleCrossLightSpotShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getHalo() {
-        return Objects.requireNonNull(halo, "Attempted to call getHaloShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getBloomBlit() {
-        return Objects.requireNonNull(bloomBlit, "Attempted to call getBloomBlitShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getCloudShader() {
-        return Objects.requireNonNull(clouds, "Attempted to call getCloudShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getVanillaCloudShader() {
-        return Objects.requireNonNull(clouds, "Attempted to call getCloudShader before shaders have finished loading.");
-    }
-
-    public static ShaderInstance getBlockEntityShader() {
-        return Objects.requireNonNull(blockEntity, "Attempted to call getBlockEntityShader before shaders have finished loading.");
-    }
+    private static final List<ShaderHolder> HOLDERS;
 
     @SubscribeEvent
     public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
         ResourceProvider provider = event.getResourceProvider();
 
-        event.registerShader(
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("round_rect"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                (shader) -> roundRect = shader
-        );
-
-        event.registerShader(
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("circle"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                (shader) -> circle = shader
-        );
-
-        event.registerShader(
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("ring"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                (shader) -> ring = shader
-        );
-
-        event.registerShader(
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("ring_glow"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                (shader) -> glowingRing = shader
-        );
-
-        event.registerShader(
-
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("light_spot"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                (shader) -> lightSpot = shader
-        );
-
-        event.registerShader(
-
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("cross_light_spot"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                (shader) -> crossLightSpot = shader
-        );
-
-        event.registerShader(
-
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("double_cross_light_spot"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                (shader) -> doubleCrossLightSpot = shader
-        );
-
-        event.registerShader(
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("halo"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                (shader) -> halo = shader
-        );
-
-        event.registerShader(
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("bloom_blit"),
-                        DefaultVertexFormat.POSITION_TEX_COLOR
-                ),
-                (shader) -> bloomBlit = shader
-        );
-
-        event.registerShader(
-                new ShaderInstance(
-                        provider,
-                        ThatSkyInteractions.getLocation("clouds"),
-                        DefaultVertexFormat.POSITION_COLOR_NORMAL
-                ),
-                (shader) -> clouds = shader
-        );
+        for (ShaderHolder holder : HOLDERS) {
+            event.registerShader(
+                    new ShaderInstance(
+                            provider,
+                            holder.getLocation(),
+                            holder.getFormat()
+                    ),
+                    holder::setInstance
+            );
+        }
 
         Batch.onRegisterShaders(event);
 
         //PostEffects.setup(provider);
-        ClientProxy client = ThatSkyInteractions.getInstance().getClient();
-        client.getCloudRenderer().setup(provider);
-        client.getBloomRenderDispatch().setup(provider);
+        CloudRenderer.INSTANCE.setup(provider);
+        BloomRenderDispatch.INSTANCE.setup(provider);
     }
 
     public static void resize(int width, int height) {
@@ -214,10 +77,8 @@ public class Shaders {
             return;
         }
 
-        ClientProxy client = instance.getClient();
-
-        client.getCloudRenderer().resize(width, height);
-        client.getBloomRenderDispatch().resize(width, height);
+        CloudRenderer.INSTANCE.resize(width, height);
+        BloomRenderDispatch.INSTANCE.resize(width, height);
     }
 
     public static final class Batch {
@@ -255,5 +116,48 @@ public class Shaders {
                     (shader) -> glow = (BatchShaderInstance) shader
             );
         }
+    }
+
+    @Setter
+    @RequiredArgsConstructor
+    public static class ShaderHolder {
+        @Getter
+        private final ResourceLocation location;
+        @Getter private final VertexFormat format;
+
+        private ShaderInstance instance;
+
+        public @NotNull ShaderInstance getInstance() {
+            return Objects.requireNonNull(instance, "Attempted to call get shader [" + location + "] before shaders have finished loading.");
+        }
+
+        public @NotNull ShaderInstance use() {
+            RenderSystem.setShader(this::getInstance);
+            return this.getInstance();
+        }
+    }
+
+    private static ShaderHolder register(ResourceLocation location, VertexFormat format) {
+        ShaderHolder holder = new ShaderHolder(location, format);
+        HOLDERS.add(holder);
+        return holder;
+    }
+
+    static {
+        HOLDERS = new ArrayList<>();
+        ROUND_RECT = register(ThatSkyInteractions.getLocation("round_rect"), DefaultVertexFormat.POSITION_TEX_COLOR);
+
+        SECTOR = register(ThatSkyInteractions.getLocation("sector"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        SECTOR_STROKE = register(ThatSkyInteractions.getLocation("sector_stroke"), DefaultVertexFormat.POSITION_TEX_COLOR);
+
+        CIRCLE = register(ThatSkyInteractions.getLocation("circle"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        RING = register(ThatSkyInteractions.getLocation("ring"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        GLOWING_RING = register(ThatSkyInteractions.getLocation("ring_glow"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        LIGHT_SPOT = register(ThatSkyInteractions.getLocation("light_spot"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        CROSS_LIGHT_SPOT = register(ThatSkyInteractions.getLocation("cross_light_spot"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        DOUBLE_CROSS_LIGHT_SPOT = register(ThatSkyInteractions.getLocation("double_cross_light_spot"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        HALO = register(ThatSkyInteractions.getLocation("halo"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        BLOOM_BLIT = register(ThatSkyInteractions.getLocation("bloom_blit"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        CLOUDS = register(ThatSkyInteractions.getLocation("clouds"), DefaultVertexFormat.POSITION_COLOR_NORMAL);
     }
 }

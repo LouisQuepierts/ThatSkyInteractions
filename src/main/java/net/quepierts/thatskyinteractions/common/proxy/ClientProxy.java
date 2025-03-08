@@ -76,7 +76,6 @@ import net.quepierts.thatskyinteractions.common.reference.Animations;
 import net.quepierts.thatskyinteractions.common.registry.CreativeModeTabs;
 import net.quepierts.thatskyinteractions.common.registry.Items;
 import net.quepierts.thatskyinteractions.common.registry.Particles;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -85,39 +84,12 @@ import java.util.UUID;
 
 public class ClientProxy extends CommonProxy {
     private static final ResourceLocation EMPTY_LOCATION = ResourceLocation.withDefaultNamespace("empty");
-    public final Options options;
-    @NotNull
-    private final UnlockRelationshipHandler unlockRelationshipHandler;
-    @NotNull
-    private final FakePlayerDisplayHandler fakePlayerDisplayHandler;
-    @NotNull
-    private final CameraHandler cameraHandler;
-    @NotNull
-    private final EffectDistributorManager particleDistributorManager;
-    @NotNull
-    private final VertexBufferManager vertexBufferManager;
-    @NotNull
-    private final CloudRenderer cloudRenderer;
-    @NotNull
-    private final BloomRenderDispatch bloomRenderDispatch;
-    @NotNull
-    private final VboRenderDispatch vboRenderDispatch;
 
     @Nullable
     private UUID target;
 
     public ClientProxy(IEventBus modBus, ModContainer modContainer) {
         super(modBus, modContainer);
-
-        this.options = new Options();
-        this.unlockRelationshipHandler = new UnlockRelationshipHandler();
-        this.fakePlayerDisplayHandler = new FakePlayerDisplayHandler();
-        this.cameraHandler = new CameraHandler();
-        this.particleDistributorManager = new EffectDistributorManager();
-        this.vertexBufferManager = new VertexBufferManager();
-        this.cloudRenderer = new CloudRenderer();
-        this.bloomRenderDispatch = new BloomRenderDispatch(this.vertexBufferManager);
-        this.vboRenderDispatch = new VboRenderDispatch(this.vertexBufferManager);
 
         NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.EntityInteract.class, this::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(ScreenEvent.MouseButtonPressed.Post.class, this::onMousePressed);
@@ -136,13 +108,13 @@ public class ClientProxy extends CommonProxy {
         NeoForge.EVENT_BUS.addListener(RenderLevelStageEvent.class, this::onRenderLevelStage);
         NeoForge.EVENT_BUS.addListener(ClientChatReceivedEvent.Player.class, this::onChatReceivedPlayer);
         NeoForge.EVENT_BUS.addListener(GameShuttingDownEvent.class, this::onGameShuttingDown);
-        NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, cameraHandler::onComputeCameraAngles);
-        NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Pre.class, fakePlayerDisplayHandler::onRenderPlayerPre);
-        NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Post.class, fakePlayerDisplayHandler::onRenderPlayerPost);
-        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, fakePlayerDisplayHandler::onClientTick);
+//        NeoForge.EVENT_BUS.addListener(ViewportEvent.ComputeCameraAngles.class, CameraHandler.INSTANCE::onComputeCameraAngles);
+//        NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Pre.class, fakePlayerDisplayHandler::onRenderPlayerPre);
+//        NeoForge.EVENT_BUS.addListener(RenderPlayerEvent.Post.class, fakePlayerDisplayHandler::onRenderPlayerPost);
+//        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, fakePlayerDisplayHandler::onClientTick);
         //NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, cloudRenderer::onClientTick);
         //NeoForge.EVENT_BUS.addListener(ClientTickEvent.Pre.class, particleDistributorManager::onClientTick);
-        NeoForge.EVENT_BUS.addListener(PlayerTickEvent.Pre.class, particleDistributorManager::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(PlayerTickEvent.Pre.class, EffectDistributorManager.INSTANCE::onPlayerTick);
 
         SimpleAnimator.EVENT_BUS.addListener(AnimatorEvent.Play.class, this::onAnimatorPlay);
         SimpleAnimator.EVENT_BUS.addListener(AnimatorEvent.Stop.class, this::onAnimatorStop);
@@ -154,21 +126,17 @@ public class ClientProxy extends CommonProxy {
 
         modBus.addListener(RegisterGuiLayersEvent.class, this::onRegisterGuiLayers);
         modBus.addListener(RegisterParticleProvidersEvent.class, this::onRegisterParticleProviders);
-        modBus.addListener(RegisterKeyMappingsEvent.class, options::register);
+//        modBus.addListener(RegisterKeyMappingsEvent.class, options::register);
         modBus.addListener(EntityRenderersEvent.AddLayers.class, this::onAddLayers);
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, BlockEntityRenderers::onRegisterBER);
         modBus.addListener(BuildCreativeModeTabContentsEvent.class, this::onBuildCreativeTab);
-        modBus.addListener(RegisterClientReloadListenersEvent.class, this::onClientReloadListeners);
+//        modBus.addListener(RegisterClientReloadListenersEvent.class, this::onClientReloadListeners);
 
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
-    private void onClientReloadListeners(RegisterClientReloadListenersEvent event) {
-        this.vertexBufferManager.setReload();
-    }
-
     private void onGameShuttingDown(final GameShuttingDownEvent event) {
-        this.vertexBufferManager.cleanup();
+        VertexBufferManager.INSTANCE.cleanup();
     }
 
     private void onBuildCreativeTab(BuildCreativeModeTabContentsEvent event) {
@@ -195,26 +163,26 @@ public class ClientProxy extends CommonProxy {
         Vec3 cameraPosition = camera.getPosition();
 
         if (stage == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            this.vboRenderDispatch.drawObjects(
+            VboRenderDispatch.INSTANCE.drawObjects(
                     event.getModelViewMatrix(),
                     event.getProjectionMatrix(),
                     cameraPosition,
                     partialTick
             );
         } else if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
-            this.vertexBufferManager.tick();
+            VertexBufferManager.INSTANCE.tick();
         } else if (stage == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
-            this.cloudRenderer.prepareBuffer();
-            this.bloomRenderDispatch.prepareBuffer();
+            CloudRenderer.INSTANCE.prepareBuffer();
+            BloomRenderDispatch.INSTANCE.prepareBuffer();
         } else {
             if (stage == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-                this.cloudRenderer.renderClouds(
+                CloudRenderer.INSTANCE.renderClouds(
                         event.getModelViewMatrix(),
                         event.getProjectionMatrix(),
                         partialTick,
                         cameraPosition
                 );
-                this.bloomRenderDispatch.drawObjects(
+                BloomRenderDispatch.INSTANCE.drawObjects(
                         event.getModelViewMatrix(),
                         event.getProjectionMatrix(),
                         cameraPosition,
@@ -222,7 +190,7 @@ public class ClientProxy extends CommonProxy {
                 );
                 /*Window window = Minecraft.getInstance().getWindow();
 
-                RenderTarget target = this.cloudRenderer.getFinalTarget();
+                RenderTarget target = CloudRenderer.INSTANCE.getFinalTarget();
                 RenderUtils.blitDepthToScreen(target, window.getScreenWidth(), window.getScreenHeight());*/
             }
         }
@@ -288,7 +256,7 @@ public class ClientProxy extends CommonProxy {
         Player player = event.getEntity();
         UUID uuid = player.getUUID();
         World2ScreenWidgetLayer.INSTANCE.remove(uuid);
-        this.particleDistributorManager.remove(uuid);
+        EffectDistributorManager.INSTANCE.remove(uuid);
 
         Minecraft minecraft = Minecraft.getInstance();
         if (this.target != null && this.target.equals(uuid) && minecraft.screen instanceof PlayerInteractScreen animatable) {
@@ -298,8 +266,8 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onStopAnimate(final AnimateStopEvent.Pre event) {
-        if (this.unlockRelationshipHandler.hasInvite()) {
-            this.unlockRelationshipHandler.cancel();
+        if (UnlockRelationshipHandler.INSTANCE.hasInvite()) {
+            UnlockRelationshipHandler.INSTANCE.cancel();
         }
     }
 
@@ -315,7 +283,7 @@ public class ClientProxy extends CommonProxy {
 
         if (Objects.requireNonNull(event.getCurState()) == AnimationState.LOOP) {
             if (event.getAnimationID().equals(Animations.UNLOCK_ACCEPT)) {
-                this.unlockRelationshipHandler.accepted();
+                UnlockRelationshipHandler.INSTANCE.accepted();
             }
         }
     }
@@ -360,27 +328,27 @@ public class ClientProxy extends CommonProxy {
 
     private void onWorldLoad(final LevelEvent.Load event) {
         if (event.getLevel() instanceof ClientLevel level) {
-            this.cloudRenderer.setLevel(level);
+            CloudRenderer.INSTANCE.setLevel(level);
         }
     }
 
     private void onWorldUnload(final LevelEvent.Unload event) {
         if (event.getLevel() instanceof ClientLevel) {
-            this.cloudRenderer.reset();
-            this.bloomRenderDispatch.cleanup();
-            this.vboRenderDispatch.cleanup();
+            CloudRenderer.INSTANCE.reset();
+            BloomRenderDispatch.INSTANCE.cleanup();
+            VboRenderDispatch.INSTANCE.cleanup();
         }
     }
 
     private void onLoggingIn(final ClientPlayerNetworkEvent.LoggingIn event) {
-        this.fakePlayerDisplayHandler.init(event.getPlayer().clientLevel);
+        FakePlayerDisplayHandler.INSTANCE.init(event.getPlayer().clientLevel);
     }
 
     private void onLoggingOut(final ClientPlayerNetworkEvent.LoggingOut event) {
-        this.unlockRelationshipHandler.reset();
-        this.cameraHandler.cleanup();
-        this.fakePlayerDisplayHandler.reset();
-        this.particleDistributorManager.clear();
+        UnlockRelationshipHandler.INSTANCE.reset();
+        CameraHandler.INSTANCE.cleanup();
+        FakePlayerDisplayHandler.INSTANCE.reset();
+        EffectDistributorManager.INSTANCE.clear();
         AnimateScreenHolderLayer.INSTANCE.reset();
         World2ScreenWidgetLayer.INSTANCE.reset();
     }
@@ -407,7 +375,7 @@ public class ClientProxy extends CommonProxy {
             return;
         }
 
-        if (!this.options.keyEnabledInteract.get().isDown()) {
+        if (!Options.KEY_ENABLED_INTERACT.get().isDown()) {
             return;
         }
 
@@ -472,7 +440,7 @@ public class ClientProxy extends CommonProxy {
             return;
         }
 
-        if (!this.options.keyEnabledInteract.get().isDown()) {
+        if (!Options.KEY_ENABLED_INTERACT.get().isDown()) {
             return;
         }
 
@@ -482,14 +450,9 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void onKey(final InputEvent.Key event) {
-        if (options.keyEnabledInteract.get().isDown()) {
-            if (options.keyClickButton.get().isDown()) {
-                World2ScreenWidgetLayer.INSTANCE.click();
-                return;
-            }
-
+        if (Options.KEY_ENABLED_INTERACT.get().isDown()) {
             if (Minecraft.getInstance().screen == null) {
-                if (options.keyOpenFriendAstrolabe.get().isDown()) {
+                if (Options.KEY_OPEN_FRIEND_ASTROLABE.get().isDown()) {
                     AnimateScreenHolderLayer.INSTANCE.push(new FriendAstrolabeScreen());
                 }
             }
@@ -508,7 +471,7 @@ public class ClientProxy extends CommonProxy {
             return;
         }
 
-        if (options.keyEnabledInteract.get().isDown()) {
+        if (Options.KEY_ENABLED_INTERACT.get().isDown()) {
             if (World2ScreenWidgetLayer.INSTANCE.click()) {
                 ThatSkyInteractions.LOGGER.info("click");
                 event.setCanceled(true);
@@ -527,46 +490,6 @@ public class ClientProxy extends CommonProxy {
     @Nullable
     public UUID getTarget() {
         return this.target;
-    }
-
-    @NotNull
-    public UnlockRelationshipHandler getUnlockRelationshipHandler() {
-        return this.unlockRelationshipHandler;
-    }
-
-    @NotNull
-    public CameraHandler getCameraHandler() {
-        return this.cameraHandler;
-    }
-
-    @NotNull
-    public FakePlayerDisplayHandler getFakePlayerDisplayHandler() {
-        return this.fakePlayerDisplayHandler;
-    }
-
-    @NotNull
-    public EffectDistributorManager getParticleDistributorManager() {
-        return particleDistributorManager;
-    }
-
-    @NotNull
-    public CloudRenderer getCloudRenderer() {
-        return this.cloudRenderer;
-    }
-
-    @NotNull
-    public BloomRenderDispatch getBloomRenderDispatch() {
-        return this.bloomRenderDispatch;
-    }
-
-    @NotNull
-    public VboRenderDispatch getVboRenderDispatch() {
-        return vboRenderDispatch;
-    }
-
-    @NotNull
-    public VertexBufferManager getVertexBufferManager() {
-        return this.vertexBufferManager;
     }
 
     public void onUploadVertexBuffers(final VertexBufferManager upload) {

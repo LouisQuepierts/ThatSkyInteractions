@@ -4,8 +4,8 @@
         "srcrgb": "srcalpha",
         "dstrgb": "1-srcalpha"
     },
-    "vertex": "thatskyinteractions:uv_color",
-    "fragment": "thatskyinteractions:round_rect",
+    "vertex": "position_color_text",
+    "fragment": "thatskyinteractions:sector",
     "attributes": [
         "Color",
         "UV0"
@@ -32,16 +32,16 @@
             "values": [ 1.0, 1.0, 1.0, 1.0 ]
         },
         {
-            "name": "Rect",
+            "name": "Radians",
             "type": "float",
             "count": 2,
-            "values": [ 1.0, 1.0 ]
+            "values": [ 0.1, 0.1 ]
         },
         {
-            "name": "Radius",
+            "name": "Radii",
             "type": "float",
-            "count": 1,
-            "values": [ 0.1 ]
+            "count": 3,
+            "values": [ 0.1, 0.1, 0.0 ]
         },
         {
             "name": "Smooth",

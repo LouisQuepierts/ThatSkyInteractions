@@ -10,6 +10,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -83,7 +84,7 @@ public class PickupWingOfLightW2SButton extends World2ScreenButton {
                 ).withColor(Palette.NORMAL_TEXT_COLOR) :
                 Component.translatable(
                         "gui.thatskyinteractions.prompt.w2s.world.collect",
-                        Component.translatable(ThatSkyInteractions.getInstance().getClient().options.keyEnabledInteract.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
+                        Component.translatable(Options.KEY_ENABLED_INTERACT.get().getKey().getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
                         Component.translatable(InputConstants.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_RIGHT).getName()).withColor(Palette.HIGHLIGHT_TEXT_COLOR),
                         Component.translatable("word.thatskyinteractions.missing_wol").withColor(Palette.HIGHLIGHT_TEXT_COLOR)
                 ).withColor(Palette.NORMAL_TEXT_COLOR);

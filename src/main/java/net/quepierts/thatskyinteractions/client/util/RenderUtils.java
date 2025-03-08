@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
@@ -30,153 +31,163 @@ public class RenderUtils {
         return ResourceLocation.fromNamespaceAndPath(interaction.getNamespace(), "textures/icon/interaction/" + interaction.getPath() + ".png");
     }
 
-    public static void fillRoundRect(GuiGraphics guiGraphics, int x, int y, int width, int height, float radius, int color) {
-        int x2 = x + width;
-        int y2 = y + height;
+    public static void frameRoundRect(GuiGraphics graphics, float x, float y, float width, float height, float lineRadius, float rectRadius, int color) {
+        float x2 = x + width;
+        float y2 = y + height;
 
-        final float ratio = (float) height / (float) width;
+        final float shorter = Math.min(width, height);
+        final float xRatio = Math.max(width / height, 1.0f);
+        final float yRatio = Math.max(height / width, 1.0f);
+        final float nRectRadius = Math.clamp(rectRadius / shorter, 0.0f, 1.0f);
+        final float nLineRadius = Math.clamp(lineRadius / shorter, 0.0f, 1.0f);
 
-        RenderSystem.setShader(Shaders::getRoundRectShader);
-        ShaderInstance shader = Shaders.getRoundRectShader();
-        shader.safeGetUniform("Ratio").set(ratio);
-        shader.safeGetUniform("Radius").set(radius * ratio);
+        RenderSystem.enableBlend();
+        ShaderInstance shader = Shaders.ROUND_RECT.use();
 
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.addVertex(matrix4f, (float)x, (float)y, 0).setUv(0, 0).setColor(color);
-        bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y2, 0).setUv(1, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y, 0).setUv(1, 0).setColor(color);
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        shader.getUniform("Rect").set(xRatio, yRatio);
+        shader.getUniform("Radii").set(nRectRadius, nLineRadius);
+        shader.getUniform("Smooth").set(0.5f / shorter);
+        
+        quadIdentity(graphics, x, y, x2, y2, color);
+        RenderSystem.disableBlend();
     }
 
-    public static void fillCircle(GuiGraphics guiGraphics, int x, int y, int radius, int color) {
+    public static void fillRoundRect(GuiGraphics graphics, float x, float y, float width, float height, float radius, int color) {
+        float x2 = x + width;
+        float y2 = y + height;
+
+        final float shorter = Math.min(width, height);
+        final float xRatio = Math.max(width / height, 1.0f);
+        final float yRatio = Math.max(height / width, 1.0f);
+        final float nRectRadius = Math.clamp(radius / shorter, 0.0f, 1.0f);
+
+        ShaderInstance shader = Shaders.ROUND_RECT.use();
+        shader.getUniform("Rect").set(xRatio, yRatio);
+        shader.getUniform("Radius").set(nRectRadius);
+        shader.getUniform("Smooth").set(0.5f / shorter);
+
+        quadIdentity(graphics, x, y, x2, y2, color);
+    }
+
+    public static void fillSector(GuiGraphics graphics, float x, float y, float scale, float sweepAngle, float middleAngle, float circleRadius, float sectorRadius, float edgeRadius, int color) {
+        float x2 = x + scale;
+        float y2 = y + scale;
+        float nOuterRadius = Math.clamp(circleRadius / scale, 0.0f, 1.0f);
+        float nInnerRadius = Math.clamp(sectorRadius / scale, 0.0f, 1.0f);
+        float nEdgeRadius = Math.clamp(edgeRadius / scale, 0.0f, 1.0f);
+
+        RenderSystem.enableBlend();
+
+        ShaderInstance shader = Shaders.SECTOR.use();
+        shader.getUniform("Radians").set(sweepAngle * Mth.DEG_TO_RAD, middleAngle * Mth.DEG_TO_RAD);
+        shader.getUniform("Radii").set(nOuterRadius, nInnerRadius, nEdgeRadius);
+        shader.getUniform("Smooth").set(0.5f / scale);
+
+        quadIdentity(graphics, x, y, x2, y2, color);
+
+        RenderSystem.disableBlend();
+    }
+
+    public static void drawSectorStroke(GuiGraphics graphics, float x, float y, float scale, float sweepAngle, float middleAngle, float circleRadius, float sectorRadius, float edgeRadius, float stroke, int color) {
+        float x2 = x + scale;
+        float y2 = y + scale;
+        float nOuterRadius = Math.clamp(circleRadius / scale, 0.0f, 1.0f);
+        float nInnerRadius = Math.clamp(sectorRadius / scale, 0.0f, 1.0f);
+        float nEdgeRadius = Math.clamp(edgeRadius / scale, 0.0f, 1.0f);
+        float nStroke = Math.clamp(stroke / scale, 0.0f, 1.0f);
+
+        RenderSystem.enableBlend();
+
+        ShaderInstance shader = Shaders.SECTOR_STROKE.use();
+        shader.getUniform("Radians").set(sweepAngle * Mth.DEG_TO_RAD, middleAngle * Mth.DEG_TO_RAD);
+        shader.getUniform("Radii").set(nOuterRadius, nInnerRadius, nEdgeRadius);
+        shader.getUniform("Stroke").set(nStroke);
+        shader.getUniform("Smooth").set(0.5f / scale);
+
+        quadIdentity(graphics, x, y, x2, y2, color);
+
+        RenderSystem.disableBlend();
+    }
+
+    public static void fillCircle(GuiGraphics graphics, float x, float y, int radius, int color) {
+        float x2 = x + radius * 2;
+        float y2 = y + radius * 2;
+
+        Shaders.CIRCLE.use();
+        quadIdentity(graphics, x, y, x2, y2, color);
+    }
+
+    public static void drawRing(GuiGraphics graphics, int x, int y, int radius, float width, int color) {
         int x2 = x + radius * 2;
         int y2 = y + radius * 2;
 
-        RenderSystem.setShader(Shaders::getCircleShader);
-
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.addVertex(matrix4f, (float)x, (float)y, 0).setUv(0, 0).setColor(color);
-        bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y2, 0).setUv(1, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y, 0).setUv(1, 0).setColor(color);
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
-    }
-
-    public static void drawRing(GuiGraphics guiGraphics, int x, int y, int radius, float width, int color) {
-        int x2 = x + radius * 2;
-        int y2 = y + radius * 2;
-
-        RenderSystem.setShader(Shaders::getRingShader);
-        ShaderInstance shader = Shaders.getRingShader();
+        ShaderInstance shader = Shaders.RING.use();
         shader.safeGetUniform("Width").set(width);
 
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.addVertex(matrix4f, (float)x, (float)y, 0).setUv(0, 0).setColor(color);
-        bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y2, 0).setUv(1, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, (float)x2, (float)y, 0).setUv(1, 0).setColor(color);
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        quadIdentity(graphics, x, y, x2, y2, color);
     }
 
-    public static void drawGlowingRing(GuiGraphics guiGraphics, float x, float y, int radius, float width, int color) {
+    public static void drawGlowingRing(GuiGraphics graphics, float x, float y, int radius, float width, int color) {
         float x1 = x - radius * 0.5f;
         float y1 = y - radius * 0.5f;
         float x2 = x1 + radius * 3;
         float y2 = y1 + radius * 3;
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(Shaders::getGlowingRingShader);
-        ShaderInstance shader = Shaders.getGlowingRingShader();
+        ShaderInstance shader = Shaders.GLOWING_RING.use();
         Objects.requireNonNull(shader.getUniform("Width")).set(width);
 
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.addVertex(matrix4f, x1, y1, 0).setUv(0, 0).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x1, y2, 0).setUv(0, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y1, 0).setUv(1, 0).setColor(color);
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        quadIdentity(graphics, x, y, x2, y2, color);
         RenderSystem.disableBlend();
     }
 
-    public static void drawHalo(GuiGraphics guiGraphics, float x, float y, int size, float intensity, int color) {
+    public static void drawHalo(GuiGraphics graphics, float x, float y, int size, float intensity, int color) {
         float x2 = x + size;
         float y2 = y + size;
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(Shaders::getHalo);
-        Objects.requireNonNull(Shaders.getHalo().getUniform("Intensity")).set(intensity);
-
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(color);
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
-        RenderSystem.disableBlend();
-    }
-
-    public static void drawLightSpot(GuiGraphics guiGraphics, float x, float y, int size, float intensity, int color) {
-        float x2 = x + size;
-        float y2 = y + size;
-
-        RenderSystem.enableBlend();
-        RenderSystem.setShader(Shaders::getLightSpotShader);
-        ShaderInstance shader = Shaders.getLightSpotShader();
+        ShaderInstance shader = Shaders.HALO.use();
         Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
 
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(color);
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        quadIdentity(graphics, x, y, x2, y2, color);
         RenderSystem.disableBlend();
     }
 
-    public static void drawCrossLightSpot(GuiGraphics guiGraphics, float x, float y, int size, float intensity, float width, int color) {
+    public static void drawLightSpot(GuiGraphics graphics, float x, float y, int size, float intensity, int color) {
         float x2 = x + size;
         float y2 = y + size;
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(Shaders::getCrossLightSpotShader);
-        ShaderInstance shader = Shaders.getCrossLightSpotShader();
+        ShaderInstance shader = Shaders.LIGHT_SPOT.use();
+        Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
+
+        quadIdentity(graphics, x, y, x2, y2, color);
+        RenderSystem.disableBlend();
+    }
+
+    public static void drawCrossLightSpot(GuiGraphics graphics, float x, float y, int size, float intensity, float width, int color) {
+        float x2 = x + size;
+        float y2 = y + size;
+
+        RenderSystem.enableBlend();
+        ShaderInstance shader = Shaders.CROSS_LIGHT_SPOT.use();
         Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
         Objects.requireNonNull(shader.getUniform("Width")).set(width / size);
 
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(color);
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        quadIdentity(graphics, x, y, x2, y2, color);
         RenderSystem.disableBlend();
     }
 
-    public static void drawDoubleCrossHalo(GuiGraphics guiGraphics, float x, float y, int size, float intensity, float width, int color) {
+    public static void drawDoubleCrossHalo(GuiGraphics graphics, float x, float y, int size, float intensity, float width, int color) {
         float x2 = x + size;
         float y2 = y + size;
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(Shaders::getDoubleCrossLightSpotShader);
-        ShaderInstance shader = Shaders.getDoubleCrossLightSpotShader();
+        ShaderInstance shader = Shaders.DOUBLE_CROSS_LIGHT_SPOT.use();
         Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
         Objects.requireNonNull(shader.getUniform("Width")).set(width / size);
 
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(0, 0).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x, y2, 0).setUv(0, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
-        bufferbuilder.addVertex(matrix4f, x2, y, 0).setUv(1, 0).setColor(color);
-        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+        quadIdentity(graphics, x, y, x2, y2, color);
         RenderSystem.disableBlend();
     }
 
@@ -225,13 +236,13 @@ public class RenderUtils {
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
-    public static void blit(GuiGraphics guiGraphics, ResourceLocation atlasLocation, int x, int y, int width, int height) {
+    public static void blit(GuiGraphics graphics, ResourceLocation atlasLocation, int x, int y, int width, int height) {
         int x2 = x + width;
         int y2 = y + height;
 
         RenderSystem.setShaderTexture(0, atlasLocation);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        Matrix4f matrix4f = graphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         bufferbuilder.addVertex(matrix4f, (float)x, (float)y, 0).setUv(0, 0);
         bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1);
@@ -240,13 +251,13 @@ public class RenderUtils {
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
-    public static void blitIcon(GuiGraphics guiGraphics, ResourceLocation atlasLocation, int x, int y, int width, int height) {
+    public static void blitIcon(GuiGraphics graphics, ResourceLocation atlasLocation, int x, int y, int width, int height) {
         int x2 = x + width;
         int y2 = y + height;
 
         RenderSystem.setShaderTexture(0, getIconTexture(atlasLocation).getId());
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        Matrix4f matrix4f = graphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         bufferbuilder.addVertex(matrix4f, (float)x, (float)y, 0).setUv(0, 0);
         bufferbuilder.addVertex(matrix4f, (float)x, (float)y2, 0).setUv(0, 1);
@@ -255,10 +266,10 @@ public class RenderUtils {
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 
-    private static void innerBlit(GuiGraphics guiGraphics, ResourceLocation atlasLocation, int x1, int x2, int y1, int y2, int blitOffset, float minU, float maxU, float minV, float maxV) {
+    private static void innerBlit(GuiGraphics graphics, ResourceLocation atlasLocation, int x1, int x2, int y1, int y2, int blitOffset, float minU, float maxU, float minV, float maxV) {
         RenderSystem.setShaderTexture(0, getIconTexture(atlasLocation).getId());
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
+        Matrix4f matrix4f = graphics.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         bufferbuilder.addVertex(matrix4f, (float)x1, (float)y1, (float)blitOffset).setUv(minU, minV);
         bufferbuilder.addVertex(matrix4f, (float)x1, (float)y2, (float)blitOffset).setUv(minU, maxV);
@@ -283,7 +294,7 @@ public class RenderUtils {
         GlStateManager._depthMask(false);
         GlStateManager._viewport(0, 0, width, height);
 
-        ShaderInstance shaderinstance = Shaders.getBloomBlit();
+        ShaderInstance shaderinstance = Shaders.BLOOM_BLIT.getInstance();
         shaderinstance.setSampler("ScreenSampler", target.getColorTextureId());
         shaderinstance.setSampler("DiffuseSampler", src.getColorTextureId());
         Objects.requireNonNull(shaderinstance.getUniform("Blend")).set(blend);
@@ -312,5 +323,25 @@ public class RenderUtils {
         GL30C.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL30C.GL_DEPTH_BUFFER_BIT, GL30C.GL_NEAREST);
         GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
         Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+    }
+
+    private static void quadIdentity(GuiGraphics graphics, float x1, float y1, float x2, float y2) {
+        Matrix4f matrix4f = graphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.addVertex(matrix4f, x1, y1, 0).setUv(0, 0);
+        bufferbuilder.addVertex(matrix4f, x1, y2, 0).setUv(0, 1);
+        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1);
+        bufferbuilder.addVertex(matrix4f, x2, y1, 0).setUv(1, 0);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+    }
+
+    private static void quadIdentity(GuiGraphics graphics, float x1, float y1, float x2, float y2, int color) {
+        Matrix4f matrix4f = graphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferbuilder.addVertex(matrix4f, x1, y1, 0).setUv(0, 0).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x1, y2, 0).setUv(0, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
+        bufferbuilder.addVertex(matrix4f, x2, y1, 0).setUv(1, 0).setColor(color);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 }

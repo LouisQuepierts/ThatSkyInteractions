@@ -19,6 +19,7 @@ import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 public class UnlockRelationshipHandler {
+    public static final UnlockRelationshipHandler INSTANCE = new UnlockRelationshipHandler();
     private final Minecraft minecraft = Minecraft.getInstance();
     private PlayerPair pair;
     private String node;
@@ -26,6 +27,8 @@ public class UnlockRelationshipHandler {
     private Runnable onCanceled;
     private boolean invite = false;
 
+    UnlockRelationshipHandler() {
+    }
 
     public void invite(
             @NotNull UUID target,

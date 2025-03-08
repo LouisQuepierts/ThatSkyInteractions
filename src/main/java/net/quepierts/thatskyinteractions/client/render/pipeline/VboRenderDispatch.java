@@ -4,8 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class VboRenderDispatch extends RenderDispatch<BlockEntity> {
-    public VboRenderDispatch(VertexBufferManager vertexBufferManager) {
+public final class VboRenderDispatch extends RenderDispatch<BlockEntity> {
+    public static final VboRenderDispatch INSTANCE = new VboRenderDispatch(VertexBufferManager.INSTANCE);
+    VboRenderDispatch(VertexBufferManager vertexBufferManager) {
         super(vertexBufferManager);
     }
 

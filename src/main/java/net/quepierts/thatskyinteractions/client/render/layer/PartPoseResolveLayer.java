@@ -37,7 +37,7 @@ public class PartPoseResolveLayer extends RenderLayer<AbstractClientPlayer, Play
         ClientAnimator clientAnimator = (ClientAnimator) animator;
         PlayerModel<AbstractClientPlayer> parent = this.getParentModel();
 
-        EffectDistributorManager distributorManager = ThatSkyInteractions.getInstance().getClient().getParticleDistributorManager();
+        EffectDistributorManager distributorManager = EffectDistributorManager.INSTANCE;
         EffectDistributorManager.PartMatrices matrices = distributorManager.get(player.getUUID());
         // translate to world space
         float scale = player.getScale() * 0.9375F;

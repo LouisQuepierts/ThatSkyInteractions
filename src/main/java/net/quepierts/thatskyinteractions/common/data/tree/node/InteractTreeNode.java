@@ -17,6 +17,7 @@ import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import net.quepierts.thatskyinteractions.common.data.PlayerPair;
 import net.quepierts.thatskyinteractions.common.data.tree.NodeState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -30,6 +31,8 @@ public class InteractTreeNode {
     @NotNull protected final String middle;
     @NotNull protected final String right;
 
+    @Nullable protected String parent;
+    protected Branch branch;
     protected final int price;
     protected int y;
     protected int x;
@@ -63,7 +66,7 @@ public class InteractTreeNode {
         return element == null ? def : element.getAsInt();
     }
 
-    public static InteractTreeNode serialize(JsonObject object) {
+    public static InteractTreeNode fromJson(JsonObject object) {
         String type = object.get("type").getAsString();
         return FACTORIES.getOrDefault(type, DEFAULT_FACTORY).fromJson().apply(object);
     }
@@ -100,6 +103,14 @@ public class InteractTreeNode {
 
     public @NotNull String getRight() {
         return right;
+    }
+
+    public @Nullable String getParent() {
+        return parent;
+    }
+
+    public Branch getBranch() {
+        return branch;
     }
 
     public boolean hasLeft() {

@@ -29,7 +29,7 @@ public class WingOfLightBlockRenderer implements BlockEntityRenderer<WingOfLight
 
     public WingOfLightBlockRenderer(BlockEntityRendererProvider.Context context) {
         this.minecraft = Minecraft.getInstance();
-        this.renderer = ThatSkyInteractions.getInstance().getClient().getBloomRenderDispatch();
+        this.renderer = BloomRenderDispatch.INSTANCE;
     }
 
     @Override

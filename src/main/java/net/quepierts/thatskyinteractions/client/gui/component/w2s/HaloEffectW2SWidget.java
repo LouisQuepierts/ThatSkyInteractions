@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.render.pipeline.BloomRenderDispatch;
 import net.quepierts.thatskyinteractions.client.util.RayTraceUtil;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.jetbrains.annotations.NotNull;
@@ -113,7 +114,7 @@ public class HaloEffectW2SWidget extends World2ScreenWidget {
         if (computeList.isEmpty())
             return;
 
-        RenderTarget renderTarget = ThatSkyInteractions.getInstance().getClient().getBloomRenderDispatch().getFinalTarget();
+        RenderTarget renderTarget = BloomRenderDispatch.INSTANCE.getFinalTarget();
         if (renderTarget == null)
             return;
 

@@ -19,7 +19,7 @@ public class LevelRendererMixin {
     )
     private float tsi$redirectDayTime(ClientLevel instance, float partialTick) {
         float unmodified = instance.getTimeOfDay(partialTick);
-        CameraHandler handler = ThatSkyInteractions.getInstance().getClient().getCameraHandler();
+        CameraHandler handler = CameraHandler.INSTANCE;
         return handler.recomputeDayTime(unmodified);
     }
 }

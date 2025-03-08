@@ -10,6 +10,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.render.pipeline.BloomRenderDispatch;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VboRenderDispatch;
 import net.quepierts.thatskyinteractions.client.render.pipeline.VertexBufferManager;
 import net.quepierts.thatskyinteractions.common.block.entity.MuralBlockEntity;
@@ -21,11 +22,9 @@ import org.joml.Vector3f;
 
 @OnlyIn(Dist.CLIENT)
 public class MuralBlockRenderer extends HighlightBlockEntityRenderer<MuralBlockEntity> {
-    private final VboRenderDispatch vboRenderDispatch;
 
     @SuppressWarnings("unused")
     public MuralBlockRenderer(BlockEntityRendererProvider.Context context) {
-        this.vboRenderDispatch = ThatSkyInteractions.getInstance().getClient().getVboRenderDispatch();
     }
 
     @Override
@@ -38,8 +37,8 @@ public class MuralBlockRenderer extends HighlightBlockEntityRenderer<MuralBlockE
             int combinedOverlay
     ) {
         if (mural.isDirty()) {
-            this.bloomRenderer.clearRenderAction(mural);
-            this.vboRenderDispatch.clearRenderAction(mural);
+            BloomRenderDispatch.INSTANCE.clearRenderAction(mural);
+            VboRenderDispatch.INSTANCE.clearRenderAction(mural);
             mural.setDirty(false);
             BlockPos blockPos = mural.getBlockPos();
             Vector2f sizeF = mural.getSizeF();
@@ -59,7 +58,7 @@ public class MuralBlockRenderer extends HighlightBlockEntityRenderer<MuralBlockE
                     )
             ).scale(sizeF.x / 16f, sizeF.y / 16f, 1);
 
-            (mural.shouldBloom() ? this.bloomRenderer : this.vboRenderDispatch).addRenderAction(
+            (mural.shouldBloom() ? BloomRenderDispatch.INSTANCE : VboRenderDispatch.INSTANCE).addRenderAction(
                     mural,
                     VertexBufferManager.QUAD,
                     transformation,
@@ -121,8 +120,8 @@ public class MuralBlockRenderer extends HighlightBlockEntityRenderer<MuralBlockE
     public boolean shouldRender(@NotNull MuralBlockEntity blockEntity, @NotNull Vec3 cameraPos) {
         boolean b = super.shouldRender(blockEntity, cameraPos);
         if (!b) {
-            this.bloomRenderer.removeRenderAction(blockEntity);
-            this.vboRenderDispatch.removeRenderAction(blockEntity);
+            BloomRenderDispatch.INSTANCE.removeRenderAction(blockEntity);
+            VboRenderDispatch.INSTANCE.removeRenderAction(blockEntity);
             blockEntity.setDirty(true);
         }
         return b;

@@ -21,6 +21,8 @@ import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 public class EffectDistributorManager {
+    public static final EffectDistributorManager INSTANCE = new EffectDistributorManager();
+
     private final EnumMap<ModelBone, ImmutableList<EffectDistributor>> distributors;
     private final Map<UUID, PartMatrices> matrices;
 

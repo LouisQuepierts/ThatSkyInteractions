@@ -13,6 +13,8 @@ import net.quepierts.thatskyinteractions.common.data.tree.node.InteractTreeNode;
 import org.apache.commons.lang3.stream.Streams;
 
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -28,20 +30,22 @@ public class InteractTree {
 
     public static InteractTree fromStream(Reader reader) {
         JsonObject object = JsonParser.parseReader(reader).getAsJsonObject();
-        return serialize(object);
+        return fromJson(object);
     }
 
-    public static InteractTree serialize(JsonObject object) {
+    public static InteractTree fromJson(JsonObject object) {
         JsonArray array = object.getAsJsonArray("nodes");
         String rootID = object.has("root") ? object.get("root").getAsString() : "root";
 
         Map<String, InteractTreeNode> nodes = Streams.of(array.iterator())
                 .map(JsonElement::getAsJsonObject)
-                .map(InteractTreeNode::serialize)
+                .map(InteractTreeNode::fromJson)
                 .collect(Collectors.toUnmodifiableMap(
                         InteractTreeNode::getId,
                         InteractTreeNode::get
                 ));
+
+        //Map<String, List<InteractTreeNode>> children = new HashMap<>();
 
         InteractTreeNode root = nodes.get(rootID);
 
