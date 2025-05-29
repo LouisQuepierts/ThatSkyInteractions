@@ -1,0 +1,11 @@
+{
+    "vertex": "blit_screen",
+    "fragment": "thatskyinteractions:bloom/post",
+    "samplers": [
+        { "name": "DiffuseSampler" },
+        { "name": "ScreenSampler" },
+        { "name": "BaseSampler" }
+    ],
+    "uniforms": [
+    ]
+}

@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.client.render.pipeline;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import net.minecraft.client.Minecraft;
@@ -11,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.render.BloomPostprocessor;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 
 import java.io.IOException;
@@ -19,9 +21,8 @@ public final class BloomRenderDispatch extends RenderDispatch<BlockEntity> {
     public static final BloomRenderDispatch INSTANCE = new BloomRenderDispatch(VertexBufferManager.INSTANCE);
     public static final ResourceLocation EFFECT_LOCATION = ThatSkyInteractions.getLocation("shaders/post/bloom.json");
 
-    private PostChain effect;
-    private RenderTarget finalTarget;
-    private RenderTarget surroundTarget;
+    private BloomPostprocessor postprocessor;
+    private RenderTarget bloomTarget;
 
     private boolean shouldApplyBloom = false;
 
@@ -35,21 +36,20 @@ public final class BloomRenderDispatch extends RenderDispatch<BlockEntity> {
     }
 
     public void prepareBuffer() {
-        this.finalTarget.clear(Minecraft.ON_OSX);
-        this.surroundTarget.clear(Minecraft.ON_OSX);
+        this.bloomTarget.clear(Minecraft.ON_OSX);
 
         Minecraft minecraft = Minecraft.getInstance();
         RenderTarget mainRenderTarget = minecraft.getMainRenderTarget();
         mainRenderTarget.bindWrite(false);
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
-        RenderUtils.blitDepth(mainRenderTarget, this.finalTarget, width, height);
+        RenderUtils.blitDepth(mainRenderTarget, this.bloomTarget, width, height);
         mainRenderTarget.bindWrite(false);
     }
 
     @Override
     protected void prepareRender(float partialTick) {
-        this.finalTarget.bindWrite(false);
+        this.bloomTarget.bindWrite(true);
 
         RenderSystem.disableCull();
         RenderSystem.enableDepthTest();
@@ -60,19 +60,14 @@ public final class BloomRenderDispatch extends RenderDispatch<BlockEntity> {
         Minecraft minecraft = Minecraft.getInstance();
         RenderTarget mainRenderTarget = minecraft.getMainRenderTarget();
         mainRenderTarget.bindWrite(false);
-        int width = minecraft.getWindow().getWidth();
-        int height = minecraft.getWindow().getHeight();
 
         RenderSystem.enableCull();
         RenderSystem.disableDepthTest();
 
         VertexBuffer.unbind();
 
-        this.effect.process(partialTick);
-        mainRenderTarget.bindWrite(false);
-
-        RenderUtils.bloomBlit(this.surroundTarget, width, height, 1.2f);
-        RenderUtils.bloomBlit(this.finalTarget, width, height, 1.8f);
+        this.postprocessor.process(this.bloomTarget);
+//        this.bloomTarget.blitToScreen(width, height);
         this.shouldApplyBloom = false;
     }
 
@@ -87,33 +82,32 @@ public final class BloomRenderDispatch extends RenderDispatch<BlockEntity> {
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
 
-        if (this.effect != null) {
-            this.effect.close();
+        if (this.postprocessor != null) {
+            this.postprocessor.close();
         }
 
-        try {
-            this.effect = new PostChain(
-                    textureManager, provider,
-                    minecraft.getMainRenderTarget(),
-                    EFFECT_LOCATION
-            );
-            this.effect.resize(width, height);
-            this.finalTarget = this.effect.getTempTarget("final");
-            this.surroundTarget = this.effect.getTempTarget("surround");
-        }catch (IOException ioexception) {
-            ThatSkyInteractions.LOGGER.warn("Failed to load shader: {}", EFFECT_LOCATION, ioexception);
-        } catch (JsonSyntaxException jsonsyntaxexception) {
-            ThatSkyInteractions.LOGGER.warn("Failed to parse shader: {}", EFFECT_LOCATION, jsonsyntaxexception);
+        if (this.bloomTarget != null) {
+            this.bloomTarget.destroyBuffers();
         }
+
+        this.postprocessor = new BloomPostprocessor(5);
+        this.bloomTarget = new TextureTarget(width, height, true, Minecraft.ON_OSX);
+        this.bloomTarget.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     public void resize(int width, int height) {
-        if (this.effect != null) {
-            this.effect.resize(width, height);
+        if (this.postprocessor != null) {
+            this.postprocessor.resize(width, height);
+        }
+
+        if (this.bloomTarget != null) {
+            this.bloomTarget.unbindRead();
+            this.bloomTarget.unbindWrite();
+            this.bloomTarget.resize(width, height, Minecraft.ON_OSX);
         }
     }
 
     public RenderTarget getFinalTarget() {
-        return this.finalTarget;
+        return this.bloomTarget;
     }
 }

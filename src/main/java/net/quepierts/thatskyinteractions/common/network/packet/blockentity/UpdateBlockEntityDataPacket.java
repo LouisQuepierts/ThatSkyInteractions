@@ -34,7 +34,7 @@ public class UpdateBlockEntityDataPacket implements IUpdate {
 
     @Override
     public void update(ServerPlayer serverPlayer) {
-        if (serverPlayer == null) {
+         if (serverPlayer == null) {
             return;
         }
 

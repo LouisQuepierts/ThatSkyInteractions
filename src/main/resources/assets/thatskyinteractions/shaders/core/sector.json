@@ -4,12 +4,8 @@
         "srcrgb": "srcalpha",
         "dstrgb": "1-srcalpha"
     },
-    "vertex": "position_color_text",
+    "vertex": "position_tex_color",
     "fragment": "thatskyinteractions:sector",
-    "attributes": [
-        "Color",
-        "UV0"
-    ],
     "samplers": [
     ],
     "uniforms": [

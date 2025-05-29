@@ -40,7 +40,7 @@ public class HaloEffectW2SWidget extends World2ScreenWidget {
 
     @Override
     public void render(GuiGraphics guiGraphics, boolean highlight, float value, float deltaTicks) {
-        PoseStack pose = guiGraphics.pose();
+        /*PoseStack pose = guiGraphics.pose();
         pose.pushPose();
 
         pose.translate(this.x, this.y, 0);
@@ -51,7 +51,7 @@ public class HaloEffectW2SWidget extends World2ScreenWidget {
                 200, 1.0f, 0xfffffee0
         );
 
-        pose.popPose();
+        pose.popPose();*/
     }
 
     @Override

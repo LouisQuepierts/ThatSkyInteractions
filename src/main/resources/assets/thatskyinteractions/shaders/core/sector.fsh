@@ -6,14 +6,18 @@ uniform float Smooth;
 uniform vec2 Radians;
 uniform vec3 Radii;
 
+#pragma multi_compile
+#pragma branches(value = [USE_SHADOW])
+#pragma branches(value = [USE_ROUNDED_EDGES, USE_STROKE], require = [USE_SHADOW])
+
 #define SweepRadian Radians.x
 #define MiddleRadian Radians.y
 #define RingRadius Radii.x
 #define SectorRadius Radii.y
 #define EdgeRadius Radii.z
 
-in vec4 vertexColor;
 in vec2 texCoord0;
+in vec4 vertexColor;
 
 out vec4 fragColor;
 

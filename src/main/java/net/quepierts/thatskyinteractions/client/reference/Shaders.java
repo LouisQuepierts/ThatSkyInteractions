@@ -19,7 +19,6 @@ import net.quepierts.thatskyinteractions.client.render.cloud.CloudRenderer;
 import net.quepierts.thatskyinteractions.client.render.pipeline.BatchShaderInstance;
 import net.quepierts.thatskyinteractions.client.render.pipeline.BloomRenderDispatch;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +43,10 @@ public class Shaders {
     public static final ShaderHolder HALO;
     public static final ShaderHolder BLOOM_BLIT;
     public static final ShaderHolder CLOUDS;
+
+    public static final ShaderHolder BLOOM_DOWNSAMPLE;
+    public static final ShaderHolder BLOOM_UPSAMPLE;
+    public static final ShaderHolder BLOOM_POST;
 
     private static final List<ShaderHolder> HOLDERS;
 
@@ -159,5 +162,8 @@ public class Shaders {
         HALO = register(ThatSkyInteractions.getLocation("halo"), DefaultVertexFormat.POSITION_TEX_COLOR);
         BLOOM_BLIT = register(ThatSkyInteractions.getLocation("bloom_blit"), DefaultVertexFormat.POSITION_TEX_COLOR);
         CLOUDS = register(ThatSkyInteractions.getLocation("clouds"), DefaultVertexFormat.POSITION_COLOR_NORMAL);
+        BLOOM_DOWNSAMPLE = register(ThatSkyInteractions.getLocation("bloom/down_sample"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        BLOOM_UPSAMPLE = register(ThatSkyInteractions.getLocation("bloom/up_sample"), DefaultVertexFormat.POSITION_TEX_COLOR);
+        BLOOM_POST = register(ThatSkyInteractions.getLocation("bloom/post"), DefaultVertexFormat.POSITION_TEX_COLOR);
     }
 }

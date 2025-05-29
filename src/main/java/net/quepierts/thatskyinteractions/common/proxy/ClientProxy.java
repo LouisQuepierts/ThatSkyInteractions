@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -40,6 +41,7 @@ import net.quepierts.simpleanimator.api.event.common.*;
 import net.quepierts.simpleanimator.core.SimpleAnimator;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.ClientHelper;
+import net.quepierts.thatskyinteractions.client.Debug;
 import net.quepierts.thatskyinteractions.client.Options;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
@@ -438,6 +440,16 @@ public class ClientProxy extends CommonProxy {
     private void onMouseScrolling(final InputEvent.MouseScrollingEvent event) {
         if (Minecraft.getInstance().level == null) {
             return;
+        }
+
+        if (!FMLEnvironment.production) {
+            if (Minecraft.getInstance().options.keyShift.isDown()) {
+                if (event.getScrollDeltaY() > 0) {
+                    Debug.scroll ++;
+                } else {
+                    Debug.scroll --;
+                }
+            }
         }
 
         if (!Options.KEY_ENABLED_INTERACT.get().isDown()) {

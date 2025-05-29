@@ -297,7 +297,7 @@ public class RenderUtils {
         ShaderInstance shaderinstance = Shaders.BLOOM_BLIT.getInstance();
         shaderinstance.setSampler("ScreenSampler", target.getColorTextureId());
         shaderinstance.setSampler("DiffuseSampler", src.getColorTextureId());
-        Objects.requireNonNull(shaderinstance.getUniform("Blend")).set(blend);
+        shaderinstance.safeGetUniform("Blend").set(blend);
         shaderinstance.apply();
         BufferBuilder bufferbuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLIT_SCREEN);
         bufferbuilder.addVertex(0.0F, 0.0F, 0.0F);
