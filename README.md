@@ -139,4 +139,4 @@ Developer/Animator/Artist: LouisQuepierts
 Inspired by *Sky: Children of the Light* by thatgamecompany.  
 All design references are used for educational and non-commercial purposes.
 
-Attended (TeaCon Jiachen)[https://www.teacon.cn/jiachen/]
+Attended TeaCon Jiachen (https://www.teacon.cn/jiachen/)
