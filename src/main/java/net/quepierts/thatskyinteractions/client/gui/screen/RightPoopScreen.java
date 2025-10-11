@@ -37,7 +37,7 @@ public class RightPoopScreen extends AnimatedScreen {
         renderOriginal(guiGraphics, mouseX, mouseY, partialTick);
 
         pose.translate((1.0f - this.enter.get()) * 40.0f + v, 0.0f, 0.0f);
-        guiGraphics.fill(0, 0, this.width, this.height, BG_COLOR);
+        guiGraphics.fill(0, 0, this.width, this.height, 0xff0d0d0e);
 
         renderLabel(guiGraphics, mouseX, mouseY, partialTick);
 
