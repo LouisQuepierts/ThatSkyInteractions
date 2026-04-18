@@ -6,8 +6,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
-import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
@@ -35,7 +35,14 @@ public class ColorInputLabel extends Vector3InputLabel {
                 this.ySlider.getIntValue(),
                 this.zSlider.getIntValue()
         );
-        RenderUtils.fillRoundRect(guiGraphics, left, top, width, height, 0.1f, color);
+        var pose    = guiGraphics.pose();
+
+        SdfGraphics .getInstance()
+                    .color(color)
+                    .round(4)
+                    .rectangle(left, top, width, height)
+                    .fill(pose);
+        
         RenderSystem.disableBlend();
     }
 }

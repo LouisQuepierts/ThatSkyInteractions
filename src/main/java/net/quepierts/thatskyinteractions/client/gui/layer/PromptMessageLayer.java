@@ -10,6 +10,7 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -76,7 +77,13 @@ public class PromptMessageLayer implements LayeredDraw.Layer {
         pose.scale(scale, scale, scale);
         RenderSystem.enableBlend();
         int width1 = this.length * 2;
-        RenderUtils.fillRoundRect(guiGraphics, -this.length, -16, width1, 20, 0.25f, BG_COLOR);
+
+        SdfGraphics .getInstance()
+                    .color(BG_COLOR)
+                    .round(4)
+                    .rectangle(-this.length, -16, width1, 20)
+                    .fill(pose);
+
         guiGraphics.drawString(minecraft.font, this.component, -this.length + 12, -10, 0xffffffff);
         RenderSystem.disableBlend();
         pose.popPose();

@@ -13,6 +13,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.gui.animate.AbstractScreenAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -40,18 +41,32 @@ public class Slider extends AbstractWidget {
     public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         RenderSystem.enableBlend();
 
+        var sdf     = SdfGraphics.getInstance();
+        var pose    = guiGraphics.pose();
+
         float alpha = Palette.getShaderAlpha();
 
+        sdf     .color(0xa0101010)
+                .roundedHBar(this.getX(), this.getY(), this.getWidth(), 16)
+                .fill(pose);
+
         if (this.isFocused()) {
-            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), 16, 0.5f, Palette.HIGHLIGHT_COLOR ^ 0x40000000);
-            RenderUtils.fillRoundRect(guiGraphics, this.getX() + 1, this.getY() + 1, this.getWidth() - 2, 14, 0.5f, 0x80101010);
-        } else {
-            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), 16, 0.5f, 0xa0101010);
+            sdf     .color(Palette.HIGHLIGHT_COLOR ^ 0x40000000)
+                    .stroke(pose, 1.0f);
         }
 
         int i = (int) (this.display * (double) (this.width - 16));
-        RenderUtils.fillRoundRect(guiGraphics, this.getX() + 2, this.getY() + 2, i + 12, 12, 0.5f, 0xa0404040);
-        RenderUtils.fillRoundRect(guiGraphics, this.getX() + i + 3, this.getY() + 3, 10, 10, 0.5f, Palette.HIGHLIGHT_COLOR ^ (this.isFocused() ? 0x40000000 : 0x80000000));
+
+
+        sdf     .color(0xa0404040)
+                .roundedHBar(this.getX() + 2, this.getY() + 2, i + 12, 12)
+                .fill(pose)
+                .color(Palette.HIGHLIGHT_COLOR ^ (this.isFocused() ? 0x40000000 : 0x80000000))
+                .circle(this.getX() + i + 3, this.getY() + 3, 5).fill(pose);
+
+//        RenderUtils.fillRoundHTab(guiGraphics, this.getX() + 2, this.getY() + 2, i + 12, 12, 0xa0404040);
+//        RenderUtils.fillCircle(guiGraphics, this.getX() + i + 3, this.getY() + 3, 5, Palette.HIGHLIGHT_COLOR ^ (this.isFocused() ? 0x40000000 : 0x80000000));
+
         Minecraft minecraft = Minecraft.getInstance();
         this.renderScrollingString(guiGraphics, minecraft.font, 2, Palette.NORMAL_TEXT_COLOR);
         Palette.setShaderAlpha(alpha);

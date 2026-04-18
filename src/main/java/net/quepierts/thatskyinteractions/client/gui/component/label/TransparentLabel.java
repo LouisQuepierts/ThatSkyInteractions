@@ -11,9 +11,9 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
 import net.quepierts.thatskyinteractions.client.gui.component.WidgetHolder;
-import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -45,7 +45,13 @@ public class TransparentLabel extends AbstractWidget implements Renderable, Widg
     protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         float alpha = Palette.getShaderAlpha();
         RenderSystem.enableBlend();
-        RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0.1f, 0x80000000);
+
+        SdfGraphics .getInstance()
+                    .color(0x80000000)
+                    .round(8)
+                    .rectangle(this.getX(), this.getY(), this.getWidth(), this.getHeight())
+                    .fill(guiGraphics.pose());
+
         guiGraphics.drawCenteredString(this.minecraft.font, this.getMessage(), this.getX() + this.getWidth() / 2, this.getY() + 10, Palette.NORMAL_TEXT_COLOR);
         RenderSystem.disableBlend();
         Palette.setShaderAlpha(alpha);

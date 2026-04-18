@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -78,7 +79,14 @@ public abstract class SqueezeButton extends AbstractButton {
         float alpha = Palette.getShaderAlpha();
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
-        RenderUtils.fillRoundRect(guiGraphics, begin, begin, width, width, 0.16f, 0x80101010);
+
+        var pose    = guiGraphics.pose();
+        SdfGraphics .getInstance()
+                    .color(0x80101010)
+                    .round(4)
+                    .rectangle(begin, begin, this.width, this.height)
+                    .fill(pose);
+
         if (!this.active) {
             RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, alpha);
         }

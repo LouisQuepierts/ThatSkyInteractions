@@ -11,6 +11,7 @@ import net.minecraft.util.StringUtil;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.gui.component.TEditBox;
 import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
@@ -103,7 +104,12 @@ public class InputScreen extends AnimatedScreen {
 
         int hWidth = this.boxWidth / 2;
         int hHeight = this.boxHeight / 2;
-        RenderUtils.fillRoundRect(guiGraphics, -hWidth, -hHeight, this.boxWidth, this.boxHeight, 0.05f, BG_COLOR);
+
+        SdfGraphics .getInstance()
+                    .color(BG_COLOR)
+                    .round(8)
+                    .rectangle(-hWidth, -hHeight, this.boxWidth, this.boxHeight)
+                    .fill(pose);
 
         RenderSystem.enableBlend();
         Palette.useUnlockedIconColor();

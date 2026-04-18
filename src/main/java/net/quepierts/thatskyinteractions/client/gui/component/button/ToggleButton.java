@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,14 +28,22 @@ public class ToggleButton extends AbstractButton {
     protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         RenderSystem.enableBlend();
 
-        PoseStack pose = guiGraphics.pose();
+        var sdf     = SdfGraphics.getInstance();
+        var pose    = guiGraphics.pose();
+
         pose.pushPose();
         final int xMid = width / 2;
         final int yMid = height / 2;
         pose.translate(this.getX() + xMid, this.getY() + yMid, 0.0f);
 
-        RenderUtils.fillRoundRect(guiGraphics, 0, 0, width, height, 0.5f, BG_OFF);
-        RenderUtils.fillCircle(guiGraphics, 4, 4, 8, BTN_OFF);
+        sdf         .color(BG_OFF)
+                    .round(10)
+                    .rectangle(0, 0, this.width, this.height)
+                    .fill(pose)
+                    .color(BTN_OFF)
+                    .circle(4, 4, 8)
+                    .fill(pose);
+
         pose.popPose();
 
         RenderSystem.disableBlend();

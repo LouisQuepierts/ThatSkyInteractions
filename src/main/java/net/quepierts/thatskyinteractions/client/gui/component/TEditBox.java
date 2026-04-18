@@ -20,7 +20,7 @@ import net.minecraft.util.StringUtil;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
-import net.quepierts.thatskyinteractions.client.util.RenderUtils;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -362,15 +362,20 @@ public class TEditBox extends AbstractWidget {
             this.autoConfirm = -1;
         }
 
+        var sdf     = SdfGraphics.getInstance();
+        var pose    = guiGraphics.pose();
+
         if (this.isVisible()) {
 
             RenderSystem.enableBlend();
-            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0.5f, this.isFocused() ? Palette.HIGHLIGHT_COLOR : 0xa0101010);
+            sdf     .color(0xa0101010)
+                    .roundedHBar(this.getX(), this.getY(), this.getWidth(), this.getHeight())
+                    .fill(pose);
+//            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.getHeight() * 0.5f, this.isFocused() ? Palette.HIGHLIGHT_COLOR : 0xa0101010);
 
             if (this.isFocused()) {
-                int width = this.getWidth() - 2;
-                int height = this.getHeight() - 2;
-                RenderUtils.fillRoundRect(guiGraphics, this.getX() + 1, this.getY() + 1, width, height, 0.5f, 0xff101010);
+                sdf     .color(Palette.HIGHLIGHT_COLOR)
+                        .stroke(pose, 1.0f);
             }
 
             int textColor = this.isEditable ? this.textColor : this.textColorUneditable;

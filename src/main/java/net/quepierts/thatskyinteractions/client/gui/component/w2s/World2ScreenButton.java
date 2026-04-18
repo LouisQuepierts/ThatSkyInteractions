@@ -1,12 +1,12 @@
 package net.quepierts.thatskyinteractions.client.gui.component.w2s;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 
 public abstract class World2ScreenButton extends World2ScreenWidget {
@@ -25,7 +25,8 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
 
     @Override
     public void render(GuiGraphics guiGraphics, boolean highlight, float value, float deltaTicks) {
-        PoseStack pose = guiGraphics.pose();
+        var sdf     = SdfGraphics.getInstance();
+        var pose    = guiGraphics.pose();
 
         RenderSystem.enableBlend();
         RenderSystem.disableCull();
@@ -43,8 +44,16 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
 
         if (this.alpha > 0) {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f,  alpha / 10.0f);
-            RenderUtils.fillCircle(guiGraphics, -16, -16, 16, BG_COLOR);
-            RenderUtils.drawRing(guiGraphics, -15, -15, 15, 0.025f, 0xffd1cec1);
+
+            sdf     .color(BG_COLOR)
+                    .circle(-16, -16, 16)
+                    .fill(pose)
+
+                    .color(0xffd1cec1)
+                    .circle(-15, -15, 15)
+                    .stroke(pose, 1.0f);
+            /*RenderUtils.fillCircle(guiGraphics, -16, -16, 16, BG_COLOR);
+            RenderUtils.drawRing(guiGraphics, -15, -15, 15, 1, 0xffd1cec1);*/
 
             this.renderInner(guiGraphics, highlight, deltaTicks);
         }
@@ -52,7 +61,13 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         pose.translate(0, 8, 0);
         pose.mulPose(Axis.ZP.rotation(Mth.PI / 4));
-        RenderUtils.fillRoundRect(guiGraphics, 0, 0, 8, 8, 0.2f, BG_COLOR);
+
+        sdf     .color(BG_COLOR)
+                .round(1)
+                .rectangle(0, 0, 8, 8)
+                .fill(pose);
+
+//        RenderUtils.fillRoundRect(guiGraphics, 0, 0, 8, 8, 1, BG_COLOR);
         RenderUtils.blit(guiGraphics, W2S_LOCATION, 0, 0, 8, 8);
 
         RenderSystem.enableCull();

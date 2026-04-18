@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.gui.animate.AnimateUtils;
 import net.quepierts.thatskyinteractions.client.gui.animate.LerpNumberAnimation;
 import net.quepierts.thatskyinteractions.client.gui.animate.ScreenAnimator;
@@ -59,14 +60,22 @@ public abstract class RoundRectButton extends AbstractButton {
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         RenderSystem.enableBlend();
 
-        PoseStack pose = guiGraphics.pose();
+        var pose    = guiGraphics.pose();
+        var sdf     = SdfGraphics.getInstance();
+
         pose.pushPose();
         final int xMid = width / 2;
         final int yMid = height / 2;
         pose.translate(this.getX() + xMid, this.getY() + yMid, 0.0f);
         float scale = 1.0f - (AnimateUtils.Time.bounce((float) click.get()) * 0.3f);
         pose.scale(scale, scale, 1.0f);
-        RenderUtils.fillRoundRect(guiGraphics, -xMid, -yMid, width, height, 0.25f, this.isHovered() ? 0xb0101010 : 0x80101010);
+
+        sdf     .color(this.isHovered() ? 0xb0101010 : 0x80101010)
+                .round(Math.min(width, height) * 0.25f)
+                .rectangle(-xMid, -yMid, width, height)
+                .fill(pose);
+
+//        RenderUtils.fillRoundRect(guiGraphics, -xMid, -yMid, width, height, 0.25f, this.isHovered() ? 0xb0101010 : 0x80101010);
         guiGraphics.drawCenteredString(Minecraft.getInstance().font, this.getMessage(), 0, -4, Palette.NORMAL_TEXT_COLOR);
         pose.popPose();
 

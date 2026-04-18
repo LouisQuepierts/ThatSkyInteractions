@@ -11,10 +11,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.client.gui.Palette;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.gui.component.button.SqueezeButton;
 import net.quepierts.thatskyinteractions.client.gui.layer.AnimateScreenHolderLayer;
 import net.quepierts.thatskyinteractions.client.gui.screen.confirm.ConfirmProvider;
-import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
@@ -71,7 +71,13 @@ public class ConfirmScreen extends AnimatedScreen {
 
         int hWidth = this.boxWidth / 2;
         int hHeight = this.boxHeight / 2;
-        RenderUtils.fillRoundRect(guiGraphics, -hWidth, -hHeight, this.boxWidth, this.boxHeight, 0.05f, 0xc0101010);
+
+        SdfGraphics .getInstance()
+                    .color(0xC0101010)
+                    .round(8)
+                    .rectangle(-hWidth, -hHeight, this.boxWidth, this.boxHeight)
+                    .fill(pose);
+
         //guiGraphics.fill(-hWidth, -hHeight, hWidth, hHeight, 0xc0101010);
 
         mouseX -= xMid;
