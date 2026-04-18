@@ -16,8 +16,10 @@ import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.reference.Shaders;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.lwjgl.opengl.GL30C;
 
 import java.util.Objects;
@@ -31,113 +33,67 @@ public class RenderUtils {
         return ResourceLocation.fromNamespaceAndPath(interaction.getNamespace(), "textures/icon/interaction/" + interaction.getPath() + ".png");
     }
 
-    public static void frameRoundRect(GuiGraphics graphics, float x, float y, float width, float height, float lineRadius, float rectRadius, int color) {
-        float x2 = x + width;
-        float y2 = y + height;
-
-        final float shorter = Math.min(width, height);
-        final float xRatio = Math.max(width / height, 1.0f);
-        final float yRatio = Math.max(height / width, 1.0f);
-        final float nRectRadius = Math.clamp(rectRadius / shorter, 0.0f, 1.0f);
-        final float nLineRadius = Math.clamp(lineRadius / shorter, 0.0f, 1.0f);
-
-        RenderSystem.enableBlend();
-        ShaderInstance shader = Shaders.ROUND_RECT.use();
-
-        shader.getUniform("Rect").set(xRatio, yRatio);
-        shader.getUniform("Radii").set(nRectRadius, nLineRadius);
-        shader.getUniform("Smooth").set(0.5f / shorter);
-        
-        quadIdentity(graphics, x, y, x2, y2, color);
-        RenderSystem.disableBlend();
-    }
-
     public static void fillRoundRect(GuiGraphics graphics, float x, float y, float width, float height, float radius, int color) {
-        float x2 = x + width;
-        float y2 = y + height;
-
-        final float shorter = Math.min(width, height);
-        final float xRatio = Math.max(width / height, 1.0f);
-        final float yRatio = Math.max(height / width, 1.0f);
-        final float nRectRadius = Math.clamp(radius / shorter, 0.0f, 1.0f);
-
-        ShaderInstance shader = Shaders.ROUND_RECT.use();
-        shader.getUniform("Rect").set(xRatio, yRatio);
-        shader.getUniform("Radius").set(nRectRadius);
-        shader.getUniform("Smooth").set(0.5f / shorter);
-
-        quadIdentity(graphics, x, y, x2, y2, color);
+        SdfGraphics .getInstance()
+                    .color(color)
+                    .round(radius)
+                    .rectangle(x, y, width, height)
+                    .fill(graphics.pose());
     }
 
-    public static void fillSector(GuiGraphics graphics, float x, float y, float scale, float sweepAngle, float middleAngle, float circleRadius, float sectorRadius, float edgeRadius, int color) {
-        float x2 = x + scale;
-        float y2 = y + scale;
-        float nOuterRadius = Math.clamp(circleRadius / scale, 0.0f, 1.0f);
-        float nInnerRadius = Math.clamp(sectorRadius / scale, 0.0f, 1.0f);
-        float nEdgeRadius = Math.clamp(edgeRadius / scale, 0.0f, 1.0f);
-
-        RenderSystem.enableBlend();
-
-        ShaderInstance shader = Shaders.SECTOR.use();
-        shader.getUniform("Radians").set(sweepAngle * Mth.DEG_TO_RAD, middleAngle * Mth.DEG_TO_RAD);
-        shader.getUniform("Radii").set(nOuterRadius, nInnerRadius, nEdgeRadius);
-        shader.getUniform("Smooth").set(0.5f / scale);
-
-        quadIdentity(graphics, x, y, x2, y2, color);
-
-        RenderSystem.disableBlend();
-    }
-
-    public static void drawSectorStroke(GuiGraphics graphics, float x, float y, float scale, float sweepAngle, float middleAngle, float circleRadius, float sectorRadius, float edgeRadius, float stroke, int color) {
-        float x2 = x + scale;
-        float y2 = y + scale;
-        float nOuterRadius = Math.clamp(circleRadius / scale, 0.0f, 1.0f);
-        float nInnerRadius = Math.clamp(sectorRadius / scale, 0.0f, 1.0f);
-        float nEdgeRadius = Math.clamp(edgeRadius / scale, 0.0f, 1.0f);
-        float nStroke = Math.clamp(stroke / scale, 0.0f, 1.0f);
-
-        RenderSystem.enableBlend();
-
-        ShaderInstance shader = Shaders.SECTOR_STROKE.use();
-        shader.getUniform("Radians").set(sweepAngle * Mth.DEG_TO_RAD, middleAngle * Mth.DEG_TO_RAD);
-        shader.getUniform("Radii").set(nOuterRadius, nInnerRadius, nEdgeRadius);
-        shader.getUniform("Stroke").set(nStroke);
-        shader.getUniform("Smooth").set(0.5f / scale);
-
-        quadIdentity(graphics, x, y, x2, y2, color);
-
-        RenderSystem.disableBlend();
+    public static void fillRoundHTab(GuiGraphics graphics, float x, float y, float width, float height, int color) {
+        SdfGraphics .getInstance()
+                    .color(color)
+                    .roundedHBar(x, y, width, height)
+                    .fill(graphics.pose());
     }
 
     public static void fillCircle(GuiGraphics graphics, float x, float y, int radius, int color) {
-        float x2 = x + radius * 2;
+        /*float x2 = x + radius * 2;
         float y2 = y + radius * 2;
 
         Shaders.CIRCLE.use();
-        quadIdentity(graphics, x, y, x2, y2, color);
+        quadIdentity(graphics, x, y, x2, y2, color);*/
+
+        SdfGraphics .getInstance()
+                    .color(color)
+                    .circle(x, y, radius)
+                    .fill(graphics.pose());
     }
 
     public static void drawRing(GuiGraphics graphics, int x, int y, int radius, float width, int color) {
-        int x2 = x + radius * 2;
+        /*int x2 = x + radius * 2;
         int y2 = y + radius * 2;
 
         ShaderInstance shader = Shaders.RING.use();
         shader.safeGetUniform("Width").set(width);
 
-        quadIdentity(graphics, x, y, x2, y2, color);
+        quadIdentity(graphics, x, y, x2, y2, color);*/
+
+        SdfGraphics .getInstance()
+                    .color(color)
+                    .circle(x, y, radius)
+                    .stroke(graphics.pose(), width);
+
     }
 
     public static void drawGlowingRing(GuiGraphics graphics, float x, float y, int radius, float width, int color) {
-        float x1 = x - radius * 0.5f;
-        float y1 = y - radius * 0.5f;
-        float x2 = x1 + radius * 3;
-        float y2 = y1 + radius * 3;
-
         RenderSystem.enableBlend();
-        ShaderInstance shader = Shaders.GLOWING_RING.use();
+        /*ShaderInstance shader = Shaders.GLOWING_RING.use();
         Objects.requireNonNull(shader.getUniform("Width")).set(width);
 
-        quadIdentity(graphics, x, y, x2, y2, color);
+        quadIdentity(graphics, x, y, x2, y2, color);*/
+
+        SdfGraphics .getInstance()
+                .center(true)
+                .color(color)
+                .circle(x, y, radius)
+                .stroke(graphics.pose(), width)
+                .circle(x, y, radius - width * 0.5f)
+                .light(graphics.pose(), 4.0f)
+                .reset()
+        ;
+
         RenderSystem.disableBlend();
     }
 
@@ -342,6 +298,19 @@ public class RenderUtils {
         bufferbuilder.addVertex(matrix4f, x1, y2, 0).setUv(0, 1).setColor(color);
         bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1).setColor(color);
         bufferbuilder.addVertex(matrix4f, x2, y1, 0).setUv(1, 0).setColor(color);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+    }
+
+    private static void sdfQuad(GuiGraphics graphics, float x1, float y1, float w, float h) {
+        var x2  = x1 + w;
+        var y2  = y1 + h;
+
+        var matrix4f = graphics.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.addVertex(matrix4f, x1, y1, 0).setUv(0, 0);
+        bufferbuilder.addVertex(matrix4f, x1, y2, 0).setUv(0, 1);
+        bufferbuilder.addVertex(matrix4f, x2, y2, 0).setUv(1, 1);
+        bufferbuilder.addVertex(matrix4f, x2, y1, 0).setUv(1, 0);
         BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
     }
 }

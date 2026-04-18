@@ -111,8 +111,15 @@ public class SDFGraphicsShaderInstance extends ShaderInstance {
         }
     }
 
+    public void light() {
+        if (this.pass           != PassType.LIGHT) {
+            this.pass           = PassType.LIGHT;
+            this.uPassType      .set(PassType.LIGHT.ordinal());
+        }
+    }
+
     public void shared(float smooth, float round) {
-        this.vSharedParams.y        = smooth;
+        this.vSharedParams.x        = smooth;
         this.vSharedParams.z        = round;
         this.uSharedParams          .set(this.vSharedParams);
     }
@@ -143,6 +150,7 @@ public class SDFGraphicsShaderInstance extends ShaderInstance {
 
     public enum PassType {
         FILL,
-        STROKE
+        STROKE,
+        LIGHT
     }
 }

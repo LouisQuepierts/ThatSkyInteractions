@@ -8,7 +8,7 @@
 
 #define PASS_FILL       0
 #define PASS_STROKE     1
-#define PASS_SMOOTH     2
+#define PASS_LIGHT      2
 
 uniform int             uRenderType;
 uniform int             uPassType;
@@ -22,6 +22,7 @@ in      vec4            vColor;
 out     vec4            fragColor;
 
 #define uSmoothRadius   uSharedParams.x
+#define uLightRadius    uSharedParams.x
 #define uStrokeWidth    uSharedParams.y
 #define uCornerRadius   uSharedParams.z
 
@@ -86,16 +87,21 @@ float sdf(vec2 p) {
 void main() {
     vec2    p               = vPosition;
     float   d               = sdf(p);
-    float   aa              = max(fwidth(d) * 0.5, uSmoothRadius);
 
     float   alpha;
 
     if (uPassType == PASS_FILL) {
+        float   aa          = max(fwidth(d) * 0.5, uSmoothRadius);
         alpha               = smoothstep(0.0 + aa, 0.0 - aa, d);
     }
     else if (uPassType == PASS_STROKE) {
+        float   aa          = max(fwidth(d) * 0.5, uSmoothRadius);
         alpha               = smoothstep(0.0 + aa, 0.0 - aa, d) *
                               smoothstep(0.0 - aa, 0.0 + aa, d + uStrokeWidth);
+    }
+    else if (uPassType == PASS_LIGHT) {
+        float k             = 4.605 / uLightRadius;
+        alpha               = exp(-abs(d) * k);
     }
 
     vec4    color           = vColor;

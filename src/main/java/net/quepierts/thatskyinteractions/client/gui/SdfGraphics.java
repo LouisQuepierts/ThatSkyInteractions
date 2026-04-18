@@ -150,6 +150,19 @@ public final class SdfGraphics {
         return          this;
     }
 
+    public SdfGraphics light(@NotNull PoseStack pose, float radius) {
+        var last        = this.smooth;
+        this.smooth     = radius;
+
+        var shader      = Shaders.GRAPHICS.getInstance();
+        shader          .shared(this.smooth, this.round);
+        shader          .light();
+
+        this            ._draw(pose);
+        this.smooth     = last;
+        return          this;
+    }
+
     public SdfGraphics reset() {
         this.x          = 0;
         this.y          = 0;
@@ -162,13 +175,15 @@ public final class SdfGraphics {
         this.smooth     = 0;
         this.round      = 0;
         this.rotation   = 0;
+        this.center     = false;
         return          this;
     }
 
     private void _draw(@NotNull PoseStack pose) {
         var matrix4f    = new Matrix4f(pose.last().pose());
-        var width       = this.w + this.round * 2.0f;
-        var height      = this.h + this.round * 2.0f;
+        var ex = (this.round + this.smooth) * 2.0f;
+        var width       = this.w + ex;
+        var height      = this.h + ex;
 
         if (this.center) {
             matrix4f    .translate(this.x, this.y, 0);
