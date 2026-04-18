@@ -2,11 +2,9 @@
     "vertex": "blit_screen",
     "fragment": "thatskyinteractions:bloom/down_sample",
     "samplers": [
-        { "name": "CurrentSampler" },
-        { "name": "NoiseSampler" }
+        { "name": "CurrentSampler" }
     ],
     "uniforms": [
-        { "name": "Resolution", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
-        { "name": "FrameIndex", "type": "int", "count": 1, "values": [ 0 ]}
+        { "name": "Resolution", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] }
     ]
 }

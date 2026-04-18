@@ -110,23 +110,16 @@ public class BloomPostprocessor implements AutoCloseable {
         downsample.apply();
 
         int sampler0 = Uniform.glGetUniformLocation(downsample.getId(), "CurrentSampler");
-        int sampler1 = Uniform.glGetUniformLocation(downsample.getId(), "NoiseSampler");
 
         GlStateManager._activeTexture(GL13.GL_TEXTURE1);
         noise.bind();
 
         Uniform resolution = downsample.getUniform("Resolution");
-        Uniform index = downsample.getUniform("FrameIndex");
         assert resolution != null;
-        assert index != null;
 
         Uniform.uploadInteger(sampler0, 0);
-        Uniform.uploadInteger(sampler1, 1);
         resolution.set(1.0F / input.width, 1.0F / input.height);
         resolution.upload();
-
-        index.set(0);
-        index.upload();
 
         this.downsampleTargets[0].clear(false);
         blit(input, this.downsampleTargets[0], resolution);
@@ -139,8 +132,6 @@ public class BloomPostprocessor implements AutoCloseable {
             src.bindRead();
             GlStateManager._activeTexture(GL13.GL_TEXTURE0);
             src.bindRead();
-            index.set(i);
-            index.upload();
 
             blit(src, dst, resolution);
         }

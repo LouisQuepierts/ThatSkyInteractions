@@ -1,10 +1,8 @@
 #version 150
 
 uniform sampler2D CurrentSampler;
-uniform sampler2D NoiseSampler;
 
 uniform vec2 Resolution;
-uniform int FrameIndex;
 
 in vec2 texCoord;
 out vec4 fragColor;
@@ -34,11 +32,16 @@ vec4 sampleGaussian(sampler2D tex, vec2 texCoord, vec2 stride) {
 }
 
 void main() {
-    vec2 noiseUV = mod(gl_FragCoord.xy + vec2(FrameIndex * 17), 128.0) / 128.0;
-    float noise = texture(NoiseSampler, noiseUV).r;
+    vec2 uv = texCoord;
 
-    vec2 offset = vec2(noise - 0.5) * Resolution;
-    vec2 uv = texCoord /*+ offset*/;
+    vec2 texel = Resolution;
+    vec4 bloom =
+        texture(CurrentSampler, uv + vec2(-0.5, -0.5) * texel) +
+        texture(CurrentSampler, uv + vec2(0.5, -0.5) * texel) +
+        texture(CurrentSampler, uv + vec2(-0.5, 0.5) * texel) +
+        texture(CurrentSampler, uv + vec2(0.5, 0.5) * texel);
 
-    fragColor = sampleGaussian(CurrentSampler, uv, Resolution);
+    bloom *= 0.25;
+
+    fragColor = bloom;
 }

@@ -35,7 +35,7 @@ vec4 samplerGaussian(sampler2D tex, vec2 texCoord, vec2 stride) {
 }
 
 void main() {
-    vec2 noiseUV = mod(texCoord.xy + vec2(FrameIndex * 17), 128.0) / 128.0;
+    vec2 noiseUV = mod(texCoord.xy + vec2(FrameIndex * 17), 128.0) * 0.0078125;
     float noise = texture(NoiseSampler, noiseUV).r;
 
     vec2 offset = vec2(noise - 0.5) * Resolution;
