@@ -95,9 +95,8 @@ public class FriendAstrolabeButton extends AstrolabeButton {
 
         if (this.data == null)  {
             if (this.hasLinked()) {
-                pose.translate(2, 2, 0);
                 Palette.mulShaderAlpha(this.alpha.getValue());
-                RenderUtils.drawGlowingRing(guiGraphics, 0, 0, 4, 0.12f, 0xff25223d);
+                RenderUtils.drawGlowingRing(guiGraphics, 6, 6, 4, 1.0f, 0xff25223d);
                 Palette.setShaderAlpha(alpha);
             }
         } else {
@@ -113,7 +112,7 @@ public class FriendAstrolabeButton extends AstrolabeButton {
                 );
             } else {
                 Palette.mulShaderAlpha(this.alpha.getValue());
-                RenderUtils.drawGlowingRing(guiGraphics, 0, 0, 6, 0.08f, 0xff25223d);
+                RenderUtils.drawGlowingRing(guiGraphics, 6, 6, 6, 1.0f, 0xff25223d);
 
                 pose.translate(6.0f, 6.0f, 0.0f);
                 pose.mulPose(Axis.ZN.rotationDegrees(parent.getRotate()));
@@ -181,7 +180,7 @@ public class FriendAstrolabeButton extends AstrolabeButton {
 
             if (Vector2f.distanceSquared(this.getX(), this.getY(), mouseX, mouseY) < 32) {
                 RenderSystem.enableBlend();
-                RenderUtils.drawRing(guiGraphics, 6, 6, 6, 0.05f, Palette.NORMAL_TEXT_COLOR);
+                RenderUtils.drawRing(guiGraphics, 6, 6, 6, 1.0f, Palette.NORMAL_TEXT_COLOR);
             }
 
             Palette.setShaderAlpha(alpha);

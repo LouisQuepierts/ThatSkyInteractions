@@ -21,7 +21,7 @@ public class NicknameButton extends SqueezeButton {
     private final Font font;
 
     public NicknameButton(int x, int y, ScreenAnimator animator, FriendData friendData) {
-        super(x, y, 32, Component.empty(), animator, TEXTURE);
+        super(x, y, 36, Component.empty(), animator, TEXTURE);
 
         this.friendData = friendData;
         this.font = Minecraft.getInstance().font;
@@ -43,6 +43,6 @@ public class NicknameButton extends SqueezeButton {
     protected void renderIcon(GuiGraphics guiGraphics, int begin) {
         super.renderIcon(guiGraphics, begin);
 
-        guiGraphics.drawCenteredString(this.font, friendData.getNickname(), begin + 16, begin + 40, Palette.NORMAL_TEXT_COLOR);
+        guiGraphics.drawCenteredString(this.font, friendData.getNickname(), begin + 18, begin + 40, Palette.NORMAL_TEXT_COLOR);
     }
 }

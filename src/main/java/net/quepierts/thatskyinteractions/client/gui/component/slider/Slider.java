@@ -44,25 +44,38 @@ public class Slider extends AbstractWidget {
         var sdf     = SdfGraphics.getInstance();
         var pose    = guiGraphics.pose();
 
-        float alpha = Palette.getShaderAlpha();
+        var alpha   = Palette.getShaderAlpha();
+        var width   = this.getWidth();
 
-        sdf     .color(0xa0101010)
-                .roundedHBar(this.getX(), this.getY(), this.getWidth(), 16)
-                .fill(pose);
+        var x       = this.getX() + width * 0.5f;
+        var y       = this.getY() + height * 0.5f;
+
+        sdf         .color(0xa0101010)
+                    .center(true)
+                    .roundedHBar(x, y, width, 16)
+                    .fill(pose);
 
         if (this.isFocused()) {
-            sdf     .color(Palette.HIGHLIGHT_COLOR ^ 0x40000000)
-                    .stroke(pose, 1.0f);
+            sdf     .color(Palette.HIGHLIGHT_COLOR)
+                    .roundedHBar(x, y, width - 2.25f, 13.75f)
+                    .light(pose, 2.0f)
+                    .roundedHBar(x, y, width - 2, 14)
+                    .stroke(pose, 0.5f)
+            ;
         }
 
         int i = (int) (this.display * (double) (this.width - 16));
 
 
-        sdf     .color(0xa0404040)
+        sdf     .center(false)
+                .color(0xa0404040)
                 .roundedHBar(this.getX() + 2, this.getY() + 2, i + 12, 12)
                 .fill(pose)
                 .color(Palette.HIGHLIGHT_COLOR ^ (this.isFocused() ? 0x40000000 : 0x80000000))
-                .circle(this.getX() + i + 3, this.getY() + 3, 5).fill(pose);
+                .circle(this.getX() + i + 3, this.getY() + 3, 5).fill(pose)
+
+                .reset()
+        ;
 
 //        RenderUtils.fillRoundHTab(guiGraphics, this.getX() + 2, this.getY() + 2, i + 12, 12, 0xa0404040);
 //        RenderUtils.fillCircle(guiGraphics, this.getX() + i + 3, this.getY() + 3, 5, Palette.HIGHLIGHT_COLOR ^ (this.isFocused() ? 0x40000000 : 0x80000000));

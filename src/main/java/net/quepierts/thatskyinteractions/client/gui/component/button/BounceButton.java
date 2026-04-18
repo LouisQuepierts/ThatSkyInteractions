@@ -84,7 +84,9 @@ public abstract class BounceButton extends AbstractButton {
     }
 
     protected void renderIcon(GuiGraphics guiGraphics, int begin) {
-        RenderUtils.blitIcon(guiGraphics, this.getIcon(), begin, begin, this.getWidth(), this.getHeight());
+        int l     = begin + 2;
+        int scale = this.getWidth() - 4;
+        RenderUtils.blit(guiGraphics, this.getIcon(), l, l, scale, scale);
     }
 
     @NotNull

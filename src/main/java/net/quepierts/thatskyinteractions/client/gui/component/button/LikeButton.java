@@ -24,7 +24,7 @@ public class LikeButton extends SqueezeButton {
     private final FriendData friendData;
     private boolean on;
     public LikeButton(int x, int y, ScreenAnimator animator, FriendData friendData) {
-        super(x, y, 32, Component.empty(), animator, TEXTURE_OFF);
+        super(x, y, 36, Component.empty(), animator, TEXTURE_OFF);
         this.friendData = friendData;
         LocalPlayer player = Minecraft.getInstance().player;
 

@@ -68,6 +68,30 @@ public abstract class SqueezeButton extends AbstractButton {
         pose.translate(this.getX() + half, this.getY() + half, 0.0f);
         float scale = 1.0f - (AnimateUtils.Time.bounce((float) click.get()) * 0.3f);
         pose.scale(scale, scale, 1.0f);
+
+        float alpha = Palette.getShaderAlpha();
+
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
+
+        var sdf     = SdfGraphics.getInstance();
+        sdf         .color(0x80101010)
+                    .round(8)
+                    .center(true)
+                    .rectangle(0, 0, this.width, this.height)
+                    .fill(pose);
+
+        if (this.isHovered()) {
+            sdf     .color(Palette.HIGHLIGHT_COLOR)
+                    .round(7)
+                    .rectangle(0, 0, this.width - 2.25f, this.height - 2.25f)
+                    .light(pose, 2.0f)
+                    .rectangle(0, 0, this.width - 2, this.height - 2)
+                    .stroke(pose, 0.5f)
+            ;
+        }
+
+        sdf         .reset();
+
         this.renderIcon(guiGraphics, -half);
         //guiGraphics.blit(icon, -half, -half, this.getWidth(), this.getHeight(), 0, 0, size, size, size, size);
         pose.popPose();
@@ -76,21 +100,13 @@ public abstract class SqueezeButton extends AbstractButton {
     }
 
     protected void renderIcon(GuiGraphics guiGraphics, int begin) {
-        float alpha = Palette.getShaderAlpha();
-
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
-
-        var pose    = guiGraphics.pose();
-        SdfGraphics .getInstance()
-                    .color(0x80101010)
-                    .round(4)
-                    .rectangle(begin, begin, this.width, this.height)
-                    .fill(pose);
-
         if (!this.active) {
+            float alpha = Palette.getShaderAlpha();
             RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, alpha);
         }
-        RenderUtils.blit(guiGraphics, this.getIcon(), begin, begin, width, width);
+        int l     = begin + 2;
+        int scale = width - 4;
+        RenderUtils.blit(guiGraphics, this.getIcon(), l, l, scale, scale);
     }
 
     @NotNull

@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.client.gui.Palette;
 import net.quepierts.thatskyinteractions.client.gui.SdfGraphics;
 import net.quepierts.thatskyinteractions.client.util.RenderUtils;
 
@@ -25,8 +26,8 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
 
     @Override
     public void render(GuiGraphics guiGraphics, boolean highlight, float value, float deltaTicks) {
-        var sdf     = SdfGraphics.getInstance();
-        var pose    = guiGraphics.pose();
+        var sdf         = SdfGraphics.getInstance().center(true);
+        var pose        = guiGraphics.pose();
 
         RenderSystem.enableBlend();
         RenderSystem.disableCull();
@@ -42,15 +43,17 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
             this.alpha --;
         }
 
+        var interact    = this.alpha > 0;
+
         if (this.alpha > 0) {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f,  alpha / 10.0f);
 
             sdf     .color(BG_COLOR)
-                    .circle(-16, -16, 16)
+                    .circle(0, 0, 16)
                     .fill(pose)
 
                     .color(0xffd1cec1)
-                    .circle(-15, -15, 15)
+                    .circle(0, 0, 15)
                     .stroke(pose, 1.0f);
             /*RenderUtils.fillCircle(guiGraphics, -16, -16, 16, BG_COLOR);
             RenderUtils.drawRing(guiGraphics, -15, -15, 15, 1, 0xffd1cec1);*/
@@ -62,9 +65,9 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
         pose.translate(0, 8, 0);
         pose.mulPose(Axis.ZP.rotation(Mth.PI / 4));
 
-        sdf     .color(BG_COLOR)
+        sdf.color(BG_COLOR)
                 .round(1)
-                .rectangle(0, 0, 8, 8)
+                .rectangle(4, 4, 8, 8)
                 .fill(pose);
 
 //        RenderUtils.fillRoundRect(guiGraphics, 0, 0, 8, 8, 1, BG_COLOR);
@@ -73,6 +76,8 @@ public abstract class World2ScreenButton extends World2ScreenWidget {
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
         pose.popPose();
+
+        sdf.center(false);
     }
 
     protected void renderInner(GuiGraphics guiGraphics, boolean highlight, float deltaTicks) {

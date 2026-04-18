@@ -93,7 +93,7 @@ public class CloudEditScreen extends AnimatedScreen {
         }
         Palette.setShaderAlpha(value);
         for (Renderable renderable : this.renderables) {
-            renderable.render(guiGraphics, mouseX, mouseX, delta);
+            renderable.render(guiGraphics, mouseX, mouseY, delta);
         }
     }
 

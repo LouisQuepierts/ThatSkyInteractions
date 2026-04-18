@@ -367,16 +367,25 @@ public class TEditBox extends AbstractWidget {
 
         if (this.isVisible()) {
 
+            var x   = this.getX() + this.getWidth() * 0.5f;
+            var y   = this.getY() + this.getHeight() * 0.5f;
+
             RenderSystem.enableBlend();
-            sdf     .color(0xa0101010)
-                    .roundedHBar(this.getX(), this.getY(), this.getWidth(), this.getHeight())
+            sdf     .center(true)
+                    .color(0xa0101010)
+                    .roundedHBar(x, y, this.getWidth(), this.getHeight())
                     .fill(pose);
 //            RenderUtils.fillRoundRect(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.getHeight() * 0.5f, this.isFocused() ? Palette.HIGHLIGHT_COLOR : 0xa0101010);
 
             if (this.isFocused()) {
                 sdf     .color(Palette.HIGHLIGHT_COLOR)
-                        .stroke(pose, 1.0f);
+                        .roundedHBar(x, y, this.getWidth() - 2.25f, this.getHeight() - 2.25f)
+                        .light(pose, 2.0f)
+                        .roundedHBar(x, y, this.getWidth() - 2f, this.getHeight() - 2f)
+                        .stroke(pose, 0.5f);
             }
+
+            sdf         .reset();
 
             int textColor = this.isEditable ? this.textColor : this.textColorUneditable;
             int i = this.cursorPos - this.displayPos;

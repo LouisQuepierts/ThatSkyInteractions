@@ -16,7 +16,7 @@ public class EmptyButton extends AstrolabeButton {
     protected void render(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         float alpha = Palette.getShaderAlpha();
         Palette.mulShaderAlpha(this.alpha.getValue());
-        RenderUtils.drawGlowingRing(guiGraphics, 0, 0, 4, 0.12f, 0xff25223d);
+        RenderUtils.drawGlowingRing(guiGraphics, 0, 0, 4, 0.5f, 0xff25223d);
         Palette.setShaderAlpha(alpha);
     }
 

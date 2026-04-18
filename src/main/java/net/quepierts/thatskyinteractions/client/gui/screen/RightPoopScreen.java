@@ -33,13 +33,14 @@ public class RightPoopScreen extends AnimatedScreen {
         float alpha = Palette.getShaderAlpha();
         Palette.setShaderAlpha(this.enter.getValue());
         float v = this.width - this.size;
+        int localMouseX = mouseX - (int) v;
 
         renderOriginal(guiGraphics, mouseX, mouseY, partialTick);
 
         pose.translate((1.0f - this.enter.get()) * 40.0f + v, 0.0f, 0.0f);
         guiGraphics.fill(0, 0, this.width, this.height, BG_COLOR);
 
-        renderLabel(guiGraphics, mouseX, mouseY, partialTick);
+        renderLabel(guiGraphics, localMouseX, mouseY, partialTick);
 
         Palette.setShaderAlpha(alpha);
         RenderSystem.disableBlend();
