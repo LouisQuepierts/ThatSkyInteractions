@@ -1,0 +1,66 @@
+{
+    "blend": {
+        "func": "add",
+        "srcrgb": "srcalpha",
+        "dstrgb": "1-srcalpha"
+    },
+    "vertex": "thatskyinteractions:sdf_graphics",
+    "fragment": "thatskyinteractions:sdf_graphics",
+    "attributes": [
+        "Position",
+        "UV0",
+        "Color"
+    ],
+    "samplers": [
+    ],
+    "uniforms": [
+        {
+            "name": "uModelMatrix",
+            "type": "matrix4x4",
+            "count": 16,
+            "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]
+        },
+        {
+            "name": "ProjMat",
+            "type": "matrix4x4",
+            "count": 16,
+            "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]
+        },
+        {
+            "name": "ColorModulator",
+            "type": "float",
+            "count": 4,
+            "values": [ 1.0, 1.0, 1.0, 1.0 ]
+        },
+        {
+            "name": "uRect",
+            "type": "float",
+            "count": 4,
+            "values": [ 0.0, 0.0, 1.0, 1.0 ]
+        },
+        {
+            "name": "uRenderType",
+            "type": "int",
+            "count": 1,
+            "values": [ 0 ]
+        },
+        {
+            "name": "uPassType",
+            "type": "int",
+            "count": 1,
+            "values": [ 0 ]
+        },
+        {
+            "name": "uSharedParams",
+            "type": "float",
+            "count": 4,
+            "values": [ 0.0, 0.0, 0.0, 0.0 ]
+        },
+        {
+            "name": "uShapeParams",
+            "type": "float",
+            "count": 4,
+            "values": [ 0.0, 0.0, 0.0, 0.0 ]
+        }
+    ]
+}
