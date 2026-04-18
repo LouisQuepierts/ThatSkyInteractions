@@ -146,7 +146,7 @@ public class InteractTreeWidget extends AbstractWidget implements Resizable {
 
         pose.translate(this.getX(), this.getY() + this.scroll0.get(), 0.0f);
         int localMouseX = mouseX - this.getX();
-        int localMouseY = mouseY - this.getY();
+        int localMouseY = mouseY - this.getY() - (int) this.scroll0.get();
 
         Vector4f rect = new Vector4f(0, (float) -this.scroll0.get(), this.width, this.height);
         for (CulledRenderable renderable : this.renderables) {
