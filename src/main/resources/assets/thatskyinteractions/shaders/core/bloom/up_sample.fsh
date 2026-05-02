@@ -10,29 +10,44 @@ uniform int FrameIndex;
 in vec2 texCoord;
 out vec4 fragColor;
 
-#define PI 3.14159265358
-#define E 2.718281828459
-#define R 2
+#define             R               2
+#define             KERNEL_SIZE     5
 
-float gaussianWeight(float x, float y, float sigma) {
-    float sigma2 = sigma * sigma;
-    return (1.0 / sqrt(2.0 * PI * sigma2)) * pow(E, -((x * x + y * y) / (2.0 * sigma2)));
-}
+const   float       GAUSSIAN_KERNEL[25] = float[](
+        0.002968, 0.013304, 0.021945, 0.013304, 0.002968,
+        0.013304, 0.059634, 0.098320, 0.059634, 0.013304,
+        0.021945, 0.098320, 0.162102, 0.098320, 0.021945,
+        0.013304, 0.059634, 0.098320, 0.059634, 0.013304,
+        0.002968, 0.013304, 0.021945, 0.013304, 0.002968
+);
 
-vec4 samplerGaussian(sampler2D tex, vec2 texCoord, vec2 stride) {
-    vec4 color = vec4(0.0);
-    float weight = 0.0;
-    for (int x = -R; x <= R; x++) {
-        for (int y = -R; y <= R; y++) {
-            float w = gaussianWeight(x, y, 1.0);
+vec4 samplerGaussian(
+sampler2D       tex,
+vec2            texCoord,
+vec2            stride
+) {
+    vec4 color      = vec4(0.0);
+
+    for (int    y   = -R;
+    y   <= R;
+    y   ++
+    ) {
+        for (
+        int x   = -R;
+        x   <= R;
+        x   ++
+        ) {
+            int idx = (y + R) * KERNEL_SIZE + (x + R);
+            float w = GAUSSIAN_KERNEL[idx];
+
             vec2 uv = texCoord + vec2(x, y) * stride;
-            color += texture(tex, uv) * w;
-            weight += w;
+            color   += texture(tex, uv) * w;
         }
     }
-    color /= weight;
-    return color;
+
+    return          color;
 }
+
 
 void main() {
     vec2 noiseUV = mod(texCoord.xy + vec2(FrameIndex * 17), 128.0) * 0.0078125;
