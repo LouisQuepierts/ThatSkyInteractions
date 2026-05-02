@@ -102,10 +102,12 @@ public class RenderUtils {
         float y2 = y + size;
 
         RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
         ShaderInstance shader = Shaders.HALO.use();
-        Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
+//        Objects.requireNonNull(shader.getUniform("Intensity")).set(intensity);
 
         quadIdentity(graphics, x, y, x2, y2, color);
+        RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
     }
 

@@ -1,8 +1,8 @@
 {
     "blend": {
         "func": "add",
-        "srcrgb": "srcalpha",
-        "dstrgb": "1-srcalpha"
+        "srcrgb": "1",
+        "dstrgb": "1"
     },
     "vertex": "thatskyinteractions:uv_color",
     "fragment": "thatskyinteractions:halo",

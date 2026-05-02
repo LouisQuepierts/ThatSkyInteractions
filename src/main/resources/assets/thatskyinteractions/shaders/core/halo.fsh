@@ -8,61 +8,85 @@ uniform float Intensity;
 
 out vec4 fragColor;
 
-void dodge_blend(float base, float blend, float opacity, out float result) {
-    result = base / (1.0 - clamp(blend, 0.000001, 0.999999));
-    result = mix(base, result, opacity);
-}
+vec3 halo(vec2 uv, vec4 color, vec4 params)
+{
+    float strength = params.x;
+    float angleOffset = params.y;
 
-void hsva2rgba(vec4 hsv, out vec4 rgb) {
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(hsv.xxx + K.xyz) * 6.0 - K.www);
-    rgb.rgb = hsv.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), hsv.y);
-    rgb.a = hsv.a;
-}
+    float r = length(uv);
 
-float saturate(float c) {
-    return clamp(c, 0, 1);
+    // --- radial masks ---
+    float inner = smoothstep(0.0, 1.0, 1.0 - r);
+    float outer = smoothstep(0.0, 1.0, (r - 1.0) * 9.0);
+
+    // --- angle sparkle ---
+    float angle = atan(uv.y, uv.x) + angleOffset;
+    float sector = mod(angle, 0.03490658); // ~2 degrees
+
+    float sparkleMask = step(sector, 0.02 / r);
+
+    // --- strength shaping ---
+    float strength3 = strength * strength * strength;
+
+    float sparkleMix = sparkleMask * 0.15 + 0.85;
+
+    float epsilon = mix(
+            0.01,
+            0.0001,
+            strength3 * sparkleMix * (outer * 0.5 + 0.5)
+    );
+
+    // --- ring highlight ---
+    float ringOffset = r - 0.9;
+
+    float radialTerm =
+    (inner * inner * inner) * 0.5 +
+    outer * (1.0 / (ringOffset * ringOffset));
+
+    // --- cross highlight ---
+    float crossX = 1.0 + (0.06 / (uv.x * uv.x + epsilon));
+    float crossY = 1.0 + (0.3  / (uv.y * uv.y + epsilon));
+
+    float intensity =
+    0.1 * radialTerm * crossX * crossY;
+
+    intensity = clamp(intensity, 0.0, 100.0);
+
+    // --- color shaping ---
+    float edge = abs(dot(uv, uv) - 1.0) * 1.4492757;
+    edge = min(edge, 3.0);
+
+    vec3 edgeVec = vec3(edge);
+
+    vec3 tint = (vec3(-0.25, -0.5, -0.75) + edgeVec) * 3.0;
+
+    vec3 colorMask =
+    mix(
+            max(1.0 - tint * tint, 0.0),
+            vec3(1.0),
+            edgeVec
+    );
+
+    // --- final ---
+    float glow = intensity * intensity * 0.1;
+
+    return vec3(color.rgb * colorMask * glow);
 }
 
 void main() {
-    vec2 uv = texCoord0 * 2 - 1;
-    float r = length(uv);
+    vec2 uv = texCoord0 * 8.0 - 4.0;
 
-    // halo ring color
-    float halo_ring = smoothstep(0.34, 0.5, r) * smoothstep(0.44, 0.35, r);
-    float hue = clamp(smoothstep(0.37, 0.48, r), 0, 0.76);
-    vec4 halo_hsva = vec4(hue, 1.72, 3.04, 1);
-    vec4 halo_color;
-    hsva2rgba(halo_hsva, halo_color);
-    halo_color = mix(vec4(1), halo_color, halo_ring * 2.5);
+    float strength = 0.68;
+    vec4 iColor = vec4(0.06);
+    vec4 iParams = vec4(strength, 0.0, 0.0, 0.0);
 
-    // base mask
-    float base = (1 - saturate(r)) * 0.05;
-    dodge_blend(base, halo_ring, 0.65, base);
+    vec3 color = halo(uv, iColor, iParams);
 
-    float inner_edge = smoothstep(0.29, 0.39, r);
-    // y light
-    float y_line = 1 - smoothstep(0, 0.38, abs(uv.y));
-    float y_range = smoothstep(3.77 * Intensity, 0.1, r) * inner_edge;
-    y_line = y_line * y_range;
+    vec3 remap = color / (1.0 + color);
+    color = mix(remap, color, 0.22) * 0.5;
 
-    dodge_blend(base, y_line, y_range, base);
+    float luma = dot(color, vec3(0.299, 0.587, 0.114));
+    color = mix(vec3(luma), color, 0.36) * 0.5;
 
-    // x light
-    float x_line = 1 - smoothstep(0, 0.3, abs(uv.x));
-    float x_range = smoothstep(1.75 * Intensity, 0.27, r) * inner_edge;
-    x_line = x_line * x_range;
-
-    dodge_blend(base, x_line, x_range, base);
-
-    // core light
-    float core_light = smoothstep(0.11, 0, r);
-    dodge_blend(base, core_light, 0.5, base);
-
-    // color mask
-    vec4 color = ColorModulator * base;
-    vec4 result = mix(halo_color, color, base * 0.13);
-    result.a = base;
-    
-    fragColor = result;
+    fragColor = vec4(color, 0.0);
 }

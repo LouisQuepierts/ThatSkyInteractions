@@ -38,6 +38,7 @@ public class VertexBufferManager implements PreparableReloadListener {
     public static final VertexBufferManager INSTANCE = new VertexBufferManager();
 
     public static final ModelResourceLocation QUAD = ThatSkyInteractions.getModelLocation("quad");
+    public static final ModelResourceLocation GRAPHICS_SDF = ThatSkyInteractions.getModelLocation("graphics_sdf");
 //    public static final ResourceLocation GRID = ThatSkyInteractions.getLocation("grid");
     public static final ModelResourceLocation CUBE = ThatSkyInteractions.getModelLocation("cube");
     public static final ModelResourceLocation BODY = ThatSkyInteractions.getModelLocation("body");
@@ -134,6 +135,13 @@ public class VertexBufferManager implements PreparableReloadListener {
         builder.addVertex(0.5f, 0.5f, 0).setColor(0xffffffff).setUv(1, 0).setNormal(0, 0, 1);
         builder.addVertex(0.5f, -0.5f, 0).setColor(0xffffffff).setUv(1, 1).setNormal(0, 0, 1);
         this.upload(QUAD, Objects.requireNonNull(builder.build()));
+
+        final BufferBuilder sdfBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        sdfBuilder.addVertex(-0.5f, -0.5f, 0).setUv(0, 1);
+        sdfBuilder.addVertex(-0.5f, 0.5f, 0).setUv(0, 0);
+        sdfBuilder.addVertex(0.5f, 0.5f, 0).setUv(1, 0);
+        sdfBuilder.addVertex(0.5f, -0.5f, 0).setUv(1, 1);
+        this.upload(GRAPHICS_SDF, Objects.requireNonNull(sdfBuilder.build()));
 
         /*final BufferBuilder gridBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
         final int diff = 100;
