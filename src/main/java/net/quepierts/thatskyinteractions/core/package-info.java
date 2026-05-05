@@ -1,0 +1,4 @@
+@ParametersAreNonnullByDefault
+package net.quepierts.thatskyinteractions.core;
+
+import javax.annotation.ParametersAreNonnullByDefault;

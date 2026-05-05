@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.quepierts.thatskyinteractions.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "thatskyinteractions.refmap.json",
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
