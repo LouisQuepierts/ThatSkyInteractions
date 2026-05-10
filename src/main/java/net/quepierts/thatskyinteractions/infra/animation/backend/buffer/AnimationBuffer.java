@@ -1,15 +1,20 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.buffer;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.animation.adapter.Consumer4f;
+import net.quepierts.thatskyinteractions.infra.animation.adapter.Consumer4i;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
-public final class AnimationBuffer {
+@Getter
+public final class AnimationBuffer implements ReadableBuffer, WritableBuffer {
 
     public static final AnimationBuffer DUMMY   = new AnimationBuffer(0);
 
-    @Getter
     private final   FloatBuffer bufferView;
     private final   float[]     buffer;
     private final   int         size;
@@ -21,33 +26,59 @@ public final class AnimationBuffer {
         this.bufferView = FloatBuffer.wrap(this.buffer);
     }
 
-    public void write(int index, float value) {
-        this.buffer[index] = value;
+    @Override
+    public void write(int location, float value) {
+        this.buffer[location] = value;
     }
 
-    public void write(int index, float x, float y) {
-        this.buffer[index] = x;
-        this.buffer[index + 1] = y;
+    @Override
+    public void write(int location, float x, float y) {
+        this.buffer[location] = x;
+        this.buffer[location + 1] = y;
     }
 
-    public void write(int index, float x, float y, float z) {
-        this.buffer[index] = x;
-        this.buffer[index + 1] = y;
-        this.buffer[index + 2] = z;
+    @Override
+    public void write(int location, float x, float y, float z) {
+        this.buffer[location] = x;
+        this.buffer[location + 1] = y;
+        this.buffer[location + 2] = z;
     }
 
-    public void write(int index, float x, float y, float z, float w) {
-        this.buffer[index] = x;
-        this.buffer[index + 1] = y;
-        this.buffer[index + 2] = z;
-        this.buffer[index + 3] = w;
+    @Override
+    public void write(int location, float x, float y, float z, float w) {
+        this.buffer[location] = x;
+        this.buffer[location + 1] = y;
+        this.buffer[location + 2] = z;
+        this.buffer[location + 3] = w;
     }
 
-    public float read(int location) {
+    @Override
+    public void write(int location, int value) {
+
+    }
+
+    @Override
+    public void write(int location, int x, int y) {
+
+    }
+
+    @Override
+    public void write(int location, int x, int y, int z) {
+
+    }
+
+    @Override
+    public void write(int location, int x, int y, int z, int w) {
+
+    }
+
+    @Override
+    public float readFloat(int location) {
         return this.buffer[location];
     }
 
-    public void read(int location, Consumer4f consumer) {
+    @Override
+    public void readFloat(int location, @NonNull Consumer4f consumer) {
         consumer.accept(
                 this.buffer[location],
                 this.buffer[location + 1],
@@ -56,12 +87,43 @@ public final class AnimationBuffer {
         );
     }
 
-    public void read(int location, int length, float[] out) {
+    @Override
+    public void readFloat(int location, int length, float @NonNull [] out) {
         System.arraycopy(this.buffer, location, out, 0, length);
     }
 
-    public void read(int location, int length, FloatBuffer out) {
+    @Override
+    public void readFloat(int location, int length, @NonNull FloatBuffer out) {
         out.put(this.buffer, location, length);
+    }
+
+    @Override
+    public int readInt(int location) {
+        return Float.floatToRawIntBits(this.buffer[location]);
+    }
+
+    @Override
+    public void readInt(int location, @NonNull Consumer4i consumer) {
+        consumer.accept(
+                Float.floatToRawIntBits(this.buffer[location]),
+                Float.floatToRawIntBits(this.buffer[location + 1]),
+                Float.floatToRawIntBits(this.buffer[location + 2]),
+                Float.floatToRawIntBits(this.buffer[location + 3])
+        );
+    }
+
+    @Override
+    public void readInt(int location, int length, int @NonNull [] out) {
+        for (int i = 0; i < length; i++) {
+            out[i] = Float.floatToRawIntBits(this.buffer[location + i]);
+        }
+    }
+
+    @Override
+    public void readInt(int location, int length, @NonNull IntBuffer out) {
+        for (int i = 0; i < length; i++) {
+            out.put(Float.floatToRawIntBits(this.buffer[location + i]));
+        }
     }
 
     public void memcpy(int dstOffset, AnimationBuffer src, int length) {
@@ -76,33 +138,96 @@ public final class AnimationBuffer {
         return index >= 0 && index + length <= this.size;
     }
 
-    public static void memcpy(AnimationBuffer src, AnimationBuffer dst) {
-        System.arraycopy(src.buffer, 0, dst.buffer, 0, Math.min(src.size, dst.size));
-    }
+    @Getter
+    @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class Slice implements ReadableBuffer, WritableBuffer {
 
-    public static void blend(
-            AnimationBuffer src0,
-            AnimationBuffer src1,
-            AnimationBuffer dst,
-            float weight
-    ) {
-        if (weight == 0.0f) {
-            memcpy(src0, dst);
-        } else if (weight == 1.0f) {
-            memcpy(src1, dst);
-        } else {
-            var invWeight = 1 - weight;
-            for (int i = 0; i < src0.size; i++) {
-                dst.buffer[i] = src0.buffer[i] * weight + src1.buffer[i] * invWeight;
-            }
+        protected final AnimationBuffer buffer;
+        protected final int offset;
+        protected final int size;
+
+        public Slice slice(int offset, int size) {
+            return new Slice(this.buffer, this.offset + offset, size);
         }
-    }
 
-    public AnimationBufferSlice slice(int offset, int length) {
-        return new AnimationBufferSlice(this, offset, length);
-    }
+        @Override
+        public void write(int location, float value) {
+            this.buffer.write(this.offset + location, value);
+        }
 
-    public AnimationBufferSlice slice() {
-        return new AnimationBufferSlice(this, 0, this.size);
+        @Override
+        public void write(int location, float x, float y) {
+            this.buffer.write(this.offset + location, x, y);
+        }
+
+        @Override
+        public void write(int location, float x, float y, float z) {
+            this.buffer.write(this.offset + location, x, y, z);
+        }
+
+        @Override
+        public void write(int location, float x, float y, float z, float w) {
+            this.buffer.write(this.offset + location, x, y, z, w);
+        }
+
+        @Override
+        public void write(int location, int value) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void write(int location, int x, int y) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void write(int location, int x, int y, int z) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void write(int location, int x, int y, int z, int w) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public float readFloat(int location) {
+            return this.buffer.readFloat(this.offset + location);
+        }
+
+        @Override
+        public void readFloat(int location, @NonNull Consumer4f consumer) {
+            this.buffer.readFloat(this.offset + location, consumer);
+        }
+
+        @Override
+        public void readFloat(int location, int length, float @NonNull [] out) {
+            this.buffer.readFloat(this.offset + location, length, out);
+        }
+
+        @Override
+        public void readFloat(int location, int length, @NonNull FloatBuffer out) {
+            this.buffer.readFloat(this.offset + location, length, out);
+        }
+
+        @Override
+        public int readInt(int location) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void readInt(int location, @NonNull Consumer4i consumer) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void readInt(int location, int length, int @NonNull [] out) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void readInt(int location, int length, @NonNull IntBuffer out) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

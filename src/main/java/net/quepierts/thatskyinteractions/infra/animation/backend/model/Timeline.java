@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.infra.animation.model;
+package net.quepierts.thatskyinteractions.infra.animation.backend.model;
 
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.infra.animation.interpolator.Interpolator4f;

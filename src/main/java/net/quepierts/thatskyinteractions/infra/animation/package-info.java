@@ -1,0 +1,4 @@
+@ParametersAreNonnullByDefault
+package net.quepierts.thatskyinteractions.infra.animation;
+
+import javax.annotation.ParametersAreNonnullByDefault;

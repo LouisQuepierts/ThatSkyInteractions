@@ -9,6 +9,8 @@ public class DefaultChannelFormats {
 
     public static final ChannelFormat TIMELINE  = ChannelFormat.builder()
             .add("cursor", ChannelFormatElement.CURSOR)
+            .add("weight", ChannelFormatElement.WEIGHT)
+            .add("enabled", ChannelFormatElement.ENABLED)
             .build();
 
 }

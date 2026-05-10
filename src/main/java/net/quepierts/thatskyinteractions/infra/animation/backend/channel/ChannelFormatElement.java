@@ -10,6 +10,8 @@ public record ChannelFormatElement(
 ) {
 
     public static final ChannelFormatElement CURSOR     = new ChannelFormatElement(0, Type.INT, 1);
+    public static final ChannelFormatElement WEIGHT     = new ChannelFormatElement(1, Type.FLOAT, 1);
+    public static final ChannelFormatElement ENABLED    = new ChannelFormatElement(2, Type.BOOL, 1);
 
     public int size() {
         return this.type.getSize() * this.count;
