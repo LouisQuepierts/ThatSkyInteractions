@@ -6,9 +6,16 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.channel.Channel
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.TimelineSource;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationContext;
 import net.quepierts.thatskyinteractions.infra.animation.backend.model.Timeline;
+import net.quepierts.thatskyinteractions.infra.animation.interpolator.Interpolator4f;
 import org.jspecify.annotations.NonNull;
 
 public final class TimelineSampler extends AnimationSampler<TimelineSource> {
+
+    private static final Interpolator4f[]   BUILTIN_INTERPOLATIONS  = new Interpolator4f[]{
+            Interpolator4f.LINEAR,
+            Interpolator4f.CATMULL_ROM,
+            Interpolator4f.CONSTANT
+    };
 
     public static TimelineSampler of(
             @NonNull TimelineSource  source,
@@ -150,35 +157,36 @@ public final class TimelineSampler extends AnimationSampler<TimelineSource> {
         var o0              = Timeline.Address.offset(a0);
         var o1              = Timeline.Address.offset(a1);
 
-        timeline            .interpolation()[cursor]
-                            .interpolate(
-                                time,
-                                o0, o1,
-                                b0, b1,
-                                offset,
-                                target
-                            );
-
+        var lerp            = timeline.interpolation()[cursor];
+        BUILTIN_INTERPOLATIONS[lerp].interpolate(
+                time,
+                o0,
+                o1,
+                b0,
+                b1,
+                offset,
+                target
+        );
     }
 
     private static int binarySearch(Timeline timeline, float time) {
-        int left = 0;
-        int right = timeline.size() - 1;
+        int left            = 0;
+        int right           = timeline.size() - 1;
 
-        var starts = timeline.starts();
-        var ends = timeline.ends();
+        var starts          = timeline.starts();
+        var ends            = timeline.ends();
 
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            if (time < starts[mid]) {
-                right = mid - 1;
+        while (left         <= right) {
+            int mid         = (left + right) / 2;
+            if (time        < starts[mid]) {
+                right       = mid - 1;
             } else if (time > ends[mid]) {
-                left = mid + 1;
+                left        = mid + 1;
             } else {
-                return mid;
+                return      mid;
             }
         }
 
-        return left;
+        return              left;
     }
 }

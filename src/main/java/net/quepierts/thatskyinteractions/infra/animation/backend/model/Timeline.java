@@ -1,16 +1,19 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.model;
 
 import lombok.experimental.UtilityClass;
-import net.quepierts.thatskyinteractions.infra.animation.interpolator.Interpolator4f;
 
 public record Timeline(
         float[]             starts,
         float[]             ends,
         int[]               addr0,
         int[]               addr1,
-        Interpolator4f[]    interpolation,
+        byte[]              interpolation,
         int                 size
 ) {
+
+    public static final byte INTERPOLATION_LINER = (byte) 0;
+    public static final byte INTERPOLATION_CATMULLROM = (byte) 1;
+    public static final byte INTERPOLATION_CONSTANT         = (byte) 2;
 
     @UtilityClass
     public static class Address {
