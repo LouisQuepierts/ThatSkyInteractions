@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 public final class TreeNode {
 
-    private static final Action     DEFAULT_ACTION  = new Action() {};
+    private static final Action     DEFAULT_ACTION  = () -> {};
     private static final Cost       DEFAULT_COST    = new Cost(Currency.WHITE_CANDLE, 0);
 
     private final String    id;
