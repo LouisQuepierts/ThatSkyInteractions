@@ -1,5 +1,7 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.sampler;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.WritableBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormatElement;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;
@@ -9,7 +11,8 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.model.Timeline;
 import net.quepierts.thatskyinteractions.infra.animation.interpolator.Interpolator4f;
 import org.jspecify.annotations.NonNull;
 
-public final class TimelineSampler extends AnimationSampler<TimelineSource> {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TimelineSampler implements AnimationSampler {
 
     private static final Interpolator4f[]   BUILTIN_INTERPOLATIONS  = new Interpolator4f[]{
             Interpolator4f.LINEAR,
@@ -37,15 +40,8 @@ public final class TimelineSampler extends AnimationSampler<TimelineSource> {
                             );
     }
 
+    private final TimelineSource source;
     private final int[] mapping;
-
-    private TimelineSampler(
-            TimelineSource  source,
-            int[]           mapping
-    ) {
-        super(source);
-        this.mapping = mapping;
-    }
 
     @Override
     public void sample(
@@ -53,7 +49,7 @@ public final class TimelineSampler extends AnimationSampler<TimelineSource> {
             WritableBuffer          target
     ) {
         var time        = context.getProgress();
-        var source      = this.getSource();
+        var source      = this.source;
         var localTime   = source.isLoop() ?
                         time % source.getDuration() :
                         time;
@@ -140,7 +136,7 @@ public final class TimelineSampler extends AnimationSampler<TimelineSource> {
             WritableBuffer          target
     ) {
 
-        var source          = this.getSource();
+        var source          = this.source;
         var timeline        = source.getTimeline(cursor);
         var constants       = source.getConstants();
         var parameters      = context.getParameterBuffer();

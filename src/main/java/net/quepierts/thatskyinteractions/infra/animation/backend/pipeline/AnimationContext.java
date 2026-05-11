@@ -1,29 +1,37 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.pipeline;
 
+import net.quepierts.thatskyinteractions.infra.animation.adapter.PipelineInputProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
+import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformReader;
 import net.quepierts.thatskyinteractions.infra.animation.runtime.AnimationState;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public interface AnimationContext {
 
-    float                   getProgress();
+    float                               getProgress();
 
-    ChannelFormat           getChannelFormat();
+    @NonNull    ChannelLayout           getChannelLayout();
 
-    AnimationState          getAnimationState();
+    @NonNull    ChannelFormat           getChannelFormat();
 
-    AnimationSampler<?>     getSampler(int location);
+    @NonNull    AnimationState          getAnimationState();
 
-    AnimationFrameBuffer    getFrameBuffer(int location);
+    @NonNull    AnimationSampler        getSampler(int location);
 
-    AnimationBuffer         getParameterBuffer();
+    @NonNull    AnimationFrameBuffer    getFrameBuffer(int location);
 
-    UniformReader           getUniform();
+    @NonNull    AnimationBuffer         getParameterBuffer();
 
-    boolean                 getOperationMask(int index);
+    @NonNull    UniformReader           getUniform();
 
-    boolean                 getSamplerMask(int channel);
+    @Nullable   PipelineInputProvider   getInputProvider();
+
+    boolean                             getOperationMask(int index);
+
+    boolean                             getSamplerMask(int channel);
 
 }

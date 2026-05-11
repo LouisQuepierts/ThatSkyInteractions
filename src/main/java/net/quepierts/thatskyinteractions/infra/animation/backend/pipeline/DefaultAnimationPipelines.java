@@ -8,7 +8,7 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.pass.definition
 @UtilityClass
 public class DefaultAnimationPipelines {
 
-    public static final AnimationPipeline IMMEDIATE = AnimationPipeline.compiler()
+    public static final AnimationPipeline HUMANOID_TIMELINE = AnimationPipeline.compiler()
             .withChannelLayout(DefaultChannelLayouts.HUMANOID)
             .withChannelFormat(DefaultChannelFormats.TIMELINE)
             .withSampler("Pipeline.OriginSampler")

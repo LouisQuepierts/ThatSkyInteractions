@@ -7,7 +7,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.Collection;
 import java.util.Iterator;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(staticName = "of")
 public final class LocationLookup implements Iterable<String> {
 
     public static LocationLookup of(@NotNull Collection<String> collection) {

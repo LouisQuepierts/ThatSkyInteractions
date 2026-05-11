@@ -7,13 +7,9 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.Writable
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationContext;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
 
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AnimationSampler<T extends AnimationSource> {
+public interface AnimationSampler {
 
-    @Getter
-    private final T source;
-
-    public abstract void sample(
+     void sample(
             AnimationContext        context,
             WritableBuffer          target
     );
