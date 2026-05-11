@@ -54,22 +54,22 @@ public final class AnimationBuffer implements ReadableBuffer, WritableBuffer {
 
     @Override
     public void write(int location, int value) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void write(int location, int x, int y) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void write(int location, int x, int y, int z) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void write(int location, int x, int y, int z, int w) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -99,31 +99,22 @@ public final class AnimationBuffer implements ReadableBuffer, WritableBuffer {
 
     @Override
     public int readInt(int location) {
-        return Float.floatToRawIntBits(this.buffer[location]);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void readInt(int location, @NonNull Consumer4i consumer) {
-        consumer.accept(
-                Float.floatToRawIntBits(this.buffer[location]),
-                Float.floatToRawIntBits(this.buffer[location + 1]),
-                Float.floatToRawIntBits(this.buffer[location + 2]),
-                Float.floatToRawIntBits(this.buffer[location + 3])
-        );
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void readInt(int location, int length, int @NonNull [] out) {
-        for (int i = 0; i < length; i++) {
-            out[i] = Float.floatToRawIntBits(this.buffer[location + i]);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void readInt(int location, int length, @NonNull IntBuffer out) {
-        for (int i = 0; i < length; i++) {
-            out.put(Float.floatToRawIntBits(this.buffer[location + i]));
-        }
+        throw new UnsupportedOperationException();
     }
 
     public void memcpy(int dstOffset, AnimationBuffer src, int length) {
