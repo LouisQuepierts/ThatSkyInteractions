@@ -30,7 +30,7 @@ public final class PipelineCompileContext {
             this.error("Sampler '" + name + "' not found.");
         }
 
-        return index + 1;
+        return index;
     }
 
     public int getBufferLocation(String name) {
@@ -44,7 +44,7 @@ public final class PipelineCompileContext {
             this.error("Buffer '" + name + "' not found.");
         }
 
-        return index + 1;
+        return index;
     }
 
     public int getUniformLocation(String name) {

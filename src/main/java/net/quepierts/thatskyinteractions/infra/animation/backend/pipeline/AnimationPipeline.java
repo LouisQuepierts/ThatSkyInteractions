@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.pipeline;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,30 +12,34 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.channel.Channel
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pass.AnimationPass;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pass.definition.AnimationPassDefinition;
+import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationBufferSampler;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UboDefinition;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformReader;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformType;
+import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationBufferSource;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.*;
 import net.quepierts.thatskyinteractions.infra.animation.runtime.AnimationState;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class AnimationPipeline {
 
+    public static final String ORIGINAL_SAMPLER     = "Pipeline.OriginSampler";
+    public static final String OUTPUT_BUFFER        = "Pipeline.ResultBuffer";
+
     @Getter
     private final ChannelFormat             channelFormat;
+
+    @Getter
+    private final ChannelLayout             channelLayout;
 
     private final AnimationPass[]           passes;
 
     @Getter
     private final LocationLookup            bufferLookup;
-    private final AnimationResultView       result;
+    private final AnimationOriginBuffer     origin;
+    private final AnimationResultBuffer     result;
     private final AnimationFrameBuffer[]    buffers;
 
     @Getter
@@ -49,6 +54,53 @@ public final class AnimationPipeline {
     private final UniformBuffer             uniform;
 
     private final Context                   context = new Context(this);
+
+    private AnimationPipeline(
+            ChannelFormat       format,
+            ChannelLayout       layout,
+            AnimationPass[]     passes,
+            LocationLookup      bufferNames,
+            LocationLookup      samplerNames,
+            LocationLookup      uboNames,
+            UboDefinition       uniform
+    ) {
+        this.channelFormat          = format;
+        this.channelLayout          = layout;
+        this.passes                 = passes;
+
+        this.bufferLookup           = bufferNames;
+        this.samplerLookup          = samplerNames;
+        this.uboLookup              = uboNames;
+
+        var bufferAmount    = bufferNames.size();
+        var bufferSize      = layout.getChannelCount() << 2;
+        var buffer          = new AnimationBuffer(bufferSize * bufferAmount);
+        var buffers         = new AnimationFrameBuffer[bufferAmount];
+
+        for (int i = 1;
+             i < bufferAmount;
+             i++
+        ) {
+            buffers[i]      = new AnimationFrameBuffer(
+                                buffer,
+                                bufferSize * i,
+                                bufferSize
+            );
+        }
+
+        this.origin         = new AnimationOriginBuffer(buffer, bufferSize * bufferNames.size(), bufferSize);
+        this.result         = new AnimationResultBuffer(buffer, bufferSize);
+        this.buffers        = buffers;
+
+        this.samplers       = new AnimationSampler[samplerNames.size()];
+        this.ubos           = new UniformBuffer[uboNames.size()];
+        this.uniform        = new UniformBuffer(uniform);
+
+        var originSource    = new AnimationBufferSource(layout.getLookup(), this.origin);
+        var originSampler   = AnimationBufferSampler.of(originSource, layout);
+
+        this.samplers[0]    = originSampler;
+    }
 
     public void submit(
             AnimationState      state,
@@ -76,12 +128,24 @@ public final class AnimationPipeline {
             return;
         }
 
+        this.bindSource(location, sampler);
+    }
+
+    public void bindSource(
+            int                     location,
+            AnimationSampler<?>     sampler
+    ) {
+        if (location == 0) {
+            log.error("Cannot bind source to location 0.");
+            return;
+        }
+
         this.samplers[location] = sampler;
     }
 
     public void bindUbo(
-            String              name,
-            UniformBuffer       buffer
+            String                  name,
+            UniformBuffer           buffer
     ) {
         var location            = this.uboLookup.find(name);
         if (location == -1) {
@@ -89,6 +153,13 @@ public final class AnimationPipeline {
             return;
         }
 
+        this.bindUbo(location, buffer);
+    }
+
+    public void bindUbo(
+            int                     location,
+            UniformBuffer           buffer
+    ) {
         this.ubos[location]     = buffer;
     }
 
@@ -106,12 +177,13 @@ public final class AnimationPipeline {
         private ChannelLayout                           layout;
         private ChannelFormat                           format      = DefaultChannelFormats.EMPTY;
         private final List<AnimationPassDefinition>     passes      = new ArrayList<>();
-        private final List<String>                      samplers    = new ArrayList<>();
-        private final List<String>                      buffers     = new ArrayList<>();
+        private final Set<String>                       samplers    = new ObjectArraySet<>();
+        private final Set<String>                       buffers     = new ObjectArraySet<>();
         private final UboDefinition.Builder             uniforms    = UboDefinition.builder();
         private final Map<String, UboDefinition>        ubo         = new Object2ObjectArrayMap<>();
 
         private Compiler() {
+            this.samplers.add("Pipeline.OriginSampler");
             this.buffers.add("Pipeline.OutputBuffer");
         }
 
@@ -156,11 +228,7 @@ public final class AnimationPipeline {
                 throw new IllegalStateException("Channel layout is not set.");
             }
 
-            var channelCount    = this.layout.getChannelCount();
-            var bufferSize      = channelCount << 2;
-
             var uniform         = this.uniforms.build();
-            var uniformBuffer   = new UniformBuffer(uniform);
 
             var bufferNames     = LocationLookup.of(this.buffers);
             var samplerNames    = LocationLookup.of(this.samplers);
@@ -176,36 +244,19 @@ public final class AnimationPipeline {
                                 .map(def -> def.compile(context))
                                 .toArray(AnimationPass[]::new);
 
-            int bufferAmount    = this.buffers.size();
-            var buffer          = new AnimationBuffer(bufferSize * bufferAmount);
-            var buffers         = new AnimationFrameBuffer[bufferAmount];
-
-            for (int i = 0; i < bufferAmount; i++) {
-                buffers[i]      = new AnimationFrameBuffer(
-                                    buffer,
-                                    bufferSize * i,
-                                    bufferSize
-                                );
-            }
-
             if (context.hasErrors()) {
                 context.printErrors(log::error);
                 throw new IllegalStateException("Pipeline compile failed.");
             }
 
-            var result          = new AnimationResultBuffer(buffer, bufferSize);
-
             return new AnimationPipeline(
                     this.format,
+                    this.layout,
                     passes,
                     bufferNames,
-                    result,
-                    buffers,
                     samplerNames,
-                    new AnimationSampler[this.samplers.size()],
                     uboNames,
-                    new UniformBuffer[this.ubo.size()],
-                    uniformBuffer
+                    uniform
             );
         }
     }
@@ -219,6 +270,11 @@ public final class AnimationPipeline {
         @Override
         public float getProgress() {
             return this.state.getProgress();
+        }
+
+        @Override
+        public ChannelLayout getChannelLayout() {
+            return this.pipeline.getChannelLayout();
         }
 
         @Override
@@ -258,7 +314,7 @@ public final class AnimationPipeline {
 
         @Override
         public boolean getSamplerMask(int channel) {
-            return channel != -1; // todu
+            return channel != -1; // todo
         }
     }
 
