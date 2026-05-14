@@ -46,8 +46,16 @@ public final class ChannelLayout implements Iterable<String> {
 
         private Builder() { }
 
-        public Builder add(String name) {
+        public Builder channel(String name) {
             this.names.add(name);
+            return this;
+        }
+
+        public Builder transform(String name) {
+            this.names.add(name + ".position");
+            this.names.add(name + ".rotation");
+            this.names.add(name + ".scale");
+            this.names.add(name + ".pivot");
             return this;
         }
 
