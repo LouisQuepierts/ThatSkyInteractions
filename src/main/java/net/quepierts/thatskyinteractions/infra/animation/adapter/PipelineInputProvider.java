@@ -4,6 +4,6 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.Writable
 
 public interface PipelineInputProvider {
 
-    void read(int channel, int offset, WritableBuffer out);
+    void fill(int channel, int offset, WritableBuffer out);
 
 }

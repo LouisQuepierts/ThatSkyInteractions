@@ -3,6 +3,9 @@ package net.quepierts.thatskyinteractions.feature.animation;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.core.model.animation.BedrockAnimation;
@@ -37,7 +40,7 @@ public class BedrockAnimationCompiler {
                                 .isPresent()) {
 
                 channels        .add(name + ".position");
-                var timeline    = compile(bone.position().get(), constants, duration);
+                var timeline    = compile(bone.position().get(), constants, duration, Channel.POSITION);
                 timelines       .add(timeline);
 
             }
@@ -46,7 +49,7 @@ public class BedrockAnimationCompiler {
                                 .isPresent()) {
 
                 channels        .add(name + ".rotation");
-                var timeline    = compile(bone.rotation().get(), constants, duration);
+                var timeline    = compile(bone.rotation().get(), constants, duration, Channel.ROTATION);
                 timelines       .add(timeline);
             }
 
@@ -54,7 +57,7 @@ public class BedrockAnimationCompiler {
                                 .isPresent()) {
 
                 channels        .add(name + ".scale");
-                var timeline    = compile(bone.scale().get(), constants, duration);
+                var timeline    = compile(bone.scale().get(), constants, duration, Channel.SCALE);
                 timelines       .add(timeline);
             }
         }
@@ -80,7 +83,8 @@ public class BedrockAnimationCompiler {
     private static @NonNull Timeline compile(
             @NonNull BedrockTimeline    timeline,
             @NonNull FloatArrayList     constants,
-            float                       duration
+            float                       duration,
+            final Channel               channel
     ) {
         var tmp                 = new float[16];
         var keyframes           = timeline.keyframes();
@@ -100,6 +104,8 @@ public class BedrockAnimationCompiler {
 
         var n                   = array.size();
         var t                   = n - 1;
+
+        var factor              = channel.getFactor();
 
         for (int i = 0; i < t; i++) {
             var e0              = array.get(i);
@@ -128,10 +134,10 @@ public class BedrockAnimationCompiler {
                 var kp          = array.get(i0).getValue();
                 var kn          = array.get(i3).getValue();
 
-                get(kp.getPost  (), tmp, 0);
-                get(k0.getPost  (), tmp, 4);
-                get(k1.getPre   (), tmp, 8);
-                get(kn.getPre   (), tmp, 12);
+                get(kp.getPost  (), factor, tmp, 0);
+                get(k0.getPost  (), factor, tmp, 4);
+                get(k1.getPre   (), factor, tmp, 8);
+                get(kn.getPre   (), factor, tmp, 12);
 
                 addr0           .add(addr);
                 addr1           .add(addr + 8);
@@ -142,7 +148,7 @@ public class BedrockAnimationCompiler {
 
             } else {
 
-                get(k0.getPost  (), tmp, 0);
+                get(k0.getPost  (), factor, tmp, 0);
                 addr0           .add(addr);
 
                 if (k0.getPost().equals(k1.getPre())) {
@@ -151,7 +157,7 @@ public class BedrockAnimationCompiler {
 
                     interpolations.add(Timeline.INTERPOLATION_CONSTANT);
                 } else {
-                    get(k1.getPre(), tmp, 4);
+                    get(k1.getPre(), factor, tmp, 4);
                     addr1        .add(addr + 4);
                     constants    .addElements(addr, tmp, 0, 8);
 
@@ -186,7 +192,7 @@ public class BedrockAnimationCompiler {
 
     private static void get(
             @NonNull Vector3fc vector,
-            float[] array,
+            final float factor, float[] array,
             int offset
     ) {
         array[offset]       = vector.x();
@@ -194,5 +200,13 @@ public class BedrockAnimationCompiler {
         array[offset + 2]   = vector.z();
     }
 
+    @Getter
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private enum Channel {
+        POSITION(0.0625f),
+        ROTATION(Mth.DEG_TO_RAD),
+        SCALE(1.0f);
 
+        final float factor;
+    }
 }

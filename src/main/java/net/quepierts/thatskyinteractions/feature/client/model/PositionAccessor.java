@@ -15,9 +15,9 @@ public final class PositionAccessor implements PropertyAccessor {
     public void accept(float x, float y, float z, float w) {
         final var pose = this.part.getInitialPose();
         this.part.setPos(
-                pose.x() + x * 0.0625f,
-                pose.y() + y * 0.0625f,
-                pose.z() + z * 0.0625f
+                pose.x() + x,
+                pose.y() + y,
+                pose.z() + z
         );
     }
 }

@@ -18,7 +18,7 @@ public final class OriginSampler implements AnimationSampler {
                 continue;
             }
 
-            input       .read(i, i << 2, target);
+            input       .fill(i, i << 2, target);
         }
     }
 }

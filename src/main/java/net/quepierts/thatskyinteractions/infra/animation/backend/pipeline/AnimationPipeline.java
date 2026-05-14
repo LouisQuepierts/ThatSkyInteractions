@@ -99,8 +99,8 @@ public final class AnimationPipeline {
     }
 
     public void submit(
-            AnimationState          state,
-            AnimationOutput         output
+            @NonNull    AnimationState          state,
+            @NonNull    AnimationOutput         output
     ) {
         submit(state, null, output);
     }
