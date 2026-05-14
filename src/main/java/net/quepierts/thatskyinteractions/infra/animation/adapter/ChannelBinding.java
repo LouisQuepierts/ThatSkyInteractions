@@ -24,14 +24,14 @@ public class ChannelBinding {
     }
 
     record Entry(
-            int         channel,
-            Consumer4f  consumer
+            int                 channel,
+            PropertyAccessor    consumer
     ) { }
 
     public static final class Builder {
         private final List<Entry> entries = new ArrayList<>();
 
-        public @NonNull Builder bind(int channel, @NonNull Consumer4f consumer) {
+        public @NonNull Builder bind(int channel, @NonNull PropertyAccessor consumer) {
             if (channel > 0) {
                 this.entries.add(new Entry(channel, consumer));
             }
