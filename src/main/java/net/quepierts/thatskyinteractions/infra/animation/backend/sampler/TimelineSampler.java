@@ -29,7 +29,7 @@ public final class TimelineSampler implements AnimationSampler {
 
         var i               = 0;
         for (var channel    : channels) {
-            mapping[i]      = layout.getChannelId(channel);
+            mapping[i]      = layout.id(channel);
 
             i               ++;
         }

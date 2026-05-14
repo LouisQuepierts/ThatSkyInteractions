@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.infra.animation.backend.channel;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.quepierts.thatskyinteractions.infra.util.ArrayIterator;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
 import org.jspecify.annotations.NonNull;
 
@@ -20,8 +19,12 @@ public final class ChannelLayout implements Iterable<String> {
         return new Builder();
     }
 
-    public int getChannelId(String name) {
+    public int id(String name) {
         return this.lookup.find(name);
+    }
+
+    public String channel(int id) {
+        return this.lookup.name(id);
     }
 
     public int getChannelCount() {
