@@ -14,6 +14,7 @@ public class AvatarRenderStateMixin implements AvatarRenderStateExtension {
     @Final
     private final HumanoidAnimationState a4j$AnimationState = HumanoidAnimationState._default();
 
+    @Unique
     @Override
     public HumanoidAnimationState a4j$GetAnimationState() {
         return this.a4j$AnimationState;

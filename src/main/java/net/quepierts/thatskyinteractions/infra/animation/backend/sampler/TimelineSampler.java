@@ -11,6 +11,8 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.model.Timeline;
 import net.quepierts.thatskyinteractions.infra.animation.interpolator.Interpolator4f;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Arrays;
+
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TimelineSampler implements AnimationSampler {
 
@@ -26,6 +28,7 @@ public final class TimelineSampler implements AnimationSampler {
     ) {
         var channels        = source.getChannels();
         var mapping         = new int[channels.size()];
+        Arrays              .fill(mapping, -1);
 
         var i               = 0;
         for (var channel    : channels) {
@@ -104,11 +107,16 @@ public final class TimelineSampler implements AnimationSampler {
         var cursor          = attribute.readInt(cursorAddr);
         var ends            = timeline.ends();
 
-        if (time < ends[cursor]) {
+        if (time <= ends[cursor]) {
+
+            var start           = timeline.starts()[cursor];
+            var end             = timeline.ends()[cursor];
+            var localTime       = (time - start) / (end - start);
 
             this.sampleSegment(
                     context,
-                    time,
+                    timeline,
+                    localTime,
                     cursor,
                     offset,
                     target
@@ -119,9 +127,14 @@ public final class TimelineSampler implements AnimationSampler {
         cursor              = binarySearch(timeline, time);
         attribute           .write(cursorAddr, cursor);
 
+        var start           = timeline.starts()[cursor];
+        var end             = timeline.ends()[cursor];
+        var localTime       = (time - start) / (end - start);
+
         this.sampleSegment(
                 context,
-                time,
+                timeline,
+                localTime,
                 cursor,
                 offset,
                 target
@@ -130,6 +143,7 @@ public final class TimelineSampler implements AnimationSampler {
 
     private void sampleSegment(
             AnimationContext        context,
+            Timeline                timeline,
             float                   time,
             int                     cursor,
             int                     offset,
@@ -137,18 +151,19 @@ public final class TimelineSampler implements AnimationSampler {
     ) {
 
         var source          = this.source;
-        var timeline        = source.getTimeline(cursor);
         var constants       = source.getConstants();
         var parameters      = context.getParameterBuffer();
 
         var a0              = timeline.addr0()[cursor];
         var a1              = timeline.addr1()[cursor];
 
-        var b0              = Timeline.Address.isParameter(a0) ?
-                            parameters : constants;
+        var b0              = Timeline.Address.isParameter(a0)
+                            ? parameters
+                            : constants;
 
-        var b1              = Timeline.Address.isParameter(a1) ?
-                            parameters : constants;
+        var b1              = Timeline.Address.isParameter(a1)
+                            ? parameters
+                            : constants;
 
         var o0              = Timeline.Address.offset(a0);
         var o1              = Timeline.Address.offset(a1);
@@ -172,7 +187,7 @@ public final class TimelineSampler implements AnimationSampler {
         var starts          = timeline.starts();
         var ends            = timeline.ends();
 
-        while (left         <= right) {
+        while (left         < right) {
             int mid         = (left + right) / 2;
             if (time        < starts[mid]) {
                 right       = mid - 1;

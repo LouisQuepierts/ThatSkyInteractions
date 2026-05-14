@@ -10,6 +10,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.model.animation.BedrockAnimationDefinition;
@@ -41,7 +42,7 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
         return instance;
     }
 
-    private Map<Identifier, Holder> animations = Map.of();
+    private Map<Identifier, BedrockAnimationDefinition> animations = Map.of();
 
     private BedrockAnimationManager() {
         super(
@@ -57,16 +58,15 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
             final @NonNull  ResourceManager                             manager,
             final @NonNull  ProfilerFiller                              profiler
     ) {
-        var builder         = ImmutableMap.<Identifier, Holder>builder();
-        preparations        .forEach(
-                                (id, def)
-                                    -> builder.put(id, new Holder(id, def))
-        );
+        var builder         = ImmutableMap.<Identifier, BedrockAnimationDefinition>builder();
+        preparations        .forEach(builder::put);
 
         this.animations     = builder.buildOrThrow();
+
+        NeoForge.EVENT_BUS.post(new AnimationReloadedEvent(this));
     }
 
-    public Holder get(Identifier identifier) {
+    public BedrockAnimationDefinition get(Identifier identifier) {
         return this.animations.get(identifier);
     }
 

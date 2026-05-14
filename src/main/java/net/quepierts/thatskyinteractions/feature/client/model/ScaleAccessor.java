@@ -12,8 +12,8 @@ public final class ScaleAccessor implements PropertyAccessor {
 
     @Override
     public void accept(float x, float y, float z, float w) {
-        this.part.xScale = x;
-        this.part.yScale = y;
-        this.part.zScale = z;
+        this.part.xScale += x;
+        this.part.yScale += y;
+        this.part.zScale += z;
     }
 }

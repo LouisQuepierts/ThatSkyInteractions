@@ -79,9 +79,9 @@ public final class MinecraftModelAdaptor implements AnimationOutput {
             @NonNull ChannelLayout          layout,
             ChannelBinding.@NonNull Builder builder
     ) {
-        builder.bind(layout.id(name + ".position"), PositionAccessor.of(part));
-        builder.bind(layout.id(name + ".rotation"), RotationAccessor.of(part));
-        builder.bind(layout.id(name + ".scale"),    ScaleAccessor.of(part));
+        builder.bind(layout.id(name + ".position"), PositionAccessor.of(part, name + ".position"));
+        builder.bind(layout.id(name + ".rotation"), RotationAccessor.of(part, name + ".rotation"));
+//        builder.bind(layout.id(name + ".scale"),    ScaleAccessor.of(part));
     }
 
     private static Map<String, ModelPart> getChildren(ModelPart thiz) {

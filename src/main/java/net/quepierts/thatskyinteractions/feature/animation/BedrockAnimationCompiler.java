@@ -12,12 +12,10 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.Animatio
 import net.quepierts.thatskyinteractions.infra.animation.backend.model.Timeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.TimelineSource;
-import net.quepierts.thatskyinteractions.infra.util.ArrayUtils;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 @UtilityClass
 public class BedrockAnimationCompiler {
@@ -73,7 +71,7 @@ public class BedrockAnimationCompiler {
                                     channels.toArray(String[]::new),
                                     timelines.toArray(Timeline[]::new),
                                     buffer,
-                                    animation.loop(),
+                                    /*animation.loop()*/ true,
                                     animation.length()
                                 );
     }
@@ -98,16 +96,14 @@ public class BedrockAnimationCompiler {
         var addr1               = new IntArrayList();
         var interpolations      = new ByteArrayList();
 
-        var array               = keyframes
-                                .entrySet()
-                                .toArray(ArrayUtils::<Map.Entry<Float, BedrockKeyframe>>create);
+        var array               = new ArrayList<>(keyframes.entrySet());
 
-        var n                   = array.length;
-        var t                   = array.length - 1;
+        var n                   = array.size();
+        var t                   = n - 1;
 
         for (int i = 0; i < t; i++) {
-            var e0              = array[i];
-            var e1              = array[i + 1];
+            var e0              = array.get(i);
+            var e1              = array.get(i + 1);
 
             var t0              = e0.getKey();
             var t1              = e1.getKey();
@@ -129,8 +125,8 @@ public class BedrockAnimationCompiler {
                 var i0          = Mth.clamp(i - 1, 0, n - 1);
                 var i3          = Mth.clamp(i + 2, 0, n - 1);
 
-                var kp          = array[i0].getValue();
-                var kn          = array[i3].getValue();
+                var kp          = array.get(i0).getValue();
+                var kn          = array.get(i3).getValue();
 
                 get(kp.getPost  (), tmp, 0);
                 get(k0.getPost  (), tmp, 4);
@@ -164,6 +160,19 @@ public class BedrockAnimationCompiler {
 
             }
         }
+
+
+        var last                = starts.size() - 1;
+        var end                 = ends.getFloat(last);
+
+        if (end < duration) {
+            starts.add(end);
+            ends.add(duration);
+            addr0.add(addr0.getInt(last));
+            addr1.add(addr1.getInt(last));
+            interpolations.add(Timeline.INTERPOLATION_CONSTANT);
+        }
+
 
         return                  new Timeline(
                                     starts          .toFloatArray(),

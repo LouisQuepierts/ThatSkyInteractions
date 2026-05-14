@@ -77,7 +77,7 @@ public final class AnimationPipeline {
         var buffer              = new AnimationBuffer(bufferSize * bufferAmount);
         var buffers             = new AnimationFrameBuffer[bufferAmount];
 
-        for (int i = 1;
+        for (int i = 0;
              i < bufferAmount;
              i++
         ) {

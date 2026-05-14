@@ -6,6 +6,8 @@ import net.quepierts.thatskyinteractions.infra.animation.runtime.AnimationState;
 
 public final class HumanoidAnimationState extends AnimationState {
 
+    private float start;
+
     public static HumanoidAnimationState _default() {
         return new HumanoidAnimationState(DefaultChannelFormats.TIMELINE);
     }
@@ -14,4 +16,11 @@ public final class HumanoidAnimationState extends AnimationState {
         super(DefaultMinecraftChannelLayout.HUMANOID, channelFormat);
     }
 
+    public void update(float current) {
+        this.progress   = (current - this.start) * 0.05f;
+    }
+
+    public void start(float current) {
+        this.start      = current;
+    }
 }
