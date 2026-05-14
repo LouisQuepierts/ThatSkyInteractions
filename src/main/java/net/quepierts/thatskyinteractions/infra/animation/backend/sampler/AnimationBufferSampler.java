@@ -1,12 +1,17 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.sampler;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.WritableBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationContext;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationBufferSource;
 import org.jspecify.annotations.NonNull;
 
-public final class AnimationBufferSampler extends AnimationSampler<AnimationBufferSource> {
+@Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AnimationBufferSampler implements AnimationSampler {
 
     public static AnimationBufferSampler of(
             @NonNull AnimationBufferSource source,
@@ -22,9 +27,7 @@ public final class AnimationBufferSampler extends AnimationSampler<AnimationBuff
         return new AnimationBufferSampler(source);
     }
 
-    private AnimationBufferSampler(AnimationBufferSource source) {
-        super(source);
-    }
+    private final AnimationBufferSource source;
 
     @Override
     public void sample(AnimationContext context, WritableBuffer target) {

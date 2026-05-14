@@ -1,10 +1,13 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.quepierts.thatskyinteractions.mixin",
+  "package": "net.quepierts.thatskyinteractions.feature.mixin",
   "compatibilityLevel": "JAVA_21",
   "refmap": "thatskyinteractions.refmap.json",
   "client": [
+    "vanilla.accessor.ModelPartAccessor",
+    "vanilla.client.AvatarRenderStateMixin",
+    "vanilla.client.PlayerModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -7,6 +7,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChannelBinding {
@@ -31,9 +32,16 @@ public class ChannelBinding {
     public static final class Builder {
         private final List<Entry> entries = new ArrayList<>();
 
-        public @NonNull Builder bind(int channel, @NonNull PropertyAccessor consumer) {
-            if (channel > 0) {
-                this.entries.add(new Entry(channel, consumer));
+        public @NonNull Builder bind(int channel, @NonNull PropertyAccessor accessor) {
+            if (channel > -1) {
+                this.entries.add(new Entry(channel, accessor));
+            }
+            return this;
+        }
+
+        public @NonNull Builder bind(int channel, @NonNull Supplier<PropertyAccessor> supplier) {
+            if (channel > -1) {
+                this.entries.add(new Entry(channel, supplier.get()));
             }
             return this;
         }
