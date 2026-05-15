@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.mixin.vanilla.accessor;
+package net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor;
 
 import net.minecraft.client.model.geom.ModelPart;
 import org.spongepowered.asm.mixin.Mixin;

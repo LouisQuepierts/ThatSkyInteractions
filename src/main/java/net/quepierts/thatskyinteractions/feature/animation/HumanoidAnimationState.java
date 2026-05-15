@@ -17,6 +17,10 @@ public final class HumanoidAnimationState extends AnimationState {
     }
 
     public void update(float current) {
+        // for test
+        if (current - this.start > 60.0f) {
+            this.start = current;
+        }
         this.progress   = (current - this.start) * 0.05f;
     }
 

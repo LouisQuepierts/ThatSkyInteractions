@@ -1,8 +1,8 @@
-package net.quepierts.thatskyinteractions.feature.client.render;
+package net.quepierts.thatskyinteractions.feature.entity;
 
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 
-public interface AvatarRenderStateExtension {
+public interface AvatarExtension {
 
     HumanoidAnimationState a4j$GetAnimationState();
 

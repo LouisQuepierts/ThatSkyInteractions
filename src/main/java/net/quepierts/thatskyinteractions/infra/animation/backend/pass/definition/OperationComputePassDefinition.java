@@ -9,15 +9,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ComputePassDefinition extends AnimationPassDefinition {
+public final class OperationComputePassDefinition extends AnimationPassDefinition {
 
     private final List<OperationDescription> operations = new ArrayList<>();
 
-    public ComputePassDefinition(String name) {
-        super(name);
+    public OperationComputePassDefinition(String name) {
+        super(name, PassType.COMPUTE);
     }
 
-    public ComputePassDefinition sample(
+    public OperationComputePassDefinition sample(
             String sampler,
             String buffer
     ) {
@@ -34,7 +34,7 @@ public final class ComputePassDefinition extends AnimationPassDefinition {
         return this;
     }
 
-    public ComputePassDefinition blend(
+    public OperationComputePassDefinition blend(
             String src0,
             String src1,
             String dst,
@@ -53,7 +53,7 @@ public final class ComputePassDefinition extends AnimationPassDefinition {
         return this;
     }
 
-    public ComputePassDefinition blend(
+    public OperationComputePassDefinition blend(
             String src0,
             String src1,
             String dst,
@@ -73,7 +73,7 @@ public final class ComputePassDefinition extends AnimationPassDefinition {
         return this;
     }
 
-    public ComputePassDefinition assign(
+    public OperationComputePassDefinition assign(
             String src,
             String dst
     ) {

@@ -6,11 +6,7 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftChannelLayout;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
-import net.quepierts.thatskyinteractions.feature.client.render.AvatarRenderStateExtension;
-import net.quepierts.thatskyinteractions.feature.client.render.MinecraftModelAdaptorProvider;
-import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationPipeline;
-import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
-import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
+import net.quepierts.thatskyinteractions.feature.client.render.HumanoidRenderStateExtension;
 import net.quepierts.thatskyinteractions.test.animation.AnimationTest;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -46,9 +42,7 @@ public class PlayerModelMixin {
         final var pipeline  = DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE;
         final var sampler   = AnimationTest.getSampler();
 
-        final var animation = ((AvatarRenderStateExtension) state).a4j$GetAnimationState();
-
-        animation.update(state.ageInTicks);
+        final var animation = ((HumanoidRenderStateExtension) state).a4j$GetAnimationState();
 
         pipeline.bindSource("TimelineSampler", sampler);
         pipeline.submit(animation, this.a4j$ModelAdaptor);

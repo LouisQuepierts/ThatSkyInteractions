@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.minecraft.client.model.geom.ModelPart;
-import net.quepierts.thatskyinteractions.feature.mixin.vanilla.accessor.ModelPartAccessor;
+import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.ModelPartAccessor;
 import net.quepierts.thatskyinteractions.infra.animation.adapter.AnimationOutput;
 import net.quepierts.thatskyinteractions.infra.animation.adapter.ChannelBinding;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;

@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.model.geom.ModelPart;
-import net.quepierts.thatskyinteractions.feature.mixin.vanilla.accessor.ModelPartAccessor;
+import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.ModelPartAccessor;
 import net.quepierts.thatskyinteractions.infra.animation.adapter.PipelineInputProvider;
 import net.quepierts.thatskyinteractions.infra.animation.adapter.PropertyProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.WritableBuffer;

@@ -5,11 +5,15 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "thatskyinteractions.refmap.json",
   "client": [
-    "vanilla.accessor.ModelPartAccessor",
-    "vanilla.client.AvatarRenderStateMixin",
+    "vanilla.client.accessor.ModelPartAccessor",
+    "vanilla.client.AvatarRendererMixin",
+    "vanilla.client.HumanoidRenderStateMixin",
     "vanilla.client.PlayerModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "vanilla.common.AvatarMixin"
+  ]
 }
