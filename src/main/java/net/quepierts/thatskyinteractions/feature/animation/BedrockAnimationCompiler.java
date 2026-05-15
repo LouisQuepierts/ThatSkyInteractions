@@ -191,13 +191,14 @@ public class BedrockAnimationCompiler {
     }
 
     private static void get(
-            @NonNull Vector3fc vector,
-            final float factor, float[] array,
-            int offset
+            @NonNull Vector3fc  vector,
+            final float         factor,
+            float[]             array,
+            int                 offset
     ) {
-        array[offset]       = vector.x();
-        array[offset + 1]   = vector.y();
-        array[offset + 2]   = vector.z();
+        array[offset]       = vector.x() * factor;
+        array[offset + 1]   = vector.y() * factor;
+        array[offset + 2]   = vector.z() * factor;
     }
 
     @Getter
