@@ -1,6 +1,6 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.pipeline;
 
-import net.quepierts.thatskyinteractions.infra.animation.adapter.Consumer4f;
+import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer4f;
 
 public interface AnimationResultView {
 

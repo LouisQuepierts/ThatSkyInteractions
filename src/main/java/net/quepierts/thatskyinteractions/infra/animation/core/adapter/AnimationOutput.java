@@ -1,11 +1,9 @@
-package net.quepierts.thatskyinteractions.infra.animation.adapter;
+package net.quepierts.thatskyinteractions.infra.animation.core.adapter;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationResultView;
 import org.jspecify.annotations.NonNull;
-
-import java.util.Arrays;
 
 public interface AnimationOutput {
 

@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.infra.animation.interpolator;
+package net.quepierts.thatskyinteractions.infra.animation.core.interpolator;
 
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.WritableBuffer;

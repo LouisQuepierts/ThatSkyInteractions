@@ -1,8 +1,8 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.buffer;
 
 import lombok.Getter;
-import net.quepierts.thatskyinteractions.infra.animation.adapter.Consumer4f;
-import net.quepierts.thatskyinteractions.infra.animation.adapter.Consumer4i;
+import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer4f;
+import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer4i;
 import org.jspecify.annotations.NonNull;
 
 import java.nio.FloatBuffer;

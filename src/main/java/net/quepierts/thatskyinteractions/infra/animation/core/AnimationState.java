@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.infra.animation.runtime;
+package net.quepierts.thatskyinteractions.infra.animation.core;
 
 import lombok.Getter;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;

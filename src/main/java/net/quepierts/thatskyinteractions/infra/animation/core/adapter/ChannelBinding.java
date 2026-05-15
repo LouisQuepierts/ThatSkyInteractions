@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.infra.animation.adapter;
+package net.quepierts.thatskyinteractions.infra.animation.core.adapter;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

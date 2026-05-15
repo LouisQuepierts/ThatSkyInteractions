@@ -8,7 +8,7 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.channel.Channel
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.TimelineSource;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationContext;
 import net.quepierts.thatskyinteractions.infra.animation.backend.model.Timeline;
-import net.quepierts.thatskyinteractions.infra.animation.interpolator.Interpolator4f;
+import net.quepierts.thatskyinteractions.infra.animation.core.interpolator.Interpolator4f;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;

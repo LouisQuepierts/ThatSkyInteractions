@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.model;
 
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.model.geom.ModelPart;
-import net.quepierts.thatskyinteractions.infra.animation.adapter.PropertyAccessor;
+import net.quepierts.thatskyinteractions.infra.animation.core.adapter.PropertyAccessor;
 import org.jspecify.annotations.NonNull;
 
 @RequiredArgsConstructor(staticName = "of")

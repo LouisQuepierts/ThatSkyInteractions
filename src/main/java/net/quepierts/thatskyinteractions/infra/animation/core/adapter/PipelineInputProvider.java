@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.infra.animation.adapter;
+package net.quepierts.thatskyinteractions.infra.animation.core.adapter;
 
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.WritableBuffer;
 
