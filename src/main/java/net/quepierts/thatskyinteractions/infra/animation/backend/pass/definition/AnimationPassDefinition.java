@@ -10,17 +10,13 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 public abstract class AnimationPassDefinition {
 
-    private final String name;
+    private final String    name;
+    private final PassType  type;
 
-    public static ComputePassDefinition compute(String name) {
-        return new ComputePassDefinition(name);
+    public static OperationComputePassDefinition compute(String name) {
+        return new OperationComputePassDefinition(name);
     }
 
     public abstract AnimationPass compile(@NotNull PipelineCompileContext context);
 
-    public enum Type {
-        PARAMETER,
-        COMPUTE,
-        POSTPROCESS
-    }
 }

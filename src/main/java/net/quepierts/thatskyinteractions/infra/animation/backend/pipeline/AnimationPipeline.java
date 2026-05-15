@@ -17,6 +17,7 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.Animati
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.OriginSampler;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.*;
 import net.quepierts.thatskyinteractions.infra.animation.runtime.AnimationState;
+import net.quepierts.thatskyinteractions.infra.util.ArrayUtils;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -36,6 +37,7 @@ public final class AnimationPipeline {
     @Getter
     private final ChannelLayout             channelLayout;
 
+    private final AnimationPass[]           parameterPasses;
     private final AnimationPass[]           passes;
 
     @Getter
@@ -59,7 +61,7 @@ public final class AnimationPipeline {
     private AnimationPipeline(
             ChannelFormat       format,
             ChannelLayout       layout,
-            AnimationPass[]     passes,
+            AnimationPass[][]   passes,
             LocationLookup      bufferNames,
             LocationLookup      samplerNames,
             LocationLookup      uboNames,
@@ -67,7 +69,8 @@ public final class AnimationPipeline {
     ) {
         this.channelFormat      = format;
         this.channelLayout      = layout;
-        this.passes             = passes;
+        this.parameterPasses    = passes[0];
+        this.passes             = passes[1];
         this.bufferLookup       = bufferNames;
         this.samplerLookup      = samplerNames;
         this.uboLookup          = uboNames;
@@ -223,6 +226,7 @@ public final class AnimationPipeline {
             return this;
         }
 
+        @SuppressWarnings("unchecked")
         public AnimationPipeline compile() {
 
             if (this.layout == null) {
@@ -241,9 +245,12 @@ public final class AnimationPipeline {
                                 uniform.getLookup()
             );
 
-            var passes          = this.passes.stream()
-                                .map(def -> def.compile(context))
-                                .toArray(AnimationPass[]::new);
+            var passes          = (ArrayList<AnimationPass>[]) new ArrayList[3];
+            ArrayUtils          .init(passes, () -> new ArrayList<AnimationPass>());
+            for (final var definition : this.passes) {
+                final var pass = definition.compile(context);
+                passes[definition.getType().ordinal()].add(pass);
+            }
 
             if (context.hasErrors()) {
                 context.printErrors(log::error);
@@ -253,7 +260,9 @@ public final class AnimationPipeline {
             return new AnimationPipeline(
                     this.format,
                     this.layout,
-                    passes,
+                    Arrays.stream(passes)
+                            .map(a -> a.toArray(AnimationPass[]::new))
+                            .toArray(AnimationPass[][]::new),
                     bufferNames,
                     samplerNames,
                     uboNames,
