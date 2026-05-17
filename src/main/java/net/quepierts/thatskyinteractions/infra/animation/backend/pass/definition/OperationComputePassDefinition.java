@@ -3,7 +3,7 @@ package net.quepierts.thatskyinteractions.infra.animation.backend.pass.definitio
 import net.quepierts.thatskyinteractions.infra.animation.backend.pass.AnimationPass;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pass.Operation;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pass.ComputePass;
-import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.PipelineCompileContext;
+import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationPipelineCompileContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
     }
 
     @Override
-    public AnimationPass compile(@NotNull PipelineCompileContext context) {
+    public AnimationPass compile(@NotNull AnimationPipelineCompileContext context) {
         var operations      = new Operation[this.operations.size()];
 
         for (int i = 0;
@@ -125,7 +125,7 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
             };
         }
 
-        return new ComputePass(operations);
+        return new ComputePass(this.getName(), operations);
     }
 
     private record OperationDescription(

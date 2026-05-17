@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
-public final class PipelineCompileContext {
+public final class AnimationPipelineCompileContext {
 
     public static final String ORIGINAL_SAMPLER     = "Pipeline.OriginSampler";
     public static final String OUTPUT_BUFFER        = "Pipeline.ResultBuffer";

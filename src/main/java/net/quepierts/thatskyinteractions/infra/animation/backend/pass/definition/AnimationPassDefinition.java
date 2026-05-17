@@ -3,7 +3,7 @@ package net.quepierts.thatskyinteractions.infra.animation.backend.pass.definitio
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pass.AnimationPass;
-import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.PipelineCompileContext;
+import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationPipelineCompileContext;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
@@ -17,6 +17,6 @@ public abstract class AnimationPassDefinition {
         return new OperationComputePassDefinition(name);
     }
 
-    public abstract AnimationPass compile(@NotNull PipelineCompileContext context);
+    public abstract AnimationPass compile(@NotNull AnimationPipelineCompileContext context);
 
 }

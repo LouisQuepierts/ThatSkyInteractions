@@ -241,13 +241,17 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
                 throw new IllegalStateException("Channel layout is not set.");
             }
 
+            if (this.passes.isEmpty()) {
+                throw new IllegalStateException("No passes are set.");
+            }
+
             var uniform         = this.uniforms.build();
 
             var bufferNames     = LocationLookup.of(this.buffers);
             var samplerNames    = LocationLookup.of(this.samplers);
             var uboNames        = LocationLookup.of(this.ubo.keySet());
 
-            var context         = new PipelineCompileContext(
+            var context         = new AnimationPipelineCompileContext(
                                 samplerNames,
                                 bufferNames,
                                 uniform.getLookup()

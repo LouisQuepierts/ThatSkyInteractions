@@ -6,10 +6,17 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.Animat
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationFrameBuffer;
 import org.jetbrains.annotations.NotNull;
 
-@RequiredArgsConstructor
 public final class ComputePass extends AnimationPass {
 
     private final Operation[] operations;
+
+    public ComputePass(
+            final String name,
+            final Operation[] operations
+    ) {
+        super(name);
+        this.operations = operations;
+    }
 
     @Override
     public void execute(@NotNull AnimationContext context) {
