@@ -63,7 +63,7 @@ public final class SkeletonLayout {
 
     public static final class Builder {
 
-        private final Set<String>               bones       = new ObjectArraySet<>();
+        private final List<String>              bones       = new ArrayList<>();
         private final Map<String, String>       parents     = new HashMap<>();
 
         private final String                    root;
@@ -149,7 +149,7 @@ public final class SkeletonLayout {
             final var flat      = new int[sum];
             final var cursor    = new int[capacity];
             // starts -> cursor
-            System.arraycopy(parents, 0, cursor, 0, capacity);
+            System.arraycopy(starts, 0, cursor, 0, capacity);
             for (var i = 0; i < sum; i++) {
                 var parent      = parents[i];
                 if (parent != -1) {
