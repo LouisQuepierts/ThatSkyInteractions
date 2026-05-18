@@ -22,15 +22,17 @@ public interface AnimationPipeline {
     }
 
     void submit(
-            @NonNull AnimationState state,
-            @NonNull AnimationOutput output
+            @NonNull AnimationState state
     );
 
-    void submit(
+    default void submit(
             @NonNull AnimationState state,
-            @Nullable PipelineInputProvider input,
             @NonNull AnimationOutput output
-    );
+    ) {
+        this.bindTarget(0, output);
+        this.submit(state);
+        this.bindTarget(0, null);
+    }
 
     void bindSource(
             String name,
@@ -51,6 +53,17 @@ public interface AnimationPipeline {
             int location,
             UniformBuffer buffer
     );
+
+    void bindTarget(
+            String name,
+            AnimationOutput target
+    );
+
+    void bindTarget(
+            int location,
+            AnimationOutput target
+    );
+
 
     ChannelFormat getChannelFormat();
 

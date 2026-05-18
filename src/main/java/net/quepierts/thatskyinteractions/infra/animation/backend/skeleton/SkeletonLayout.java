@@ -1,7 +1,6 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.skeleton;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

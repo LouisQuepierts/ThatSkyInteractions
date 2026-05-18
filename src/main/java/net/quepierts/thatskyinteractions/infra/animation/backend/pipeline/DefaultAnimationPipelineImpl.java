@@ -50,6 +50,8 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
     private final LocationLookup            uboLookup;
     private final UniformBuffer[]           ubos;
 
+    private final AnimationOutput[]         targets;
+
     @Getter
     private final UniformBuffer             uniform;
 
@@ -95,18 +97,24 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         this.ubos               = new UniformBuffer[uboNames.size()];
         this.uniform            = new UniformBuffer(uniform);
 
+        this.targets            = new AnimationOutput[1];
+
         this.samplers[0]        = new OriginSampler();
     }
 
     @Override
-    public void submit(
-            @NonNull AnimationState state,
-            @NonNull AnimationOutput output
-    ) {
-        submit(state, null, output);
+    public void submit(@NonNull final AnimationState state) {
+        var context     = this.context;
+        context.state   = state;
+
+        for (var pass : this.parameterPasses) {
+            pass.execute(context);
+        }
+
+        context.state   = null;
     }
 
-    @Override
+    /*@Override
     public void submit(
             @NonNull AnimationState state,
             @Nullable PipelineInputProvider input,
@@ -124,12 +132,12 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
 
         context.state   = null;
         context.input   = null;
-    }
+    }*/
 
     @Override
     public void bindSource(
-            String name,
-            AnimationSampler sampler
+            final String name,
+            final AnimationSampler sampler
     ) {
         var location            = this.samplerLookup.find(name);
         if (location == -1) {
@@ -142,8 +150,8 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
 
     @Override
     public void bindSource(
-            int location,
-            AnimationSampler sampler
+            final int location,
+            final AnimationSampler sampler
     ) {
         if (location == 0) {
             log.error("Cannot bind source to location 0.");
@@ -155,8 +163,8 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
 
     @Override
     public void bindUbo(
-            String name,
-            UniformBuffer buffer
+            final String name,
+            final UniformBuffer buffer
     ) {
         var location            = this.uboLookup.find(name);
         if (location == -1) {
@@ -169,10 +177,28 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
 
     @Override
     public void bindUbo(
-            int location,
-            UniformBuffer buffer
+            final int location,
+            final UniformBuffer buffer
     ) {
         this.ubos[location]     = buffer;
+    }
+
+    @Override
+    public void bindTarget(
+            final String name,
+            final AnimationOutput target
+    ) {
+        // todo: MRT
+        this.targets[0] = target;
+    }
+
+    @Override
+    public void bindTarget(
+            final int location,
+            final AnimationOutput target
+    ) {
+        // todo: MRT
+        this.targets[0] = target;
     }
 
     public static Compiler compiler() {
@@ -220,7 +246,7 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         }
 
         public Compiler withOutput(String name) {
-
+            // todo: MRT
             return this;
         }
 
