@@ -11,6 +11,10 @@ public interface WritableBuffer {
 
     void write(int location, float x, float y, float z, float w);
 
+    void write(int location, float[] values);
+
+    void write(int location, int length, float[] values);
+
     void write(int location, int value);
 
     void write(int location, int x, int y);
@@ -18,6 +22,10 @@ public interface WritableBuffer {
     void write(int location, int x, int y, int z);
 
     void write(int location, int x, int y, int z, int w);
+
+    void write(int location, int[] values);
+
+    void write(int location, int length, int[] values);
 
     default void write(int location, boolean value) {
         this.write(location, value ? 1 : 0);

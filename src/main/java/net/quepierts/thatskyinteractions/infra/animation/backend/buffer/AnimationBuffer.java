@@ -55,6 +55,16 @@ public final class AnimationBuffer implements ReadableBuffer, WritableBuffer {
     }
 
     @Override
+    public void write(final int location, final float[] values) {
+        System.arraycopy(values, 0, this.buffer, location, values.length);
+    }
+
+    @Override
+    public void write(final int location, final int length, final float[] values) {
+        System.arraycopy(values, 0, this.buffer, location, length);
+    }
+
+    @Override
     public void write(int location, int value) {
         throw new UnsupportedOperationException();
     }
@@ -71,6 +81,16 @@ public final class AnimationBuffer implements ReadableBuffer, WritableBuffer {
 
     @Override
     public void write(int location, int x, int y, int z, int w) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void write(final int location, final int[] values) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void write(final int location, final int length, final int[] values) {
         throw new UnsupportedOperationException();
     }
 
@@ -168,6 +188,16 @@ public final class AnimationBuffer implements ReadableBuffer, WritableBuffer {
         }
 
         @Override
+        public void write(final int location, final float[] values) {
+            this.buffer.write(this.offset + location, values);
+        }
+
+        @Override
+        public void write(final int location, final int length, final float[] values) {
+            this.buffer.write(this.offset + location, length, values);
+        }
+
+        @Override
         public void write(int location, int value) {
             throw new UnsupportedOperationException();
         }
@@ -184,6 +214,16 @@ public final class AnimationBuffer implements ReadableBuffer, WritableBuffer {
 
         @Override
         public void write(int location, int x, int y, int z, int w) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void write(final int location, final int[] values) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void write(final int location, final int length, final int[] values) {
             throw new UnsupportedOperationException();
         }
 

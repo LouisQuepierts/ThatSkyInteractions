@@ -103,6 +103,20 @@ public final class AttributeBuffer implements ReadableBuffer, WritableBuffer {
     }
 
     @Override
+    public void write(final int location, final float[] values) {
+        for (int i = 0; i < values.length; i++) {
+            this.buffer[location + i] = Float.floatToRawIntBits(values[i]);
+        }
+    }
+
+    @Override
+    public void write(final int location, final int length, final float[] values) {
+        for (int i = 0; i < length; i++) {
+            this.buffer[location + i] = Float.floatToRawIntBits(values[i]);
+        }
+    }
+
+    @Override
     public void write(int location, int value) {
         this.buffer[location] = value;
     }
@@ -126,5 +140,15 @@ public final class AttributeBuffer implements ReadableBuffer, WritableBuffer {
         this.buffer[location + 1] = y;
         this.buffer[location + 2] = z;
         this.buffer[location + 3] = w;
+    }
+
+    @Override
+    public void write(final int location, final int[] values) {
+        System.arraycopy(values, 0, this.buffer, location, values.length);
+    }
+
+    @Override
+    public void write(final int location, final int length, final int[] values) {
+        System.arraycopy(values, 0, this.buffer, location, length);
     }
 }
