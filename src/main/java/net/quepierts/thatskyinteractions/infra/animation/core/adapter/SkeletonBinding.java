@@ -2,6 +2,8 @@ package net.quepierts.thatskyinteractions.infra.animation.core.adapter;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.PoseView;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonResultView;
 import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
 import org.jspecify.annotations.NonNull;
@@ -36,24 +38,40 @@ public final class SkeletonBinding {
         }
     }
 
+    public void fetch(@NonNull final SkeletonPoseBuffer target) {
+        for (final var entry : this.entries) {
+            final var view = target.get(entry.location());
+            entry.provider().write(view);
+        }
+    }
+
     record Entry(
             int                 location,
-            TransformAccessor   accessor
+            TransformAccessor   accessor,
+            TransformProvider   provider
     ) { }
 
     public static final class Builder {
         private final List<Entry> entries = new ArrayList<>();
 
-        public @NonNull Builder bind(int location, @NonNull TransformAccessor accessor) {
+        public @NonNull Builder bind(
+                int location,
+                @NonNull TransformAccessor accessor,
+                @NonNull TransformProvider provider
+        ) {
             if (location > -1) {
-                this.entries.add(new Entry(location, accessor));
+                this.entries.add(new Entry(location, accessor, provider));
             }
             return this;
         }
 
-        public @NonNull Builder bind(int location, @NonNull Supplier<TransformAccessor> supplier) {
+        public @NonNull Builder bind(
+                int location,
+                @NonNull Supplier<TransformAccessor> supplier,
+                @NonNull Supplier<TransformProvider> provider
+        ) {
             if (location > -1) {
-                this.entries.add(new Entry(location, supplier.get()));
+                this.entries.add(new Entry(location, supplier.get(), provider.get()));
             }
             return this;
         }
