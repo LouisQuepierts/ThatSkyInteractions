@@ -8,6 +8,7 @@ import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkele
 import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.render.HumanoidRenderStateExtension;
+import net.quepierts.thatskyinteractions.feature.client.render.MinecraftModelAdaptorProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerModel.class)
-public class PlayerModelMixin {
+public class PlayerModelMixin implements MinecraftModelAdaptorProvider {
 
     @Unique
     private MinecraftModelAdaptor a4j$ModelAdaptor;
@@ -59,5 +60,11 @@ public class PlayerModelMixin {
             this.a4j$ModelAdaptor.accept(animation.getCache());
         }
 
+    }
+
+    @Unique
+    @Override
+    public MinecraftModelAdaptor a4j$GetModelAdaptor() {
+        return this.a4j$ModelAdaptor;
     }
 }
