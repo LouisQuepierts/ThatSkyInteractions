@@ -3,42 +3,49 @@ package net.quepierts.thatskyinteractions.feature.client.model;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.model.geom.ModelPart;
 import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.ModelPartAccessor;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.AnimationOutput;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonOutput;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonResultView;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.ChannelBinding;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;
-import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationResultView;
+import net.quepierts.thatskyinteractions.infra.animation.core.adapter.SkeletonBinding;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MinecraftModelAdaptor implements AnimationOutput {
+public final class MinecraftModelAdaptor implements SkeletonOutput {
 
     private static final String ROOT = "root";
 
-    private final ChannelBinding binding;
+    private final SkeletonBinding skeleton;
 
     public static @NonNull MinecraftModelAdaptor auto(
             @NonNull ModelPart              root,
-            @NonNull ChannelLayout          layout
+            @NonNull SkeletonLayout         layout
     ) {
 
-        var builder                         = ChannelBinding.builder();
+        var builder                         = SkeletonBinding.builder();
         var queue                           = new ObjectArrayFIFOQueue<Map.Entry<String, ModelPart>>();
 
         getChildren(root)                   .entrySet()
                                             .forEach(queue::enqueue);
 
-        bind(ROOT, root, layout, builder);
         while (!queue.isEmpty()) {
             var entry                       = queue.dequeue();
-            getChildren(entry.getValue())   .entrySet()
-                                            .forEach(queue::enqueue);
-            bind(entry.getKey(), entry.getValue(), layout, builder);
+            final var name                  = entry.getKey();
+            final var part                  = entry.getValue();
+            getChildren(part)   .entrySet()
+                    .forEach(queue::enqueue);
+
+            builder.bind(
+                    layout.id(name),
+                    new ModelTransformAccessor(part)
+            );
         }
 
         return new MinecraftModelAdaptor(builder.build());
@@ -47,16 +54,16 @@ public final class MinecraftModelAdaptor implements AnimationOutput {
 
     public static @NonNull MinecraftModelAdaptor manual(
             @NonNull ModelPart              root,
-            @NonNull ChannelLayout          layout,
-            @NonNull String @NonNull []     parts
+            @NonNull String @NonNull []     parts,
+            @NonNull SkeletonLayout         layout
     ) {
-        var builder     = ChannelBinding.builder();
+        var builder     = SkeletonBinding.builder();
         var lookup      = root.createPartLookup();
 
         for (var name   : parts) {
 
             if (ROOT    .equals(name)) {
-                bind(ROOT, root, layout, builder);
+                builder.bind(layout.id(name), new ModelTransformAccessor(root));
                 continue;
             }
 
@@ -66,22 +73,12 @@ public final class MinecraftModelAdaptor implements AnimationOutput {
                 continue;
             }
 
-            bind(name, part, layout, builder);
+            builder.bind(layout.id(name), new ModelTransformAccessor(part));
+
         }
 
         var binding     = builder.build();
         return          new MinecraftModelAdaptor(binding);
-    }
-
-    private static void bind(
-            @NonNull String                 name,
-            @NonNull ModelPart              part,
-            @NonNull ChannelLayout          layout,
-            ChannelBinding.@NonNull Builder builder
-    ) {
-        builder.bind(layout.id(name + ".position"), PositionAccessor.of(part, name + ".position"));
-        builder.bind(layout.id(name + ".rotation"), RotationAccessor.of(part, name + ".rotation"));
-//        builder.bind(layout.id(name + ".scale"),    ScaleAccessor.of(part));
     }
 
     private static Map<String, ModelPart> getChildren(ModelPart thiz) {
@@ -89,7 +86,7 @@ public final class MinecraftModelAdaptor implements AnimationOutput {
     }
 
     @Override
-    public void accept(@NonNull AnimationResultView buffer) {
-        this.binding.apply(buffer);
+    public void accept(@NonNull final SkeletonResultView view) {
+        this.skeleton.apply(view);
     }
 }

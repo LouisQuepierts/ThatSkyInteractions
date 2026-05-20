@@ -109,6 +109,10 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         var context     = this.context;
         context.state   = state;
 
+        for (var buffer : this.buffers) {
+            buffer.clear();
+        }
+
         execute("Parameter", this.parameterPasses);
         execute("Compute", this.passes);
 

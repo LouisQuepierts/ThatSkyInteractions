@@ -74,7 +74,7 @@ public class BedrockAnimationCompiler {
                                     channels.toArray(String[]::new),
                                     timelines.toArray(Timeline[]::new),
                                     buffer,
-                                    /*animation.loop()*/ true,
+                                    true,
                                     animation.length()
                                 );
     }
@@ -171,13 +171,13 @@ public class BedrockAnimationCompiler {
         var last                = starts.size() - 1;
         var end                 = ends.getFloat(last);
 
-        if (end < duration) {
+        /*if (end < duration) {
             starts.add(end);
             ends.add(duration);
             addr0.add(addr0.getInt(last));
             addr1.add(addr1.getInt(last));
             interpolations.add(Timeline.INTERPOLATION_CONSTANT);
-        }
+        }*/
 
 
         return                  new Timeline(

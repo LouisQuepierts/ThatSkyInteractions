@@ -12,8 +12,8 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public final class SkeletonPipelineCompileContext {
 
-    public static final String INPUT_BUFFER         = "Pipeline.OriginBuffer";
-    public static final String OUTPUT_BUFFER        = "Pipeline.ResultBuffer";
+    public static final String INPUT_BUFFER         = SkeletonPipeline.INPUT_BUFFER;
+    public static final String OUTPUT_BUFFER        = SkeletonPipeline.OUTPUT_BUFFER;
 
     @Getter
     private final SkeletonLayout layout;

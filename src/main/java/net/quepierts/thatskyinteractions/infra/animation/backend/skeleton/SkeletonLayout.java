@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UboDefinition;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformType;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
 import org.jspecify.annotations.NonNull;
 
@@ -12,6 +14,8 @@ import java.util.*;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SkeletonLayout {
+
+    public static final int         BONE_SIZE   = 12;
 
     @Getter
     private final LocationLookup    bones;
@@ -58,6 +62,12 @@ public final class SkeletonLayout {
             builder.transform(bone);
         }
         return builder.build();
+    }
+
+    public @NonNull UboDefinition toPivotDefinition() {
+        return UboDefinition.builder()
+                .withArray("pivots", UniformType.VEC4, this.size())
+                .build();
     }
 
     public static final class Builder {

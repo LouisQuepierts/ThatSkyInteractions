@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ChannelBinding {
+public final class ChannelBinding {
 
     private final Entry[] entries;
 

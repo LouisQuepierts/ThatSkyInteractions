@@ -4,10 +4,10 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftAnimationPipeline;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftChannelLayout;
+import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonLayout;
+import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.render.HumanoidRenderStateExtension;
-import net.quepierts.thatskyinteractions.test.animation.AnimationTest;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +25,10 @@ public class PlayerModelMixin {
             at = @At("TAIL")
     )
     private void a4j$init(final ModelPart root, final boolean slim, final CallbackInfo ci) {
-        this.a4j$ModelAdaptor   = MinecraftModelAdaptor.auto(root, DefaultMinecraftChannelLayout.HUMANOID);
+        this.a4j$ModelAdaptor   = MinecraftModelAdaptor.auto(
+                root,
+                DefaultMinecraftSkeletonLayout.HUMANOID
+        );
     }
 
     @Inject(
@@ -40,12 +43,19 @@ public class PlayerModelMixin {
         // do animation thing
 
         final var pipeline  = DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE;
-        final var sampler   = AnimationTest.getSampler();
+        final var skeleton  = DefaultMinecraftSkeletonPipeline.HUMANOID;
 
         final var animation = ((HumanoidRenderStateExtension) state).a4j$GetAnimationState();
 
-        pipeline.bindSource("TimelineSampler", sampler);
-        pipeline.submit(animation, this.a4j$ModelAdaptor);
+        if (animation.isPlaying()) {
+            final var sampler   = animation.getSampler();
+            pipeline.bindSource("TimelineSampler", sampler);
+            pipeline.submit(animation, skeleton.getAdapter());
+
+            skeleton.bindUbo("SkeletonPivots", animation.getSkeletonPivots());
+            skeleton.bindTarget("Output", this.a4j$ModelAdaptor);
+            skeleton.submit(animation.getSkeleton());
+        }
 
     }
 }

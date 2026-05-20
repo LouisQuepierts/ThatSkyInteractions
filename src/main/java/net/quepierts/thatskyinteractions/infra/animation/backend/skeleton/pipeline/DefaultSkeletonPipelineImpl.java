@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationResultView;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.SkeletonPass;
@@ -60,7 +61,16 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         this.layout                 = layout;
         this.passes                 = passes;
         this.bufferLookup           = bufferName;
-        this.buffers                = new SkeletonPoseBuffer[bufferName.size()];
+        final var bufferAmount      = bufferName.size();
+        final var boneAmount        = layout.size();
+        final var bufferSize        = boneAmount * SkeletonLayout.BONE_SIZE;
+        final var baseBuffer        = new AnimationBuffer(bufferAmount * bufferSize);
+        this.buffers                = new SkeletonPoseBuffer[bufferAmount];
+
+        for (int i = 0; i < bufferAmount; i++) {
+            this.buffers[i] = new SkeletonPoseBuffer(baseBuffer, layout, bufferSize);
+        }
+
         this.result                 = this.buffers[1];
 
         this.uboLookup             = uboNames;
@@ -69,7 +79,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         this.uniform               = new UniformBuffer(definition);
 
         this.targets               = new SkeletonOutput[1];
-        this.adapter               = new FlatAdapter(this.buffers[0], this.layout.size());
+        this.adapter               = new FlatAdapter(this.buffers[0], boneAmount);
     }
 
     @Override
@@ -207,6 +217,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             }
 
             if (context.hasErrors()) {
+                log.error("Pipeline compile failed.");
                 context.printErrors(log::error);
                 throw new IllegalStateException("Pipeline compile failed.");
             }
@@ -241,34 +252,34 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
 
         private void position(float x, float y, float z, float w) {
             if (Float.isNaN(x)) {
-                this.buffer.write(this.ptr, 0, 0, 0);
+                this.buffer.write(this.ptr, 0f, 0f, 0f);
             } else {
                 this.buffer.write(this.ptr, x, y, z);
             }
-            this.ptr ++;
+            this.ptr += 4;
         }
 
         // input: euler
         // output: quaternion
         private void rotation(float x, float y, float z, float w) {
             if (Float.isNaN(x)) {
-                this.buffer.write(this.ptr, 0, 0, 0, 1);
+                this.buffer.write(this.ptr, 0f, 0f, 0f, 1f);
             } else {
                 // parse euler (x0, y0, z0) -> quaternion
                 var q = new Quaternionf();
-                q.rotateZYX(x, y, z);
+                q.rotateZYX(z, y, x);
                 this.buffer.write(this.ptr, q.x(), q.y(), q.z(), q.w());
             }
-            this.ptr ++;
+            this.ptr += 4;
         }
 
         private void scale(float x, float y, float z, float w) {
             if (Float.isNaN(x)) {
-                this.buffer.write(this.ptr, 1, 1, 1);
+                this.buffer.write(this.ptr, 1f, 1f, 1f);
             } else {
                 this.buffer.write(this.ptr, x, y, z);
             }
-            this.ptr ++;
+            this.ptr += 4;
         }
     }
 

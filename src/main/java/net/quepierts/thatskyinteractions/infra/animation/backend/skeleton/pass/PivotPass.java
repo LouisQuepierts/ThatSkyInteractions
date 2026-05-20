@@ -47,25 +47,26 @@ public final class PivotPass extends SkeletonPass {
         for (int i = 0; i < this.bones; i++) {
             reader              .readFloat(i * 4, 4, pivot);
 
-            if (pivot[3] == 0.0f) {
-                continue;
-            }
-
             final var srcView   = src.get(i);
             final var dstView   = dst.get(i);
 
             srcView             .getPosition(position);
-            srcView             .getRotationQ(rotation);
+            srcView             .getRotation(rotation);
             srcView             .getScale(scale);
 
-            // position += pivot - R * (S * pivot)
-            tmp                 .set(pivot)
-                                .mul(scale);
-            rotation            .transform(tmp);
-            position            .add(pivot[0], pivot[1], pivot[2])
-                                .sub(tmp);
+            if (pivot[3] != 0.0f) {
 
+                // position += pivot - R * (S * pivot)
+                tmp                 .set(pivot)
+                                    .mul(scale);
+                rotation            .transform(tmp);
+                position            .add(pivot[0], pivot[1], pivot[2])
+                                    .sub(tmp);
+            }
+            
             dstView             .setPosition(position);
+            dstView             .setRotation(rotation);
+            dstView             .setScale(scale);
 
         }
     }

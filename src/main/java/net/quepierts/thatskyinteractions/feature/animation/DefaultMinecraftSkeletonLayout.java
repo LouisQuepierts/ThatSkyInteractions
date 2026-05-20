@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.feature.animation;
 
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UboDefinition;
 
 @UtilityClass
 public class DefaultMinecraftSkeletonLayout {
@@ -22,5 +23,7 @@ public class DefaultMinecraftSkeletonLayout {
             .parent("right_leg", "body")
 
             .build();
+
+    public static final UboDefinition HUMANOID_PIVOT_UBO = HUMANOID.toPivotDefinition();
 
 }

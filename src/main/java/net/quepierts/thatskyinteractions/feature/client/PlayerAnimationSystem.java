@@ -1,10 +1,12 @@
 package net.quepierts.thatskyinteractions.feature.client;
 
 import lombok.experimental.UtilityClass;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.render.HumanoidRenderStateExtension;

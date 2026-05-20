@@ -19,4 +19,9 @@ public final class AnimationResultBuffer
     public void read(int channel, float[] out) {
         this.buffer.readFloat(channel << 2, 4, out);
     }
+
+    public void clear() {
+        this.buffer.fill(0, this.size, Float.NaN);
+    }
+
 }

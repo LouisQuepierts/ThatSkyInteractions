@@ -49,7 +49,6 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
                 BedrockAnimationParser.ANIMATION_DEFINITION_CODEC,
                 FileToIdConverter.json(FOLDER)
         );
-
     }
 
     @Override

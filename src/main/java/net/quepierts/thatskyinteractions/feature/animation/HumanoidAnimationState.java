@@ -1,12 +1,40 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import net.minecraft.resources.Identifier;
+import net.quepierts.thatskyinteractions.feature.client.animation.AnimationController;
+import net.quepierts.thatskyinteractions.feature.client.animation.ClientAnimationManager;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
+import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
+import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
+import net.quepierts.thatskyinteractions.infra.animation.core.SkeletonState;
 
+import java.lang.reflect.Parameter;
+
+@Slf4j
 public final class HumanoidAnimationState extends AnimationState {
 
-    private float start;
+    @Getter
+    private final SkeletonState skeleton = new SkeletonState(); // dummy
+
+    @Getter
+    private final UniformBuffer skeletonPivots;
+
+    private Identifier          current;
+    private AnimationSource     source;
+
+    @Getter
+    private AnimationSampler    sampler;
+
+    @Getter
+    private boolean             playing;
+    private boolean             loop;
+
+    private float last;
 
     public static HumanoidAnimationState _default() {
         return new HumanoidAnimationState(DefaultChannelFormats.TIMELINE);
@@ -14,17 +42,50 @@ public final class HumanoidAnimationState extends AnimationState {
 
     public HumanoidAnimationState(ChannelFormat channelFormat) {
         super(DefaultMinecraftChannelLayout.HUMANOID, channelFormat);
+
+        this.skeletonPivots = new UniformBuffer(DefaultMinecraftSkeletonLayout.HUMANOID_PIVOT_UBO);
+    }
+
+    public void play(Identifier identifier) {
+        final var source    = ClientAnimationManager
+                            .getInstance()
+                            .get(identifier);
+
+        if (source == null) {
+            log.warn("Animation source not found: {}", identifier);
+            return;
+        }
+
+        this.current        = identifier;
+        this.source         = source;
+        this.sampler        = source.link(DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE);
+
+        this.playing        = true;
+        this.progress       = 0.0f;
     }
 
     public void update(float current) {
         // for test
-        if (current - this.start > 60.0f) {
-            this.start = current;
-        }
-        this.progress   = (current - this.start) * 0.05f;
-    }
+        if (this.playing) {
+            final var delta = (current - last) * 0.05f;
+            this.progress   = this.progress + delta /*% 3.0f*/;
 
-    public void start(float current) {
-        this.start      = current;
+
+            final var duration = this.source.getDuration();
+            if (this.progress > duration) {
+                if (this.loop) {
+                    this.progress = this.progress % duration;
+                } else {
+                    this.playing   = false;
+                    this.progress  = duration;
+
+                    this.source     = null;
+                    this.sampler    = null;
+                    this.current    = null;
+                }
+            }
+        }
+
+        this.last       = current;
     }
 }
