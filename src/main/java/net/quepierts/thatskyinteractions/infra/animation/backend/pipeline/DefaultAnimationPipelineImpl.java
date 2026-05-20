@@ -109,16 +109,30 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         var context     = this.context;
         context.state   = state;
 
-        for (var pass : this.parameterPasses) {
-            pass.execute(context);
-        }
-
-        for (var pass : this.passes) {
-            pass.execute(context);
-        }
+        execute("Parameter", this.parameterPasses);
+        execute("Compute", this.passes);
 
         context.state   = null;
         this.targets[0].accept(this.result);
+    }
+
+    private void execute(
+            String stage,
+            AnimationPass[] passes
+    ) {
+        var pid = 0;
+        try {
+            for (; pid < passes.length; pid++) {
+                final var pass = passes[pid];
+                pass.execute(this.context);
+            }
+        } catch (Exception e) {
+            final var pass = passes[pid];
+            final var name = pass.getName();
+
+            // print stage, pid, name, exception
+            log.error("[Stage: {}] Pass '{}' (PID: {}) failed:", stage, name, pid, e);
+        }
     }
 
     /*@Override
