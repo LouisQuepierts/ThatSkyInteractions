@@ -6,6 +6,7 @@ import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftAnima
 import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
+import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.ParentOverridePassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.PivotPassDefinition;
 
@@ -30,6 +31,7 @@ public final class PlayerAnimationHook {
 
             skeleton.bindUbo(PivotPassDefinition.REQUIRED_UBO, animation.getUboPivotModification().getBuffer());
             skeleton.bindUbo(ParentOverridePassDefinition.REQUIRED_UBO, animation.getUboParentOverride().getBuffer());
+            skeleton.bindUbo(MinecraftModelPoseProvider.REQUIRED_UBO, animation.getUboModelOverride().getBuffer());
             skeleton.bindProvider(0, adaptor.link(DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID));
             skeleton.bindTarget("Output", animation.getCache());
             skeleton.submit(animation.getSkeleton());

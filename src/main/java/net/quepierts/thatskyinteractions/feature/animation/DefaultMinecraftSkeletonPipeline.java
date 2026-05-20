@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
 import lombok.experimental.UtilityClass;
+import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.FetchPassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.MergePassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.ParentOverridePassDefinition;
@@ -20,6 +21,7 @@ public class DefaultMinecraftSkeletonPipeline {
 
             .withUniform(PivotPassDefinition.REQUIRED_UBO)
             .withUniform(ParentOverridePassDefinition.REQUIRED_UBO)
+            .withUniform(MinecraftModelPoseProvider.REQUIRED_UBO)
 
             .withPass(new FetchPassDefinition("FetchPass")
                     .src("SourceProvider")

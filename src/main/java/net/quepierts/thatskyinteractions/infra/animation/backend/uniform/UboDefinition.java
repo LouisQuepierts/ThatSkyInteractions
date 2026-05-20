@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class UboDefinition {
+public final class UboDefinition {
 
     private final List<Entry>                       entries;
     private final LocationLookup                    lookup;

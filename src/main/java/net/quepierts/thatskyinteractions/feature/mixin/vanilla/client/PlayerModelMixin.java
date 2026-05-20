@@ -6,8 +6,9 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
+import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelSkeleton;
 import net.quepierts.thatskyinteractions.feature.client.render.HumanoidRenderStateExtension;
-import net.quepierts.thatskyinteractions.feature.client.render.MinecraftModelAdaptorProvider;
+import net.quepierts.thatskyinteractions.feature.client.render.EntityModelExtension;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerModel.class)
-public class PlayerModelMixin implements MinecraftModelAdaptorProvider {
+public class PlayerModelMixin implements EntityModelExtension {
 
     @Unique
     private MinecraftModelAdaptor a4j$ModelAdaptor;
@@ -25,10 +26,8 @@ public class PlayerModelMixin implements MinecraftModelAdaptorProvider {
             at = @At("TAIL")
     )
     private void a4j$init(final ModelPart root, final boolean slim, final CallbackInfo ci) {
-        this.a4j$ModelAdaptor   = MinecraftModelAdaptor.auto(
-                root,
-                DefaultMinecraftSkeletonLayout.HUMANOID
-        );
+        final var skeleton = MinecraftModelSkeleton.auto(root, DefaultMinecraftSkeletonLayout.HUMANOID);
+        this.a4j$ModelAdaptor = MinecraftModelAdaptor.of(skeleton);
     }
 
     @Inject(

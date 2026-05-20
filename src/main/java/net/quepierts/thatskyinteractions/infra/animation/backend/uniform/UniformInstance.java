@@ -6,7 +6,7 @@ import org.jspecify.annotations.NonNull;
 
 @Getter
 @RequiredArgsConstructor(staticName = "of")
-public class UniformInstance<T extends UniformParameter> {
+public final class UniformInstance<T extends UniformParameter> {
 
     private final T parameter;
     private final UniformBuffer buffer;

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.feature.client.animation.ClientAnimationManager;
+import net.quepierts.thatskyinteractions.feature.client.model.ModelOverrideParameter;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
@@ -31,7 +32,7 @@ public final class HumanoidAnimationState extends AnimationState {
     private final UniformInstance<ParentOverrideParameter> uboParentOverride;
 
     @Getter
-    private final UniformInstance<>
+    private final UniformInstance<ModelOverrideParameter> uboModelOverride;
 
 
     private Identifier          current;
@@ -56,17 +57,19 @@ public final class HumanoidAnimationState extends AnimationState {
     public HumanoidAnimationState(ChannelFormat channelFormat) {
         super(DefaultMinecraftChannelLayout.HUMANOID, channelFormat);
 
-        final var parentOverrideParameter    = ParentOverrideParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
-        final var pivotModificationParameter = PivotModificationParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
+        final var parentOverrideParameter       = ParentOverrideParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
+        final var pivotModificationParameter    = PivotModificationParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
+        final var modelOverrideParameter        = ModelOverrideParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
 
-        pivotModificationParameter      .set("body", 0, 12, 0);
-        pivotModificationParameter      .enable("body", true);
+        pivotModificationParameter              .set("body", 0, 12, 0);
+        pivotModificationParameter              .enable("body", true);
 
-        this.uboPivotModification = UniformInstance.of(pivotModificationParameter);
-        this.uboParentOverride = UniformInstance.of(parentOverrideParameter);
+        this.uboPivotModification               = UniformInstance.of(pivotModificationParameter);
+        this.uboParentOverride                  = UniformInstance.of(parentOverrideParameter);
+        this.uboModelOverride                   = UniformInstance.of(modelOverrideParameter);
 
-        this.uboPivotModification.upload();
-        this.uboParentOverride.upload();
+        this.uboPivotModification               .upload();
+        this.uboParentOverride                  .upload();
     }
 
     public void play(Identifier identifier) {
