@@ -12,6 +12,7 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeli
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.ChannelBinding;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.SkeletonBinding;
+import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -88,5 +89,9 @@ public final class MinecraftModelAdaptor implements SkeletonOutput {
     @Override
     public void accept(@NonNull final SkeletonResultView view) {
         this.skeleton.apply(view);
+    }
+
+    public void accept(@NonNull final PoseCache cache) {
+        this.skeleton.apply(cache);
     }
 }

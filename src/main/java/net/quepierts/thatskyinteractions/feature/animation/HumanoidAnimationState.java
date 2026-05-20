@@ -3,7 +3,6 @@ package net.quepierts.thatskyinteractions.feature.animation;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
-import net.quepierts.thatskyinteractions.feature.client.animation.AnimationController;
 import net.quepierts.thatskyinteractions.feature.client.animation.ClientAnimationManager;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
@@ -12,14 +11,16 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.source.Animatio
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
 import net.quepierts.thatskyinteractions.infra.animation.core.SkeletonState;
-
-import java.lang.reflect.Parameter;
+import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
 
 @Slf4j
 public final class HumanoidAnimationState extends AnimationState {
 
     @Getter
-    private final SkeletonState skeleton = new SkeletonState(); // dummy
+    private final SkeletonState skeleton    = new SkeletonState(); // dummy
+
+    @Getter
+    private final PoseCache     cache       = new PoseCache(DefaultMinecraftSkeletonLayout.HUMANOID);
 
     @Getter
     private final UniformBuffer skeletonPivots;

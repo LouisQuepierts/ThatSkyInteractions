@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.infra.animation.core.adapter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonResultView;
+import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -18,13 +19,22 @@ public final class SkeletonBinding {
         return new Builder();
     }
 
-    public void apply(@NonNull SkeletonResultView view) {
+    public void apply(@NonNull final SkeletonResultView view) {
         for (var entry : this.entries) {
             final var pose = view.get(entry.location());
             pose.getTransform(entry.accessor());
         }
     }
 
+    public void apply(@NonNull final PoseCache cache) {
+        for (var entry : this.entries) {
+            final var pose = cache.get(entry.location());
+            final var accessor = entry.accessor;
+            accessor.setPosition(pose.getTx(), pose.getTy(), pose.getTz());
+            accessor.setQuaternion(pose.getRx(), pose.getRy(), pose.getRz(), pose.getRw());
+            accessor.setScale(pose.getSx(), pose.getSy(), pose.getSz());
+        }
+    }
 
     record Entry(
             int                 location,

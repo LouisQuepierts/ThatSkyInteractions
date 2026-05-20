@@ -53,8 +53,10 @@ public class PlayerModelMixin {
             pipeline.submit(animation, skeleton.getAdapter());
 
             skeleton.bindUbo("SkeletonPivots", animation.getSkeletonPivots());
-            skeleton.bindTarget("Output", this.a4j$ModelAdaptor);
+            skeleton.bindTarget("Output", animation.getCache());
             skeleton.submit(animation.getSkeleton());
+
+            this.a4j$ModelAdaptor.accept(animation.getCache());
         }
 
     }
