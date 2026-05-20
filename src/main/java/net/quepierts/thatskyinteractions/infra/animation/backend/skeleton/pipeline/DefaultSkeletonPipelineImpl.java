@@ -33,6 +33,10 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
     private final SkeletonPass[]            passes;
 
     @Getter
+    private final LocationLookup            providerLookup;
+    private final SkeletonPoseProvider[]    providers;
+
+    @Getter
     private final LocationLookup            bufferLookup;
     private final SkeletonResultView        result;
     private final SkeletonPoseBuffer[]      buffers;
@@ -54,12 +58,16 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
     public DefaultSkeletonPipelineImpl(
             final SkeletonLayout    layout,
             final SkeletonPass[]    passes,
+            final LocationLookup    providerName,
             final LocationLookup    bufferName,
             final LocationLookup    uboNames,
             final UboDefinition     definition
     ) {
         this.layout                 = layout;
         this.passes                 = passes;
+        this.providerLookup         = providerName;
+        this.providers              = new SkeletonPoseProvider[providerName.size()];
+
         this.bufferLookup           = bufferName;
         final var bufferAmount      = bufferName.size();
         final var boneAmount        = layout.size();
@@ -68,7 +76,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         this.buffers                = new SkeletonPoseBuffer[bufferAmount];
 
         for (int i = 0; i < bufferAmount; i++) {
-            this.buffers[i] = new SkeletonPoseBuffer(baseBuffer, layout, bufferSize);
+            this.buffers[i] = new SkeletonPoseBuffer(baseBuffer, layout, i * bufferSize);
         }
 
         this.result                 = this.buffers[1];
@@ -105,6 +113,28 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
 
         context.state   = null;
         this.targets[0] .accept(this.result);
+    }
+
+    @Override
+    public void bindProvider(
+            final String name,
+            final SkeletonPoseProvider poseProvider
+    ) {
+        var location            = this.providerLookup.find(name);
+        if (location == -1) {
+            log.error("Provider '{}' not found.", name);
+            return;
+        }
+
+        this.providers[location] = poseProvider;
+    }
+
+    @Override
+    public void bindProvider(
+            final int location,
+            final SkeletonPoseProvider poseProvider
+    ) {
+        this.providers[location] = poseProvider;
     }
 
     @Override
@@ -156,8 +186,9 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         private SkeletonLayout layout;
         private final List<SkeletonPassDefinition>      passes      = new ArrayList<>();
         private final UboDefinition.Builder             uniforms    = UboDefinition.builder();
-        private final Set<String>                       buffers     = new ObjectArraySet<>();
-        private final Set<String>                       ubos        = new ObjectArraySet<>();
+        private final List<String>                      inputs      = new ArrayList<>();
+        private final List<String>                      buffers     = new ArrayList<>();
+        private final List<String>                      ubos        = new ArrayList<>();
 
         private Compiler() {
             this.buffers.add(INPUT_BUFFER);
@@ -171,6 +202,11 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
 
         public Compiler withPass(@NonNull SkeletonPassDefinition pass) {
             this.passes.add(pass);
+            return this;
+        }
+
+        public Compiler withProvider(@NonNull String name) {
+            this.inputs.add(name);
             return this;
         }
 
@@ -201,11 +237,13 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
 
             var uniform         = this.uniforms.build();
 
+            var providerName    = LocationLookup.of(this.inputs);
             var bufferName      = LocationLookup.of(this.buffers);
             var uboNames        = LocationLookup.of(this.ubos);
 
             var context         = new SkeletonPipelineCompileContext(
                                 this.layout,
+                                providerName,
                                 bufferName,
                                 uniform.getLookup(),
                                 uboNames
@@ -225,6 +263,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             return new DefaultSkeletonPipelineImpl(
                     this.layout,
                     passes,
+                    providerName,
                     bufferName,
                     uboNames,
                     uniform
@@ -297,6 +336,11 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         @Override
         public @NonNull SkeletonState getState() {
             return this.state;
+        }
+
+        @Override
+        public @NonNull SkeletonPoseProvider getProvider(final int location) {
+            return this.pipeline.providers[location];
         }
 
         @Override

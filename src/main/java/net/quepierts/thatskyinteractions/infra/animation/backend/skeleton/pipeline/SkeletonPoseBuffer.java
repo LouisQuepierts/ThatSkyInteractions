@@ -32,6 +32,9 @@ public final class SkeletonPoseBuffer
     }
 
     public void copy(final @NonNull SkeletonPoseBuffer src) {
+        if (this == src) {
+            return;
+        }
         this.buffer.memcpy(offset, src.buffer, src.offset, src.size);
     }
 

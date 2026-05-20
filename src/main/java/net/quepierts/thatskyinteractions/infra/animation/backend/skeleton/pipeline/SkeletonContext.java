@@ -11,10 +11,12 @@ public interface SkeletonContext {
 
     @NonNull SkeletonState          getState();
 
+    @NonNull SkeletonPoseProvider   getProvider(int location);
+
     @NonNull SkeletonPoseBuffer     getPoseBuffer(int location);
 
     @NonNull UniformReader          getUniform();
 
-    @NonNull UniformReader         getUniformBuffer(int location);
+    @NonNull UniformReader          getUniformBuffer(int location);
 
 }

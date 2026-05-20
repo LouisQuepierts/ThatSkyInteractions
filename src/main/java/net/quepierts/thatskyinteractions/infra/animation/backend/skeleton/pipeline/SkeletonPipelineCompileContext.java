@@ -18,11 +18,22 @@ public final class SkeletonPipelineCompileContext {
     @Getter
     private final SkeletonLayout layout;
 
+    private final LocationLookup providers;
     private final LocationLookup buffers;
     private final LocationLookup uniforms;
     private final LocationLookup ubos;
 
     private final List<String> errors   = new ArrayList<>();
+
+    public int getProviderLocation(String name) {
+        final var index = this.providers.find(name);
+
+        if (index == -1) {
+            this.error("Provider '" + name + "' not found.");
+        }
+
+        return index;
+    }
 
     public int getBufferLocation(String name) {
         if (INPUT_BUFFER.equals(name)) {

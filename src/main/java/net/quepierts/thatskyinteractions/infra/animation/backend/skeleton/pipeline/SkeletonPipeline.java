@@ -18,6 +18,16 @@ public interface SkeletonPipeline {
 
     void submit(@NonNull SkeletonState state);
 
+    void bindProvider(
+            String name,
+            SkeletonPoseProvider poseProvider
+    );
+
+    void bindProvider(
+            int location,
+            SkeletonPoseProvider poseProvider
+    );
+
     void bindUbo(
             String name,
             UniformBuffer buffer
