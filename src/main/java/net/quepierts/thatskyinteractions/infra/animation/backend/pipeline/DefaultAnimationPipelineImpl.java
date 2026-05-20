@@ -365,6 +365,11 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         }
 
         @Override
+        public @Nullable UniformReader getUniformBuffer(final int location) {
+            return this.pipeline.ubos[location];
+        }
+
+        @Override
         public @Nullable PipelineInputProvider getInputProvider() {
             return this.input;
         }

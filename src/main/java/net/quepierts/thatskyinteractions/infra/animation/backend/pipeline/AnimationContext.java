@@ -28,6 +28,8 @@ public interface AnimationContext {
 
     @NonNull    UniformReader           getUniform();
 
+    @Nullable   UniformReader           getUniformBuffer(int location);
+
     @Nullable   PipelineInputProvider   getInputProvider();
 
     boolean                             getOperationMask(int index);
