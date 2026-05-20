@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -20,10 +21,26 @@ public class UboDefinition {
         return this.entries.get(location).offset();
     }
 
+    public int getUniformOffset(int location, int index) {
+        var entry   = this.entries.get(location);
+        return entry.offset() + index * entry.type().getSize();
+    }
+
     public int getUniformOffset(String name) {
+        var index = 0;
+
+        if (name.endsWith("]")) {
+            // extract n in [n]
+            var shift   = name.substring(name.lastIndexOf('[') + 1, name.length() - 1);
+            index = Integer.parseInt(shift);
+        }
+
         for (var entry : this.entries) {
             if (entry.name().equals(name)) {
-                return entry.offset();
+                if (index >= entry.length()) {
+                    throw new IllegalArgumentException("Index out of bounds: " + index);
+                }
+                return entry.offset() + index * entry.type().getSize();
             }
         }
 
@@ -34,6 +51,10 @@ public class UboDefinition {
         return this.lookup.find(name);
     }
 
+    public Entry getEntry(int location) {
+        return this.entries.get(location);
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -41,10 +62,13 @@ public class UboDefinition {
     public record Entry (
             String      name,
             UniformType type,
-            int         offset
+            int         offset,
+            int         length
     ) { }
 
     public static final class Builder {
+        private static final Pattern                NAME_PATTERN    = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
+
         private final   List<UniformDescription>    descriptions    = new ArrayList<>();
         private final   Set<String>                 names           = new HashSet<>();
         private         boolean                     optimize        = false;
@@ -52,11 +76,21 @@ public class UboDefinition {
         private Builder() { }
 
         public Builder withUniform(String name, UniformType type) {
-            if (this.names.contains(name)) {
-                throw new IllegalArgumentException("Duplicated uniform name: " + name);
+            this.validate(name);
+
+            this.descriptions.add(new UniformDescription(name, type, 1));
+            this.names      .add(name);
+            return          this;
+        }
+
+        public Builder withArray(String name, UniformType type, int length) {
+            this.validate(name);
+
+            if (length < 1) {
+                throw new IllegalArgumentException("Array length must be greater than 0");
             }
 
-            this.descriptions.add(new UniformDescription(name, type));
+            this.descriptions.add(new UniformDescription(name, type, length));
             this.names      .add(name);
             return          this;
         }
@@ -77,10 +111,10 @@ public class UboDefinition {
 
             for (var description : this.descriptions) {
                 offset      = align(offset, description.type().getAlign());
-                entries     .add(new Entry(description.name(), description.type(), offset));
+                entries     .add(new Entry(description.name(), description.type(), offset, description.length()));
                 names       .add(description.name());
 
-                offset      += description.type().getSize();
+                offset      += description.type().getSize() * description.length();
             }
 
             return new UboDefinition(
@@ -88,6 +122,20 @@ public class UboDefinition {
                     LocationLookup.of(names),
                     offset
             );
+        }
+
+        private void validate(String name) {
+            if (name == null) {
+                throw new IllegalArgumentException("Uniform name cannot be null");
+            }
+
+            if (this.names.contains(name)) {
+                throw new IllegalArgumentException("Duplicated uniform name: " + name);
+            }
+
+            if (!NAME_PATTERN.matcher(name).matches()) {
+                throw new IllegalArgumentException("Invalid uniform name: " + name);
+            }
         }
 
         private int align(int size, int alignment) {
