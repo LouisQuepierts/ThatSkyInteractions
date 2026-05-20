@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,15 +11,16 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.S
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.SkeletonPassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UboDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformReader;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformType;
 import net.quepierts.thatskyinteractions.infra.animation.core.SkeletonState;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.AnimationOutput;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
+import org.joml.Quaternionf;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Slf4j
@@ -77,8 +77,20 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         var context     = this.context;
         context.state   = state;
 
-        for (var pass : this.passes) {
-            pass.execute(this.context);
+        var passes  = this.passes;
+        var pid     = 0;
+
+        try {
+            for (; pid < passes.length; pid++) {
+                final var pass = passes[pid];
+                pass.execute(this.context);
+            }
+        } catch (Exception e) {
+            final var pass = passes[pid];
+            final var name = pass.getName();
+
+            // print name, pid, and exception
+            log.error("Pass '{}' (PID: {}) failed:", name, pid, e);
         }
 
         context.state   = null;
@@ -135,7 +147,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         private final List<SkeletonPassDefinition>      passes      = new ArrayList<>();
         private final UboDefinition.Builder             uniforms    = UboDefinition.builder();
         private final Set<String>                       buffers     = new ObjectArraySet<>();
-        private final Map<String, UboDefinition>        ubo         = new Object2ObjectArrayMap<>();
+        private final Set<String>                       ubos        = new ObjectArraySet<>();
 
         private Compiler() {
             this.buffers.add(INPUT_BUFFER);
@@ -162,8 +174,8 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             return this;
         }
 
-        public Compiler withUniform(String name, UboDefinition definition) {
-            this.ubo.put(name, definition);
+        public Compiler withUniform(String name) {
+            this.ubos.add(name);
             return this;
         }
 
@@ -180,9 +192,10 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             var uniform         = this.uniforms.build();
 
             var bufferName      = LocationLookup.of(this.buffers);
-            var uboNames        = LocationLookup.of(this.ubo.keySet());
+            var uboNames        = LocationLookup.of(this.ubos);
 
             var context         = new SkeletonPipelineCompileContext(
+                                this.layout,
                                 bufferName,
                                 uniform.getLookup(),
                                 uboNames
@@ -221,7 +234,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             this.ptr = 0;
             for (var i = 0; i < this.channels; i++) {
                 buffer.read(i * 3, this::position);
-                buffer.read(i * 3 + 1, this::euler);
+                buffer.read(i * 3 + 1, this::rotation);
                 buffer.read(i * 3 + 2, this::scale);
             }
         }
@@ -235,20 +248,16 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             this.ptr ++;
         }
 
-        private void euler(float x, float y, float z, float w) {
-            if (Float.isNaN(x)) {
-                this.buffer.write(this.ptr, 0, 0, 0);
-            } else {
-                this.buffer.write(this.ptr, x, y, z);
-            }
-            this.ptr ++;
-        }
-
-        private void quaternion(float x, float y, float z, float w) {
+        // input: euler
+        // output: quaternion
+        private void rotation(float x, float y, float z, float w) {
             if (Float.isNaN(x)) {
                 this.buffer.write(this.ptr, 0, 0, 0, 1);
             } else {
-                this.buffer.write(this.ptr, x, y, z, w);
+                // parse euler (x0, y0, z0) -> quaternion
+                var q = new Quaternionf();
+                q.rotateZYX(x, y, z);
+                this.buffer.write(this.ptr, q.x(), q.y(), q.z(), q.w());
             }
             this.ptr ++;
         }
@@ -269,6 +278,30 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         private final DefaultSkeletonPipelineImpl   pipeline;
         private SkeletonState                       state;
 
+        @Override
+        public @NonNull SkeletonLayout getLayout() {
+            return this.pipeline.layout;
+        }
+
+        @Override
+        public @NonNull SkeletonState getState() {
+            return this.state;
+        }
+
+        @Override
+        public @NonNull SkeletonPoseBuffer getPoseBuffer(final int location) {
+            return this.pipeline.buffers[location];
+        }
+
+        @Override
+        public @NonNull UniformReader getUniform() {
+            return this.pipeline.uniform;
+        }
+
+        @Override
+        public @NonNull UniformReader getUniformBuffer(final int location) {
+            return this.pipeline.ubos[location];
+        }
     }
 
 }

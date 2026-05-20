@@ -1,6 +1,8 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
 
 import java.util.ArrayList;
@@ -12,6 +14,9 @@ public final class SkeletonPipelineCompileContext {
 
     public static final String INPUT_BUFFER         = "Pipeline.OriginBuffer";
     public static final String OUTPUT_BUFFER        = "Pipeline.ResultBuffer";
+
+    @Getter
+    private final SkeletonLayout layout;
 
     private final LocationLookup buffers;
     private final LocationLookup uniforms;

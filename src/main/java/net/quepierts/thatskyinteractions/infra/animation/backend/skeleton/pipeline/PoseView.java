@@ -13,6 +13,22 @@ public interface PoseView {
 
     void setScale(final float x, final float y, final float z);
 
+    default void setPosition(final Vector3f position) {
+        this.setPosition(position.x, position.y, position.z);
+    }
+
+    default void setRotationV(final Vector3f rotation) {
+        this.setRotationV(rotation.x, rotation.y, rotation.z);
+    }
+
+    default void setRotationQ(final Quaternionf rotation) {
+        this.setRotationQ(rotation.x, rotation.y, rotation.z, rotation.w);
+    }
+
+    default void setScale(final Vector3f scale) {
+        this.setScale(scale.x, scale.y, scale.z);
+    }
+
     void getPosition(final Vector3f out);
 
     void getRotationV(final Vector3f out);
