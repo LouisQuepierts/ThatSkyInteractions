@@ -2,9 +2,11 @@ package net.quepierts.thatskyinteractions.infra.animation.backend.uniform;
 
 import lombok.Getter;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
+import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.ReadableBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.WritableBuffer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
+import org.jspecify.annotations.NonNull;
 
 public final class UniformBuffer implements UniformReader {
 
@@ -186,7 +188,11 @@ public final class UniformBuffer implements UniformReader {
                                     );
     }
 
-    public WritableBuffer getRawBuffer() {
+    public @NonNull WritableBuffer getRawWriter() {
+        return this.buffer;
+    }
+
+    public @NonNull ReadableBuffer getRawReader() {
         return this.buffer;
     }
 }
