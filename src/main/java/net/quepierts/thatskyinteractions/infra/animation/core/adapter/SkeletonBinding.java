@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.infra.animation.core.adapter;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.PoseView;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonResultView;
 import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;

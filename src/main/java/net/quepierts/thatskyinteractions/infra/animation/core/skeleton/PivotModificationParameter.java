@@ -2,11 +2,11 @@ package net.quepierts.thatskyinteractions.infra.animation.core.skeleton;
 
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UboDefinition;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformObject;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformParameter;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
 import org.jspecify.annotations.NonNull;
 
-public final class PivotModificationParameter extends UniformObject {
+public final class PivotModificationParameter extends UniformParameter {
 
     public static PivotModificationParameter of(@NonNull final SkeletonLayout layout) {
         final var definition = layout.toPivotDefinition();

@@ -8,7 +8,7 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.channel.Channel
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformInstance;
 import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
 import net.quepierts.thatskyinteractions.infra.animation.core.SkeletonState;
 import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.ParentOverrideParameter;
@@ -25,16 +25,14 @@ public final class HumanoidAnimationState extends AnimationState {
     private final PoseCache     cache       = new PoseCache(DefaultMinecraftSkeletonLayout.HUMANOID);
 
     @Getter
-    private final ParentOverrideParameter parentOverrideParameter;
+    private final UniformInstance<PivotModificationParameter> uboPivotModification;
 
     @Getter
-    private final PivotModificationParameter pivotModificationParameter;
+    private final UniformInstance<ParentOverrideParameter> uboParentOverride;
 
     @Getter
-    private final UniformBuffer pivotModification;
+    private final UniformInstance<>
 
-    @Getter
-    private final UniformBuffer parentOverride;
 
     private Identifier          current;
     private AnimationSource     source;
@@ -58,18 +56,17 @@ public final class HumanoidAnimationState extends AnimationState {
     public HumanoidAnimationState(ChannelFormat channelFormat) {
         super(DefaultMinecraftChannelLayout.HUMANOID, channelFormat);
 
-        this.parentOverrideParameter    = ParentOverrideParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
-        this.parentOverrideParameter    .setData(DefaultMinecraftSkeletonLayout.MODIFIED_PO);
-        this.pivotModificationParameter = PivotModificationParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
+        final var parentOverrideParameter    = ParentOverrideParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
+        final var pivotModificationParameter = PivotModificationParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
 
-        this.pivotModification          = this.pivotModificationParameter.create();
-        this.parentOverride             = this.parentOverrideParameter.create();
+        pivotModificationParameter      .set("body", 0, 12, 0);
+        pivotModificationParameter      .enable("body", true);
 
-        this.pivotModificationParameter .set("body", 0, -0.75f, 0);
-        this.pivotModificationParameter .enable("body", true);
+        this.uboPivotModification = UniformInstance.of(pivotModificationParameter);
+        this.uboParentOverride = UniformInstance.of(parentOverrideParameter);
 
-        this.pivotModificationParameter .upload(this.pivotModification);
-        this.parentOverrideParameter    .upload(this.parentOverride);
+        this.uboPivotModification.upload();
+        this.uboParentOverride.upload();
     }
 
     public void play(Identifier identifier) {

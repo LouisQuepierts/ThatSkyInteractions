@@ -7,7 +7,7 @@ import org.jspecify.annotations.NonNull;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class UniformObject {
+public abstract class UniformParameter {
 
     private final UboDefinition definition;
 
