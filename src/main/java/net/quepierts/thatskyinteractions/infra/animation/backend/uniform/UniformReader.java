@@ -33,4 +33,6 @@ public interface UniformReader {
 
     @NonNull ReadableBuffer getRawReader();
 
+    int address(int location);
+
 }

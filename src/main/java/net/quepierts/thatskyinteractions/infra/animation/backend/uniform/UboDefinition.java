@@ -110,7 +110,8 @@ public class UboDefinition {
             }
 
             for (var description : this.descriptions) {
-                offset      = align(offset, description.type().getAlign());
+                final var array = description.length() > 1;
+                offset      = align(offset, Math.max(description.type().getAlign(), array ? 4 : 1));
                 entries     .add(new Entry(description.name(), description.type(), offset, description.length()));
                 names       .add(description.name());
 

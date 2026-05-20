@@ -195,4 +195,8 @@ public final class UniformBuffer implements UniformReader {
     public @NonNull ReadableBuffer getRawReader() {
         return this.buffer;
     }
+
+    public int address(int location) {
+        return this.definition.getUniformOffset(location);
+    }
 }
