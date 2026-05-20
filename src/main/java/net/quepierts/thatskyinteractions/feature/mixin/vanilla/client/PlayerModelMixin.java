@@ -3,9 +3,8 @@ package net.quepierts.thatskyinteractions.feature.mixin.vanilla.client;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonLayout;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonPipeline;
+import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.render.HumanoidRenderStateExtension;
 import net.quepierts.thatskyinteractions.feature.client.render.MinecraftModelAdaptorProvider;
@@ -42,23 +41,8 @@ public class PlayerModelMixin implements MinecraftModelAdaptorProvider {
     )
     public void tsi$setupAnim(final AvatarRenderState state, final CallbackInfo ci) {
         // do animation thing
-
-        final var pipeline  = DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE;
-        final var skeleton  = DefaultMinecraftSkeletonPipeline.HUMANOID;
-
         final var animation = ((HumanoidRenderStateExtension) state).a4j$GetAnimationState();
-
-        if (animation.isPlaying()) {
-            final var sampler   = animation.getSampler();
-            pipeline.bindSource("TimelineSampler", sampler);
-            pipeline.submit(animation, skeleton.getAdapter());
-
-            skeleton.bindUbo("SkeletonPivots", animation.getSkeletonPivots());
-            skeleton.bindTarget("Output", animation.getCache());
-            skeleton.submit(animation.getSkeleton());
-
-            this.a4j$ModelAdaptor.accept(animation.getCache());
-        }
+        PlayerAnimationHook.onSetupAnimation(animation, this.a4j$ModelAdaptor);
 
     }
 

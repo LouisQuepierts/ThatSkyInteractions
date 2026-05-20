@@ -11,6 +11,8 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.source.Animatio
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
 import net.quepierts.thatskyinteractions.infra.animation.core.SkeletonState;
+import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.ParentOverrideParameter;
+import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PivotModificationParameter;
 import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
 
 @Slf4j
@@ -23,7 +25,16 @@ public final class HumanoidAnimationState extends AnimationState {
     private final PoseCache     cache       = new PoseCache(DefaultMinecraftSkeletonLayout.HUMANOID);
 
     @Getter
-    private final UniformBuffer skeletonPivots;
+    private final ParentOverrideParameter parentOverrideParameter;
+
+    @Getter
+    private final PivotModificationParameter pivotModificationParameter;
+
+    @Getter
+    private final UniformBuffer pivotModification;
+
+    @Getter
+    private final UniformBuffer parentOverride;
 
     private Identifier          current;
     private AnimationSource     source;
@@ -37,6 +48,9 @@ public final class HumanoidAnimationState extends AnimationState {
 
     private float last;
 
+    @Getter
+    private boolean ticked = false;
+
     public static HumanoidAnimationState _default() {
         return new HumanoidAnimationState(DefaultChannelFormats.TIMELINE);
     }
@@ -44,7 +58,18 @@ public final class HumanoidAnimationState extends AnimationState {
     public HumanoidAnimationState(ChannelFormat channelFormat) {
         super(DefaultMinecraftChannelLayout.HUMANOID, channelFormat);
 
-        this.skeletonPivots = new UniformBuffer(DefaultMinecraftSkeletonLayout.HUMANOID_PIVOT_UBO);
+        this.parentOverrideParameter    = ParentOverrideParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
+        this.parentOverrideParameter    .setData(DefaultMinecraftSkeletonLayout.MODIFIED_PO);
+        this.pivotModificationParameter = PivotModificationParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
+
+        this.pivotModification          = this.pivotModificationParameter.create();
+        this.parentOverride             = this.parentOverrideParameter.create();
+
+        this.pivotModificationParameter .set("body", 0, -0.75f, 0);
+        this.pivotModificationParameter .enable("body", true);
+
+        this.pivotModificationParameter .upload(this.pivotModification);
+        this.parentOverrideParameter    .upload(this.parentOverride);
     }
 
     public void play(Identifier identifier) {
@@ -69,6 +94,7 @@ public final class HumanoidAnimationState extends AnimationState {
         // for test
         if (this.playing) {
             final var delta = (current - last) * 0.05f;
+            this.ticked     = current != last;
             this.progress   = this.progress + delta /*% 3.0f*/;
 
 

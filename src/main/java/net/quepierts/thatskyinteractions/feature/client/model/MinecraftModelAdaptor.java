@@ -7,8 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.model.geom.ModelPart;
 import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.ModelPartAccessor;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonOutput;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonResultView;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.*;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.ChannelBinding;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.SkeletonBinding;
@@ -19,7 +18,8 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MinecraftModelAdaptor implements SkeletonOutput {
+public final class MinecraftModelAdaptor
+        implements SkeletonOutput, SkeletonPoseProvider {
 
     private static final String ROOT = "root";
 
@@ -43,9 +43,11 @@ public final class MinecraftModelAdaptor implements SkeletonOutput {
             getChildren(part)   .entrySet()
                     .forEach(queue::enqueue);
 
+            final var accessor = new ModelTransformAccessor(part);
             builder.bind(
                     layout.id(name),
-                    new ModelTransformAccessor(part)
+                    accessor,
+                    accessor
             );
         }
 
@@ -64,7 +66,8 @@ public final class MinecraftModelAdaptor implements SkeletonOutput {
         for (var name   : parts) {
 
             if (ROOT    .equals(name)) {
-                builder.bind(layout.id(name), new ModelTransformAccessor(root));
+                final var accessor = new ModelTransformAccessor(root);
+                builder.bind(layout.id(name), accessor, accessor);
                 continue;
             }
 
@@ -74,7 +77,8 @@ public final class MinecraftModelAdaptor implements SkeletonOutput {
                 continue;
             }
 
-            builder.bind(layout.id(name), new ModelTransformAccessor(part));
+            final var accessor = new ModelTransformAccessor(part);
+            builder.bind(layout.id(name), accessor, accessor);
 
         }
 
@@ -93,5 +97,10 @@ public final class MinecraftModelAdaptor implements SkeletonOutput {
 
     public void accept(@NonNull final PoseCache cache) {
         this.skeleton.apply(cache);
+    }
+
+    @Override
+    public void fetch(@NonNull final SkeletonContext context, @NonNull final SkeletonPoseBuffer target) {
+        this.skeleton.fetch(target);
     }
 }

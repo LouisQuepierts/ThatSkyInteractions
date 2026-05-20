@@ -1,17 +1,41 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
 import lombok.experimental.UtilityClass;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.FetchPassDefinition;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.MergePassDefinition;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.ParentOverridePassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.PivotPassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPipeline;
 
 @UtilityClass
 public class DefaultMinecraftSkeletonPipeline {
+    
+    private static final String TEMP_BUFFER = "TempBuffer";
 
-    public static final SkeletonPipeline HUMANOID = SkeletonPipeline.compiler()
+    public static final SkeletonPipeline MODIFIED_HUMANOID = SkeletonPipeline.compiler()
             .withLayout(DefaultMinecraftSkeletonLayout.HUMANOID)
-            .withUniform(PivotPassDefinition.PIVOTS_UBO_NAME)
+
+            .withProvider("SourceProvider")
+            .withBuffer(TEMP_BUFFER)
+
+            .withUniform(PivotPassDefinition.REQUIRED_UBO)
+            .withUniform(ParentOverridePassDefinition.REQUIRED_UBO)
+
+            .withPass(new FetchPassDefinition("FetchPass")
+                    .src("SourceProvider")
+                    .dst(TEMP_BUFFER)
+            )
+            .withPass(new MergePassDefinition("MergePass")
+                    .src0(SkeletonPipeline.INPUT_BUFFER)
+                    .src1(TEMP_BUFFER)
+                    .dst(SkeletonPipeline.OUTPUT_BUFFER)
+            )
             .withPass(new PivotPassDefinition("PivotPass")
-                    .src(SkeletonPipeline.INPUT_BUFFER)
+                    .src(SkeletonPipeline.OUTPUT_BUFFER)
+                    .dst(SkeletonPipeline.OUTPUT_BUFFER)
+            )
+            .withPass(new ParentOverridePassDefinition("ParentOverridePass")
+                    .src1(SkeletonPipeline.OUTPUT_BUFFER)
                     .dst(SkeletonPipeline.OUTPUT_BUFFER)
             )
             .compile();

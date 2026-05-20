@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.feature.animation;
 
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UboDefinition;
+import net.quepierts.thatskyinteractions.infra.animation.core.model.ParentOverrideConfiguration;
 
 @UtilityClass
 public class DefaultMinecraftSkeletonLayout {
@@ -24,6 +24,10 @@ public class DefaultMinecraftSkeletonLayout {
 
             .build();
 
-    public static final UboDefinition HUMANOID_PIVOT_UBO = HUMANOID.toPivotDefinition();
+    public static final ParentOverrideConfiguration MODIFIED_PO = ParentOverrideConfiguration.builder(HUMANOID)
+            .override("head", "body")
+            .override("left_arm", "body")
+            .override("right_arm", "body")
+            .build();
 
 }
