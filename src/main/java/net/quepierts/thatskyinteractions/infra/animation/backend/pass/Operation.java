@@ -82,11 +82,27 @@ public record Operation(
         );
     }
 
+    public static Operation clear(
+            int dst
+    ) {
+        return new Operation(
+                Type.CLEAR,
+                dst,
+                -1,
+                -1,
+                -1,
+                -1,
+                0.0f,
+                0.0f
+        );
+    }
+
     public enum Type {
         SAMPLE,
         BLEND_P,
         BLEND_A,
         ASSIGN,
+        CLEAR,
         CUSTOM
     }
 

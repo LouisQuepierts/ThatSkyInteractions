@@ -16,6 +16,7 @@ public final class AnimationPipelineCompileContext {
     private final LocationLookup samplers;
     private final LocationLookup buffers;
     private final LocationLookup uniforms;
+    private final LocationLookup ubos;
 
     private final List<String> errors   = new ArrayList<>();
 
@@ -52,6 +53,16 @@ public final class AnimationPipelineCompileContext {
 
         if (index == -1) {
             this.error("Uniform '" + name + "' not found.");
+        }
+
+        return index;
+    }
+
+    public int getUboLocation(String name) {
+        var index   = this.ubos.find(name);
+
+        if (index == -1) {
+            this.error("UBO '" + name + "' not found.");
         }
 
         return index;

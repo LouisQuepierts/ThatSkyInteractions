@@ -1,7 +1,5 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.pass;
 
-import lombok.RequiredArgsConstructor;
-import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationContext;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationFrameBuffer;
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +59,10 @@ public final class ComputePass extends AnimationPass {
 
                     AnimationFrameBuffer.memcpy(dst, src);
                     break;
+                }
+                case CLEAR: {
+                    var dst         = context.getFrameBuffer(operation.dst());
+                    dst             .clear();
                 }
             }
 

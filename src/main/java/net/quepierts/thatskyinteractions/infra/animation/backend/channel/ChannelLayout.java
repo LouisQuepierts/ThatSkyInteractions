@@ -55,7 +55,6 @@ public final class ChannelLayout implements Iterable<String> {
             this.names.add(name + ".position");
             this.names.add(name + ".rotation");
             this.names.add(name + ".scale");
-            this.names.add(name + ".pivot");
             return this;
         }
 

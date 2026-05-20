@@ -3,12 +3,14 @@ package net.quepierts.thatskyinteractions.infra.animation.core.adapter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationResultView;
+import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NonNull;
 
 public interface AnimationOutput {
 
-    static AnimationOutput compose(@NonNull AnimationOutput... outputs) {
-        return compose(outputs);
+    @Contract("_ -> new")
+    static @NonNull AnimationOutput compose(@NonNull AnimationOutput... outputs) {
+        return new Composed(outputs);
     }
 
     void accept(@NonNull AnimationResultView buffer);

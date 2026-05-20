@@ -15,4 +15,6 @@ public abstract class AnimationSource {
 
     public abstract @NonNull AnimationSampler link(@NonNull AnimationPipeline pipeline);
 
+    public abstract float getDuration();
+
 }

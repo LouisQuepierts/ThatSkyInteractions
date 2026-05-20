@@ -21,4 +21,9 @@ public final class AnimationBufferSource extends AnimationSource {
     public @NonNull AnimationBufferSampler link(@NonNull AnimationPipeline pipeline) {
         return AnimationBufferSampler.of(this, pipeline.getChannelLayout());
     }
+
+    @Override
+    public float getDuration() {
+        return 0;
+    }
 }

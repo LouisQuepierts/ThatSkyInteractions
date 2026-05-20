@@ -12,6 +12,6 @@ public interface AnimationSampler {
      void sample(
             AnimationContext        context,
             WritableBuffer          target
-    );
+     );
 
 }

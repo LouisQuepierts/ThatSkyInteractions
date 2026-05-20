@@ -8,11 +8,13 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
-public final class PoseBuffer extends AnimationBuffer.Slice {
+public final class SkeletonPoseBuffer
+        extends AnimationBuffer.Slice
+        implements SkeletonResultView {
 
     private final View[] views;
 
-    PoseBuffer(
+    SkeletonPoseBuffer(
             final AnimationBuffer   buffer,
             final SkeletonLayout layout,
             final int               offset
@@ -28,7 +30,7 @@ public final class PoseBuffer extends AnimationBuffer.Slice {
         return views[id];
     }
 
-    public void copy(final @NonNull PoseBuffer src) {
+    public void copy(final @NonNull SkeletonPoseBuffer src) {
         this.buffer.memcpy(offset, src.buffer, src.offset, src.size);
     }
 
@@ -58,11 +60,6 @@ public final class PoseBuffer extends AnimationBuffer.Slice {
         }
 
         @Override
-        public void setPivot(final float x, final float y, final float z) {
-            buffer.write(offset + 12, x, y, z);
-        }
-
-        @Override
         public void getPosition(final Vector3f out) {
             buffer.readFloat(offset, (x, y, z, _) -> out.set(x, y, z));
         }
@@ -82,9 +79,5 @@ public final class PoseBuffer extends AnimationBuffer.Slice {
             buffer.readFloat(offset + 8, (x, y, z, _) -> out.set(x, y, z));
         }
 
-        @Override
-        public void getPivot(final Vector3f out) {
-            buffer.readFloat(offset + 12, (x, y, z, _) -> out.set(x, y, z));
-        }
     }
 }

@@ -1,8 +1,9 @@
-package net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass;
+package net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.SkeletonPass;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPipelineCompileContext;
 import org.jspecify.annotations.NonNull;
 

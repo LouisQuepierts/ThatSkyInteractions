@@ -3,12 +3,14 @@ package net.quepierts.thatskyinteractions.infra.animation.backend.buffer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer4f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer4i;
 import org.jspecify.annotations.NonNull;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
 @Getter
 public final class AnimationBuffer implements ReadableBuffer, WritableBuffer {
@@ -123,6 +125,10 @@ public final class AnimationBuffer implements ReadableBuffer, WritableBuffer {
 
     public void memcpy(int dstOffset, AnimationBuffer src, int srcOffset, int length) {
         System.arraycopy(src.buffer, srcOffset, this.buffer, dstOffset, length);
+    }
+
+    public void fill(int offset, int length, float value) {
+        Arrays.fill(this.buffer, offset, offset + length, value);
     }
 
     public boolean check(int index, int length) {

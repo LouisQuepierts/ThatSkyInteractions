@@ -83,11 +83,13 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
              i < bufferAmount;
              i++
         ) {
-            buffers[i]          = new AnimationFrameBuffer(
-                                    buffer,
-                                    bufferSize * i,
-                                    bufferSize
+            final var fbo = new AnimationFrameBuffer(
+                    buffer,
+                    bufferSize * i,
+                    bufferSize
             );
+            fbo                 .setClearValue(Float.NaN);
+            buffers[i]          = fbo;
         }
 
         this.result             = new AnimationResultBuffer(buffer, bufferSize);
@@ -111,7 +113,12 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
             pass.execute(context);
         }
 
+        for (var pass : this.passes) {
+            pass.execute(context);
+        }
+
         context.state   = null;
+        this.targets[0].accept(this.result);
     }
 
     /*@Override
@@ -216,8 +223,8 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         private final Map<String, UboDefinition>        ubo         = new Object2ObjectArrayMap<>();
 
         private Compiler() {
-            this.samplers.add("Pipeline.OriginSampler");
-            this.buffers.add("Pipeline.OutputBuffer");
+            this.samplers.add(ORIGINAL_SAMPLER);
+            this.buffers.add(OUTPUT_BUFFER);
         }
 
         public Compiler withChannelLayout(ChannelLayout layout) {
@@ -280,7 +287,8 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
             var context         = new AnimationPipelineCompileContext(
                                 samplerNames,
                                 bufferNames,
-                                uniform.getLookup()
+                                uniform.getLookup(),
+                                uboNames
             );
 
             var passes          = (ArrayList<AnimationPass>[]) new ArrayList[3];
@@ -312,9 +320,9 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
     @RequiredArgsConstructor
     private static final class Context implements AnimationContext {
 
-        private final DefaultAnimationPipelineImpl pipeline;
-        private         AnimationState          state;
-        private         PipelineInputProvider   input;
+        private final   DefaultAnimationPipelineImpl    pipeline;
+        private         AnimationState                  state;
+        private         PipelineInputProvider           input;
 
         @Override
         public float getProgress() {

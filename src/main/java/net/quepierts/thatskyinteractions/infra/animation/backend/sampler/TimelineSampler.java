@@ -53,9 +53,7 @@ public final class TimelineSampler implements AnimationSampler {
     ) {
         var time        = context.getProgress();
         var source      = this.source;
-        var localTime   = source.isLoop() ?
-                        time % source.getDuration() :
-                        time;
+        var localTime   = time;
 
         var state       = context.getAnimationState();
         var rewind      = time < state.lastProgress;

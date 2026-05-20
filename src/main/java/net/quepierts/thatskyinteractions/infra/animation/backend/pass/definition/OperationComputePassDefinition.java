@@ -121,6 +121,9 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
                         context.getBufferLocation(operation.src0()),
                         context.getBufferLocation(operation.dst())
                 );
+                case CLEAR -> Operation.clear(
+                        context.getBufferLocation(operation.dst())
+                );
                 case CUSTOM -> throw new UnsupportedOperationException("Custom operations are not supported yet.");
             };
         }

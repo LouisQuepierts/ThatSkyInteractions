@@ -1,7 +1,69 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline;
 
 import lombok.RequiredArgsConstructor;
+import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public final class SkeletonPipelineCompileContext {
+
+    public static final String INPUT_BUFFER         = "Pipeline.OriginBuffer";
+    public static final String OUTPUT_BUFFER        = "Pipeline.ResultBuffer";
+
+    private final LocationLookup buffers;
+    private final LocationLookup uniforms;
+    private final LocationLookup ubos;
+
+    private final List<String> errors   = new ArrayList<>();
+
+    public int getBufferLocation(String name) {
+        if (INPUT_BUFFER.equals(name)) {
+            return 0;
+        } else if (OUTPUT_BUFFER.equals(name)) {
+            return 1;
+        }
+
+        var index   = this.buffers.find(name);
+
+        if (index == -1) {
+            this.error("Buffer '" + name + "' not found.");
+        }
+
+        return index;
+    }
+
+    public int getUniformLocation(String name) {
+        var index   = this.uniforms.find(name);
+
+        if (index == -1) {
+            this.error("Uniform '" + name + "' not found.");
+        }
+
+        return index;
+    }
+
+    public int getUboLocation(String name) {
+        var index   = this.ubos.find(name);
+
+        if (index == -1) {
+            this.error("UBO '" + name + "' not found.");
+        }
+
+        return index;
+    }
+
+    public boolean hasErrors() {
+        return !this.errors.isEmpty();
+    }
+
+    public void printErrors(Consumer<String> printer) {
+        this.errors.forEach(printer);
+    }
+
+    private void error(String message) {
+        this.errors.add(message);
+    }
 }

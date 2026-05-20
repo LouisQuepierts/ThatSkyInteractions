@@ -1,11 +1,12 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.pipeline;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
-import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.WritableBuffer;
 
 public final class AnimationFrameBuffer extends AnimationBuffer.Slice {
+
+    @Setter
+    private float               clearValue;
 
     AnimationFrameBuffer(AnimationBuffer buffer, int offset, int size) {
         super(buffer, offset, size);
@@ -106,5 +107,9 @@ public final class AnimationFrameBuffer extends AnimationBuffer.Slice {
     @Override
     public void write(int location, int x, int y, int z, int w) {
         throw new UnsupportedOperationException();
+    }
+
+    public void clear() {
+        this.buffer.fill(this.offset, this.size, this.clearValue);
     }
 }

@@ -13,8 +13,6 @@ public interface PoseView {
 
     void setScale(final float x, final float y, final float z);
 
-    void setPivot(final float x, final float y, final float z);
-
     void getPosition(final Vector3f out);
 
     void getRotationV(final Vector3f out);
@@ -22,7 +20,5 @@ public interface PoseView {
     void getRotationQ(final Quaternionf out);
 
     void getScale(final Vector3f out);
-
-    void getPivot(final Vector3f out);
 
 }
