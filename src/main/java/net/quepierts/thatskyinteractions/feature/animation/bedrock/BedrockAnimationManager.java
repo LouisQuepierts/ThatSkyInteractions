@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.animation;
+package net.quepierts.thatskyinteractions.feature.animation.bedrock;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.Registry;
@@ -13,7 +13,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.model.animation.BedrockAnimationDefinition;
+import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockAnimationDefinition;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -62,7 +62,7 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
 
         this.animations     = builder.buildOrThrow();
 
-        NeoForge.EVENT_BUS.post(new AnimationReloadedEvent(this));
+        NeoForge.EVENT_BUS.post(new BedrockAnimationReloadedEvent(this));
     }
 
     public BedrockAnimationDefinition get(Identifier identifier) {

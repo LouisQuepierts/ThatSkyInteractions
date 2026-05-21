@@ -1,12 +1,10 @@
-package net.quepierts.thatskyinteractions.feature.animation;
+package net.quepierts.thatskyinteractions.feature.animation.bedrock;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.ExtraCodecs;
-import net.quepierts.thatskyinteractions.core.model.animation.*;
-
-import java.util.Optional;
+import net.quepierts.thatskyinteractions.core.model.animation.bedrock.*;
 
 @UtilityClass
 public class BedrockAnimationParser {

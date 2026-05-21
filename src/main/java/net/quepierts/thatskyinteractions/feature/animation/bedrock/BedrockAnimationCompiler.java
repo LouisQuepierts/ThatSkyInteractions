@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.animation;
+package net.quepierts.thatskyinteractions.feature.animation.bedrock;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
@@ -8,9 +8,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.Mth;
-import net.quepierts.thatskyinteractions.core.model.animation.BedrockAnimation;
-import net.quepierts.thatskyinteractions.core.model.animation.BedrockKeyframe;
-import net.quepierts.thatskyinteractions.core.model.animation.BedrockTimeline;
+import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockAnimation;
+import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockKeyframe;
+import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockTimeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.model.Timeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;

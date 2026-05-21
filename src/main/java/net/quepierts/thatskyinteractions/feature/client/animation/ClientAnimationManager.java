@@ -7,10 +7,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.model.animation.BedrockAnimation;
-import net.quepierts.thatskyinteractions.feature.animation.AnimationReloadedEvent;
-import net.quepierts.thatskyinteractions.feature.animation.BedrockAnimationCompiler;
-import net.quepierts.thatskyinteractions.feature.animation.BedrockAnimationManager;
+import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockAnimation;
+import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationReloadedEvent;
+import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationCompiler;
+import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public final class ClientAnimationManager {
     private final Map<Identifier, AnimationSource> map      = new HashMap<>();
 
     @SubscribeEvent
-    private static void onAnimationReloaded(final AnimationReloadedEvent event) {
+    private static void onAnimationReloaded(final BedrockAnimationReloadedEvent event) {
         ClientAnimationManager.instance.reload(event.getManager());
     }
 
