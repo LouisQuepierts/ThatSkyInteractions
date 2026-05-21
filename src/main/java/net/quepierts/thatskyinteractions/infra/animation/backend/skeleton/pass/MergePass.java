@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass;
 
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.PoseView;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonContext;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;

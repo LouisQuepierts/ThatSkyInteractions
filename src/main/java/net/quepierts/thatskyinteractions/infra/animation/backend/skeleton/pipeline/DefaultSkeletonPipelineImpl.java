@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline;
 
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {

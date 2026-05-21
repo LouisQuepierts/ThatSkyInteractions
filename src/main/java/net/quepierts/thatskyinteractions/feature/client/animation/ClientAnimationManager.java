@@ -1,7 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.client.animation;
 
 import lombok.Getter;
-import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;

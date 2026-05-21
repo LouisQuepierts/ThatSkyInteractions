@@ -6,11 +6,9 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.Animati
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.AnimationOutput;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.PipelineInputProvider;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public interface AnimationPipeline {
     String ORIGINAL_SAMPLER = "Pipeline.OriginSampler";

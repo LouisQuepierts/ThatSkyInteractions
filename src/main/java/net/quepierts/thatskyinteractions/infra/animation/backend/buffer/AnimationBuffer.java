@@ -3,7 +3,6 @@ package net.quepierts.thatskyinteractions.infra.animation.backend.buffer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer4f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer4i;
 import org.jspecify.annotations.NonNull;
