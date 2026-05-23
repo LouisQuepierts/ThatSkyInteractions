@@ -440,11 +440,11 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         private final LocationLookup uniform;
         private final LocationLookup ubos;
 
-        private final LocationLookup pid;
+        private final LocationLookup oid;
 
         @Override
         public int oid(final @NonNull String semantic) {
-            return this.pid.find(semantic);
+            return this.oid.find(semantic);
         }
 
         @Override

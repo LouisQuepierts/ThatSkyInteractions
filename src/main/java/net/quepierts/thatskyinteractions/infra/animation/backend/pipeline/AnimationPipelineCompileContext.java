@@ -81,12 +81,12 @@ public final class AnimationPipelineCompileContext {
             return -1;
         }
         final var semantic  = name == null ?
-                                "pid#" + this.oidObjects.size() :
+                                "oid#" + this.oidObjects.size() :
                                 name;
-        final var pid       = this.oidObjects.size();
+        final var oid       = this.oidObjects.size();
         this.oidObjects.add(semantic);
 
-        return pid;
+        return oid;
     }
 
     public boolean hasErrors() {
