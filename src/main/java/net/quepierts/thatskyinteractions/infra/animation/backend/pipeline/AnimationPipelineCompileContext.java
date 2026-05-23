@@ -1,7 +1,9 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.pipeline;
 
 import lombok.RequiredArgsConstructor;
+import net.quepierts.thatskyinteractions.infra.animation.backend.Patterns;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,9 @@ public final class AnimationPipelineCompileContext {
     private final LocationLookup uniforms;
     private final LocationLookup ubos;
 
-    private final List<String> errors   = new ArrayList<>();
+    private final List<String> oidObjects;
+
+    private final List<String> errors       = new ArrayList<>();
 
     public int getSamplerLocation(String name) {
         if (ORIGINAL_SAMPLER.equals(name)) {
@@ -66,6 +70,23 @@ public final class AnimationPipelineCompileContext {
         }
 
         return index;
+    }
+
+    public int oidObject(final @Nullable String name) {
+        if (    name != null &&
+                !Patterns.PATTERN_SEMANTIC
+                        .matcher(name)
+                        .matches()) {
+            this.error("Invalid semantic: " + name);
+            return -1;
+        }
+        final var semantic  = name == null ?
+                                "pid#" + this.oidObjects.size() :
+                                name;
+        final var pid       = this.oidObjects.size();
+        this.oidObjects.add(semantic);
+
+        return pid;
     }
 
     public boolean hasErrors() {

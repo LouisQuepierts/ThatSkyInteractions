@@ -29,7 +29,8 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
                 null,
                 null,
                 0.0f,
-                0.0f
+                0.0f,
+                new String[1]
         ));
         return this;
     }
@@ -48,7 +49,8 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
                 weight,
                 null,
                 0.0f,
-                0.0f
+                0.0f,
+                new String[1]
         ));
         return this;
     }
@@ -67,7 +69,8 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
                 null,
                 null,
                 weight,
-                0.0f
+                0.0f,
+                new String[1]
         ));
 
         return this;
@@ -85,14 +88,25 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
                 null,
                 null,
                 0.0f,
-                0.0f
+                0.0f,
+                new String[1]
         ));
+        return this;
+    }
+
+    public OperationComputePassDefinition semantic(
+            String semantic
+    ) {
+        final var last      = this.operations.getLast();
+        last.semantic()[0]  = semantic;
         return this;
     }
 
     @Override
     public AnimationPass compile(@NotNull AnimationPipelineCompileContext context) {
-        var operations      = new Operation[this.operations.size()];
+        final var size      = this.operations.size();
+        var operations      = new Operation[size];
+        var oids            = new int[size];
 
         for (int i = 0;
              i < operations.length;
@@ -100,7 +114,9 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
         ) {
             var operation   = this.operations.get(i);
 
-            operations[i] = switch (operation.type()) {
+            oids[i]         = context.oidObject(operation.semantic()[0]);
+
+            operations[i]   = switch (operation.type()) {
                 case SAMPLE -> Operation.sample(
                         context.getSamplerLocation(operation.src0()),
                         context.getBufferLocation(operation.dst())
@@ -128,7 +144,7 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
             };
         }
 
-        return new ComputePass(this.getName(), operations);
+        return new ComputePass(this.getName(), operations, oids);
     }
 
     private record OperationDescription(
@@ -142,7 +158,9 @@ public final class OperationComputePassDefinition extends AnimationPassDefinitio
             String arg1,
 
             float param0,
-            float param1
+            float param1,
+
+            String[] semantic
     ) {
 
     }

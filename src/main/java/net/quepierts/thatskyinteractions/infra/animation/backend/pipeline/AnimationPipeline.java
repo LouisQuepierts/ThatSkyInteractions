@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.infra.animation.backend.pipeline;
 
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;
+import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionReflection;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
@@ -67,11 +68,7 @@ public interface AnimationPipeline {
 
     ChannelLayout getChannelLayout();
 
-    LocationLookup getBufferLookup();
-
-    LocationLookup getSamplerLookup();
-
-    LocationLookup getUboLookup();
-
     UniformBuffer getUniform();
+
+    ExecutionReflection getReflection();
 }

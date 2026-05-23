@@ -2,9 +2,13 @@ package net.quepierts.thatskyinteractions.infra.animation.backend.pipeline;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.quepierts.thatskyinteractions.infra.animation.backend.Patterns;
+import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionReflection;
+import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.AnimationOutput;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.PipelineInputProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
@@ -37,23 +41,18 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
     private final AnimationPass[]           parameterPasses;
     private final AnimationPass[]           passes;
 
-    @Getter
-    private final LocationLookup            bufferLookup;
     private final AnimationResultBuffer     result;
     private final AnimationFrameBuffer[]    buffers;
 
-    @Getter
-    private final LocationLookup            samplerLookup;
     private final AnimationSampler[]        samplers;
-
-    @Getter
-    private final LocationLookup            uboLookup;
     private final UniformBuffer[]           ubos;
-
     private final AnimationOutput[]         targets;
 
     @Getter
     private final UniformBuffer             uniform;
+
+    private final Reflection                reflection;
+    private ExecutionState                  executionState;
 
     private final Context                   context = new Context(this);
 
@@ -61,20 +60,16 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
             ChannelFormat       format,
             ChannelLayout       layout,
             AnimationPass[][]   passes,
-            LocationLookup      bufferNames,
-            LocationLookup      samplerNames,
-            LocationLookup      uboNames,
-            UboDefinition       uniform
+            UboDefinition       uniform,
+            Reflection          reflection
     ) {
         this.channelFormat      = format;
         this.channelLayout      = layout;
         this.parameterPasses    = passes[0];
         this.passes             = passes[1];
-        this.bufferLookup       = bufferNames;
-        this.samplerLookup      = samplerNames;
-        this.uboLookup          = uboNames;
+        this.reflection         = reflection;
 
-        var bufferAmount        = bufferNames.size();
+        var bufferAmount        = reflection.buffers.size();
         var bufferSize          = layout.getChannelCount() << 2;
         var buffer              = new AnimationBuffer(bufferSize * bufferAmount);
         var buffers             = new AnimationFrameBuffer[bufferAmount];
@@ -95,8 +90,8 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         this.result             = new AnimationResultBuffer(buffer, bufferSize);
         this.buffers            = buffers;
 
-        this.samplers           = new AnimationSampler[samplerNames.size()];
-        this.ubos               = new UniformBuffer[uboNames.size()];
+        this.samplers           = new AnimationSampler[reflection.samplers.size()];
+        this.ubos               = new UniformBuffer[reflection.ubos.size()];
         this.uniform            = new UniformBuffer(uniform);
 
         this.targets            = new AnimationOutput[1];
@@ -164,7 +159,7 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
             final String name,
             final AnimationSampler sampler
     ) {
-        var location            = this.samplerLookup.find(name);
+        var location            = this.reflection.samplers.find(name);
         if (location == -1) {
             log.error("Sampler '{}' not found.", name);
             return;
@@ -191,7 +186,7 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
             final String name,
             final UniformBuffer buffer
     ) {
-        var location            = this.uboLookup.find(name);
+        var location            = this.reflection.ubos.find(name);
         if (location == -1) {
             log.error("UBO '{}' not found.", name);
             return;
@@ -224,6 +219,11 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
     ) {
         // todo: MRT
         this.targets[0] = target;
+    }
+
+    @Override
+    public ExecutionReflection getReflection() {
+        return this.reflection;
     }
 
     public static Compiler compiler() {
@@ -261,11 +261,21 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         }
 
         public Compiler withSampler(String name) {
+            if (!Patterns.PATTERN_IDENTIFIER
+                    .matcher(name)
+                    .matches()) {
+                throw new IllegalArgumentException("Invalid sampler name: " + name);
+            }
             this.samplers.add(name);
             return this;
         }
 
         public Compiler withBuffer(String name) {
+            if (!Patterns.PATTERN_IDENTIFIER
+                    .matcher(name)
+                    .matches()) {
+                throw new IllegalArgumentException("Invalid buffer name: " + name);
+            }
             this.buffers.add(name);
             return this;
         }
@@ -276,11 +286,21 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         }
 
         public Compiler withUniform(String name, UniformType type) {
+            if (!Patterns.PATTERN_IDENTIFIER
+                    .matcher(name)
+                    .matches()) {
+                throw new IllegalArgumentException("Invalid uniform name: " + name);
+            }
             this.uniforms.withUniform(name, type);
             return this;
         }
 
         public Compiler withUniform(String name, UboDefinition definition) {
+            if (!Patterns.PATTERN_IDENTIFIER
+                    .matcher(name)
+                    .matches()) {
+                throw new IllegalArgumentException("Invalid ubo name: " + name);
+            }
             this.ubo.put(name, definition);
             return this;
         }
@@ -302,11 +322,14 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
             var samplerNames    = LocationLookup.of(this.samplers);
             var uboNames        = LocationLookup.of(this.ubo.keySet());
 
+            var oids            = new ArrayList<String>();
+
             var context         = new AnimationPipelineCompileContext(
                                 samplerNames,
                                 bufferNames,
                                 uniform.getLookup(),
-                                uboNames
+                                uboNames,
+                                oids
             );
 
             var passes          = (ArrayList<AnimationPass>[]) new ArrayList[3];
@@ -321,16 +344,22 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
                 throw new IllegalStateException("Pipeline compile failed.");
             }
 
+            var reflection = new Reflection(
+                    bufferNames,
+                    samplerNames,
+                    uniform.getLookup(),
+                    uboNames,
+                    LocationLookup.of(oids)
+            );
+
             return new DefaultAnimationPipelineImpl(
                     this.format,
                     this.layout,
                     Arrays.stream(passes)
                             .map(a -> a.toArray(AnimationPass[]::new))
                             .toArray(AnimationPass[][]::new),
-                    bufferNames,
-                    samplerNames,
-                    uboNames,
-                    uniform
+                    uniform,
+                    reflection
             );
         }
     }
@@ -400,6 +429,36 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         @Override
         public boolean getSamplerMask(int channel) {
             return channel != -1; // todo
+        }
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static final class Reflection implements ExecutionReflection {
+
+        private final LocationLookup buffers;
+        private final LocationLookup samplers;
+        private final LocationLookup uniform;
+        private final LocationLookup ubos;
+
+        private final LocationLookup pid;
+
+        @Override
+        public int oid(final @NonNull String semantic) {
+            return this.pid.find(semantic);
+        }
+
+        @Override
+        public int location(final @NonNull String semantic) {
+            final var args      = semantic.split("\\.");
+            final var namespace = args[0];
+
+            return switch (namespace) {
+                case "buffer"   -> this.buffers.find(args[1]);
+                case "sampler"  -> this.samplers.find(args[1]);
+                case "uniform"  -> this.uniform.find(args[1]);
+                case "ubo"      -> this.ubos.find(args[1]);
+                default -> -1;
+            };
         }
     }
 

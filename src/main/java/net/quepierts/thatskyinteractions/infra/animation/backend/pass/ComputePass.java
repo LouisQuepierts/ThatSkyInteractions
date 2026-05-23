@@ -6,21 +6,24 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ComputePass extends AnimationPass {
 
-    private final Operation[] operations;
+    private final Operation[]   operations;
+    private final int[]         oids;
 
     public ComputePass(
-            final String name,
-            final Operation[] operations
+            final String        name,
+            final Operation[]   operations,
+            final int[]         oids
     ) {
         super(name);
         this.operations = operations;
+        this.oids = oids;
     }
 
     @Override
     public void execute(@NotNull AnimationContext context) {
 
         for (int i = 0; i < operations.length; i++) {
-            if (!context.getOperationMask(i)) {
+            if (!context.getOperationMask(this.oids[i])) {
                 continue;
             }
 
