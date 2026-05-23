@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
+import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionReflection;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationResultView;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.SkeletonPass;
@@ -30,17 +31,11 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
 
     private final SkeletonPass[]            passes;
 
-    @Getter
-    private final LocationLookup            providerLookup;
     private final SkeletonPoseProvider[]    providers;
 
-    @Getter
-    private final LocationLookup            bufferLookup;
     private final SkeletonResultView        result;
     private final SkeletonPoseBuffer[]      buffers;
 
-    @Getter
-    private final LocationLookup            uboLookup;
     private final UniformBuffer[]           ubos;
 
     private final SkeletonOutput[]          targets;
@@ -51,23 +46,22 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
     @Getter
     private final AnimationOutput           adapter;
 
+    private final Reflection                reflection;
+
     private final Context                   context = new Context(this);
 
-    public DefaultSkeletonPipelineImpl(
+    private DefaultSkeletonPipelineImpl(
             final SkeletonLayout    layout,
             final SkeletonPass[]    passes,
-            final LocationLookup    providerName,
-            final LocationLookup    bufferName,
-            final LocationLookup    uboNames,
-            final UboDefinition     definition
+            final UboDefinition     definition,
+            final Reflection        reflection
     ) {
         this.layout                 = layout;
         this.passes                 = passes;
-        this.providerLookup         = providerName;
-        this.providers              = new SkeletonPoseProvider[providerName.size()];
+        this.providers              = new SkeletonPoseProvider[reflection.providers.size()];
 
-        this.bufferLookup           = bufferName;
-        final var bufferAmount      = bufferName.size();
+        this.reflection             = reflection;
+        final var bufferAmount      = reflection.providers.size();
         final var boneAmount        = layout.size();
         final var bufferSize        = boneAmount * SkeletonLayout.BONE_SIZE;
         final var baseBuffer        = new AnimationBuffer(bufferAmount * bufferSize);
@@ -79,8 +73,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
 
         this.result                 = this.buffers[1];
 
-        this.uboLookup             = uboNames;
-        this.ubos                   = new UniformBuffer[uboNames.size()];
+        this.ubos                   = new UniformBuffer[reflection.ubos.size()];
 
         this.uniform               = new UniformBuffer(definition);
 
@@ -118,7 +111,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             final String name,
             final SkeletonPoseProvider poseProvider
     ) {
-        var location            = this.providerLookup.find(name);
+        var location            = this.reflection.providers.find(name);
         if (location == -1) {
             log.error("Provider '{}' not found.", name);
             return;
@@ -140,7 +133,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             final String name,
             final UniformBuffer buffer
     ) {
-        var location            = this.uboLookup.find(name);
+        var location            = this.reflection.ubos.find(name);
         if (location == -1) {
             log.error("UBO '{}' not found.", name);
             return;
@@ -173,6 +166,11 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
     ) {
         // todo: MRT
         this.targets[0] = target;
+    }
+
+    @Override
+    public ExecutionReflection getReflection() {
+        return this.reflection;
     }
 
     public static Compiler compiler() {
@@ -239,17 +237,21 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             var bufferName      = LocationLookup.of(this.buffers);
             var uboNames        = LocationLookup.of(this.ubos);
 
+            var oids            = new ArrayList<String>();
+
             var context         = new SkeletonPipelineCompileContext(
                                 this.layout,
                                 providerName,
                                 bufferName,
                                 uniform.getLookup(),
-                                uboNames
+                                uboNames,
+                                oids
             );
 
             var passes          = new SkeletonPass[this.passes.size()];
             for (var i = 0; i < passes.length; i++) {
-                passes[i] = this.passes.get(i).compile(context);
+                context         .oidObject(passes[i].getName());
+                passes[i]       = this.passes.get(i).compile(context);
             }
 
             if (context.hasErrors()) {
@@ -258,13 +260,19 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
                 throw new IllegalStateException("Pipeline compile failed.");
             }
 
+            var reflection = new Reflection(
+                    bufferName,
+                    providerName,
+                    uboNames,
+                    uniform.getLookup(),
+                    LocationLookup.of(oids)
+            );
+
             return new DefaultSkeletonPipelineImpl(
                     this.layout,
                     passes,
-                    providerName,
-                    bufferName,
-                    uboNames,
-                    uniform
+                    uniform,
+                    reflection
             );
         }
     }
@@ -354,6 +362,36 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         @Override
         public @NonNull UniformReader getUniformBuffer(final int location) {
             return this.pipeline.ubos[location];
+        }
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static final class Reflection implements ExecutionReflection {
+
+        private final LocationLookup buffers;
+        private final LocationLookup providers;
+        private final LocationLookup uniform;
+        private final LocationLookup ubos;
+
+        private final LocationLookup oid;
+
+        @Override
+        public int oid(final @NonNull String semantic) {
+            return this.oid.find(semantic);
+        }
+
+        @Override
+        public int location(final @NonNull String semantic) {
+            final var args      = semantic.split("\\.");
+            final var namespace = args[0];
+
+            return switch (namespace) {
+                case "buffer"   -> this.buffers.find(args[1]);
+                case "provider" -> this.providers.find(args[1]);
+                case "uniform"  -> this.uniform.find(args[1]);
+                case "ubo"      -> this.ubos.find(args[1]);
+                default         -> -1;
+            };
         }
     }
 

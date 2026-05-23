@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline;
 
+import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionReflection;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.core.SkeletonState;
@@ -50,12 +51,10 @@ public interface SkeletonPipeline {
 
     SkeletonLayout getLayout();
 
-    LocationLookup getBufferLookup();
-
-    LocationLookup getUboLookup();
-
     UniformBuffer getUniform();
 
     AnimationOutput getAdapter();
+
+    ExecutionReflection getReflection();
 
 }
