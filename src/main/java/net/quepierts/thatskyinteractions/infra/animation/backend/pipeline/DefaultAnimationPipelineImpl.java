@@ -335,7 +335,8 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
             var passes          = (ArrayList<AnimationPass>[]) new ArrayList[3];
             ArrayUtils          .init(passes, () -> new ArrayList<AnimationPass>());
             for (final var definition : this.passes) {
-                final var pass = definition.compile(context);
+                context         .oidObject(definition.getName());
+                final var pass  = definition.compile(context);
                 passes[definition.getType().ordinal()].add(pass);
             }
 
