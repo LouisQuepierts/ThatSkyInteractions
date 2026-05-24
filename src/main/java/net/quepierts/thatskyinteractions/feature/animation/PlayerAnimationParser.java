@@ -2,7 +2,11 @@ package net.quepierts.thatskyinteractions.feature.animation;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.experimental.UtilityClass;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.quepierts.thatskyinteractions.core.model.animation.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.model.animation.SourceDefinition;
 
@@ -29,5 +33,27 @@ public class PlayerAnimationParser {
                             SOURCE_CODEC
                     ).fieldOf("sources").forGetter(PlayerAnimationDefinition::sources)
             ).apply(instance, PlayerAnimationDefinition::new));
+
+    public static final StreamCodec<ByteBuf, SourceDefinition> SOURCE_STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8,
+            SourceDefinition::source,
+            ByteBufCodecs.FLOAT,
+            SourceDefinition::fadeIn,
+            ByteBufCodecs.FLOAT,
+            SourceDefinition::fadeOut,
+            SourceDefinition::new
+    );
+
+    public static final StreamCodec<ByteBuf, PlayerAnimationDefinition> ANIMATION_STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8,
+            PlayerAnimationDefinition::type,
+            ByteBufCodecs.map(
+                    Object2ObjectOpenHashMap::new,
+                    ByteBufCodecs.STRING_UTF8,
+                    SOURCE_STREAM_CODEC
+            ),
+            PlayerAnimationDefinition::sources,
+            PlayerAnimationDefinition::new
+    );
 
 }

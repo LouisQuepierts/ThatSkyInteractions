@@ -12,9 +12,13 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockAnimation;
 import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockAnimationDefinition;
+import net.quepierts.thatskyinteractions.feature.network.PacketCache;
+import net.quepierts.thatskyinteractions.feature.network.SyncAnimationSourcePacket;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -31,20 +35,40 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
 
     @SubscribeEvent
     public static void onAddReloadListeners(final AddServerReloadListenersEvent event) {
+        if (instance != null) {
+            instance.cache.free();
+        }
         event.addListener(
                 REGISTRY_KEY.identifier(),
                 instance = new BedrockAnimationManager()
         );
     }
 
+    @SubscribeEvent
+    public static void onDatapackSync(final OnDatapackSyncEvent event) {
+        if (instance == null || !instance.cache.ready()) {
+            return;
+        }
+
+        event.getRelevantPlayers().forEach(player -> {
+            PacketDistributor.sendToPlayer(
+                    player,
+                    new SyncAnimationSourcePacket(instance.definitions)
+            );
+        });
+    }
+
     public static @NonNull BedrockAnimationManager getInstance() {
-        if (instance == null)
-            throw new IllegalStateException("BedrockAnimationManager is not initialized");
+        if (instance == null) {
+            instance = new BedrockAnimationManager();
+        }
         return instance;
     }
 
+    private final PacketCache                           cache       = new PacketCache();
+
     private Map<Identifier, BedrockAnimationDefinition> definitions = Map.of();
-    private Map<Identifier, BedrockAnimation> animations = Map.of();
+    private Map<Identifier, BedrockAnimation>           animations  = Map.of();
 
     private BedrockAnimationManager() {
         super(
@@ -59,21 +83,11 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
             final @NonNull  ResourceManager                             manager,
             final @NonNull  ProfilerFiller                              profiler
     ) {
-        var builder         = ImmutableMap.<Identifier, BedrockAnimationDefinition>builder();
-        preparations        .forEach(builder::put);
-
-        this.definitions = builder.buildOrThrow();
-
-        var builder2 = ImmutableMap.<Identifier, BedrockAnimation>builder();
-        this.definitions.forEach((identifier, definition) -> {
-            definition.animations().forEach((name, animation) -> {
-                builder2.put(
-                        identifier.withSuffix("." + name),
-                        animation
-                );
-            });
-        });
-        this.animations = builder2.buildOrThrow();
+        this.sync(preparations);
+        this.cache.reset(
+                new SyncAnimationSourcePacket(this.definitions),
+                SyncAnimationSourcePacket.STREAM_CODEC
+        );
 
         NeoForge.EVENT_BUS.post(new BedrockAnimationReloadedEvent(this));
     }
@@ -84,6 +98,26 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
 
     public BedrockAnimation getAnimation(Identifier identifier) {
         return this.animations.get(identifier);
+    }
+
+    public void sync(final Map<Identifier, BedrockAnimationDefinition> definitions) {
+        var builder         = ImmutableMap.<Identifier, BedrockAnimationDefinition>builder();
+        var builder2        = ImmutableMap.<Identifier, BedrockAnimation>builder();
+
+        for (final var entry : definitions.entrySet()) {
+            final var identifier = entry.getKey();
+            builder.put(identifier, entry.getValue());
+
+            for (final var entry2 : entry.getValue().animations().entrySet()) {
+                builder2.put(
+                        identifier.withSuffix("." + entry2.getKey()),
+                        entry2.getValue()
+                );
+            }
+        }
+
+        this.definitions    = builder.build();
+        this.animations     = builder2.build();
     }
 
     public record Holder(

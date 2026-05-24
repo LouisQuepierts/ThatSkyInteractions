@@ -13,9 +13,12 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.model.animation.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
+import net.quepierts.thatskyinteractions.feature.network.SyncAnimationDefinitionPacket;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -39,12 +42,28 @@ public final class PlayerAnimationManager extends SimpleJsonResourceReloadListen
         );
     }
 
+    @SubscribeEvent
+    public static void onDatapackSync(final OnDatapackSyncEvent event) {
+        if (instance == null) {
+            return;
+        }
+
+        event.getRelevantPlayers().forEach(player -> {
+            PacketDistributor.sendToPlayer(
+                    player,
+                    new SyncAnimationDefinitionPacket(instance.definitions)
+            );
+        });
+    }
+
     public static @NonNull PlayerAnimationManager getInstance() {
-        if (instance == null)
-            throw new IllegalStateException("PlayerAnimationManager is not initialized");
+        if (instance == null) {
+            instance = new PlayerAnimationManager();
+        }
         return instance;
     }
 
+    private Map<Identifier, PlayerAnimationDefinition> definitions = Map.of();
     private Map<Identifier, Holder> map = Map.of();
 
     PlayerAnimationManager() {
@@ -60,13 +79,7 @@ public final class PlayerAnimationManager extends SimpleJsonResourceReloadListen
             final @NonNull  ResourceManager                             manager,
             final @NonNull  ProfilerFiller                              profiler
     ) {
-        var builder = ImmutableMap.<Identifier, Holder>builder();
-        for (var entry : preparations.entrySet()) {
-            var id = entry.getKey();
-            var definition = entry.getValue();
-            builder.put(id, new Holder(definition));
-        }
-        this.map = builder.build();
+        this.sync(preparations);
     }
 
     public PlayerAnimation get(Identifier id) {
@@ -80,6 +93,19 @@ public final class PlayerAnimationManager extends SimpleJsonResourceReloadListen
 
     public Iterable<Identifier> identifiers() {
         return this.map.keySet();
+    }
+
+    public void sync(final Map<Identifier, PlayerAnimationDefinition> definitions) {
+        var builder = ImmutableMap.<Identifier, Holder>builder();
+        var builder2 = ImmutableMap.<Identifier, PlayerAnimationDefinition>builder();
+        for (var entry : definitions.entrySet()) {
+            var id = entry.getKey();
+            var definition = entry.getValue();
+            builder.put(id, new Holder(definition));
+            builder2.put(id, definition);
+        }
+        this.map = builder.build();
+        this.definitions = builder2.build();
     }
 
     @RequiredArgsConstructor
