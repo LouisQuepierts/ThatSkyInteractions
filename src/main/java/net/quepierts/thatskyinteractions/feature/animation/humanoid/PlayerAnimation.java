@@ -10,6 +10,10 @@ import org.jspecify.annotations.NonNull;
 public interface PlayerAnimation {
 
     static PlayerAnimation simple(@NonNull PlayerAnimationDefinition definition) {
+        return SinglePlayerAnimation.parse(definition);
+    }
+
+    static PlayerAnimation sequence(@NonNull PlayerAnimationDefinition definition) {
         return SequencePlayerAnimation.parse(definition);
     }
 

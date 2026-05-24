@@ -6,6 +6,10 @@ import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FiniteStateMac
 @UtilityClass
 public class DefaultMinecraftFSM {
 
+    public static final FiniteStateMachine SINGLE = FiniteStateMachine.compiler()
+            .withState("main")
+            .compile();
+
     public static final FiniteStateMachine SEQUENCE = FiniteStateMachine.compiler()
             .withState("enter")
             .withState("main")

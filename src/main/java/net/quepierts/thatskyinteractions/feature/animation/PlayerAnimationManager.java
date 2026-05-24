@@ -102,6 +102,9 @@ public final class PlayerAnimationManager extends SimpleJsonResourceReloadListen
                 case "simple":
                     this.animation = PlayerAnimation.simple(this.definition);
                     break;
+                case "sequence":
+                    this.animation = PlayerAnimation.sequence(this.definition);
+                    break;
                 default:
                     log.error("Unknown animation type: {}", this.definition.type());
             }

@@ -81,7 +81,7 @@ public class BedrockAnimationCompiler {
                 var timeline    = compile(
                         bone.position().get(),
                         constants,
-                        INV_Y_BONES.contains(name) ? FACTOR_INV_Y : FACTOR_ONE,
+                        FACTOR_INV_Y,
                         duration
                 );
                 timelines       .add(timeline);

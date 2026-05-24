@@ -22,7 +22,11 @@ public class LivingEntityRendererHook {
         final var cache     = state.getCache();
         final var root      = cache.get(0);
 
-        poseStack.translate(root.getTx(), root.getTy() * -1f, root.getTz());
+        poseStack.translate(
+                root.getTx() * 0.0625f,
+                root.getTy() * 0.0625f,
+                root.getTz() * 0.0625f
+        );
     }
 
 }
