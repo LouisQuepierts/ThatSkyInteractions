@@ -13,6 +13,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockAnimation;
 import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockAnimationDefinition;
 import org.jspecify.annotations.NonNull;
 
@@ -22,9 +23,9 @@ import java.util.Map;
 public final class BedrockAnimationManager extends SimpleJsonResourceReloadListener<BedrockAnimationDefinition> {
 
     public static final ResourceKey<Registry<BedrockAnimationDefinition>> REGISTRY_KEY
-            = ResourceKey.createRegistryKey(ThatSkyInteractions.location("animations"));
+            = ResourceKey.createRegistryKey(ThatSkyInteractions.location("animation/source"));
 
-    private static final String FOLDER = "animations";
+    private static final String FOLDER = "animation/source";
 
     private static BedrockAnimationManager instance;
 
@@ -42,7 +43,8 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
         return instance;
     }
 
-    private Map<Identifier, BedrockAnimationDefinition> animations = Map.of();
+    private Map<Identifier, BedrockAnimationDefinition> definitions = Map.of();
+    private Map<Identifier, BedrockAnimation> animations = Map.of();
 
     private BedrockAnimationManager() {
         super(
@@ -60,12 +62,27 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
         var builder         = ImmutableMap.<Identifier, BedrockAnimationDefinition>builder();
         preparations        .forEach(builder::put);
 
-        this.animations     = builder.buildOrThrow();
+        this.definitions = builder.buildOrThrow();
+
+        var builder2 = ImmutableMap.<Identifier, BedrockAnimation>builder();
+        this.definitions.forEach((identifier, definition) -> {
+            definition.animations().forEach((name, animation) -> {
+                builder2.put(
+                        identifier.withSuffix("." + name),
+                        animation
+                );
+            });
+        });
+        this.animations = builder2.buildOrThrow();
 
         NeoForge.EVENT_BUS.post(new BedrockAnimationReloadedEvent(this));
     }
 
-    public BedrockAnimationDefinition get(Identifier identifier) {
+    public BedrockAnimationDefinition getDefinition(Identifier identifier) {
+        return this.definitions.get(identifier);
+    }
+
+    public BedrockAnimation getAnimation(Identifier identifier) {
         return this.animations.get(identifier);
     }
 
