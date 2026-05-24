@@ -1,0 +1,7 @@
+{
+  "sources": {
+    "enter": "thatskyinteractions:unlock_invite.enter",
+    "main": "thatskyinteractions:unlock_invite.main",
+    "exit": "thatskyinteractions:unlock_invite.exit"
+  }
+}
