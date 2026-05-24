@@ -9,8 +9,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.IdentifierArgument;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationManager;
 import net.quepierts.thatskyinteractions.feature.entity.AvatarExtension;
+import net.quepierts.thatskyinteractions.feature.network.PlayAnimationPacket;
+
+import java.util.UUID;
 
 @UtilityClass
 public final class AnimationCommand {
@@ -34,8 +38,24 @@ public final class AnimationCommand {
 
     private static int play(CommandContext<CommandSourceStack> context) {
         final var name = IdentifierArgument.getId(context, "name");
-        final var state = ((AvatarExtension) Minecraft.getInstance().player).a4j$GetAnimationState();
-        state.play(name);
+
+        final var source = context.getSource();
+        if (!source.isPlayer()) {
+            source.sendFailure(
+                    source.getDisplayName().copy()
+                            .append(" is not a player")
+            );
+            return 0;
+        }
+
+        final var id = source.getPlayer().getId();
+
+
+        PacketDistributor.sendToPlayersInDimension(
+                source.getLevel(),
+                new PlayAnimationPacket(name, id)
+        );
+
         return 0;
     }
 
