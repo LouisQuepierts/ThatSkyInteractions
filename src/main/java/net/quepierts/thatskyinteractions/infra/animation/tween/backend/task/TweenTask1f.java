@@ -1,28 +1,27 @@
 package net.quepierts.thatskyinteractions.infra.animation.tween.backend.task;
 
+import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
-import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator;
+import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;
 
-import java.util.function.Consumer;
+public final class TweenTask1f extends DefaultTimingTask {
 
-public class TweenTask<T> extends DefaultTimingTask {
-
-    private final T from;
-    private final T to;
+    private final float from;
+    private final float to;
 
     private final Ease ease;
 
-    private final Interpolator<T> interpolator;
+    private final Interpolator1f interpolator;
 
-    private final Consumer<T> consumer;
+    private final Consumer1f consumer;
 
-    public TweenTask(
+    public TweenTask1f(
             final float             duration,
-            final T                 from,
-            final T                 to,
+            final float             from,
+            final float             to,
             final Ease              ease,
-            final Interpolator<T>   interpolator,
-            final Consumer<T>       consumer
+            final Interpolator1f    interpolator,
+            final Consumer1f        consumer
     ) {
         super(duration);
         this.from                   = from;
@@ -34,10 +33,13 @@ public class TweenTask<T> extends DefaultTimingTask {
 
     @Override
     protected void _update(final float delta) {
+
         final var t                 = Math.min(this.elapsed / this.duration, 1.0f);
         final var eased             = this.ease.map(t);
 
         final var v                 = this.interpolator.interpolate(this.from, this.to, eased);
         this.consumer               .accept(v);
+
     }
+
 }

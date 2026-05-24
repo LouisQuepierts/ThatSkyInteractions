@@ -1,98 +1,84 @@
 package net.quepierts.thatskyinteractions.infra.animation.tween.backend;
 
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer2f;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer3f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformAccessor;
+import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator;
+import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import org.joml.Quaternionfc;
-import org.joml.Vector2fc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
+
+import java.util.function.Consumer;
 
 public interface TweenBackend {
     static TweenBackend create() {
         return new TweenBackendImpl();
     }
 
-    int to(
-            @NonNull Consumer1f         target,
-            float                       from,
-            float                       to,
-            float                       duration
+    TweenHandle to(
+            @NonNull Consumer1f                 target,
+            float                               from,
+            float                               to,
+            float                               duration,
+
+            @NonNull Interpolator1f             interpolator,
+            @NonNull Ease                       ease
     );
 
-    int to(
-            @NonNull Consumer1f         target,
-            @NonNull Interpolator       lerp,
-            float                       from,
-            float                       to,
-            float                       duration
+    <T> TweenHandle to(
+            @NonNull Consumer<T>                target,
+            T                                   from,
+            T                                   to,
+            float                               duration,
+
+            @NonNull Interpolator<T>            interpolator,
+            @NonNull Ease                       ease
     );
 
-    int to(
-            @NonNull Consumer2f         target,
-            @NonNull Vector2fc          from,
-            @NonNull Vector2fc          to,
-            float                       duration
+    TweenHandle translate(
+            @NonNull TransformAccessor          transform,
+            @NonNull Vector3fc                  from,
+            @NonNull Vector3fc                  to,
+            float                               duration,
+
+            @NonNull Interpolator<Vector3fc>    interpolator,
+            @NonNull Ease                       ease
     );
 
-    int to(
-            @NonNull Consumer2f         target,
-            @NonNull Interpolator       lerp,
-            @NonNull Vector2fc          from,
-            @NonNull Vector2fc          to,
-            float                       duration
+    TweenHandle rotate(
+            @NonNull TransformAccessor          transform,
+            @NonNull Vector3fc                  from,
+            @NonNull Vector3fc                  to,
+            float                               duration,
+
+            @NonNull Interpolator<Vector3fc>    interpolator,
+            @NonNull Ease                       ease
     );
 
-    int to(
-            @NonNull Consumer3f         target,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
+    TweenHandle rotate(
+            @NonNull TransformAccessor          transform,
+            @NonNull Quaternionfc               from,
+            @NonNull Quaternionfc               to,
+            float                               duration,
+
+            @NonNull Interpolator<Quaternionfc> interpolator,
+            @NonNull Ease                       ease
     );
 
-    int to(
-            @NonNull Consumer3f         target,
-            @NonNull Interpolator       lerp,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
+    TweenHandle scale(
+            @NonNull TransformAccessor          transform,
+            @NonNull Vector3fc                  from,
+            @NonNull Vector3fc                  to,
+            float                               duration,
+
+            @NonNull Interpolator<Vector3fc>    interpolator,
+            @NonNull Ease                       ease
     );
 
-    int translate(
-            @NonNull TransformAccessor transform,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
-    );
-
-    int rotate(
-            @NonNull TransformAccessor  transform,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
-    );
-
-    int rotate(
-            @NonNull TransformAccessor  transform,
-            @NonNull Quaternionfc       from,
-            @NonNull Quaternionfc       to,
-            float                       duration
-    );
-
-    int scale(
-            @NonNull TransformAccessor  transform,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
-    );
-
-    int wait(
+    TweenHandle wait(
             @NonNull Runnable           runnable,
             float                       duration
     );
-
-
-    void terminate(int handle);
 }

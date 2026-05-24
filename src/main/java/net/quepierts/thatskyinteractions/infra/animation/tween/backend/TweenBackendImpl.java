@@ -2,145 +2,137 @@ package net.quepierts.thatskyinteractions.infra.animation.tween.backend;
 
 import net.quepierts.thatskyinteractions.infra.Services;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer2f;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer3f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformAccessor;
+import net.quepierts.thatskyinteractions.infra.animation.tween.backend.task.*;
+import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator;
+import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import org.joml.Quaternionfc;
-import org.joml.Vector2fc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
 
+import java.util.function.Consumer;
+
 public final class TweenBackendImpl
         implements TweenBackend, TweenTickHandler {
+
+    private final TweenScheduler scheduler = new TweenScheduler();
 
     TweenBackendImpl() {
         Services.load(TweenTickRegistrar.class).register(this);
     }
 
     @Override
-    public int to(
-            @NonNull Consumer1f     target,
-            float                   from,
-            float                   to,
-            float                   duration
-    ) {
-        return -1;
+    public TweenHandle to(@NonNull final Consumer1f target, final float from, final float to, final float duration, @NonNull final Interpolator1f interpolator, @NonNull final Ease ease) {
+        final var task  = new TweenTask1f(
+                        duration,
+                        from,
+                        to,
+                        ease,
+                        interpolator,
+                        target
+        );
+
+        this.scheduler  .submit(task);
+
+        return DefaultTweenHandle.of(task);
     }
 
     @Override
-    public int to(
-            @NonNull Consumer1f     target,
-            @NonNull Interpolator   lerp,
-            float                   from,
-            float                   to,
-            float                   duration
-    ) {
+    public <T> TweenHandle to(@NonNull final Consumer<T> target, final T from, final T to, final float duration, @NonNull final Interpolator<T> interpolator, @NonNull final Ease ease) {
+        final var task  = new TweenTask<>(
+                        duration,
+                        from,
+                        to,
+                        ease,
+                        interpolator,
+                        target
+        );
 
-        return -1;
+        this.scheduler  .submit(task);
+
+        return DefaultTweenHandle.of(task);
     }
 
     @Override
-    public int to(
-            @NonNull Consumer2f     target,
-            @NonNull Vector2fc      from,
-            @NonNull Vector2fc      to,
-            float                   duration
-    ) {
-        return -1;
+    public TweenHandle translate(@NonNull final TransformAccessor transform, @NonNull final Vector3fc from, @NonNull final Vector3fc to, final float duration, @NonNull final Interpolator<Vector3fc> interpolator, @NonNull final Ease ease) {
+        final var task  = new TweenTask<>(
+                        duration,
+                        from,
+                        to,
+                        ease,
+                        interpolator,
+                        vec -> transform.setPosition(vec.x(), vec.y(), vec.z())
+        );
+
+        this.scheduler  .submit(task);
+
+        return DefaultTweenHandle.of(task);
     }
 
     @Override
-    public int to(
-            @NonNull Consumer2f     target,
-            @NonNull Interpolator   lerp,
-            @NonNull Vector2fc      from,
-            @NonNull Vector2fc      to,
-            float                   duration
-    ) {
-        return -1;
+    public TweenHandle rotate(@NonNull final TransformAccessor transform, @NonNull final Vector3fc from, @NonNull final Vector3fc to, final float duration, @NonNull final Interpolator<Vector3fc> interpolator, @NonNull final Ease ease) {
+        final var task  = new TweenTask<>(
+                        duration,
+                        from,
+                        to,
+                        ease,
+                        interpolator,
+                        vec -> transform.setEulerAngle(vec.x(), vec.y(), vec.z())
+        );
+
+        this.scheduler  .submit(task);
+
+        return DefaultTweenHandle.of(task);
     }
 
     @Override
-    public int to(
-            @NonNull Consumer3f     target,
-            @NonNull Vector3fc      from,
-            @NonNull Vector3fc      to,
-            float                   duration
-    ) {
-        return -1;
+    public TweenHandle rotate(@NonNull final TransformAccessor transform, @NonNull final Quaternionfc from, @NonNull final Quaternionfc to, final float duration, @NonNull final Interpolator<Quaternionfc> interpolator, @NonNull final Ease ease) {
+        final var task  = new TweenTask<>(
+                        duration,
+                        from,
+                        to,
+                        ease,
+                        interpolator,
+                        quat -> transform.setQuaternion(quat.x(), quat.y(), quat.z(), quat.w())
+        );
+
+        this.scheduler  .submit(task);
+
+        return DefaultTweenHandle.of(task);
     }
 
     @Override
-    public int to(
-            @NonNull Consumer3f     target,
-            @NonNull Interpolator   lerp,
-            @NonNull Vector3fc      from,
-            @NonNull Vector3fc      to,
-            float                   duration
-    ) {
-        return -1;
+    public TweenHandle scale(@NonNull final TransformAccessor transform, @NonNull final Vector3fc from, @NonNull final Vector3fc to, final float duration, @NonNull final Interpolator<Vector3fc> interpolator, @NonNull final Ease ease) {
+        final var task  = new TweenTask<>(
+                        duration,
+                        from,
+                        to,
+                        ease,
+                        interpolator,
+                        vec -> transform.setScale(vec.x(), vec.y(), vec.z())
+        );
+
+        this.scheduler  .submit(task);
+
+        return DefaultTweenHandle.of(task);
     }
 
     @Override
-    public int translate(
-            @NonNull TransformAccessor  transform,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
-    ) {
+    public TweenHandle wait(@NonNull final Runnable runnable, final float duration) {
+        final var task  = new WaitTask(
+                        duration,
+                        runnable
+        );
 
-        return -1;
-    }
+        this.scheduler  .submit(task);
 
-    @Override
-    public int rotate(
-            @NonNull TransformAccessor  transform,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
-    ) {
-
-        return -1;
-    }
-
-    @Override
-    public int rotate(
-            @NonNull TransformAccessor  transform,
-            @NonNull Quaternionfc       from,
-            @NonNull Quaternionfc       to,
-            float                       duration
-    ) {
-
-        return -1;
-    }
-
-    @Override
-    public int scale(
-            @NonNull TransformAccessor  transform,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
-    ) {
-
-        return -1;
-    }
-
-    @Override
-    public int wait(
-            @NonNull Runnable           runnable,
-            float                       duration
-    ) {
-
-        return -1;
-    }
-
-    @Override
-    public void terminate(int handle) {
-
+        return DefaultTweenHandle.of(task);
     }
 
     @Override
     public void tick(final float delta) {
+        this.scheduler.update(delta);
     }
 }

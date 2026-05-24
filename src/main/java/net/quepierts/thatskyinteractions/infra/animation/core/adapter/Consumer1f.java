@@ -1,6 +1,8 @@
 package net.quepierts.thatskyinteractions.infra.animation.core.adapter;
 
-public interface Consumer1f {
+import java.util.function.Consumer;
+
+public interface Consumer1f extends Consumer<Float> {
 
     void accept(float value);
 

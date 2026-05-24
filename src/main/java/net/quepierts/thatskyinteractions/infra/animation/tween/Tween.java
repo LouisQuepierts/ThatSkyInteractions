@@ -2,123 +2,98 @@ package net.quepierts.thatskyinteractions.infra.animation.tween;
 
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer2f;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer3f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformAccessor;
-import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenBackend;
+import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator;
+import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;
+import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenBackend;
 import org.joml.Quaternionfc;
-import org.joml.Vector2fc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
 
-@UtilityClass
-public class Tween {
+import java.util.function.Consumer;
 
-    private static final TweenBackend BACKEND = TweenBackend.create();
+public interface Tween {
 
-    public static int to(
-            @NonNull Consumer1f     target,
-            float                   from,
-            float                   to,
-            float                   duration
+    TweenBackend BACKEND = TweenBackend.create();
+
+    static TweenHandle to(
+            @NonNull Consumer1f                 target,
+            float                               from,
+            float                               to,
+            float                               duration,
+
+            @NonNull Interpolator1f interpolator,
+            @NonNull Ease ease
     ) {
-        return Tween.BACKEND.to(target, from, to, duration);
+        return BACKEND.to(target, from, to, duration, interpolator, ease);
     }
 
-    public static int to(
-            @NonNull Consumer1f     target,
-            @NonNull Interpolator lerp,
-            float                   from,
-            float                   to,
-            float                   duration
+    static <T> TweenHandle to(
+            @NonNull Consumer<T>                target,
+            T                                   from,
+            T                                   to,
+            float                               duration,
+
+            @NonNull Interpolator<T>            interpolator,
+            @NonNull Ease                       ease
     ) {
-        return Tween.BACKEND.to(target, lerp, from, to, duration);
+        return BACKEND.to(target, from, to, duration, interpolator, ease);
     }
 
-    public static int to(
-            @NonNull Consumer2f     target,
-            @NonNull Vector2fc      from,
-            @NonNull Vector2fc      to,
-            float                   duration
+    static TweenHandle translate(
+            @NonNull TransformAccessor          transform,
+            @NonNull Vector3fc                  from,
+            @NonNull Vector3fc                  to,
+            float                               duration,
+
+            @NonNull Interpolator<Vector3fc>    interpolator,
+            @NonNull Ease                       ease
     ) {
-        return Tween.BACKEND.to(target, from, to, duration);
+        return Tween.BACKEND.translate(transform, from, to, duration, interpolator, ease);
     }
 
-    public static int to(
-            @NonNull Consumer2f     target,
-            @NonNull Interpolator   lerp,
-            @NonNull Vector2fc      from,
-            @NonNull Vector2fc      to,
-            float                   duration
+    static TweenHandle rotate(
+            @NonNull TransformAccessor          transform,
+            @NonNull Vector3fc                  from,
+            @NonNull Vector3fc                  to,
+            float                               duration,
+
+            @NonNull Interpolator<Vector3fc>    interpolator,
+            @NonNull Ease                       ease
     ) {
-        return Tween.BACKEND.to(target, lerp, from, to, duration);
+        return Tween.BACKEND.rotate(transform, from, to, duration, interpolator, ease);
     }
 
-    public static int to(
-            @NonNull Consumer3f     target,
-            @NonNull Vector3fc      from,
-            @NonNull Vector3fc      to,
-            float                   duration
+    static TweenHandle rotate(
+            @NonNull TransformAccessor          transform,
+            @NonNull Quaternionfc               from,
+            @NonNull Quaternionfc               to,
+            float                               duration,
+
+            @NonNull Interpolator<Quaternionfc> interpolator,
+            @NonNull Ease                       ease
     ) {
-        return Tween.BACKEND.to(target, from, to, duration);
+        return Tween.BACKEND.rotate(transform, from, to, duration, interpolator, ease);
     }
 
-    public static int to(
-            @NonNull Consumer3f     target,
-            @NonNull Interpolator   lerp,
-            @NonNull Vector3fc      from,
-            @NonNull Vector3fc      to,
-            float                   duration
+    static TweenHandle scale(
+            @NonNull TransformAccessor          transform,
+            @NonNull Vector3fc                  from,
+            @NonNull Vector3fc                  to,
+            float                               duration,
+
+            @NonNull Interpolator<Vector3fc>    interpolator,
+            @NonNull Ease                       ease
     ) {
-        return Tween.BACKEND.to(target, lerp, from, to, duration);
+        return Tween.BACKEND.scale(transform, from, to, duration, interpolator, ease);
     }
 
-    public static int translate(
-            @NonNull TransformAccessor  transform,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
-    ) {
-        return Tween.BACKEND.translate(transform, from, to, duration);
-    }
-
-    public static int rotate(
-            @NonNull TransformAccessor  transform,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
-    ) {
-        return Tween.BACKEND.rotate(transform, from, to, duration);
-    }
-
-    public static int rotate(
-            @NonNull TransformAccessor  transform,
-            @NonNull Quaternionfc       from,
-            @NonNull Quaternionfc       to,
-            float                       duration
-    ) {
-        return Tween.BACKEND.rotate(transform, from, to, duration);
-    }
-
-    public static int scale(
-            @NonNull TransformAccessor  transform,
-            @NonNull Vector3fc          from,
-            @NonNull Vector3fc          to,
-            float                       duration
-    ) {
-        return Tween.BACKEND.scale(transform, from, to, duration);
-    }
-
-    public static int wait(
-            @NonNull Runnable           runnable,
-            float                       duration
+    static TweenHandle wait(
+            @NonNull Runnable                   runnable,
+            float                               duration
     ) {
         return Tween.BACKEND.wait(runnable, duration);
-    }
-
-    public static void terminate(int handle) {
-        Tween.BACKEND.terminate(handle);
     }
 
 }
