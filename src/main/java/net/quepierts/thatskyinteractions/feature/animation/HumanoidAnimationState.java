@@ -3,15 +3,16 @@ package net.quepierts.thatskyinteractions.feature.animation;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
-import net.quepierts.thatskyinteractions.feature.client.animation.ClientAnimationManager;
+import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
+import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.model.ModelOverrideParameter;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
-import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
-import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
+import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformInstance;
 import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
 import net.quepierts.thatskyinteractions.infra.animation.core.SkeletonState;
+import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMState;
 import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.ParentOverrideParameter;
 import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PivotModificationParameter;
 import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
@@ -21,6 +22,10 @@ public final class HumanoidAnimationState extends AnimationState {
 
     @Getter
     private final SkeletonState skeleton    = new SkeletonState(); // dummy
+
+    private final FSMState      fsmState    = new FSMState();
+
+    private final ExecutionState executionState = new ExecutionState(64);
 
     @Getter
     private final PoseCache     cache       = new PoseCache(DefaultMinecraftSkeletonLayout.HUMANOID);
@@ -34,12 +39,8 @@ public final class HumanoidAnimationState extends AnimationState {
     @Getter
     private final UniformInstance<ModelOverrideParameter> uboModelOverride;
 
-
     private Identifier          current;
-    private AnimationSource     source;
-
-    @Getter
-    private AnimationSampler    sampler;
+    private PlayerAnimation     animation;
 
     @Getter
     private boolean             playing;
@@ -75,18 +76,17 @@ public final class HumanoidAnimationState extends AnimationState {
     }
 
     public void play(Identifier identifier) {
-        final var source    = ClientAnimationManager
+        final var animation = PlayerAnimationManager
                             .getInstance()
                             .get(identifier);
 
-        if (source == null) {
+        if (animation == null) {
             log.warn("Animation source not found: {}", identifier);
             return;
         }
 
         this.current        = identifier;
-        this.source         = source;
-        this.sampler        = source.link(DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE);
+        this.animation = animation;
 
         this.playing        = true;
         this.progress       = 0.0f;
@@ -97,24 +97,31 @@ public final class HumanoidAnimationState extends AnimationState {
         if (this.playing) {
             final var delta = (current - last) * 0.05f;
             this.ticked     = current != last;
-            this.progress   = this.progress + delta /*% 3.0f*/;
 
+            this.animation  .update(this.fsmState, delta);
+            this.progress   = this.fsmState.getElapsed();
 
-            final var duration = this.source.getDuration();
-            if (this.progress > duration) {
-                if (this.loop) {
-                    this.progress = this.progress % duration;
-                } else {
-                    this.playing   = false;
-                    this.progress  = duration;
-
-                    this.source     = null;
-                    this.sampler    = null;
-                    this.current    = null;
-                }
+            if (this.fsmState.isFinished()) {
+                this.animation.cleanup(this.fsmState);
+                this.playing = false;
+                this.current = null;
+                this.animation = null;
             }
         }
 
         this.last       = current;
+    }
+
+    public void resolve(final MinecraftModelAdaptor adaptor) {
+        if (!this.ticked) {
+            return;
+        }
+
+        this.animation.resolve(
+                this.fsmState,
+                this.executionState,
+                this,
+                adaptor.link(DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID)
+        );
     }
 }
