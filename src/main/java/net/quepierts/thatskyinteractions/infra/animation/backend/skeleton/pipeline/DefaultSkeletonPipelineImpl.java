@@ -61,7 +61,7 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
         this.providers              = new SkeletonPoseProvider[reflection.providers.size()];
 
         this.reflection             = reflection;
-        final var bufferAmount      = reflection.providers.size();
+        final var bufferAmount      = reflection.buffers.size();
         final var boneAmount        = layout.size();
         final var bufferSize        = boneAmount * SkeletonLayout.BONE_SIZE;
         final var baseBuffer        = new AnimationBuffer(bufferAmount * bufferSize);
@@ -250,8 +250,8 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
 
             var passes          = new SkeletonPass[this.passes.size()];
             for (var i = 0; i < passes.length; i++) {
-                context         .oidObject(passes[i].getName());
                 passes[i]       = this.passes.get(i).compile(context);
+                context         .oidObject(passes[i].getName());
             }
 
             if (context.hasErrors()) {
@@ -263,8 +263,8 @@ public final class DefaultSkeletonPipelineImpl implements SkeletonPipeline {
             var reflection = new Reflection(
                     bufferName,
                     providerName,
-                    uboNames,
                     uniform.getLookup(),
+                    uboNames,
                     LocationLookup.of(oids)
             );
 

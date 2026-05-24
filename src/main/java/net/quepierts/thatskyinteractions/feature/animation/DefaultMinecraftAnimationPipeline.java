@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pass.definition.AnimationPassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationPipeline;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformType;
 
 @UtilityClass
 public class DefaultMinecraftAnimationPipeline {
@@ -16,6 +17,33 @@ public class DefaultMinecraftAnimationPipeline {
             .withPass(
                     AnimationPassDefinition.compute("ComputePass")
                             .sample("TimelineSampler", AnimationPipeline.OUTPUT_BUFFER)
+            )
+            .compile();
+
+    public static final AnimationPipeline HUMANOID_BLEND = AnimationPipeline.compiler()
+            .withChannelLayout(DefaultMinecraftChannelLayout.HUMANOID)
+            .withChannelFormat(DefaultChannelFormats.TIMELINE)
+
+            .withBuffer("Buffer#0")
+            .withBuffer("Buffer#1")
+
+            .withSampler("Sampler#0")
+            .withSampler("Sampler#1")
+
+            .withUniform("uWeight", UniformType.FLOAT)
+
+            .withPass(
+                    AnimationPassDefinition.compute("ComputePass")
+                            .sample("Sampler#0", "Buffer#0")
+                            .semantic("Compute.Sample#0")
+                            .sample("Sampler#1", "Buffer#1")
+                            .semantic("Compute.Sample#1")
+                            .blend(
+                                    "Buffer#0",
+                                    "Buffer#1",
+                                    AnimationPipeline.OUTPUT_BUFFER,
+                                    "uWeight"
+                            )
             )
             .compile();
 

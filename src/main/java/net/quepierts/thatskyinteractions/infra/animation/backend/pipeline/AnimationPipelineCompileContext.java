@@ -12,8 +12,8 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public final class AnimationPipelineCompileContext {
 
-    public static final String ORIGINAL_SAMPLER     = "Pipeline.OriginSampler";
-    public static final String OUTPUT_BUFFER        = "Pipeline.ResultBuffer";
+    public static final String ORIGINAL_SAMPLER     = AnimationPipeline.ORIGINAL_SAMPLER;
+    public static final String OUTPUT_BUFFER        = AnimationPipeline.OUTPUT_BUFFER;
 
     private final LocationLookup samplers;
     private final LocationLookup buffers;

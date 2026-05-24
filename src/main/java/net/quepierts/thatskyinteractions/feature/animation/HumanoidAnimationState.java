@@ -61,6 +61,8 @@ public final class HumanoidAnimationState extends AnimationState {
         final var pivotModificationParameter    = PivotModificationParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
         final var modelOverrideParameter        = ModelOverrideParameter.of(DefaultMinecraftSkeletonLayout.HUMANOID);
 
+        parentOverrideParameter                 .setData(DefaultMinecraftSkeletonLayout.MODIFIED_PO);
+
         pivotModificationParameter              .set("body", 0, 12, 0);
         pivotModificationParameter              .enable("body", true);
 

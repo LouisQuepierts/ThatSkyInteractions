@@ -27,7 +27,7 @@ public final class MinecraftModelPoseProvider implements SkeletonPoseProvider {
                 skeleton,
                 new Quaternionf(),
                 new float[skeleton.getLayout().size()],
-                pipeline.getBufferLookup().find(REQUIRED_UBO)
+                pipeline.getReflection().location("ubo." + REQUIRED_UBO)
         );
     }
 

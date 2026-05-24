@@ -10,8 +10,8 @@ import org.jspecify.annotations.NonNull;
 
 public interface SkeletonPipeline {
 
-    String INPUT_BUFFER = "Pipeline.OriginBuffer";
-    String OUTPUT_BUFFER = "Pipeline.ResultBuffer";
+    String INPUT_BUFFER = "Buffer#Input";
+    String OUTPUT_BUFFER = "Buffer#Output";
 
     static DefaultSkeletonPipelineImpl.Compiler compiler() {
         return DefaultSkeletonPipelineImpl.compiler();

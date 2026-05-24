@@ -53,9 +53,16 @@ public final class MinecraftModelSkeleton {
             var children     = getChildren(entry.part);
 
             for (var child : children.entrySet()) {
-                var childEntry = new Bone(child.getKey(), child.getValue(), layout.id(entry.name));
-                map.put(childEntry.name, childEntry);
-                list.add(childEntry);
+                final var name = child.getKey();
+                final var id = layout.id(name);
+
+                var childEntry = new Bone(name, child.getValue(), id);
+
+                if (id != -1) {
+                    map.put(childEntry.name, childEntry);
+                    list.add(childEntry);
+                }
+
                 queue.enqueue(childEntry);
             }
         }

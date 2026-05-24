@@ -52,7 +52,9 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
     private final UniformBuffer             uniform;
 
     private final Reflection                reflection;
-    private ExecutionState                  executionState;
+
+    @Getter
+    private final ExecutionState            executionState;
 
     private final Context                   context = new Context(this);
 
@@ -68,6 +70,7 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         this.parameterPasses    = passes[0];
         this.passes             = passes[1];
         this.reflection         = reflection;
+        this.executionState     = new ExecutionState(reflection.oid.size());
 
         var bufferAmount        = reflection.buffers.size();
         var bufferSize          = layout.getChannelCount() << 2;

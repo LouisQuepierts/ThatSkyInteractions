@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.infra.animation.backend.pipeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionReflection;
+import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
@@ -12,8 +13,8 @@ import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NonNull;
 
 public interface AnimationPipeline {
-    String ORIGINAL_SAMPLER = "Pipeline.OriginSampler";
-    String OUTPUT_BUFFER = "Pipeline.ResultBuffer";
+    String ORIGINAL_SAMPLER = "Sampler#Origin";
+    String OUTPUT_BUFFER = "Buffer#Result";
 
     @Contract(" -> new")
     static DefaultAnimationPipelineImpl.@NonNull Compiler compiler() {
@@ -71,4 +72,6 @@ public interface AnimationPipeline {
     UniformBuffer getUniform();
 
     ExecutionReflection getReflection();
+
+    ExecutionState getExecutionState();
 }
