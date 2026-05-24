@@ -15,15 +15,47 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.Animatio
 import net.quepierts.thatskyinteractions.infra.animation.backend.model.Timeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.TimelineSource;
+import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 @UtilityClass
 public class BedrockAnimationCompiler {
 
+    private static final Vector3fc FACTOR_ONE   = new Vector3f(1);
+    private static final Vector3fc FACTOR_INV_Y = new Vector3f(1, -1, 1);
+    private static final Vector3fc FACTOR_DEG   = new Vector3f(Mth.DEG_TO_RAD);
+
+    private static final Set<String> INV_Y_BONES = Set.of(
+            "body",
+            "left_arm",
+            "right_arm",
+            "left_leg",
+            "right_leg",
+            "head"
+    );
+
     public static @NonNull AnimationSource compile(@NonNull BedrockAnimation animation) {
+        return compile(animation, new ChannelProcressor() {
+            @Override
+            public boolean discard(final @NonNull String name) {
+                return false;
+            }
+
+            @Override
+            public @NonNull String procress(final @NonNull String name) {
+                return name;
+            }
+        });
+    }
+
+    public static @NonNull AnimationSource compile(
+            @NonNull BedrockAnimation   animation,
+            @NonNull ChannelProcressor  processor
+    ) {
         var bones               = animation.bones();
         var duration            = animation.length();
 
@@ -33,31 +65,52 @@ public class BedrockAnimationCompiler {
         var constants           = new FloatArrayList();
 
         for (var entry : bones.entrySet()) {
-            var name            = entry.getKey();
+            final var key = entry.getKey();
+
+            if (processor.discard(key)) {
+                continue;
+            }
+
+            var name            = processor.procress(key);
             var bone            = entry.getValue();
 
             if (bone            .position()
-                                .isPresent()) {
+                    .isPresent()) {
 
                 channels        .add(name + ".position");
-                var timeline    = compile(bone.position().get(), constants, duration, Channel.POSITION);
+                var timeline    = compile(
+                        bone.position().get(),
+                        constants,
+                        INV_Y_BONES.contains(name) ? FACTOR_INV_Y : FACTOR_ONE,
+                        duration
+                );
                 timelines       .add(timeline);
 
             }
 
             if (bone            .rotation()
-                                .isPresent()) {
+                    .isPresent()) {
 
                 channels        .add(name + ".rotation");
-                var timeline    = compile(bone.rotation().get(), constants, duration, Channel.ROTATION);
+                var timeline    = compile(
+                        bone.rotation().get(),
+                        constants,
+                        FACTOR_DEG,
+                        duration
+                );
                 timelines       .add(timeline);
             }
 
             if (bone            .scale()
-                                .isPresent()) {
+                    .isPresent()) {
 
                 channels        .add(name + ".scale");
-                var timeline    = compile(bone.scale().get(), constants, duration, Channel.SCALE);
+                var timeline    = compile(
+                        bone.scale().get(),
+                        constants,
+                        FACTOR_ONE,
+                        duration
+                );
                 timelines       .add(timeline);
             }
         }
@@ -65,26 +118,25 @@ public class BedrockAnimationCompiler {
         var size                = constants.size();
         var buffer              = new AnimationBuffer(size);
         System                  .arraycopy(
-                                    constants.elements(), 0,
-                                    buffer.getBuffer(), 0,
-                                    size
-                                );
+                constants.elements(), 0,
+                buffer.getBuffer(), 0,
+                size
+        );
 
         return                  new TimelineSource(
-                                    channels.toArray(String[]::new),
-                                    timelines.toArray(Timeline[]::new),
-                                    buffer,
-                                    true,
-                                    animation.length()
-                                );
+                channels.toArray(String[]::new),
+                timelines.toArray(Timeline[]::new),
+                buffer,
+                true,
+                animation.length()
+        );
     }
-
 
     private static @NonNull Timeline compile(
             @NonNull BedrockTimeline    timeline,
             @NonNull FloatArrayList     constants,
-            float                       duration,
-            final Channel               channel
+            final Vector3fc             factors,
+            final float                 duration
     ) {
         var tmp                 = new float[16];
         var keyframes           = timeline.keyframes();
@@ -104,8 +156,6 @@ public class BedrockAnimationCompiler {
 
         var n                   = array.size();
         var t                   = n - 1;
-
-        var factor              = channel.getFactor();
 
         for (int i = 0; i < t; i++) {
             var e0              = array.get(i);
@@ -134,10 +184,10 @@ public class BedrockAnimationCompiler {
                 var kp          = array.get(i0).getValue();
                 var kn          = array.get(i3).getValue();
 
-                get(kp.getPost  (), factor, tmp, 0);
-                get(k0.getPost  (), factor, tmp, 4);
-                get(k1.getPre   (), factor, tmp, 8);
-                get(kn.getPre   (), factor, tmp, 12);
+                get(kp.getPost  (), factors, tmp, 0);
+                get(k0.getPost  (), factors, tmp, 4);
+                get(k1.getPre   (), factors, tmp, 8);
+                get(kn.getPre   (), factors, tmp, 12);
 
                 addr0           .add(addr);
                 addr1           .add(addr + 8);
@@ -148,7 +198,7 @@ public class BedrockAnimationCompiler {
 
             } else {
 
-                get(k0.getPost  (), factor, tmp, 0);
+                get(k0.getPost  (), factors, tmp, 0);
                 addr0           .add(addr);
 
                 if (k0.getPost().equals(k1.getPre())) {
@@ -157,7 +207,7 @@ public class BedrockAnimationCompiler {
 
                     interpolations.add(Timeline.INTERPOLATION_CONSTANT);
                 } else {
-                    get(k1.getPre(), factor, tmp, 4);
+                    get(k1.getPre(), factors, tmp, 4);
                     addr1        .add(addr + 4);
                     constants    .addElements(addr, tmp, 0, 8);
 
@@ -192,22 +242,26 @@ public class BedrockAnimationCompiler {
 
     private static void get(
             @NonNull Vector3fc  vector,
-            final float         factor,
+            final Vector3fc     factor,
             float[]             array,
             int                 offset
     ) {
-        array[offset]       = vector.x() * factor;
-        array[offset + 1]   = vector.y() * factor;
-        array[offset + 2]   = vector.z() * factor;
+        array[offset]       = vector.x() * factor.x();
+        array[offset + 1]   = vector.y() * factor.y();
+        array[offset + 2]   = vector.z() * factor.z();
     }
 
     @Getter
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private enum Channel {
-        POSITION(0.0625f),
-        ROTATION(Mth.DEG_TO_RAD),
-        SCALE(1.0f);
+        POSITION,
+        ROTATION,
+        SCALE;
+    }
 
-        final float factor;
+    public interface ChannelProcressor {
+        boolean discard(@NonNull final String name);
+
+        @NonNull String procress(@NonNull final String name);
     }
 }
