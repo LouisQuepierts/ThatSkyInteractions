@@ -140,7 +140,7 @@ dependencies {
     implementation group: 'dev.anvilcraft.lib', name: 'anvillib-registrum-neoforge-26.1', version: anvillib_version
     implementation group: 'dev.anvilcraft.lib', name: 'anvillib-network-neoforge-26.1', version: anvillib_version
     implementation group: 'dev.anvilcraft.lib', name: 'anvillib-codec-neoforge-26.1', version: anvillib_version
-    implementation "dev.anvilcraft.lib:anvillib-rendering-neoforge-26.1:2.0.0"
+    implementation group: 'dev.anvilcraft.lib', name: 'anvillib-rendering-neoforge-26.1', version: anvillib_version
 
 //    runtimeOnly "maven.modrinth:sodium:$sodium_maven_version"
 //    runtimeOnly "maven.modrinth:iris:$iris_maven_version"
