@@ -13,6 +13,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("unused")
 public interface Tween {
 
     TweenBackend BACKEND = TweenBackend.create();

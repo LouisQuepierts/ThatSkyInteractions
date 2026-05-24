@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.joml.*;
 
 @UtilityClass
+@SuppressWarnings("unused")
 public class Interpolators {
 
     public static final Interpolator1f FLOAT = (from, to, progress) -> from + progress * (to - from);
