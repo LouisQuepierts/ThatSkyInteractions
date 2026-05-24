@@ -8,6 +8,7 @@ public final class ExecutionState {
 
     public ExecutionState(int size) {
         this.bits = new long[size >>> 6];
+        this.clear();
     }
 
     public void setExecutionMask(int oid, boolean value) {
@@ -23,7 +24,7 @@ public final class ExecutionState {
     }
 
     public void clear() {
-        Arrays.fill(this.bits, 0L);
+        Arrays.fill(this.bits, 0xFFFFFFFFFFFFFFL);
     }
 
     public void copyFrom(ExecutionState state) {
