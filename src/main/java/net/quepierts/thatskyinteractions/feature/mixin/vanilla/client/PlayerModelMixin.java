@@ -3,7 +3,7 @@ package net.quepierts.thatskyinteractions.feature.mixin.vanilla.client;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonLayout;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelSkeleton;

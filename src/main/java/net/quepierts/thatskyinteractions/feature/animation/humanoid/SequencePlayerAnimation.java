@@ -1,14 +1,11 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
 import lombok.extern.slf4j.Slf4j;
-import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.model.animation.PlayerAnimationDefinition;
-import net.quepierts.thatskyinteractions.core.model.animation.SourceDefinition;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftAnimationPipeline;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftFSM;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonPipeline;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
-import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationCompiler;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
@@ -21,7 +18,6 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeli
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
 import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMState;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 @Slf4j
 public final class SequencePlayerAnimation extends BaseAnimation {

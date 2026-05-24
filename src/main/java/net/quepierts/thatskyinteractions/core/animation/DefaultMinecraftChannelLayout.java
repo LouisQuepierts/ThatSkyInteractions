@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.animation;
+package net.quepierts.thatskyinteractions.core.animation;
 
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelLayout;

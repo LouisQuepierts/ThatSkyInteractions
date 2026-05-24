@@ -1,9 +1,9 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
 import net.quepierts.thatskyinteractions.core.model.animation.PlayerAnimationDefinition;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftAnimationPipeline;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftFSM;
-import net.quepierts.thatskyinteractions.feature.animation.DefaultMinecraftSkeletonPipeline;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;

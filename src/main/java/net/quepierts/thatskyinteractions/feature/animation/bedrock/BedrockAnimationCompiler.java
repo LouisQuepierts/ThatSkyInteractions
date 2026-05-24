@@ -75,7 +75,7 @@ public class BedrockAnimationCompiler {
             var bone            = entry.getValue();
 
             if (bone            .position()
-                    .isPresent()) {
+                                .isPresent()) {
 
                 channels        .add(name + ".position");
                 var timeline    = compile(
@@ -89,7 +89,7 @@ public class BedrockAnimationCompiler {
             }
 
             if (bone            .rotation()
-                    .isPresent()) {
+                                .isPresent()) {
 
                 channels        .add(name + ".rotation");
                 var timeline    = compile(
@@ -102,7 +102,7 @@ public class BedrockAnimationCompiler {
             }
 
             if (bone            .scale()
-                    .isPresent()) {
+                                .isPresent()) {
 
                 channels        .add(name + ".scale");
                 var timeline    = compile(
