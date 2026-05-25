@@ -5,7 +5,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.GameRenderer;
 import net.neoforged.neoforge.common.NeoForge;
-import net.quepierts.thatskyinteractions.feature.client.ClientTickHandler;
 import net.quepierts.thatskyinteractions.feature.client.gui.layer.GameLayerHook;
 import net.quepierts.thatskyinteractions.feature.client.render.GameRendererUpdateEvent;
 import org.spongepowered.asm.mixin.Mixin;

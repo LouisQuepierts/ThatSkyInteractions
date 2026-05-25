@@ -27,7 +27,7 @@ public class AvatarRendererMixin<AvatarlikeEntity extends Avatar & ClientAvatarE
             final CallbackInfo ci
     ) {
         final var animationState = ((AvatarExtension) entity).a4j$GetAnimationState();
-        animationState.update(state.ageInTicks);
+        animationState.update(partialTicks);
         ((HumanoidRenderStateExtension) state).a4j$SetAnimationState(animationState);
     }
 

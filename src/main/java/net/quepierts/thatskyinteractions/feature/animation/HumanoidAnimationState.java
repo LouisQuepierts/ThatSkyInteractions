@@ -5,10 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftChannelLayout;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
-import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
-import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
-import net.quepierts.thatskyinteractions.feature.client.model.ModelOverrideParameter;
+import net.quepierts.thatskyinteractions.core.model.animation.ModelOverrideParameter;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
@@ -26,8 +24,10 @@ public final class HumanoidAnimationState extends AnimationState {
     @Getter
     private final SkeletonState skeleton    = new SkeletonState(); // dummy
 
+    @Getter
     private final FSMState      fsmState    = new FSMState();
 
+    @Getter
     private final ExecutionState executionState = new ExecutionState(64);
 
     @Getter
@@ -42,12 +42,14 @@ public final class HumanoidAnimationState extends AnimationState {
     @Getter
     private final UniformInstance<ModelOverrideParameter> uboModelOverride;
 
+    @Getter
     private Identifier          current;
+
+    @Getter
     private PlayerAnimation     animation;
 
     @Getter
     private boolean             playing;
-    private boolean             loop;
 
     private float last;
 
@@ -95,8 +97,7 @@ public final class HumanoidAnimationState extends AnimationState {
         this.progress       = 0.0f;
     }
 
-    public void update(float current) {
-        // for test
+    public void tick(int current) {
         if (this.playing) {
             final var delta = (current - last) * 0.05f;
             this.ticked     = current != last;
@@ -115,16 +116,9 @@ public final class HumanoidAnimationState extends AnimationState {
         this.last       = current;
     }
 
-    public void resolve(final MinecraftModelAdaptor adaptor) {
-        if (!this.ticked) {
-            return;
+    public void update(float partialTicks) {
+        if (this.playing) {
+            this.progress   = this.fsmState.getElapsed() + partialTicks * 0.05f;
         }
-
-        this.animation.resolve(
-                this.fsmState,
-                this.executionState,
-                this,
-                adaptor.link(DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID)
-        );
     }
 }

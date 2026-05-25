@@ -4,17 +4,12 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import lombok.experimental.UtilityClass;
-import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.IdentifierArgument;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationManager;
-import net.quepierts.thatskyinteractions.feature.entity.AvatarExtension;
-import net.quepierts.thatskyinteractions.feature.network.PlayAnimationPacket;
-
-import java.util.UUID;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 
 @UtilityClass
 public final class AnimationCommand {
@@ -48,12 +43,9 @@ public final class AnimationCommand {
             return 0;
         }
 
-        final var id = source.getPlayer().getId();
-
-
-        PacketDistributor.sendToPlayersInDimension(
-                source.getLevel(),
-                new PlayAnimationPacket(name, id)
+        PlayerAnimationSystem.play(
+                source.getPlayer(),
+                name
         );
 
         return 0;

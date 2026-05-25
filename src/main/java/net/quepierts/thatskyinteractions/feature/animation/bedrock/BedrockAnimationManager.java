@@ -1,10 +1,12 @@
 package net.quepierts.thatskyinteractions.feature.animation.bedrock;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.core.Registry;
+import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -18,20 +20,30 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockAnimation;
 import net.quepierts.thatskyinteractions.core.model.animation.bedrock.BedrockAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.network.PacketCache;
-import net.quepierts.thatskyinteractions.feature.network.SyncAnimationSourcePacket;
+import net.quepierts.thatskyinteractions.feature.network.SyncDatapackPacket;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
+import java.util.function.IntFunction;
 
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public final class BedrockAnimationManager extends SimpleJsonResourceReloadListener<BedrockAnimationDefinition> {
 
-    public static final ResourceKey<Registry<BedrockAnimationDefinition>> REGISTRY_KEY
-            = ResourceKey.createRegistryKey(ThatSkyInteractions.location("animation/source"));
+    public static final Identifier IDENTIFIER = ThatSkyInteractions.location("animation/source");
 
     private static final String FOLDER = "animation/source";
 
     private static BedrockAnimationManager instance;
+
+    private static final StreamCodec<ByteBuf, Map<Identifier, BedrockAnimationDefinition>> STREAM_CODEC =
+            ByteBufCodecs.map(
+                    (IntFunction<Map<Identifier, BedrockAnimationDefinition>>) Object2ObjectOpenHashMap::new,
+                    ByteBufCodecs.STRING_UTF8.map(
+                            Identifier::parse,
+                            Identifier::toString
+                    ),
+                    BedrockAnimationParser.ANIMATION_DEFINITION_STREAM_CODEC
+            );
 
     @SubscribeEvent
     public static void onAddReloadListeners(final AddServerReloadListenersEvent event) {
@@ -39,7 +51,7 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
             instance.cache.free();
         }
         event.addListener(
-                REGISTRY_KEY.identifier(),
+                IDENTIFIER,
                 instance = new BedrockAnimationManager()
         );
     }
@@ -53,7 +65,10 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
         event.getRelevantPlayers().forEach(player -> {
             PacketDistributor.sendToPlayer(
                     player,
-                    new SyncAnimationSourcePacket(instance.definitions)
+                    new SyncDatapackPacket(
+                            "animation_source",
+                            instance.cache
+                    )
             );
         });
     }
@@ -84,12 +99,13 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
             final @NonNull  ProfilerFiller                              profiler
     ) {
         this.sync(preparations);
-        this.cache.reset(
-                new SyncAnimationSourcePacket(this.definitions),
-                SyncAnimationSourcePacket.STREAM_CODEC
-        );
 
         NeoForge.EVENT_BUS.post(new BedrockAnimationReloadedEvent(this));
+
+        this.cache.encode(
+                STREAM_CODEC,
+                this.definitions
+        );
     }
 
     public BedrockAnimationDefinition getDefinition(Identifier identifier) {
@@ -118,6 +134,10 @@ public final class BedrockAnimationManager extends SimpleJsonResourceReloadListe
 
         this.definitions    = builder.build();
         this.animations     = builder2.build();
+    }
+
+    public void sync(final PacketCache cache) {
+        this.sync(cache.decode(STREAM_CODEC));
     }
 
     public record Holder(
