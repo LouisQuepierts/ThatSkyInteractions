@@ -6,6 +6,8 @@
   "refmap": "thatskyinteractions.refmap.json",
   "client": [
     "vanilla.client.AvatarRendererMixin",
+    "vanilla.client.ClientHooksMixin",
+    "vanilla.client.GameRendererMixin",
     "vanilla.client.HumanoidRenderStateMixin",
     "vanilla.client.LivingEntityRendererMixin",
     "vanilla.client.PlayerModelMixin",
