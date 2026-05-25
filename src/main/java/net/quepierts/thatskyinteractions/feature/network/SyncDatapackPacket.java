@@ -10,43 +10,29 @@ import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationManager;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
+import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import org.jspecify.annotations.NonNull;
 
 @SuppressWarnings("unused")
 public record SyncDatapackPacket(
-        String      datatype,
+        int         id,
         PacketCache cache
 ) implements IClientboundPacket {
 
     public static final Type<SyncDatapackPacket> TYPE
             = IPacket.type(ThatSkyInteractions.location("sync_datapack"));
 
-    public static final StreamCodec<ByteBuf, SyncDatapackPacket> STREAM_CODEC = new StreamCodec<>() {
-        @Override
-        public SyncDatapackPacket decode(final ByteBuf byteBuf) {
-            var cache = new PacketCache();
-
-            var datatype = ByteBufCodecs.STRING_UTF8.decode(byteBuf);
-            cache.read(byteBuf);
-            return new SyncDatapackPacket(datatype, cache);
-        }
-
-        @Override
-        public void encode(final ByteBuf byteBuf, final SyncDatapackPacket syncDatapackPacket) {
-            ByteBufCodecs.STRING_UTF8.encode(byteBuf, syncDatapackPacket.datatype());
-            syncDatapackPacket.cache().write(byteBuf);
-        }
-    };
+    public static final StreamCodec<ByteBuf, SyncDatapackPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT,
+            SyncDatapackPacket::id,
+            PacketCache.STREAM_CODEC,
+            SyncDatapackPacket::cache,
+            SyncDatapackPacket::new
+    );
 
     @Override
     public void handleOnClient(final @NonNull Player player) {
-        switch (this.datatype) {
-            case "animation_source":
-                BedrockAnimationManager.getInstance().sync(this.cache);
-                break;
-            case "animation_definition":
-                PlayerAnimationManager.getInstance().sync(this.cache);
-        }
+        DataSyncSystem.handle(this);
     }
 
     @Override

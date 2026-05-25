@@ -6,7 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftChannelLayout;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
-import net.quepierts.thatskyinteractions.core.animation.model.ModelOverrideParameter;
+import net.quepierts.thatskyinteractions.core.animation.parameter.ModelOverrideParameter;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;

@@ -2,19 +2,29 @@ package net.quepierts.thatskyinteractions.feature.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.NoArgsConstructor;
 import net.minecraft.network.codec.StreamCodec;
 import org.jspecify.annotations.NonNull;
 
+@NoArgsConstructor
 public final class PacketCache {
+
+    public static final StreamCodec<ByteBuf, PacketCache> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public PacketCache decode(final ByteBuf byteBuf) {
+            var cache = new PacketCache();
+            cache.read(byteBuf);
+            return cache;
+        }
+
+        @Override
+        public void encode(final ByteBuf byteBuf, final PacketCache packetCache) {
+            packetCache.write(byteBuf);
+        }
+    };
 
     private volatile ByteBuf buffer;
     private int readableBytes;
-
-    public PacketCache() {}
-
-    private PacketCache(int capacity) {
-        this.buffer = Unpooled.buffer(capacity);
-    }
 
     public <T> void encode(
             @NonNull final StreamCodec<ByteBuf, T> codec,
@@ -54,7 +64,9 @@ public final class PacketCache {
 
     public void read(final ByteBuf byteBuf) {
         this.free();
-        this.buffer = Unpooled.buffer(byteBuf.readableBytes());
+        final var bytes = byteBuf.readableBytes();
+        this.buffer = Unpooled.buffer(bytes);
         this.buffer.writeBytes(byteBuf);
+        this.readableBytes = bytes;
     }
 }
