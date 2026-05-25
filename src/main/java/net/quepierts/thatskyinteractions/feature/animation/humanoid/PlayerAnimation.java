@@ -1,6 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
-import net.quepierts.thatskyinteractions.core.model.animation.PlayerAnimationDefinition;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseProvider;

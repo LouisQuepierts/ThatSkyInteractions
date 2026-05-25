@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.core.model.animation.bedrock;
+package net.quepierts.thatskyinteractions.core.animation.model.bedrock;
 
 import org.joml.Vector3fc;
 

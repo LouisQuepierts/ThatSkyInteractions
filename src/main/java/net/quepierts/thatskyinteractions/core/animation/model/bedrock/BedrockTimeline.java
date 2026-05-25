@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.core.model.animation.bedrock;
+package net.quepierts.thatskyinteractions.core.animation.model.bedrock;
 
 import it.unimi.dsi.fastutil.floats.Float2ObjectMap;
 import org.joml.Vector3f;

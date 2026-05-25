@@ -7,8 +7,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.experimental.UtilityClass;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.quepierts.thatskyinteractions.core.model.animation.PlayerAnimationDefinition;
-import net.quepierts.thatskyinteractions.core.model.animation.SourceDefinition;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
+import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
 
 @UtilityClass
 public class PlayerAnimationParser {

@@ -1,7 +1,7 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
 import lombok.extern.slf4j.Slf4j;
-import net.quepierts.thatskyinteractions.core.model.animation.PlayerAnimationDefinition;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;

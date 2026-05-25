@@ -1,20 +1,15 @@
 package net.quepierts.thatskyinteractions.feature.animation.bedrock;
 
-import com.mojang.datafixers.util.Function3;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.anvilcraft.lib.v2.codec.StreamCodecUtil;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.floats.Float2ObjectArrayMap;
-import it.unimi.dsi.fastutil.floats.Float2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.experimental.UtilityClass;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
-import net.quepierts.thatskyinteractions.core.model.animation.bedrock.*;
-import org.joml.Vector3fc;
+import net.quepierts.thatskyinteractions.core.animation.model.bedrock.*;
 
 import java.util.HashMap;
 import java.util.Map;

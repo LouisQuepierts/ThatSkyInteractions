@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.model.animation.PlayerAnimationDefinition;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.network.PacketCache;
 import net.quepierts.thatskyinteractions.feature.network.SyncDatapackPacket;
@@ -45,25 +45,20 @@ public final class PlayerAnimationManager extends SimpleJsonResourceReloadListen
                     PlayerAnimationParser.ANIMATION_STREAM_CODEC
             );
 
-    private static PlayerAnimationManager instance;
+    private static final PlayerAnimationManager instance = new PlayerAnimationManager();
 
     @SubscribeEvent
     public static void onAddReloadListeners(final AddServerReloadListenersEvent event) {
-        if (instance != null) {
-            instance.cache.free();
-        }
+
+        instance.cache.free();
         event.addListener(
                 IDENTIFIER,
-                instance = new PlayerAnimationManager()
+                instance
         );
     }
 
     @SubscribeEvent
     public static void onDatapackSync(final OnDatapackSyncEvent event) {
-        if (instance == null) {
-            return;
-        }
-
         event.getRelevantPlayers().forEach(player -> {
             PacketDistributor.sendToPlayer(
                     player,
@@ -76,9 +71,6 @@ public final class PlayerAnimationManager extends SimpleJsonResourceReloadListen
     }
 
     public static @NonNull PlayerAnimationManager getInstance() {
-        if (instance == null) {
-            instance = new PlayerAnimationManager();
-        }
         return instance;
     }
 

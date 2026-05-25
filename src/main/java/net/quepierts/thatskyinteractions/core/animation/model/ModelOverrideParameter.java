@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.core.model.animation;
+package net.quepierts.thatskyinteractions.core.animation.model;
 
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UboDefinition;

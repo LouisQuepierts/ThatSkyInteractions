@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.core.model.animation;
+package net.quepierts.thatskyinteractions.core.animation.model;
 
 import java.util.Map;
 
