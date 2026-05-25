@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.client.ui;
+package net.quepierts.thatskyinteractions.feature.client.gui;
 
 import net.quepierts.thatskyinteractions.feature.client.ClientTickHandler;
 import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenTickHandler;
