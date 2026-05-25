@@ -15,7 +15,11 @@ import java.util.function.Consumer;
 @SuppressWarnings("unused")
 public interface Tween {
 
-    TweenScope BACKEND = TweenScope.create();
+    TweenScope GLOBAL = TweenScope.global();
+
+    static TweenScope create() {
+        return TweenScope.create();
+    }
 
     static TweenHandle to(
             @NonNull Consumer1f                 target,
@@ -26,7 +30,7 @@ public interface Tween {
             @NonNull Interpolator1f interpolator,
             @NonNull Ease ease
     ) {
-        return BACKEND.to(target, from, to, duration, interpolator, ease);
+        return GLOBAL.to(target, from, to, duration, interpolator, ease);
     }
 
     static <T> TweenHandle to(
@@ -38,7 +42,7 @@ public interface Tween {
             @NonNull Interpolator<T>            interpolator,
             @NonNull Ease                       ease
     ) {
-        return BACKEND.to(target, from, to, duration, interpolator, ease);
+        return GLOBAL.to(target, from, to, duration, interpolator, ease);
     }
 
     static TweenHandle translate(
@@ -50,7 +54,7 @@ public interface Tween {
             @NonNull Interpolator<Vector3fc>    interpolator,
             @NonNull Ease                       ease
     ) {
-        return Tween.BACKEND.translate(transform, from, to, duration, interpolator, ease);
+        return Tween.GLOBAL.translate(transform, from, to, duration, interpolator, ease);
     }
 
     static TweenHandle rotate(
@@ -62,7 +66,7 @@ public interface Tween {
             @NonNull Interpolator<Vector3fc>    interpolator,
             @NonNull Ease                       ease
     ) {
-        return Tween.BACKEND.rotate(transform, from, to, duration, interpolator, ease);
+        return Tween.GLOBAL.rotate(transform, from, to, duration, interpolator, ease);
     }
 
     static TweenHandle rotate(
@@ -74,7 +78,7 @@ public interface Tween {
             @NonNull Interpolator<Quaternionfc> interpolator,
             @NonNull Ease                       ease
     ) {
-        return Tween.BACKEND.rotate(transform, from, to, duration, interpolator, ease);
+        return Tween.GLOBAL.rotate(transform, from, to, duration, interpolator, ease);
     }
 
     static TweenHandle scale(
@@ -86,14 +90,14 @@ public interface Tween {
             @NonNull Interpolator<Vector3fc>    interpolator,
             @NonNull Ease                       ease
     ) {
-        return Tween.BACKEND.scale(transform, from, to, duration, interpolator, ease);
+        return Tween.GLOBAL.scale(transform, from, to, duration, interpolator, ease);
     }
 
     static TweenHandle wait(
             @NonNull Runnable                   runnable,
             float                               duration
     ) {
-        return Tween.BACKEND.wait(runnable, duration);
+        return Tween.GLOBAL.wait(runnable, duration);
     }
 
 }

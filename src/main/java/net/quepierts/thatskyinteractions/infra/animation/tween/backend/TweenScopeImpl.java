@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.infra.animation.tween.backend;
 
-import net.quepierts.thatskyinteractions.infra.Services;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformAccessor;
 import net.quepierts.thatskyinteractions.infra.animation.tween.backend.task.*;
@@ -19,9 +18,7 @@ public final class TweenScopeImpl
 
     private final TweenScheduler scheduler = new TweenScheduler();
 
-    TweenScopeImpl() {
-        Services.load(TweenTickRegistrar.class).register(this);
-    }
+    TweenScopeImpl() {}
 
     @Override
     public TweenHandle to(@NonNull final Consumer1f target, final float from, final float to, final float duration, @NonNull final Interpolator1f interpolator, @NonNull final Ease ease) {

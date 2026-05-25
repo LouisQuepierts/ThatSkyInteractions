@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.infra.animation.tween.backend;
 
+import net.quepierts.thatskyinteractions.infra.Services;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformAccessor;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
@@ -13,6 +14,12 @@ import org.jspecify.annotations.NonNull;
 import java.util.function.Consumer;
 
 public interface TweenScope {
+    static TweenScope global() {
+        final var scope = new TweenScopeImpl();
+        Services.load(TweenTickRegistrar.class).register(scope);
+        return scope;
+    }
+
     static TweenScope create() {
         return new TweenScopeImpl();
     }
