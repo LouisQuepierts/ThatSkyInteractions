@@ -5,7 +5,6 @@ import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformA
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;
-import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenScope;
 import org.joml.Quaternionfc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;

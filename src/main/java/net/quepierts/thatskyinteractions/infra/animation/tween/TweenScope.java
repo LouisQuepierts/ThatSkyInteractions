@@ -1,12 +1,13 @@
-package net.quepierts.thatskyinteractions.infra.animation.tween.backend;
+package net.quepierts.thatskyinteractions.infra.animation.tween;
 
 import net.quepierts.thatskyinteractions.infra.Services;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformAccessor;
+import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenScopeImpl;
+import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenTickRegistrar;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;
-import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import org.joml.Quaternionfc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
@@ -15,9 +16,12 @@ import java.util.function.Consumer;
 
 public interface TweenScope {
     static TweenScope global() {
-        final var scope = new TweenScopeImpl();
-        Services.load(TweenTickRegistrar.class).register(scope);
-        return scope;
+        if (Global.instance == null) {
+            final var scope = new TweenScopeImpl();
+            Services.load(TweenTickRegistrar.class).register(scope);
+            Global.instance = scope;
+        }
+        return Global.instance;
     }
 
     static TweenScope create() {
@@ -88,4 +92,10 @@ public interface TweenScope {
             @NonNull Runnable           runnable,
             float                       duration
     );
+
+    boolean isRunning();
+
+    class Global {
+        private static TweenScope instance;
+    }
 }

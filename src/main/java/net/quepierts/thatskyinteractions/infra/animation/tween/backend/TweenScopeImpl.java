@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.infra.animation.tween.backend;
 
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformAccessor;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.backend.task.*;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator;
@@ -18,7 +19,7 @@ public final class TweenScopeImpl
 
     private final TweenScheduler scheduler = new TweenScheduler();
 
-    TweenScopeImpl() {}
+    public TweenScopeImpl() {}
 
     @Override
     public TweenHandle to(@NonNull final Consumer1f target, final float from, final float to, final float duration, @NonNull final Interpolator1f interpolator, @NonNull final Ease ease) {
@@ -126,6 +127,11 @@ public final class TweenScopeImpl
         this.scheduler  .submit(task);
 
         return DefaultTweenHandle.of(task);
+    }
+
+    @Override
+    public boolean isRunning() {
+        return this.scheduler.isRunning();
     }
 
     @Override

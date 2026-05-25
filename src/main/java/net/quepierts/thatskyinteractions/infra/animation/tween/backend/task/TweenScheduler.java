@@ -25,4 +25,7 @@ public final class TweenScheduler {
 
     }
 
+    public boolean isRunning() {
+        return !this.tasks.isEmpty();
+    }
 }
