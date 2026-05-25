@@ -7,15 +7,10 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 import net.quepierts.thatskyinteractions.feature.entity.AvatarExtension;
 import org.jspecify.annotations.NonNull;
-
-import java.util.UUID;
 
 @SuppressWarnings("unused")
 public record PlayAnimationPacket(
