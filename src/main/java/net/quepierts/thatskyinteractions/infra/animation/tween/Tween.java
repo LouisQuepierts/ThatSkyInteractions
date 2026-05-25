@@ -1,12 +1,11 @@
 package net.quepierts.thatskyinteractions.infra.animation.tween;
 
-import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformAccessor;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;
-import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenBackend;
+import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenScope;
 import org.joml.Quaternionfc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
@@ -16,7 +15,7 @@ import java.util.function.Consumer;
 @SuppressWarnings("unused")
 public interface Tween {
 
-    TweenBackend BACKEND = TweenBackend.create();
+    TweenScope BACKEND = TweenScope.create();
 
     static TweenHandle to(
             @NonNull Consumer1f                 target,

@@ -12,9 +12,9 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.function.Consumer;
 
-public interface TweenBackend {
-    static TweenBackend create() {
-        return new TweenBackendImpl();
+public interface TweenScope {
+    static TweenScope create() {
+        return new TweenScopeImpl();
     }
 
     TweenHandle to(

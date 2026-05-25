@@ -14,12 +14,12 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.function.Consumer;
 
-public final class TweenBackendImpl
-        implements TweenBackend, TweenTickHandler {
+public final class TweenScopeImpl
+        implements TweenScope, TweenTickHandler {
 
     private final TweenScheduler scheduler = new TweenScheduler();
 
-    TweenBackendImpl() {
+    TweenScopeImpl() {
         Services.load(TweenTickRegistrar.class).register(this);
     }
 
