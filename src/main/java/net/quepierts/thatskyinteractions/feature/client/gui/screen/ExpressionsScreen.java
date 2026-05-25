@@ -134,26 +134,6 @@ public final class ExpressionsScreen extends AnimatableScreen {
                 this.height,
                 0xc0101010
         );
-        /*final var sdf = SdfGraphics.getInstance()
-                .reset()
-                .round(6.0f)
-                .color(0x80101010);
-
-        final var left  = 16;
-        final var top   = 16;
-        final var size  = 24;
-        final var space = 4;
-        final var w     = size + space;
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                sdf.box(
-                        left    + j * w,
-                        top     + i * w,
-                        size, size
-                ).draw(graphics);
-            }
-        }*/
 
         super.extractAnimatableRenderState(graphics, (int) (mouseX - x), mouseY, delta);
 
