@@ -48,7 +48,7 @@ public abstract class AnimatableScreen extends Screen {
             handler.tick(delta * 0.05f);
         }
 
-//        super.extractRenderState(graphics, mouseX, mouseY, delta);
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
     }
 
     public TweenScope tween() {
