@@ -11,6 +11,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.ParentOverrideManager;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationManager;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
+import net.quepierts.thatskyinteractions.feature.data.friendship.FriendshipTreeManager;
 import net.quepierts.thatskyinteractions.feature.network.SyncDatapackPacket;
 import org.jspecify.annotations.NonNull;
 
@@ -33,6 +34,9 @@ public class DataSyncSystem {
 
     public static final ParentOverrideManager       PARENT_OVERRIDE
             = ParentOverrideManager.getInstance();
+
+    public static final FriendshipTreeManager       FRIENDSHIP_TREE
+            = FriendshipTreeManager.getInstance();
 
     @SubscribeEvent
     public static void onAddReloadListeners(final AddServerReloadListenersEvent event) {
