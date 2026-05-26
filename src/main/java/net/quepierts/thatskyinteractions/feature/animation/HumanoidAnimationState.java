@@ -51,10 +51,13 @@ public final class HumanoidAnimationState extends AnimationState {
     @Getter
     private boolean             playing;
 
-    private float last;
+    private int last;
 
     @Getter
     private boolean ticked = false;
+
+    @Getter
+    private boolean resolved = false;
 
     @Getter
     private float alpha = 0.0f;
@@ -119,6 +122,7 @@ public final class HumanoidAnimationState extends AnimationState {
 
     public void update(float partialTicks) {
         if (this.playing) {
+            this.resolved   = false;
             final var delta = partialTicks * 0.05f;
             this.progress               = this.fsmState.getElapsed() + delta;
             var progress                = Math.min(
@@ -147,5 +151,9 @@ public final class HumanoidAnimationState extends AnimationState {
         }
 
         return alpha;
+    }
+
+    public void markResolved() {
+        this.resolved = true;
     }
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 @Slf4j
 public final class MinecraftModelAdaptor {
 
+    @Getter
     private final MinecraftModelSkeleton                            skeleton;
     private final Map<SkeletonPipeline, MinecraftModelPoseProvider> linked;
 
