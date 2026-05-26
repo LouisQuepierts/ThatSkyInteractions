@@ -14,8 +14,8 @@ public final class ParentOverridePass extends SkeletonPass {
     private final int bones;
 
     // ubo format:
-    // fint  parent[]       0
-    // bool  enable         1
+    // bool  enable         0
+    // fint  parent[]       1
     private final int ubo;
 
     public ParentOverridePass(
@@ -35,7 +35,7 @@ public final class ParentOverridePass extends SkeletonPass {
     @Override
     public void execute(@NonNull final SkeletonContext context) {
         final var uniform   = context.getUniformBuffer(this.ubo);
-        final var enable    = uniform.readBool(1);
+        final var enable    = uniform.readBool(0);
 
         final var src       = context.getPoseBuffer(this.src);
         final var dst       = context.getPoseBuffer(this.dst);
@@ -47,7 +47,7 @@ public final class ParentOverridePass extends SkeletonPass {
 
         final var reader    = uniform.getRawReader();
 
-        final var pParent   = 0;
+        final var pParent   = 4;
 
         final var size      = this.bones;
         final var parents   = new float[size];

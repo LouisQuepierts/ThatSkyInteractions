@@ -9,6 +9,7 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.Uniform
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformType;
 import net.quepierts.thatskyinteractions.infra.animation.core.model.ParentOverrideConfiguration;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public final class ParentOverrideParameter extends UniformParameter {
 
@@ -16,8 +17,8 @@ public final class ParentOverrideParameter extends UniformParameter {
         final var size = layout.size();
         final var definition = UboDefinition.builder()
 //                .withArray("order", UniformType.INT, size)
-                .withArray("parent", UniformType.INT, size)
                 .withUniform("enable", UniformType.BOOL)
+                .withArray("parent", UniformType.INT, size)
                 .build();
         return new ParentOverrideParameter(definition);
     }
@@ -48,5 +49,15 @@ public final class ParentOverrideParameter extends UniformParameter {
         final var writer = buffer.getRawWriter();
 //        writer.write(0, this.data.getOrder());
         writer.write(this.ADDR_PARENT, this.data.getParent());
+    }
+
+    public void upload(
+            @Nullable final ParentOverrideConfiguration configuration,
+            @NonNull  final UniformBuffer               buffer
+    ) {
+        if (configuration != this.data) {
+            this.data = configuration;
+            this.upload(buffer);
+        }
     }
 }
