@@ -5,16 +5,13 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
-import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelSkeleton;
 import net.quepierts.thatskyinteractions.feature.client.render.EntityModelExtension;
 import org.joml.*;
 
 @Slf4j
-@EventBusSubscriber
 public final class PlayerAnimationHook {
 
     public static void onSetupAnimation(
