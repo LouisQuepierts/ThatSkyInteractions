@@ -1,17 +1,16 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.screen;
 
-import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.GridPane;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VBox;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.friendship.FriendshipTreeLayout;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.ScrollDirection;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VScrollPane;
+import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
-import net.quepierts.thatskyinteractions.core.model.ui.Alignment;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -32,7 +31,27 @@ public final class ExpressionsScreen extends AnimatableScreen {
     protected void init() {
         super.init();
 
-        VisualNode visualNode = (control, graphics, mouseX, mouseY, delta) -> {
+        this.slide = this.tween().to(
+                this::setTransition,
+                0.0f,
+                1.0f,
+                0.5f,
+                Interpolators.FLOAT,
+                Eases.QUAD_OUT
+        );
+
+        final var tree      = DataSyncSystem.FRIENDSHIP_TREE.get(ThatSkyInteractions.location("friend"));
+        final var layout    = new FriendshipTreeLayout(tree, 0, 0, this.height);
+        layout.layout();
+
+        final var scroll    = new VScrollPane(0, 0, this.width, this.height, Component.empty());
+        scroll.addChild(layout);
+        scroll.getDirection().set(ScrollDirection.BACKWARD);
+        scroll.getScrollSpeed().set(16.0f);
+        scroll.layout();
+        this.addRenderableWidget(scroll);
+
+        /*VisualNode visualNode = (control, graphics, mouseX, mouseY, delta) -> {
             final var x = control.getX() + control.getWidth() / 2;
             final var y = control.getY() + control.getHeight() / 2;
 
@@ -62,18 +81,9 @@ public final class ExpressionsScreen extends AnimatableScreen {
                         .light(2.5f)
                         .draw(graphics);
             }
-        };
+        };*/
 
-        this.slide = this.tween().to(
-                this::setTransition,
-                0.0f,
-                1.0f,
-                0.5f,
-                Interpolators.FLOAT,
-                Eases.QUAD_OUT
-        );
-
-        var vBox     = new VBox(0, 0, this.sliderWide, this.height, Component.empty());
+        /*var vBox     = new VBox(0, 0, this.sliderWide, this.height, Component.empty());
         vBox.setAlignment(Alignment.TOP_CENTER);
         final var padding = vBox.getPadding();
         padding.top = 16;
@@ -110,7 +120,7 @@ public final class ExpressionsScreen extends AnimatableScreen {
 
         vBox.addChild(grid);
         vBox.layout();
-        this.addRenderableWidget(vBox);
+        this.addRenderableWidget(vBox);*/
     }
 
     @Override
