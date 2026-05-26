@@ -13,15 +13,17 @@ import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
 @UtilityClass
 public class PlayerAnimationParser {
 
+    public static final float DEFAULT_TRANSITION = 0.0f;
+
     public static final Codec<SourceDefinition> SOURCE_CODEC =
             Codec.STRING.xmap(
-                    str -> new SourceDefinition(str, 0.0f, 0.0f),
+                    str -> new SourceDefinition(str, DEFAULT_TRANSITION, DEFAULT_TRANSITION),
                     SourceDefinition::source
             ).withAlternative(
                     RecordCodecBuilder.create(instance -> instance.group(
                             Codec.STRING.fieldOf("source").forGetter(SourceDefinition::source),
-                            Codec.FLOAT.optionalFieldOf("fadeIn", 0.0f).forGetter(SourceDefinition::fadeIn),
-                            Codec.FLOAT.optionalFieldOf("fadeOut", 0.0f).forGetter(SourceDefinition::fadeOut)
+                            Codec.FLOAT.optionalFieldOf("fadeIn", DEFAULT_TRANSITION).forGetter(SourceDefinition::fadeIn),
+                            Codec.FLOAT.optionalFieldOf("fadeOut", DEFAULT_TRANSITION).forGetter(SourceDefinition::fadeOut)
                     ).apply(instance, SourceDefinition::new))
             );
 
