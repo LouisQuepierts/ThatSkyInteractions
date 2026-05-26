@@ -17,28 +17,36 @@
     "high_five_1": {
       "type": "interaction",
       "price": 1,
-      "interact": "thatskyinteractions:high_five",
       "left": "high_five_2",
-      "middle": "hug_1"
+      "middle": "hug_1",
+      "metadata": {
+        "interaction": "thatskyinteractions:high_five"
+      }
     },
     "high_five_2": {
       "type": "interaction",
       "price": 4,
-      "interact": "thatskyinteractions:high_five",
-      "level": 2
+      "metadata": {
+        "interaction": "thatskyinteractions:high_five",
+        "level": "2"
+      }
     },
     "hug_1": {
       "type": "interaction",
       "price": 2,
-      "interact": "thatskyinteractions:hug",
       "left": "hug_2",
-      "middle": "lock_1"
+      "middle": "lock_1",
+      "metadata": {
+        "interaction": "thatskyinteractions:hug"
+      }
     },
     "hug_2": {
       "type": "interaction",
       "price": 4,
-      "interact": "thatskyinteractions:hug",
-      "level": 2
+      "metadata": {
+        "interaction": "thatskyinteractions:hug",
+        "level": "2"
+      }
     },
     "lock_1": {
       "type": "lock",
@@ -48,40 +56,52 @@
     "double_high_five_1": {
       "type": "interaction",
       "price": 3,
-      "interact": "thatskyinteractions:double_high_five",
       "left": "double_high_five_2",
-      "middle": "pat_head_1"
+      "middle": "pat_head_1",
+      "metadata": {
+        "interaction": "thatskyinteractions:double_high_five"
+      }
     },
     "double_high_five_2": {
       "type": "interaction",
       "price": 4,
-      "interact": "thatskyinteractions:double_high_five",
-      "level": 2
+      "metadata": {
+        "interaction": "thatskyinteractions:double_high_five",
+        "level": "2"
+      }
     },
     "pat_head_1": {
       "type": "interaction",
       "price": 6,
-      "interact": "thatskyinteractions:pat_head",
       "left": "pat_head_2",
-      "middle": "bear_hug_1"
+      "middle": "bear_hug_1",
+      "metadata": {
+        "interaction": "thatskyinteractions:pat_head"
+      }
     },
     "pat_head_2": {
       "type": "interaction",
       "price": 8,
-      "interact": "thatskyinteractions:pat_head",
-      "level": 2
+      "metadata": {
+        "interaction": "thatskyinteractions:pat_head",
+        "level": "2"
+      }
     },
     "bear_hug_1": {
       "type": "interaction",
       "price": 8,
-      "interact": "thatskyinteractions:bear_hug",
-      "middle": "bear_hug_2"
+      "middle": "bear_hug_2",
+      "metadata": {
+        "interaction": "thatskyinteractions:bear_hug"
+      }
     },
     "bear_hug_2": {
       "type": "interaction",
       "price": 12,
-      "interact": "thatskyinteractions:bear_hug",
-      "level": 2
+      "metadata": {
+        "interaction": "thatskyinteractions:bear_hug",
+        "level": "2"
+      }
     }
   }
 }

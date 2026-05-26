@@ -1,79 +1,131 @@
 package net.quepierts.thatskyinteractions.feature.data.friendship;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.core.model.friendship.FriendshipTreeDefinition;
+import net.quepierts.thatskyinteractions.infra.util.ArrayIterator;
 import net.quepierts.thatskyinteractions.infra.util.LocationLookup;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FriendshipTree {
+public final class FriendshipTree implements Iterable<FriendshipTreeNode> {
 
     public static FriendshipTree of(@NonNull final FriendshipTreeDefinition definition) {
 
-        final var nodes     = definition.nodes();
-        final var size      = nodes.size();
-        final var lookup    = LocationLookup.of(nodes.keySet());
-        final var ordinal   = new FriendshipTreeNode[size];
+        final var nodes             = definition.nodes();
+        final var size              = nodes.size();
 
-        final var parents   = new int[size];
-        final var branches  = new FriendshipTreeNode.Branch[size];
+        final var order             = new String[size];
+        final var parents           = new int[size];
+        final var levels            = new int[size];
+        final var ordinal           = new FriendshipTreeNode[size];
+        final var branches          = new FriendshipTreeNode.Branch[size];
+
         Arrays.fill(parents, -1);
+        Arrays.fill(levels, 0);
         Arrays.fill(branches, FriendshipTreeNode.Branch.MIDDLE);
 
-        var i = 0;
-        for (final var name : lookup) {
-            final var node      = nodes.get(name);
-            final var location  = i;
+        final var queue             = new ObjectArrayFIFOQueue<String>();
+        queue                       .enqueue(definition.root());
 
-            final var left      = lookup.find(node.left());
-            final var middle    = lookup.find(node.middle());
-            final var right     = lookup.find(node.right());
+        var read                    = 0;
+        var write                   = 0;
 
-            final var branch    = branches[location];
+        while (!queue.isEmpty()) {
+            final var name          = queue.dequeue();
+            final var node          = nodes.get(name);
 
-            if (branch != FriendshipTreeNode.Branch.MIDDLE) {
-                if (left != -1 || right != -1) {
-                    throw new IllegalArgumentException("Invalid friendship tree definition: " + name);
-                }
+            if (node == null) {
+                throw new IllegalArgumentException("Node " + name + " does not exist.");
             }
 
-            if (left != -1) {
-                parents[left]   = location;
-                branches[left]  = FriendshipTreeNode.Branch.LEFT;
+            final var hasLeft       = !node.left().isEmpty();
+            final var hasRight      = !node.right().isEmpty();
+
+            if (branches[read] != FriendshipTreeNode.Branch.MIDDLE && (hasLeft || hasRight)) {
+                throw new IllegalArgumentException("Node " + name + " is not on middle branch.");
             }
 
-            if (middle != -1) {
-                parents[middle]  = location;
-                branches[middle] = FriendshipTreeNode.Branch.MIDDLE;
+            var left                = -1;
+            var middle              = -1;
+            var right               = -1;
+
+            if (hasLeft) {
+                left                = ++ write;
+                parents[left]       = read;
+                levels[left]        = levels[read] + 1;
+                branches[left]      = FriendshipTreeNode.Branch.LEFT;
+                queue.enqueue(node.left());
             }
 
-            if (right != -1) {
-                parents[right]   = location;
-                branches[right]  = FriendshipTreeNode.Branch.RIGHT;
+            if (!node.middle().isEmpty()) {
+                middle              = ++ write;
+                parents[middle]     = read;
+                levels[middle]      = levels[read] + 1;
+                queue.enqueue(node.middle());
             }
 
-            ordinal[i] = new FriendshipTreeNode(
-                    name,
-                    node.type(),
-                    left,
-                    middle,
-                    right,
-                    parents[location],
-                    node.metadata(),
-                    node.cost(),
-                    branch
+            if (hasRight) {
+                right               = ++ write;
+                parents[right]      = read;
+                levels[right]       = levels[read] + 1;
+                branches[right]     = FriendshipTreeNode.Branch.RIGHT;
+                queue.enqueue(node.right());
+            }
+
+            order[read]       = name;
+            ordinal[read]     = new FriendshipTreeNode(
+                                name,
+                                node.type(),
+                                left, right, middle,
+                                parents[read],
+                                levels[read],
+                                node.metadata(),
+                                node.cost(),
+                                branches[read]
             );
-
-            i ++;
+            read ++;
         }
 
-        return new FriendshipTree(lookup, ordinal);
+        final var lookup        = LocationLookup.of(order);
+
+        return new FriendshipTree(
+                lookup,
+                ordinal,
+                levels[size - 1] + 1
+        );
     }
 
-    private final LocationLookup lookup;
-    private final FriendshipTreeNode[] ordinal;
+    @Getter
+    private final LocationLookup        lookup;
 
+    private final FriendshipTreeNode[]  ordinal;
+
+    private final int                   height;
+
+    @Override
+    public @NonNull Iterator<FriendshipTreeNode> iterator() {
+        return new ArrayIterator<>(this.ordinal);
+    }
+
+    public FriendshipTreeNode getRoot() {
+        return this.ordinal[0];
+    }
+
+    public FriendshipTreeNode get(int location) {
+        return this.ordinal[location];
+    }
+
+    public int size() {
+        return this.ordinal.length;
+    }
+
+    public int height() {
+        return this.height;
+    }
 }

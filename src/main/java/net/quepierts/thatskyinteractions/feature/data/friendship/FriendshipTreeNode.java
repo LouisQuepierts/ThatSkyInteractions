@@ -2,13 +2,14 @@ package net.quepierts.thatskyinteractions.feature.data.friendship;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.core.model.Currency;
 import net.quepierts.thatskyinteractions.core.model.friendship.Cost;
 
 import java.util.Map;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class FriendshipTreeNode {
 
     private static final Cost DEFAULT_COST    = new Cost(Currency.WHITE_CANDLE, 0);
@@ -21,12 +22,13 @@ public final class FriendshipTreeNode {
     private final int       right;
 
     private final int       parent;
+    private final int       level;
 
     private final Map<String, String> metadata;
 
     private final Cost      cost;
 
-    private Branch          branch;
+    private final Branch    branch;
 
     public boolean hasLeft() {
         return this.branch == Branch.MIDDLE && left != -1;
@@ -46,8 +48,8 @@ public final class FriendshipTreeNode {
 
     public enum Branch {
         LEFT,
-        RIGHT,
-        MIDDLE
+        MIDDLE,
+        RIGHT
     }
 
 }
