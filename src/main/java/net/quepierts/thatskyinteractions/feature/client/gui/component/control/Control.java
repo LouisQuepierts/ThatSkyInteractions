@@ -7,11 +7,21 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.quepierts.thatskyinteractions.core.property.Vector2fProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.core.model.ui.Insets;
+import org.joml.Vector2fc;
 import org.jspecify.annotations.NonNull;
 
+import java.util.function.Consumer;
+
 public class Control extends AbstractWidget {
+
+    @Getter
+    private final Consumer<Vector2fc> position;
+
+    @Getter
+    private final Consumer<Vector2fc> size;
 
     @Getter
     private final Insets padding;
@@ -30,6 +40,9 @@ public class Control extends AbstractWidget {
             final Component message
     ) {
         super(x, y, width, height, message);
+
+        this.position   = vec2 -> this.setPosition((int) vec2.x(), (int) vec2.y());
+        this.size       = vec2 -> this.setSize((int) vec2.x(), (int) vec2.y());
 
         this.padding    = new Insets(0);
         this.margin     = new Insets(0);
