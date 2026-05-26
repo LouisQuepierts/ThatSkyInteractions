@@ -1,16 +1,10 @@
 package net.quepierts.thatskyinteractions.feature.mixin.vanilla.client;
 
 import net.minecraft.client.Camera;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
 import net.quepierts.thatskyinteractions.feature.entity.AvatarExtension;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.TransformF;
-import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
 import org.joml.*;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
