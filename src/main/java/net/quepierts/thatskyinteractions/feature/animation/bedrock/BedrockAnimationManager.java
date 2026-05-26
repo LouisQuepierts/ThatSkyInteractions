@@ -22,9 +22,6 @@ import java.util.function.IntFunction;
 @Slf4j
 public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimationDefinition> {
 
-    public static final Identifier IDENTIFIER
-            = ThatSkyInteractions.location("animation/source");
-
     private static final String FOLDER
             = "animation/source";
 
@@ -33,14 +30,7 @@ public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimat
             = DataSyncSystem.register(BedrockAnimationManager::new);
 
     private static final StreamCodec<ByteBuf, Map<Identifier, BedrockAnimationDefinition>> STREAM_CODEC
-            = ByteBufCodecs.map(
-                    (IntFunction<Map<Identifier, BedrockAnimationDefinition>>) Object2ObjectOpenHashMap::new,
-                    ByteBufCodecs.STRING_UTF8.map(
-                            Identifier::parse,
-                            Identifier::toString
-                    ),
-                    BedrockAnimationParser.ANIMATION_DEFINITION_STREAM_CODEC
-            );
+            = createStreamCodec(BedrockAnimationParser.ANIMATION_DEFINITION_STREAM_CODEC);
 
     private Map<Identifier, BedrockAnimationDefinition> definitions = Map.of();
     private Map<Identifier, BedrockAnimation>           animations  = Map.of();
@@ -48,8 +38,7 @@ public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimat
     private BedrockAnimationManager() {
         super(
                 BedrockAnimationParser.ANIMATION_DEFINITION_CODEC,
-                FileToIdConverter.json(FOLDER),
-                IDENTIFIER
+                FOLDER
         );
     }
 

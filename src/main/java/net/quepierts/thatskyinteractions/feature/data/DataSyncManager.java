@@ -2,18 +2,22 @@ package net.quepierts.thatskyinteractions.feature.data;
 
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.network.PacketCache;
 import net.quepierts.thatskyinteractions.feature.network.SyncDatapackPacket;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
+import java.util.function.IntFunction;
 
 public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListener<T> {
 
@@ -24,14 +28,15 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
     private final PacketCache cache;
 
     protected DataSyncManager(
-            final Codec<T>                                  codec,
-            final FileToIdConverter                         lister,
-            final Identifier                                identifier
+            final Codec<T>  codec,
+            final String    folder
     ) {
-        super(codec, lister);
-        this.identifier     = identifier;
-
-        this.cache = new PacketCache();
+        super(
+                codec,
+                FileToIdConverter.json(folder)
+        );
+        this.identifier = ThatSkyInteractions.location(folder);
+        this.cache      = new PacketCache();
     }
 
     @Override
@@ -52,4 +57,17 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
     protected abstract void apply(@NonNull Map<Identifier, T> preparations);
 
     protected abstract @NonNull StreamCodec<ByteBuf, Map<Identifier, T>> getStreamCodec();
+
+    protected static <T> StreamCodec<ByteBuf, Map<Identifier, T>> createStreamCodec(
+            @NonNull final StreamCodec<ByteBuf, T> element
+    ) {
+        return ByteBufCodecs.map(
+                (IntFunction<Map<Identifier, T>>) Object2ObjectOpenHashMap::new,
+                ByteBufCodecs.STRING_UTF8.map(
+                        Identifier::parse,
+                        Identifier::toString
+                ),
+                element
+        );
+    }
 }

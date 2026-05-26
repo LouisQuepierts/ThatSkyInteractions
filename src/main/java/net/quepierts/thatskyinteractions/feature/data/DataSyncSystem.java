@@ -8,6 +8,7 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.animation.ParentOverrideManager;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationManager;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.network.SyncDatapackPacket;
@@ -18,16 +19,20 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @UtilityClass
+@SuppressWarnings("unused")
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public class DataSyncSystem {
 
     private static final List<DataSyncManager<?>> MANAGERS = new ArrayList<>();
 
-    public static final BedrockAnimationManager BEDROCK_ANIMATION_MANAGER
+    public static final BedrockAnimationManager     BEDROCK_ANIMATION
             = BedrockAnimationManager.getInstance();
 
-    public static final PlayerAnimationManager PLAYER_ANIMATION_MANAGER
+    public static final PlayerAnimationManager      PLAYER_ANIMATION
             = PlayerAnimationManager.getInstance();
+
+    public static final ParentOverrideManager       PARENT_OVERRIDE
+            = ParentOverrideManager.getInstance();
 
     @SubscribeEvent
     public static void onAddReloadListeners(final AddServerReloadListenersEvent event) {

@@ -10,6 +10,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationManager;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 
 @UtilityClass
 public final class AnimationCommand {
@@ -17,7 +18,7 @@ public final class AnimationCommand {
     static final SuggestionProvider<CommandSourceStack> ANIMATIONS
             = (_, builder)
             -> SharedSuggestionProvider.suggestResource(
-                    PlayerAnimationManager.getInstance().identifiers(), builder
+                    DataSyncSystem.PLAYER_ANIMATION.identifiers(), builder
             );
 
     static LiteralArgumentBuilder<CommandSourceStack> command() {

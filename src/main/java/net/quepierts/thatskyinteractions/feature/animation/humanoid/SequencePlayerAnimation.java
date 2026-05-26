@@ -1,14 +1,17 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
 import lombok.extern.slf4j.Slf4j;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
+import net.quepierts.thatskyinteractions.feature.animation.ParentOverrideManager;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
+import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationPipeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
@@ -18,27 +21,33 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.d
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPipeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
+import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformInstance;
 import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMState;
+import net.quepierts.thatskyinteractions.infra.animation.core.model.ParentOverrideConfiguration;
+import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.ParentOverrideParameter;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
 public final class SequencePlayerAnimation extends BaseAnimation {
 
-    private final AnimationPipeline     apl;
-    private final SkeletonPipeline      spl;
+    private final AnimationPipeline             apl;
+    private final SkeletonPipeline              spl;
 
-    private final AnimationSampler      enter;
-    private final AnimationSampler      main;
-    private final AnimationSampler      exit;
+    private final AnimationSampler              enter;
+    private final AnimationSampler              main;
+    private final AnimationSampler              exit;
 
-    private final AnimationSampler[]    ordinal;
+    private final AnimationSampler[]            ordinal;
+
+    private final ParentOverrideConfiguration   override;
 
     public SequencePlayerAnimation(
-            final AnimationPipeline     apl,
-            final SkeletonPipeline      spl,
-            final AnimationSource       enter,
-            final AnimationSource       main,
-            final AnimationSource       exit
+            final AnimationPipeline             apl,
+            final SkeletonPipeline              spl,
+            final AnimationSource               enter,
+            final AnimationSource               main,
+            final AnimationSource               exit,
+            final ParentOverrideConfiguration   override
     ) {
         super(DefaultMinecraftFSM.SEQUENCE);
 
@@ -53,22 +62,31 @@ public final class SequencePlayerAnimation extends BaseAnimation {
                         this.main,
                         this.exit
         };
+
+        this.override   = override;
     }
 
     public static PlayerAnimation parse(final @NonNull PlayerAnimationDefinition definition) {
-        final var manager   = BedrockAnimationManager.getInstance();
+        final var manager   = DataSyncSystem.BEDROCK_ANIMATION;
+        final var overrides = DataSyncSystem.PARENT_OVERRIDE;
 
         final var sources   = definition.sources();
         final var enter     = parse(sources.get("enter"), manager);
         final var main      = parse(sources.get("main"), manager);
         final var exit      = parse(sources.get("exit"), manager);
 
+        final var override  = overrides.get(
+                Identifier.parse(definition.override()),
+                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID.getLayout()
+        );
+
         final var animation = new SequencePlayerAnimation(
                 DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
                 DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
                 enter,
                 main,
-                exit
+                exit,
+                override
         );
 
         setParameter(1, animation.uniform, sources.get("enter"), enter);
@@ -97,8 +115,14 @@ public final class SequencePlayerAnimation extends BaseAnimation {
         )]);
         animation.submit(animationState, skeleton.getAdapter());
 
+        final var parentOverride = animationState.getUboParentOverride();
+        parentOverride.getParameter().upload(
+                this.override,
+                parentOverride.getBuffer()
+        );
+
         skeleton.bindUbo(PivotPassDefinition.REQUIRED_UBO, animationState.getUboPivotModification().getBuffer());
-        skeleton.bindUbo(ParentOverridePassDefinition.REQUIRED_UBO, animationState.getUboParentOverride().getBuffer());
+        skeleton.bindUbo(ParentOverridePassDefinition.REQUIRED_UBO, parentOverride.getBuffer());
         skeleton.bindUbo(MinecraftModelPoseProvider.REQUIRED_UBO, animationState.getUboModelOverride().getBuffer());
         skeleton.bindProvider(0, provider);
         skeleton.bindTarget("Output", animationState.getCache());

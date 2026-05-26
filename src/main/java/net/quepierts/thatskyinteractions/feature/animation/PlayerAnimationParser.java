@@ -30,6 +30,7 @@ public class PlayerAnimationParser {
     public static final Codec<PlayerAnimationDefinition> ANIMATION_CODEC =
             RecordCodecBuilder.create(instance -> instance.group(
                     Codec.STRING.optionalFieldOf("type", "simple").forGetter(PlayerAnimationDefinition::type),
+                    Codec.STRING.optionalFieldOf("override", "thatskyinteractions:disabled").forGetter(PlayerAnimationDefinition::override),
                     Codec.unboundedMap(
                             Codec.STRING,
                             SOURCE_CODEC
@@ -49,6 +50,8 @@ public class PlayerAnimationParser {
     public static final StreamCodec<ByteBuf, PlayerAnimationDefinition> ANIMATION_STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,
             PlayerAnimationDefinition::type,
+            ByteBufCodecs.STRING_UTF8,
+            PlayerAnimationDefinition::override,
             ByteBufCodecs.map(
                     Object2ObjectOpenHashMap::new,
                     ByteBufCodecs.STRING_UTF8,
