@@ -4,17 +4,20 @@ import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDef
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
+import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationPipeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
+import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.SamplingMode;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.ParentOverridePassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.PivotPassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPipeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
+import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMParameter;
 import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMState;
 import org.jspecify.annotations.NonNull;
 
@@ -33,21 +36,24 @@ public final class SinglePlayerAnimation extends BaseAnimation {
         this.apl = apl;
         this.spl = spl;
         this.sampler = source.link(apl);
-
-        this.uniform.duration()[0] = source.getDuration();
     }
 
     public static PlayerAnimation parse(final @NonNull PlayerAnimationDefinition definition) {
         final var manager   = BedrockAnimationManager.getInstance();
 
         final var sources   = definition.sources();
-        final var main      = parse(sources.get("main"), manager);
+        final var source    = sources.get("main");
+        final var main      = parse(source, manager);
 
-        return new SinglePlayerAnimation(
+        final var animation = new SinglePlayerAnimation(
                 DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
                 DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
                 main
         );
+
+        setParameter(1, animation.uniform, source, main);
+
+        return animation;
     }
 
     @Override
@@ -62,6 +68,14 @@ public final class SinglePlayerAnimation extends BaseAnimation {
 
 //        animation.getExecutionState().copyFrom(executionState);
 
+        final var transition    = fsmState.isBlending();
+        final var state         = fsmState.getCurrentState();
+
+        final var mode          = state == 0 ? SamplingMode.FREEZE_START : (transition ?
+                                SamplingMode.byId(state) :
+                                SamplingMode.DEFAULT);
+
+        animation.setSamplingMode(1, mode);
         animation.bindSource(1, this.sampler);
         animation.submit(animationState, skeleton.getAdapter());
 

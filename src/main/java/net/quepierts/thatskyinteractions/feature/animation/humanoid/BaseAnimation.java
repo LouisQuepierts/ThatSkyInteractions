@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
@@ -15,6 +16,7 @@ import org.jspecify.annotations.Nullable;
 @Slf4j
 public abstract class BaseAnimation implements PlayerAnimation {
 
+    @Getter
     protected final FiniteStateMachine  fsm;
     protected final FSMParameter        uniform;
 
@@ -62,6 +64,22 @@ public abstract class BaseAnimation implements PlayerAnimation {
         }
 
         return BedrockAnimationCompiler.compile(animation);
+    }
+
+    protected static void setParameter(
+            final int               index,
+            final FSMParameter      parameter,
+            final SourceDefinition  definition,
+            final AnimationSource   source
+    ) {
+        if (definition == null ||
+                source == null) {
+            return;
+        }
+
+        parameter.fadeIn()[index]   = definition.fadeIn();
+        parameter.fadeOut()[index]  = definition.fadeOut();
+        parameter.duration()[index] = source.getDuration();
     }
 
 }

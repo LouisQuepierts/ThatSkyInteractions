@@ -7,19 +7,22 @@ import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FiniteStateMac
 public class DefaultMinecraftFSM {
 
     public static final FiniteStateMachine SINGLE = FiniteStateMachine.compiler()
+            .sequence()
+
+            .withState("system#enter")
             .withState("main")
+            .withState("system#exit")
+
             .compile();
 
     public static final FiniteStateMachine SEQUENCE = FiniteStateMachine.compiler()
+            .sequence()
+
+            .withState("system#enter")
             .withState("enter")
             .withState("main")
             .withState("exit")
-
-            .withTransition("enter", "main")
-            .withTransition("main", "exit")
-
-            .withInitialState("enter")
-            .withTerminalState("exit")
+            .withState("system#exit")
 
             .compile();
 

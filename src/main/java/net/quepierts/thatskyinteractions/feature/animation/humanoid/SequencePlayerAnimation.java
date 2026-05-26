@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
 import lombok.extern.slf4j.Slf4j;
+import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
@@ -11,6 +12,7 @@ import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPose
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
 import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationPipeline;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
+import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.SamplingMode;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.ParentOverridePassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.PivotPassDefinition;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPipeline;
@@ -46,10 +48,6 @@ public final class SequencePlayerAnimation extends BaseAnimation {
         this.main       = main != null ? main.link(apl) : null;
         this.exit       = exit != null ? exit.link(apl) : null;
 
-        this.uniform.duration()[0] = enter != null ? enter.getDuration() : 0;
-        this.uniform.duration()[1] = main != null ? main.getDuration() : 0;
-        this.uniform.duration()[2] = exit != null ? exit.getDuration() : 0;
-
         this.ordinal    = new AnimationSampler[] {
                         this.enter,
                         this.main,
@@ -65,13 +63,19 @@ public final class SequencePlayerAnimation extends BaseAnimation {
         final var main      = parse(sources.get("main"), manager);
         final var exit      = parse(sources.get("exit"), manager);
 
-        return new SequencePlayerAnimation(
+        final var animation = new SequencePlayerAnimation(
                 DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
                 DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
                 enter,
                 main,
                 exit
         );
+
+        setParameter(1, animation.uniform, sources.get("enter"), enter);
+        setParameter(2, animation.uniform, sources.get("main"), main);
+        setParameter(3, animation.uniform, sources.get("exit"), exit);
+
+        return animation;
     }
 
     @Override
@@ -84,9 +88,13 @@ public final class SequencePlayerAnimation extends BaseAnimation {
         final var animation = this.apl;
         final var skeleton  = this.spl;
 
-//        animation.getExecutionState().copyFrom(executionState);
+        final var mode          = this.extractSamplingMode(fsmState);
 
-        animation.bindSource(1, this.ordinal[fsmState.getCurrentState()]);
+        animation.setSamplingMode(1, mode);
+        animation.bindSource(1, this.ordinal[Mth.clamp(
+                fsmState.getCurrentState() - 1,
+                0, 2
+        )]);
         animation.submit(animationState, skeleton.getAdapter());
 
         skeleton.bindUbo(PivotPassDefinition.REQUIRED_UBO, animationState.getUboPivotModification().getBuffer());
@@ -95,6 +103,21 @@ public final class SequencePlayerAnimation extends BaseAnimation {
         skeleton.bindProvider(0, provider);
         skeleton.bindTarget("Output", animationState.getCache());
         skeleton.submit(animationState.getSkeleton());
+    }
+
+    private SamplingMode extractSamplingMode(final @NonNull FSMState state) {
+
+        final var transition = state.isBlending();
+
+        final var currentState = state.getCurrentState();
+        if (currentState == 0 || state.getLastState() == 0 && transition) {
+            return SamplingMode.FREEZE_START;
+        } else if (state.getLastState() == 3 && transition) {
+            return SamplingMode.FREEZE_END;
+        }
+
+        return SamplingMode.DEFAULT;
+
     }
 
 }

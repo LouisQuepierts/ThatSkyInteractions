@@ -5,6 +5,7 @@ import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationStat
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseProvider;
 import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMState;
+import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FiniteStateMachine;
 import org.jspecify.annotations.NonNull;
 
 public interface PlayerAnimation {
@@ -36,4 +37,6 @@ public interface PlayerAnimation {
     void cleanup(
             @NonNull FSMState state
     );
+
+    FiniteStateMachine getFsm();
 }

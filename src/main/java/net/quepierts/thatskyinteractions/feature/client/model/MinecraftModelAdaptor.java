@@ -1,5 +1,7 @@
 package net.quepierts.thatskyinteractions.feature.client.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.*;
 import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
@@ -13,6 +15,10 @@ public final class MinecraftModelAdaptor {
 
     private final MinecraftModelSkeleton                            skeleton;
     private final Map<SkeletonPipeline, MinecraftModelPoseProvider> linked;
+
+    @Setter
+    @Getter
+    private float   alpha   = 1.0f;
 
     private MinecraftModelAdaptor(final MinecraftModelSkeleton    skeleton) {
         this.skeleton   = skeleton;
@@ -34,10 +40,15 @@ public final class MinecraftModelAdaptor {
             final var loc       = entry.id();
             final var view      = cache.get(loc);
 
-            entry.setPosition(view.getTx(), view.getTy(), view.getTz());
-            entry.setQuaternion(view.getRx(), view.getRy(), view.getRz(), view.getRw());
-            entry.setScale(view.getSx(), view.getSy(), view.getSz());
-
+            if (this.alpha == 1.0f) {
+                entry.setPosition(view.getTx(), view.getTy(), view.getTz());
+                entry.setQuaternion(view.getRx(), view.getRy(), view.getRz(), view.getRw());
+                entry.setScale(view.getSx(), view.getSy(), view.getSz());
+            } else {
+                entry.setPosition(view.getTx(), view.getTy(), view.getTz(), this.alpha);
+                entry.setQuaternion(view.getRx(), view.getRy(), view.getRz(), view.getRw(), this.alpha);
+                entry.setScale(view.getSx(), view.getSy(), view.getSz(), this.alpha);
+            }
         }
     }
 }

@@ -56,6 +56,9 @@ public final class HumanoidAnimationState extends AnimationState {
     @Getter
     private boolean ticked = false;
 
+    @Getter
+    private float alpha = 0.0f;
+
     public static HumanoidAnimationState _default() {
         return new HumanoidAnimationState(DefaultChannelFormats.TIMELINE);
     }
@@ -118,7 +121,33 @@ public final class HumanoidAnimationState extends AnimationState {
 
     public void update(float partialTicks) {
         if (this.playing) {
-            this.progress   = this.fsmState.getElapsed() + partialTicks * 0.05f;
+            final var delta = partialTicks * 0.05f;
+            this.progress               = this.fsmState.getElapsed() + delta;
+            var progress                = Math.min(
+                    (this.fsmState.getBlendElapsed() + delta) / this.fsmState.getBlendDuration(),
+                    1.0f
+            );
+            this.alpha                  = getAlpha(this.fsmState, progress);
         }
+    }
+
+
+
+    private float getAlpha(final FSMState fsmState, float progress) {
+        var alpha = 1.0f;
+
+        final var current = this.getAnimation();
+        final var fsm = current.getFsm();
+        final var lookup = fsm.getLookup();
+
+        if (fsmState.getCurrentState() == 0) {
+            alpha = 0.0f;
+        } else if ("system#exit".equals(lookup.name(fsmState.getCurrentState()))) {
+            alpha = 1.0f - progress;
+        } else if ("system#enter".equals(lookup.name(fsmState.getLastState()))) {
+            alpha = progress;
+        }
+
+        return alpha;
     }
 }

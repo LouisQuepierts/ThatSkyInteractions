@@ -110,17 +110,30 @@ public final class MinecraftModelSkeleton {
     ) implements TransformAccessor {
 
         @Override
-        public void setPosition(final float x, final float y, final float z) {
+        public void setPosition(
+                final float x,
+                final float y,
+                final float z
+        ) {
             this.part.setPos(x, y, z);
         }
 
         @Override
-        public void setEulerAngle(final float x, final float y, final float z) {
+        public void setEulerAngle(
+                final float x,
+                final float y,
+                final float z
+        ) {
             this.part.setRotation(x, y, z);
         }
 
         @Override
-        public void setQuaternion(final float x, final float y, final float z, final float w) {
+        public void setQuaternion(
+                final float x,
+                final float y,
+                final float z,
+                final float w
+        ) {
             float eulerX = org.joml.Math.atan2(y * z + w * x, 0.5f - x * x - y * y);
             float eulerY = org.joml.Math.safeAsin(-2.0f * (x * z - w * y));
             float eulerZ = Math.atan2(x * y + w * z, 0.5f - y * y - z * z);
@@ -133,10 +146,73 @@ public final class MinecraftModelSkeleton {
         }
 
         @Override
-        public void setScale(final float x, final float y, final float z) {
+        public void setScale(
+                final float x,
+                final float y,
+                final float z
+        ) {
             this.part.xScale = x;
             this.part.yScale = y;
             this.part.zScale = z;
+        }
+
+        public void setPosition(
+                final float x,
+                final float y,
+                final float z,
+                final float alpha
+        ) {
+            final var part = this.part;
+            if (alpha == 1.0f) {
+                part.setPos(x, y, z);
+            } else if (alpha > 0.0f) {
+                part.setPos(
+                        part.x * (1.0f - alpha) + x * alpha,
+                        part.y * (1.0f - alpha) + y * alpha,
+                        part.z * (1.0f - alpha) + z * alpha
+                );
+            }
+        }
+
+        public void setQuaternion(
+                final float x,
+                final float y,
+                final float z,
+                final float w,
+                final float alpha
+        ) {
+            if (alpha == 1.0f) {
+                this.setQuaternion(x, y, z, w);
+            } else if (alpha > 0.0f) {
+                float eulerX = org.joml.Math.atan2(y * z + w * x, 0.5f - x * x - y * y);
+                float eulerY = org.joml.Math.safeAsin(-2.0f * (x * z - w * y));
+                float eulerZ = Math.atan2(x * y + w * z, 0.5f - y * y - z * z);
+
+                final var part = this.part;
+                part.setRotation(
+                        part.xRot * (1.0f - alpha) + eulerX * alpha,
+                        part.yRot * (1.0f - alpha) + eulerY * alpha,
+                        part.zRot * (1.0f - alpha) + eulerZ * alpha
+                );
+            }
+        }
+
+        public void setScale(
+                final float x,
+                final float y,
+                final float z,
+                final float alpha
+        ) {
+            final var part = this.part;
+            if (alpha == 1.0f) {
+                part.xScale = x;
+                part.yScale = y;
+                part.zScale = z;
+            } else if (alpha > 0.0f) {
+                part.xScale = part.xScale * (1.0f - alpha) + x * alpha;
+                part.yScale = part.yScale * (1.0f - alpha) + y * alpha;
+                part.zScale = part.zScale * (1.0f - alpha) + z * alpha;
+            }
         }
 
     }

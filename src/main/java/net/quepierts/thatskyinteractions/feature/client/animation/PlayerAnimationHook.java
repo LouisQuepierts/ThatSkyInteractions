@@ -24,6 +24,7 @@ public final class PlayerAnimationHook {
             );
         }
 
+        adaptor.setAlpha(animation.getAlpha());
         adaptor.accept(animation.getCache());
     }
 
