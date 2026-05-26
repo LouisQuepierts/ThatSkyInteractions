@@ -30,7 +30,12 @@ public final class AnimationBufferSampler implements AnimationSampler {
     private final AnimationBufferSource source;
 
     @Override
-    public void sample(AnimationContext context, WritableBuffer target) {
+    public void sample(
+            final AnimationContext      context,
+            final WritableBuffer        target,
+            final SamplingMode          mode,
+            final float                 time
+    ) {
         var layout      = context.getChannelLayout();
         var source      = this.getSource().getBuffer();
         var raw         = source.getBuffer().getBuffer();

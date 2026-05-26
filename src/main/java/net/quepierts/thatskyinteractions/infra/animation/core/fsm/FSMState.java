@@ -3,23 +3,20 @@ package net.quepierts.thatskyinteractions.infra.animation.core.fsm;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 public final class FSMState {
 
-    @Getter
     float           elapsed;
-    @Getter
     float           blendElapsed;
     float           blendDuration;
 
-    @Getter
+    float           normalizedElapsed;
+    float           normalizedBlendElapsed;
+
     int             lastState;
-    @Getter
     int             currentState;
 
-    @Getter
     boolean         blending;
-
-    @Getter
     boolean         finished;
 
     @Setter

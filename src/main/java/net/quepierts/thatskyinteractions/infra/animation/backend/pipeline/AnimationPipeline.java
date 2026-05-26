@@ -5,6 +5,7 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.channel.Channel
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionReflection;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
 import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
+import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.SamplingMode;
 import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.AnimationOutput;
@@ -64,6 +65,10 @@ public interface AnimationPipeline {
             AnimationOutput target
     );
 
+    void setSamplingMode(
+            int location,
+            SamplingMode mode
+    );
 
     ChannelFormat getChannelFormat();
 

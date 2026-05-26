@@ -6,8 +6,10 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.Animat
 public interface AnimationSampler {
 
      void sample(
-            AnimationContext        context,
-            WritableBuffer          target
+            final AnimationContext      context,
+            final WritableBuffer        target,
+            final SamplingMode          mode,
+            final float                 time
      );
 
 }

@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.infra.animation.backend.pipeline;
 
+import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.SamplingMode;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.PipelineInputProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
 import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
@@ -21,6 +22,8 @@ public interface AnimationContext {
     @NonNull    AnimationState          getAnimationState();
 
     @NonNull    AnimationSampler        getSampler(int location);
+
+    @NonNull    SamplingMode            getSamplingMode(int location);
 
     @NonNull    AnimationFrameBuffer    getFrameBuffer(int location);
 

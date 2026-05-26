@@ -40,14 +40,16 @@ public final class FiniteStateMachine {
     }
 
     public void reset(@NonNull final FSMState state) {
-        state.currentState       = this.initial;
-        state.elapsed            = 0.0f;
-        state.blendElapsed       = 0.0f;
-        state.blendDuration      = 0.0f;
-        state.lastState          = INVALID_STATE;
-        state.blending           = false;
-        state.uniform            = null;
-        state.finished           = false;
+        state.currentState              = this.initial;
+        state.elapsed                   = 0.0f;
+        state.blendElapsed              = 0.0f;
+        state.normalizedElapsed         = 0.0f;
+        state.normalizedBlendElapsed    = 0.0f;
+        state.blendDuration             = 0.0f;
+        state.lastState                 = INVALID_STATE;
+        state.blending                  = false;
+        state.uniform                   = null;
+        state.finished                  = false;
     }
 
     public void update(
@@ -63,17 +65,24 @@ public final class FiniteStateMachine {
             return;
         }
 
-        state.elapsed            += delta;
-
         if (state.blending) {
-            state.blendElapsed   += delta;
+            state.blendElapsed          += delta;
+            state.normalizedBlendElapsed = Math.min(
+                    state.blendElapsed / state.blendDuration,
+                    1.0f
+            );
 
             if (state.blendElapsed >= state.blendDuration) {
-                state.blending   = false;
+                state.blending      = false;
             }
+
+            return;
         }
 
-        final var duration      = state.uniform.duration()[state.currentState];
+        final var duration          = state.uniform.duration()[state.currentState];
+
+        state.elapsed               += delta;
+        state.normalizedElapsed     = Math.min(state.elapsed / duration, 1.0f);
 
         if (state.elapsed < duration) {
             return;
@@ -108,20 +117,24 @@ public final class FiniteStateMachine {
             int                     next
     ) {
         if (next == state.currentState) { // loop
-            state.elapsed    %= state.uniform.duration()[state.currentState];
+            final var duration = state.uniform.duration()[state.currentState];
+            state.elapsed           %= duration;
+            state.normalizedElapsed = Math.min(state.elapsed / duration, 1.0f);
             return;
         }
 
-        state.blendElapsed   = 0.0f;
-        state.blendDuration  = Math.max(
-                state.uniform.fadeOut()[state.currentState],
-                state.uniform.fadeIn()[next]
-        );
-        state.blending       = state.blendDuration > 0.0f;
+        state.blendElapsed      = 0.0f;
+        state.normalizedElapsed = 0.0f;
+        state.blendDuration     = Math.max(
+                                    state.uniform.fadeOut()[state.currentState],
+                                    state.uniform.fadeIn()[next]
+                                );
+        state.blending          = state.blendDuration > 0.0f;
 
-        state.lastState      = state.currentState;
-        state.currentState   = next;
-        state.elapsed        = 0.0f;
+        state.lastState         = state.currentState;
+        state.currentState      = next;
+        state.elapsed           = 0.0f;
+        state.normalizedElapsed = 0.0f;
     }
 
     public FSMParameter uniform() {
@@ -148,6 +161,13 @@ public final class FiniteStateMachine {
         private String                      initialState;
         private String                      terminalState;
 
+        private boolean                     sequence;
+
+        public Compiler sequence() {
+            this.sequence = true;
+            return this;
+        }
+
         public Compiler withState(final @NonNull String state) {
 
             if (this.states.size() == Byte.MAX_VALUE) {
@@ -164,8 +184,15 @@ public final class FiniteStateMachine {
                 throw new IllegalArgumentException("State already exists: " + state);
             }
 
+            if (this.sequence && !this.states.isEmpty()) {
+                this.transitions.put(
+                        this.states.getLast(),
+                        state
+                );
+            } else {
+                this.transitions.put(state, state);
+            }
             this.states.add(state);
-            this.transitions.put(state, state);
             return this;
         }
 

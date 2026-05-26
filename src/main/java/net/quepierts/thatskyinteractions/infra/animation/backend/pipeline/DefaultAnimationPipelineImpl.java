@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.quepierts.thatskyinteractions.infra.animation.backend.Patterns;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionReflection;
 import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
+import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.SamplingMode;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.AnimationOutput;
 import net.quepierts.thatskyinteractions.infra.animation.core.adapter.PipelineInputProvider;
 import net.quepierts.thatskyinteractions.infra.animation.backend.buffer.AnimationBuffer;
@@ -45,6 +46,7 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
     private final AnimationFrameBuffer[]    buffers;
 
     private final AnimationSampler[]        samplers;
+    private final SamplingMode[]            samplingModes;
     private final UniformBuffer[]           ubos;
     private final AnimationOutput[]         targets;
 
@@ -94,12 +96,14 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         this.buffers            = buffers;
 
         this.samplers           = new AnimationSampler[reflection.samplers.size()];
+        this.samplingModes      = new SamplingMode[reflection.samplers.size()];
         this.ubos               = new UniformBuffer[reflection.ubos.size()];
         this.uniform            = new UniformBuffer(uniform);
 
         this.targets            = new AnimationOutput[1];
 
         this.samplers[0]        = new OriginSampler();
+        Arrays.fill(this.samplingModes, SamplingMode.DEFAULT);
     }
 
     @Override
@@ -222,6 +226,14 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
     ) {
         // todo: MRT
         this.targets[0] = target;
+    }
+
+    @Override
+    public void setSamplingMode(
+            final int location,
+            final SamplingMode mode
+    ) {
+        this.samplingModes[location] = mode;
     }
 
     @Override
@@ -398,6 +410,11 @@ public final class DefaultAnimationPipelineImpl implements AnimationPipeline {
         @Override
         public @NonNull AnimationSampler getSampler(int location) {
             return this.pipeline.samplers[location];
+        }
+
+        @Override
+        public @NonNull SamplingMode getSamplingMode(int location) {
+            return this.pipeline.samplingModes[location];
         }
 
         @Override

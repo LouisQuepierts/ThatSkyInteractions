@@ -14,7 +14,8 @@ public final class LocationLookup implements Iterable<String> {
         return new LocationLookup(collection.toArray(String[]::new));
     }
 
-    private final String[] names;
+    private final   String[] names;
+    private         String   fallback = "";
 
     public int find(String name) {
         for (int i = 0; i < names.length; i++) {
@@ -31,6 +32,9 @@ public final class LocationLookup implements Iterable<String> {
     }
 
     public String name(int location) {
+        if (location == -1) {
+            return this.fallback;
+        }
         return this.names[location];
     }
 

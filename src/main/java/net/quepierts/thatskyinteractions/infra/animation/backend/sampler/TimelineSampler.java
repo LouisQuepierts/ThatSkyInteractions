@@ -48,12 +48,18 @@ public final class TimelineSampler implements AnimationSampler {
 
     @Override
     public void sample(
-            AnimationContext        context,
-            WritableBuffer          target
+            final AnimationContext      context,
+            final WritableBuffer        target,
+            final SamplingMode          mode,
+            final float                 time
     ) {
-        var time        = context.getProgress();
+
+        if (mode != SamplingMode.DEFAULT) {
+            this.directSample(context, target, mode);
+            return;
+        }
+
         var source      = this.source;
-        var localTime   = time;
 
         var state       = context.getAnimationState();
         var rewind      = time < state.lastProgress;
@@ -81,7 +87,7 @@ public final class TimelineSampler implements AnimationSampler {
             this.sampleTimeline(
                     context,
                     source.getTimeline(i),
-                    localTime,
+                    time,
                     cursorAddr,
                     channel << 2,
                     target
@@ -89,6 +95,37 @@ public final class TimelineSampler implements AnimationSampler {
 
             attrBase += attrSize;
         }
+    }
+
+    private void directSample(
+            AnimationContext        context,
+            WritableBuffer          target,
+            SamplingMode            mode
+    ) {
+
+        final var max           = mode == SamplingMode.FREEZE_END;
+        final var progress      = max ? 1.0f : 0.0f;
+
+        for (int i = 0; i < this.mapping.length; i++) {
+            final var channel   = this.mapping[i];
+
+            if (!context.getSamplerMask(channel)) {
+                continue;
+            }
+
+            final var timeline  = this.source.getTimeline(i);
+            final var cursor    = max ? timeline.size() - 1 : 0;
+
+            this.sampleSegment(
+                    context,
+                    timeline,
+                    progress,
+                    cursor,
+                    channel << 2,
+                    target
+            );
+        }
+
     }
 
     private void sampleTimeline(

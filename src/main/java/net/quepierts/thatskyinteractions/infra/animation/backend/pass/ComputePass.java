@@ -33,8 +33,10 @@ public final class ComputePass extends AnimationPass {
                 case SAMPLE: {
                     var sampler     = context.getSampler(operation.src0());
                     var buffer      = context.getFrameBuffer(operation.dst());
+                    var time        = context.getAnimationState().getProgress();
+                    var mode        = context.getSamplingMode(operation.src0());
 
-                    sampler         .sample(context, buffer);
+                    sampler         .sample(context, buffer, mode, time);
                     break;
                 }
                 case BLEND_P: {

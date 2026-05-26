@@ -5,7 +5,12 @@ import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.Animat
 
 public final class OriginSampler implements AnimationSampler {
     @Override
-    public void sample(AnimationContext context, WritableBuffer target) {
+    public void sample(
+            AnimationContext context,
+            WritableBuffer target,
+            final SamplingMode mode,
+            final float time
+    ) {
         var input       = context.getInputProvider();
 
         if (input == null) {
