@@ -5,7 +5,9 @@ import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
+import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -18,7 +20,12 @@ public abstract class Pane
 
     @Getter(AccessLevel.PROTECTED)
     private final List<Control> children;
+
+    @Getter(AccessLevel.PROTECTED)
     private @Nullable Control   clicked;
+
+    @Getter
+    private final BooleanProperty   clip    = new BooleanProperty(false);
 
     public Pane(
             final int x,
@@ -53,19 +60,26 @@ public abstract class Pane
             return;
         }
 
-        graphics.enableScissor(
-                this.getX(),
-                this.getY(),
-                this.getRight(),
-                this.getBottom()
-        );
+        final var clip = this.clip.get();
+        if (clip) {
+            final var transform = graphics.pose().transform(new Vector3f(this.getX(), this.getY(), 0.0f));
+            final var left      = (int) transform.x();
+            final var top       = (int) transform.y();
+            graphics.enableScissor(
+                    left,
+                    top,
+                    left + this.getWidth(),
+                    top + this.getHeight()
+            );
+        }
 
         for (final var child : children) {
             child.extractRenderState(graphics, mouseX, mouseY, delta);
         }
 
-        graphics.disableScissor();
-
+        if (clip) {
+            graphics.disableScissor();
+        }
     }
 
     @Override
@@ -115,6 +129,20 @@ public abstract class Pane
     ) {
         if (this.clicked != null) {
             return this.clicked.mouseDragged(event, dx, dy);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(final double x, final double y, final double scrollX, final double scrollY) {
+        if (!this.isMouseOver(x, y)) {
+            return false;
+        }
+
+        for (final var child : this.children) {
+            if (child.mouseScrolled(x, y, scrollX, scrollY)) {
+                return true;
+            }
         }
         return false;
     }
