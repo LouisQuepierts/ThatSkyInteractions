@@ -10,5 +10,6 @@
       "source": "thatskyinteractions:unlock_invite.exit",
       "fadeOut": 0.25
     }
-  }
+  },
+  "override": "thatskyinteractions:modified"
 }
