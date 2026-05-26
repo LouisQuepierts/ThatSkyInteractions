@@ -1,8 +1,14 @@
 {
   "type": "sequence",
   "sources": {
-    "enter": "thatskyinteractions:unlock_invite.enter",
+    "enter": {
+      "source": "thatskyinteractions:unlock_invite.enter",
+      "fadeIn": 0.25
+    },
     "main": "thatskyinteractions:unlock_invite.main",
-    "exit": "thatskyinteractions:unlock_invite.exit"
+    "exit": {
+      "source": "thatskyinteractions:unlock_invite.exit",
+      "fadeOut": 0.25
+    }
   }
 }
