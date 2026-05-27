@@ -1,0 +1,11 @@
+[versions]
+minecraft   = "26.1.2"
+neoforge    = "26.1.2.0-beta"
+anvillib    = "2.0.0+snapshot.424"
+animata4j   = "1.0.0+97"
+
+[libraries]
+anvillib-registrum  = { group = 'dev.anvilcraft.lib', name = 'anvillib-registrum-neoforge-26.1', version.ref = "anvillib" }
+anvillib-network    = { group = 'dev.anvilcraft.lib', name = 'anvillib-network-neoforge-26.1', version.ref = "anvillib" }
+anvillib-rendering  = { group = 'dev.anvilcraft.lib', name = 'anvillib-rendering-neoforge-26.1', version.ref = "anvillib" }
+animata4j-core      = { group = 'net.quepierts', name = 'animata4j-core', version.ref = "animata4j"}
