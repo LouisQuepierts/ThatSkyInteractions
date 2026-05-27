@@ -1,0 +1,18 @@
+
+
+dependencies {
+//    api "maven.modrinth:simpleanimator:$simpleanimator_maven_version"
+
+    jarJar implementation (group: 'dev.anvilcraft.lib', name: 'anvillib-registrum-neoforge-26.1', version: anvillib_version)
+    jarJar implementation (group: 'dev.anvilcraft.lib', name: 'anvillib-network-neoforge-26.1', version: anvillib_version)
+    jarJar implementation (group: 'dev.anvilcraft.lib', name: 'anvillib-rendering-neoforge-26.1', version: anvillib_version)
+
+    // implementation from libs/ .jars
+    jarJar implementation (files('libs/animata4j-core-1.0.0-95.jar'))
+//    runtimeOnly "maven.modrinth:sodium:$sodium_maven_version"
+//    runtimeOnly "maven.modrinth:iris:$iris_maven_version"
+
+//    api "maven.modrinth:sodium:$sodium_maven_version"
+//    api "maven.modrinth:iris:$iris_maven_version"
+//    api "maven.modrinth:embeddium:$embeddium_maven_version"
+}

@@ -58,7 +58,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 apply from: "$rootDir/gradle/scripts/mdg.gradle"
 apply from: "$rootDir/gradle/scripts/publishing.gradle"
 apply from: "$rootDir/gradle/scripts/resources.gradle"
-apply from: "$rootDir/dependencies.gradle"
+apply from: "$rootDir/gradle/scripts/dependencies.gradle"
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
