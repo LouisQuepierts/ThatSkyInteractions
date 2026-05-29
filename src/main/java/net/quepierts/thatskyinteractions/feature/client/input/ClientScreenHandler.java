@@ -8,6 +8,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.ExpressionsScreen;
+import net.quepierts.thatskyinteractions.feature.client.gui.screen.FriendshipScreen;
 
 @UtilityClass
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
@@ -21,7 +22,7 @@ public class ClientScreenHandler {
 
             if (minecraft.screen == null) {
                 minecraft.pushGuiLayer(
-                        new ExpressionsScreen()
+                        new FriendshipScreen()
                 );
                 minecraft.mouseHandler.releaseMouse();
             }

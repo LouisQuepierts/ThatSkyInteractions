@@ -70,7 +70,7 @@ public class VScrollPane extends Pane {
         );
 
         pose.translate(0, -scroll);
-        super.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
+        super.extractWidgetRenderState(graphics, mouseX, (int) (mouseY + scroll), delta);
         pose.translate(0, scroll);
 
         graphics.disableScissor();
@@ -84,7 +84,7 @@ public class VScrollPane extends Pane {
 
         final var current   = this.scroll;
         final var value     = current - (float) scrollY * this.direction.get().getDirection() * this.scrollSpeed.get();
-        final var clamped   = Math.min(Math.max(value, 0.0f), this.content);
+        final var clamped   = Math.min(Math.max(value, 0.0f), this.content - this.height);
 
         if (clamped != current) {
             this.scroll = clamped;

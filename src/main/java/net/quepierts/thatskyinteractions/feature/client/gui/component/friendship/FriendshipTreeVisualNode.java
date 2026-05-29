@@ -22,20 +22,34 @@ public class FriendshipTreeVisualNode implements VisualNode {
             final int mouseY,
             final float delta
     ) {
-        SdfGraphics.getInstance()
+        final var x = control.getX() + 16;
+        final var y = control.getY() + 16;
+        final var sdf = SdfGraphics.getInstance()
                 .reset()
                 .center(true)
                 .box(
-                        control.getX() + 16,
-                        control.getY() + 16,
+                        x,
+                        y,
                         control.getWidth(),
                         control.getHeight()
                 )
                 .round(6)
                 .color(0x80101010)
                 .fill()
-                .draw(graphics)
-                .reset();
+                .draw(graphics);
+
+        if (control.isMouseOver(mouseX, mouseY)) {
+            sdf.color(0xfffffee0)
+                    .round(5.0f)
+                    .box(
+                            x, y,
+                            control.getWidth() - 2,
+                            control.getHeight() - 2
+                    )
+                    .stroke(1.0f)
+                    .light(2.5f)
+                    .draw(graphics);
+        }
 
         graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
