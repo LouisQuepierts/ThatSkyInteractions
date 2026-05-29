@@ -12,19 +12,19 @@ import net.quepierts.thatskyinteractions.feature.animation.ParentOverrideManager
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
-import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
-import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationPipeline;
-import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.AnimationSampler;
-import net.quepierts.thatskyinteractions.infra.animation.backend.sampler.SamplingMode;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.ParentOverridePassDefinition;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pass.definition.PivotPassDefinition;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPipeline;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseProvider;
-import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformInstance;
-import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMState;
-import net.quepierts.thatskyinteractions.infra.animation.core.model.ParentOverrideConfiguration;
-import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.ParentOverrideParameter;
+import net.quepierts.animata4j.backend.execution.ExecutionState;
+import net.quepierts.animata4j.backend.pipeline.AnimationPipeline;
+import net.quepierts.animata4j.backend.sampler.AnimationSampler;
+import net.quepierts.animata4j.backend.sampler.SamplingMode;
+import net.quepierts.animata4j.backend.skeleton.pass.definition.ParentOverridePassDefinition;
+import net.quepierts.animata4j.backend.skeleton.pass.definition.PivotPassDefinition;
+import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPipeline;
+import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPoseProvider;
+import net.quepierts.animata4j.backend.source.AnimationSource;
+import net.quepierts.animata4j.backend.uniform.UniformInstance;
+import net.quepierts.animata4j.core.fsm.FSMState;
+import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
+import net.quepierts.animata4j.core.skeleton.ParentOverrideParameter;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j

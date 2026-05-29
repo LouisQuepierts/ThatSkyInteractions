@@ -10,7 +10,7 @@ dependencies {
     jarJar(libs.anvillib.network)
     jarJar(libs.anvillib.rendering)
 
-//    implementation(libs.animata4j.core)
-//    jarJar(libs.animata4j.core)
+    implementation(libs.animata4j.core)
+    jarJar(libs.animata4j.core)
 
 }

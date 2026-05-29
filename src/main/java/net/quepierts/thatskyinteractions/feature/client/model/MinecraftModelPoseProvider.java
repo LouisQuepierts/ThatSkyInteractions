@@ -2,10 +2,10 @@ package net.quepierts.thatskyinteractions.feature.client.model;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonContext;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPipeline;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseBuffer;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseProvider;
+import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonContext;
+import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPipeline;
+import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPoseBuffer;
+import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPoseProvider;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.NonNull;
 

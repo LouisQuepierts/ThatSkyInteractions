@@ -7,16 +7,16 @@ import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftChannelL
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.core.animation.parameter.ModelOverrideParameter;
-import net.quepierts.thatskyinteractions.infra.animation.backend.channel.ChannelFormat;
-import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
-import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformInstance;
-import net.quepierts.thatskyinteractions.infra.animation.core.AnimationState;
-import net.quepierts.thatskyinteractions.infra.animation.core.SkeletonState;
-import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMState;
-import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.ParentOverrideParameter;
-import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PivotModificationParameter;
-import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
+import net.quepierts.animata4j.backend.channel.ChannelFormat;
+import net.quepierts.animata4j.backend.channel.DefaultChannelFormats;
+import net.quepierts.animata4j.backend.execution.ExecutionState;
+import net.quepierts.animata4j.backend.uniform.UniformInstance;
+import net.quepierts.animata4j.core.AnimationState;
+import net.quepierts.animata4j.core.SkeletonState;
+import net.quepierts.animata4j.core.fsm.FSMState;
+import net.quepierts.animata4j.core.skeleton.ParentOverrideParameter;
+import net.quepierts.animata4j.core.skeleton.PivotModificationParameter;
+import net.quepierts.animata4j.core.skeleton.PoseCache;
 
 @Slf4j
 public final class HumanoidAnimationState extends AnimationState {

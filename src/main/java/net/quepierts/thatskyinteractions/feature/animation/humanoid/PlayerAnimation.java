@@ -2,10 +2,10 @@ package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
-import net.quepierts.thatskyinteractions.infra.animation.backend.execution.ExecutionState;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.SkeletonPoseProvider;
-import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMState;
-import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FiniteStateMachine;
+import net.quepierts.animata4j.backend.execution.ExecutionState;
+import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPoseProvider;
+import net.quepierts.animata4j.core.fsm.FSMState;
+import net.quepierts.animata4j.core.fsm.FiniteStateMachine;
 import org.jspecify.annotations.NonNull;
 
 public interface PlayerAnimation {

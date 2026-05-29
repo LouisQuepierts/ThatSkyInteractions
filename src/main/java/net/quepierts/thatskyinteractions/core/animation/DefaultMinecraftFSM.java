@@ -1,7 +1,7 @@
 package net.quepierts.thatskyinteractions.core.animation;
 
 import lombok.experimental.UtilityClass;
-import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FiniteStateMachine;
+import net.quepierts.animata4j.core.fsm.FiniteStateMachine;
 
 @UtilityClass
 public class DefaultMinecraftFSM {

@@ -1,6 +1,6 @@
 package net.quepierts.thatskyinteractions.infra.animation.tween.backend.task;
 
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
+import net.quepierts.animata4j.core.adapter.Consumer1f;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;
 

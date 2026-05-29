@@ -1,10 +1,10 @@
 package net.quepierts.thatskyinteractions.core.animation;
 
 import lombok.experimental.UtilityClass;
-import net.quepierts.thatskyinteractions.infra.animation.backend.channel.DefaultChannelFormats;
-import net.quepierts.thatskyinteractions.infra.animation.backend.pass.definition.AnimationPassDefinition;
-import net.quepierts.thatskyinteractions.infra.animation.backend.pipeline.AnimationPipeline;
-import net.quepierts.thatskyinteractions.infra.animation.backend.uniform.UniformType;
+import net.quepierts.animata4j.backend.channel.DefaultChannelFormats;
+import net.quepierts.animata4j.backend.pass.definition.AnimationPassDefinition;
+import net.quepierts.animata4j.backend.pipeline.AnimationPipeline;
+import net.quepierts.animata4j.backend.uniform.UniformType;
 
 @UtilityClass
 public class DefaultMinecraftAnimationPipeline {

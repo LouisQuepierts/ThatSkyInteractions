@@ -6,10 +6,10 @@ import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationCompiler;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
-import net.quepierts.thatskyinteractions.infra.animation.backend.source.AnimationSource;
-import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMParameter;
-import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FSMState;
-import net.quepierts.thatskyinteractions.infra.animation.core.fsm.FiniteStateMachine;
+import net.quepierts.animata4j.backend.source.AnimationSource;
+import net.quepierts.animata4j.core.fsm.FSMParameter;
+import net.quepierts.animata4j.core.fsm.FSMState;
+import net.quepierts.animata4j.core.fsm.FiniteStateMachine;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 

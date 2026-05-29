@@ -1,8 +1,8 @@
 package net.quepierts.thatskyinteractions.core.animation;
 
 import lombok.experimental.UtilityClass;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
-import net.quepierts.thatskyinteractions.infra.animation.core.model.ParentOverrideConfiguration;
+import net.quepierts.animata4j.backend.skeleton.SkeletonLayout;
+import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
 
 @UtilityClass
 public class DefaultMinecraftSkeletonLayout {

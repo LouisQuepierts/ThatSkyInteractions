@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.core.property;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import net.quepierts.thatskyinteractions.infra.animation.core.adapter.Consumer1f;
+import net.quepierts.animata4j.core.adapter.Consumer1f;
 
 @NoArgsConstructor
 @AllArgsConstructor

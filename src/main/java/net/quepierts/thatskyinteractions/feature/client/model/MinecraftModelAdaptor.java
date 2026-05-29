@@ -3,8 +3,8 @@ package net.quepierts.thatskyinteractions.feature.client.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.pipeline.*;
-import net.quepierts.thatskyinteractions.infra.animation.core.skeleton.PoseCache;
+import net.quepierts.animata4j.backend.skeleton.pipeline.*;
+import net.quepierts.animata4j.core.skeleton.PoseCache;
 import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;

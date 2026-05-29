@@ -12,8 +12,8 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.ParentOverrideDefinition;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
-import net.quepierts.thatskyinteractions.infra.animation.backend.skeleton.SkeletonLayout;
-import net.quepierts.thatskyinteractions.infra.animation.core.model.ParentOverrideConfiguration;
+import net.quepierts.animata4j.backend.skeleton.SkeletonLayout;
+import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
