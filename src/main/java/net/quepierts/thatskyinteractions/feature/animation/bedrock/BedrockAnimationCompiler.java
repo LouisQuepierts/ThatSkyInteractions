@@ -39,22 +39,12 @@ public class BedrockAnimationCompiler {
     );
 
     public static @NonNull AnimationSource compile(@NonNull BedrockAnimation animation) {
-        return compile(animation, new ChannelProcressor() {
-            @Override
-            public boolean discard(final @NonNull String name) {
-                return false;
-            }
-
-            @Override
-            public @NonNull String procress(final @NonNull String name) {
-                return name;
-            }
-        });
+        return compile(animation, ChannelProcessor.none());
     }
 
     public static @NonNull AnimationSource compile(
             @NonNull BedrockAnimation   animation,
-            @NonNull ChannelProcressor  processor
+            @NonNull ChannelProcessor   processor
     ) {
         var bones               = animation.bones();
         var duration            = animation.length();
@@ -71,7 +61,7 @@ public class BedrockAnimationCompiler {
                 continue;
             }
 
-            var name            = processor.procress(key);
+            var name            = processor.process(key);
             var bone            = entry.getValue();
 
             if (bone            .position()
@@ -259,9 +249,4 @@ public class BedrockAnimationCompiler {
         SCALE;
     }
 
-    public interface ChannelProcressor {
-        boolean discard(@NonNull final String name);
-
-        @NonNull String procress(@NonNull final String name);
-    }
 }
