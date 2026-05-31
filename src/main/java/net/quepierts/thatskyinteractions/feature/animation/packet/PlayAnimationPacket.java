@@ -9,7 +9,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.entity.AvatarExtension;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import org.jspecify.annotations.NonNull;
 
 @SuppressWarnings("unused")
@@ -35,13 +35,13 @@ public record PlayAnimationPacket(
     @Override
     public void handleOnClient(final @NonNull Player player) {
 
-        final var level = player.level();
-        final var entity = level.getEntity(this.id);
+        final var level     = player.level();
+        final var entity    = level.getEntity(this.id);
 
-        if (entity instanceof AvatarExtension extension) {
-            final var state = extension.a4j$GetAnimationState();
-            state.play(this.animation);
-        }
+        final var data      = PlayerAnimationSystem.getAnimationData(player);
+        final var state     = data.getAnimation();
+
+        state               .play(this.animation);
 
     }
 

@@ -4,10 +4,10 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
+import net.quepierts.thatskyinteractions.feature.client.renderstate.AnimationStateModifier;
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelSkeleton;
-import net.quepierts.thatskyinteractions.feature.client.render.HumanoidRenderStateExtension;
 import net.quepierts.thatskyinteractions.feature.client.render.EntityModelExtension;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -39,10 +39,11 @@ public class PlayerModelMixin implements EntityModelExtension {
             )
     )
     public void tsi$setupAnim(final AvatarRenderState state, final CallbackInfo ci) {
-        // do animation thing
-        final var animation = ((HumanoidRenderStateExtension) state).a4j$GetAnimationState();
-        PlayerAnimationHook.onSetupAnimation(animation, this.a4j$ModelAdaptor);
+        final var animation     = state.getRenderData(AnimationStateModifier.CONTEXT_KEY);
 
+        if (animation != null) {
+            PlayerAnimationHook.onSetupAnimation(animation, this.a4j$ModelAdaptor);
+        }
     }
 
     @Unique

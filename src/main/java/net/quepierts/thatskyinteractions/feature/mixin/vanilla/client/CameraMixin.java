@@ -1,10 +1,11 @@
 package net.quepierts.thatskyinteractions.feature.mixin.vanilla.client;
 
 import net.minecraft.client.Camera;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
-import net.quepierts.thatskyinteractions.feature.entity.AvatarExtension;
 import org.joml.*;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,16 +46,17 @@ public abstract class CameraMixin {
             final float partialTicks,
             final CallbackInfo ci
     ) {
-        if (!(this.entity instanceof AvatarExtension extension)) {
+        if (!(this.entity instanceof Avatar)) {
             return;
         }
 
-        final var state = extension.a4j$GetAnimationState();
+        final var data          = PlayerAnimationSystem.getAnimationData(this.entity);
+        final var animation     = data.getAnimation();
 
         final var position = new Vector3d(this.position.x(), this.position.y(), this.position.z());
         final var rotation = new Vector3f(this.xRot, this.yRot, this.roll);
         final var modified = PlayerAnimationHook.onSetupCameraAnimation(
-                state,
+                animation,
                 (Camera) (Object) this,
                 position,
                 rotation,

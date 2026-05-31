@@ -8,7 +8,6 @@
     "vanilla.client.AvatarRendererMixin",
     "vanilla.client.CameraMixin",
     "vanilla.client.GameRendererMixin",
-    "vanilla.client.HumanoidRenderStateMixin",
     "vanilla.client.LivingEntityRendererMixin",
     "vanilla.client.MouseHandlerMixin",
     "vanilla.client.PlayerModelMixin",
@@ -18,7 +17,5 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "mixins": [
-    "vanilla.common.AvatarMixin"
-  ]
+  "mixins": []
 }

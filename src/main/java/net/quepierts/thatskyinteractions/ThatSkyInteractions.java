@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import net.quepierts.thatskyinteractions.feature.registry.DataComponents;
 
 @Slf4j
@@ -15,12 +16,10 @@ public class ThatSkyInteractions {
     public static final String MODID = "thatskyinteractions";
     public static final Registrum REGISTRUM = Registrum.create(MODID);
 
-    private static ThatSkyInteractions instance;
-
     public ThatSkyInteractions(IEventBus modBus) {
-        instance = this;
-
         DataComponents.REGISTRAR.register(modBus);
+
+        AttachmentTypes.register();
     }
 
     public static Identifier location(String path) {

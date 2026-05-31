@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.entity.LivingEntity;
-import net.quepierts.thatskyinteractions.feature.client.render.HumanoidRenderStateExtension;
+import net.quepierts.thatskyinteractions.feature.client.renderstate.AnimationStateModifier;
 import net.quepierts.thatskyinteractions.feature.client.render.LivingEntityRendererHook;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,13 +37,15 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
             final CallbackInfo ci
     ) {
 
-        if (!(state instanceof HumanoidRenderStateExtension extension)) {
-            return;
+        final var animation = state.getRenderData(AnimationStateModifier.CONTEXT_KEY);
+        if (animation != null) {
+            LivingEntityRendererHook.onBeforeRender(
+                    animation,
+                    poseStack,
+                    submitNodeCollector,
+                    camera
+            );
         }
-
-        final var animation = extension.a4j$GetAnimationState();
-
-        LivingEntityRendererHook.onBeforeRender(animation, poseStack, submitNodeCollector, camera);
 
     }
 

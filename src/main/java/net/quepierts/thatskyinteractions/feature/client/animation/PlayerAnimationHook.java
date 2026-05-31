@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Input;
@@ -15,16 +14,13 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
-import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.render.EntityModelExtension;
-import net.quepierts.thatskyinteractions.feature.entity.AvatarExtension;
 import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.ClientInputAccessor;
 import org.joml.*;
-
-import java.util.Objects;
 
 @Slf4j
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
@@ -35,7 +31,8 @@ public final class PlayerAnimationHook {
             final double        xo,
             final double        yo
     ) {
-        final var animation     = ((AvatarExtension) player).a4j$GetAnimationState();
+        final var data          = PlayerAnimationSystem.getAnimationData(player);
+        final var animation     = data.getAnimation();
 
         if (animation.isPlaying()) {
             final var definition    = animation.getDefinition();
@@ -67,7 +64,8 @@ public final class PlayerAnimationHook {
     public static void onRestrictPlayerMotion(final MovementInputUpdateEvent event) {
         final var player        = event.getEntity();
         final var input         = event.getInput();
-        final var animation     = ((AvatarExtension) player).a4j$GetAnimationState();
+        final var data          = PlayerAnimationSystem.getAnimationData(player);
+        final var animation     = data.getAnimation();
 
         if (!animation.isPlaying()) {
             return;
@@ -182,7 +180,9 @@ public final class PlayerAnimationHook {
     }
 
     public static HumanoidAnimationState getClientAnimationState() {
-        final var player = Minecraft.getInstance().player;
-        return ((AvatarExtension) Objects.requireNonNull(player)).a4j$GetAnimationState();
+        final var player        = Minecraft.getInstance().player;
+        final var data          = PlayerAnimationSystem.getAnimationData(player);
+
+        return data.getAnimation();
     }
 }
