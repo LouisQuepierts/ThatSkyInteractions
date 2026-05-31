@@ -7,7 +7,6 @@
   "client": [
     "vanilla.client.AvatarRendererMixin",
     "vanilla.client.CameraMixin",
-    "vanilla.client.ClientHooksMixin",
     "vanilla.client.GameRendererMixin",
     "vanilla.client.HumanoidRenderStateMixin",
     "vanilla.client.LivingEntityRendererMixin",
