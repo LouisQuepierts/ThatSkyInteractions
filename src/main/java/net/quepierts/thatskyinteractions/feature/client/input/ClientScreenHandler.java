@@ -7,6 +7,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.ExpressionsScreen;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.FriendshipScreen;
 
@@ -21,10 +22,7 @@ public class ClientScreenHandler {
         if (TSIKeys.KEY_INTERACT.consumeClick()) {
 
             if (minecraft.screen == null) {
-                minecraft.pushGuiLayer(
-                        new FriendshipScreen()
-                );
-                minecraft.mouseHandler.releaseMouse();
+                ScreenLoader.open(ExpressionsScreen.class);
             }
         }
     }

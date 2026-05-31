@@ -14,6 +14,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.Scr
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VBox;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VScrollPane;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
+import net.quepierts.thatskyinteractions.feature.client.gui.controller.ExpressionScreenController;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -21,14 +22,19 @@ import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Inter
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public final class ExpressionsScreen extends SlideScreen {
+public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenController> {
 
     public ExpressionsScreen() {
-        super(Component.translatable("menu.thatskyinteractions.expressions"));
+        super(Component.translatable("menu.thatskyinteractions.expressions"), null);
     }
 
     @Override
-    protected Control create() {
+    protected ExpressionScreenController createController(final Void unused) {
+        return new ExpressionScreenController();
+    }
+
+    @Override
+    protected Control createView() {
 
         VisualNode visualNode = (control, graphics, mouseX, mouseY, delta) -> {
             final var x = control.getX() + control.getWidth() / 2;

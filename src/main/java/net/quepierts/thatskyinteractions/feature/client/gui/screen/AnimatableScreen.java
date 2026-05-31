@@ -8,15 +8,19 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.Layout;
+import net.quepierts.thatskyinteractions.feature.client.gui.controller.ScreenController;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenTickHandler;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public abstract class AnimatableScreen extends Screen {
+public abstract class AnimatableScreen<Model, Controller extends ScreenController<Model>> extends Screen {
 
     private final TweenScope    tween;
+
+    @Getter
+    private final Controller    controller;
     private Control             root;
     private @Nullable Layout    layout;
 
@@ -24,22 +28,25 @@ public abstract class AnimatableScreen extends Screen {
     private boolean closed;
 
     protected AnimatableScreen(
-            final Component title
+            final Component     title,
+            final Model         model
     ) {
-        this(title, Tween.GLOBAL);
+        this(title, Tween.GLOBAL, model);
     }
 
     protected AnimatableScreen(
-            final Component title,
-            final TweenScope tween
+            final Component     title,
+            final TweenScope    tween,
+            final Model         model
     ) {
         super(title);
         this.tween  = tween;
+        this.controller = this.createController(model);
     }
 
     @Override
     protected void init() {
-        this.root   = this.create();
+        this.root   = this.createView();
         this.layout = (this.root instanceof Layout l) ? l : null;
     }
 
@@ -130,5 +137,7 @@ public abstract class AnimatableScreen extends Screen {
         }
     }
 
-    protected abstract Control create();
+    protected abstract Controller createController(final Model model);
+
+    protected abstract Control createView();
 }

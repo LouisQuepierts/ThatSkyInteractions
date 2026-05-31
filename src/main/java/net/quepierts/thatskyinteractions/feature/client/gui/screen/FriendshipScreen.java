@@ -6,15 +6,23 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Co
 import net.quepierts.thatskyinteractions.feature.client.gui.component.friendship.FriendshipTreeLayout;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.ScrollDirection;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VScrollPane;
+import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
+import net.quepierts.thatskyinteractions.feature.data.friendship.FriendshipTreeData;
+import org.jspecify.annotations.NonNull;
 
-public final class FriendshipScreen extends SlideScreen {
-    public FriendshipScreen() {
-        super(Component.translatable("gui.thatskyinteractions.friendship"));
+public final class FriendshipScreen extends SlideScreen<FriendshipTreeData, FriendshipScreenController> {
+    public FriendshipScreen(@NonNull final FriendshipTreeData data) {
+        super(Component.translatable("gui.thatskyinteractions.friendship"), data);
     }
 
     @Override
-    protected Control create() {
+    protected FriendshipScreenController createController(final FriendshipTreeData model) {
+        return new FriendshipScreenController(model);
+    }
+
+    @Override
+    protected Control createView() {
 
         final var tree      = DataSyncSystem.FRIENDSHIP_TREE.get(ThatSkyInteractions.location("friend"));
         final var layout    = new FriendshipTreeLayout(tree, 0, 0, this.getSliderWide().get(), this.height);

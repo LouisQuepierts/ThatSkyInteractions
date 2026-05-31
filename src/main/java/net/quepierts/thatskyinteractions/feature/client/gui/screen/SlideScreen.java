@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.core.property.IntProperty;
+import net.quepierts.thatskyinteractions.feature.client.gui.controller.ScreenController;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -12,7 +13,8 @@ import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Inter
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public abstract class SlideScreen extends AnimatableScreen {
+public abstract class SlideScreen<Model, Controller extends ScreenController<Model>>
+        extends AnimatableScreen<Model, Controller> {
 
     @Getter
     private final IntProperty       sliderWide      = new IntProperty(160);
@@ -22,16 +24,18 @@ public abstract class SlideScreen extends AnimatableScreen {
     private @Nullable TweenHandle   slide;
 
     protected SlideScreen(
-            final Component title
+            final Component     title,
+            final Model         model
     ) {
-        super(title);
+        super(title, model);
     }
 
     protected SlideScreen(
-            final Component title,
-            final TweenScope tween
+            final Component     title,
+            final TweenScope    tween,
+            final Model         model
     ) {
-        super(title, tween);
+        super(title, tween, model);
     }
 
     @Override
