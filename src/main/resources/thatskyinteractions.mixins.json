@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "thatskyinteractions.refmap.json",
   "client": [
-    "vanilla.client.AvatarRendererMixin",
     "vanilla.client.CameraMixin",
     "vanilla.client.GameRendererMixin",
     "vanilla.client.LivingEntityRendererMixin",
