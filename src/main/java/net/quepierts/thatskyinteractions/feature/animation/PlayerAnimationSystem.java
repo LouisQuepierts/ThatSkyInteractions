@@ -3,15 +3,13 @@ package net.quepierts.thatskyinteractions.feature.animation;
 import lombok.experimental.UtilityClass;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.entity.AvatarExtension;
-import net.quepierts.thatskyinteractions.feature.network.PlayAnimationPacket;
+import net.quepierts.thatskyinteractions.feature.animation.packet.PlayAnimationPacket;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass

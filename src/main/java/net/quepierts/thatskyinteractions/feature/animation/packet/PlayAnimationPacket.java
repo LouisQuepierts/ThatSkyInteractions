@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.network;
+package net.quepierts.thatskyinteractions.feature.animation.packet;
 
 import dev.anvilcraft.lib.v2.network.packet.IClientboundPacket;
 import dev.anvilcraft.lib.v2.network.packet.IPacket;
