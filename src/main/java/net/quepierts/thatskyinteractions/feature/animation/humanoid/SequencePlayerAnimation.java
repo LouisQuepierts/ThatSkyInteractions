@@ -8,8 +8,6 @@ import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimatio
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
-import net.quepierts.thatskyinteractions.feature.animation.ParentOverrideManager;
-import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.animata4j.backend.execution.ExecutionState;
@@ -21,10 +19,8 @@ import net.quepierts.animata4j.backend.skeleton.pass.definition.PivotPassDefinit
 import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPipeline;
 import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPoseProvider;
 import net.quepierts.animata4j.backend.source.AnimationSource;
-import net.quepierts.animata4j.backend.uniform.UniformInstance;
 import net.quepierts.animata4j.core.fsm.FSMState;
 import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
-import net.quepierts.animata4j.core.skeleton.ParentOverrideParameter;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j

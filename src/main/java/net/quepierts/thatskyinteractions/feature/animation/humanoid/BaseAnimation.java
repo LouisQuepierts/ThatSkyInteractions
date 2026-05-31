@@ -10,6 +10,7 @@ import net.quepierts.animata4j.backend.source.AnimationSource;
 import net.quepierts.animata4j.core.fsm.FSMParameter;
 import net.quepierts.animata4j.core.fsm.FSMState;
 import net.quepierts.animata4j.core.fsm.FiniteStateMachine;
+import net.quepierts.thatskyinteractions.feature.animation.bedrock.ChannelProcessor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -48,8 +49,8 @@ public abstract class BaseAnimation implements PlayerAnimation {
     }
 
     protected static AnimationSource parse(
-            final @Nullable SourceDefinition definition,
-            final @NonNull BedrockAnimationManager manager
+            final @Nullable SourceDefinition        definition,
+            final @NonNull  BedrockAnimationManager manager
     ) {
         if (definition == null) {
             return null;
@@ -63,7 +64,13 @@ public abstract class BaseAnimation implements PlayerAnimation {
             return null;
         }
 
-        return BedrockAnimationCompiler.compile(animation);
+        final var namespace = definition.namespace();
+        return BedrockAnimationCompiler.compile(
+                animation,
+                namespace.map(
+                        s -> ChannelProcessor.namespaced(s, "_")
+                ).orElse(ChannelProcessor.none())
+        );
     }
 
     protected static void setParameter(
