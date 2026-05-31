@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftChannelLayout;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.core.animation.parameter.ModelOverrideParameter;
 import net.quepierts.animata4j.backend.channel.ChannelFormat;
@@ -49,6 +50,9 @@ public final class HumanoidAnimationState extends AnimationState {
     private PlayerAnimation     animation;
 
     @Getter
+    private PlayerAnimationDefinition definition;
+
+    @Getter
     private boolean             playing;
 
     private int last;
@@ -85,9 +89,9 @@ public final class HumanoidAnimationState extends AnimationState {
     }
 
     public void play(Identifier identifier) {
-        final var animation = PlayerAnimationManager
-                            .getInstance()
-                            .get(identifier);
+        final var manager   = PlayerAnimationManager.getInstance();
+        final var animation = manager.get(identifier);
+        final var definition= manager.getDefinition(identifier);
 
         if (animation == null) {
             log.warn("Animation source not found: {}", identifier);
@@ -95,7 +99,8 @@ public final class HumanoidAnimationState extends AnimationState {
         }
 
         this.current        = identifier;
-        this.animation = animation;
+        this.animation      = animation;
+        this.definition     = definition;
 
         this.playing        = true;
         this.progress       = 0.0f;

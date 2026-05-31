@@ -10,7 +10,9 @@
     "vanilla.client.GameRendererMixin",
     "vanilla.client.HumanoidRenderStateMixin",
     "vanilla.client.LivingEntityRendererMixin",
+    "vanilla.client.MouseHandlerMixin",
     "vanilla.client.PlayerModelMixin",
+    "vanilla.client.accessor.ClientInputAccessor",
     "vanilla.client.accessor.ModelPartAccessor"
   ],
   "injectors": {

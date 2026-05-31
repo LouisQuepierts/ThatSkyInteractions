@@ -7,5 +7,6 @@ public record PlayerAnimationDefinition(
         String                          override,
         Map<String, SourceDefinition>   sources,
         PlayerMask                      unlock,
-        boolean                         abortable
+        boolean                         abortable,
+        boolean                         restrictMotion
 ) { }

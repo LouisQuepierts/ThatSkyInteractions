@@ -66,6 +66,15 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
         return holder.get();
     }
 
+    public PlayerAnimationDefinition getDefinition(Identifier id) {
+        var holder = this.map.get(id);
+        if (holder == null) {
+            log.error("Animation not found: {}", id);
+            return null;
+        }
+        return holder.definition;
+    }
+
     public Iterable<Identifier> identifiers() {
         return this.map.keySet();
     }
