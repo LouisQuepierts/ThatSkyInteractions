@@ -28,18 +28,6 @@ public class DataSyncSystem {
 
     private static final List<DataSyncManager<?>> MANAGERS = new ArrayList<>();
 
-    public static final BedrockAnimationManager     BEDROCK_ANIMATION
-            = BedrockAnimationManager.getInstance();
-
-    public static final PlayerAnimationManager      PLAYER_ANIMATION
-            = PlayerAnimationManager.getInstance();
-
-    public static final ParentOverrideManager       PARENT_OVERRIDE
-            = ParentOverrideManager.getInstance();
-
-    public static final FriendshipTreeManager       FRIENDSHIP_TREE
-            = FriendshipTreeManager.getInstance();
-
     private static boolean initialized = false;
 
     @SubscribeEvent

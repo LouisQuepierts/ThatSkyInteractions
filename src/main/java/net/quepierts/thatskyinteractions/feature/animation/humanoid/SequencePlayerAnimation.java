@@ -8,6 +8,8 @@ import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimatio
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
+import net.quepierts.thatskyinteractions.feature.animation.ParentOverrideManager;
+import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.animata4j.backend.execution.ExecutionState;
@@ -63,8 +65,8 @@ public final class SequencePlayerAnimation extends BaseAnimation {
     }
 
     public static PlayerAnimation parse(final @NonNull PlayerAnimationDefinition definition) {
-        final var manager   = DataSyncSystem.BEDROCK_ANIMATION;
-        final var overrides = DataSyncSystem.PARENT_OVERRIDE;
+        final var manager   = BedrockAnimationManager.getInstance();
+        final var overrides = ParentOverrideManager.getInstance();
 
         final var sources   = definition.sources();
         final var enter     = parse(sources.get("enter"), manager);

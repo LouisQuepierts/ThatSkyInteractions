@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import net.quepierts.thatskyinteractions.feature.registry.DataComponents;
 
@@ -20,6 +21,7 @@ public class ThatSkyInteractions {
         DataComponents.REGISTRAR.register(modBus);
 
         AttachmentTypes.register();
+        DataSyncSystem.register();
     }
 
     public static Identifier location(String path) {

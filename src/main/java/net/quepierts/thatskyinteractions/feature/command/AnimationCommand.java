@@ -18,7 +18,7 @@ public final class AnimationCommand {
     static final SuggestionProvider<CommandSourceStack> ANIMATIONS
             = (_, builder)
             -> SharedSuggestionProvider.suggestResource(
-                    DataSyncSystem.PLAYER_ANIMATION.identifiers(), builder
+                    PlayerAnimationManager.getInstance().identifiers(), builder
             );
 
     static LiteralArgumentBuilder<CommandSourceStack> command() {
