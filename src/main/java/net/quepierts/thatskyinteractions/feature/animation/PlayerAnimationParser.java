@@ -39,7 +39,8 @@ public class PlayerAnimationParser {
                     ).fieldOf("sources").forGetter(PlayerAnimationDefinition::sources),
                     PlayerMaskParser.CODEC.optionalFieldOf("unlock", PlayerMask.direct(0)).forGetter(PlayerAnimationDefinition::unlock),
                     Codec.BOOL.optionalFieldOf("abortable", false).forGetter(PlayerAnimationDefinition::abortable),
-                    Codec.BOOL.optionalFieldOf("restrictMotion", true).forGetter(PlayerAnimationDefinition::restrictMotion)
+                    Codec.BOOL.optionalFieldOf("restrictMotion", true).forGetter(PlayerAnimationDefinition::restrictMotion),
+                    Codec.BOOL.optionalFieldOf("rootMotion", false).forGetter(PlayerAnimationDefinition::rootMotion)
             ).apply(instance, PlayerAnimationDefinition::new));
 
     public static final StreamCodec<ByteBuf, SourceDefinition> SOURCE_STREAM_CODEC = StreamCodec.composite(
@@ -71,6 +72,8 @@ public class PlayerAnimationParser {
             PlayerAnimationDefinition::abortable,
             ByteBufCodecs.BOOL,
             PlayerAnimationDefinition::restrictMotion,
+            ByteBufCodecs.BOOL,
+            PlayerAnimationDefinition::rootMotion,
             PlayerAnimationDefinition::new
     );
 

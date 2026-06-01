@@ -59,7 +59,8 @@ public final class RegisterPlayerAnimationEvent extends Event {
                     sources,
                     definition.unlock(),
                     definition.abortable(),
-                    definition.restrictMotion()
+                    definition.restrictMotion(),
+                    definition.rootMotion()
             );
 
             this.definitions    .put(id, duplicate);

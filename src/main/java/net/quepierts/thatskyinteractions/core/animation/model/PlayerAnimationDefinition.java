@@ -8,5 +8,6 @@ public record PlayerAnimationDefinition(
         Map<String, SourceDefinition>   sources,
         PlayerMask                      unlock,
         boolean                         abortable,
-        boolean                         restrictMotion
+        boolean                         restrictMotion,
+        boolean                         rootMotion
 ) { }
