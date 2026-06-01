@@ -6,15 +6,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
-import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
+import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 
 @Slf4j
+@EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimationDefinition> {
 
     private static final String FOLDER
@@ -24,7 +28,7 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
             = createStreamCodec(PlayerAnimationParser.ANIMATION_STREAM_CODEC);
 
     private static final PlayerAnimationManager instance
-            = DataSyncSystem.register(PlayerAnimationManager::new);
+            = new PlayerAnimationManager();
 
     public static @NonNull PlayerAnimationManager getInstance() {
         return instance;
@@ -37,6 +41,11 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
                 PlayerAnimationParser.ANIMATION_CODEC,
                 FOLDER
         );
+    }
+
+    @SubscribeEvent
+    public static void onRegisterSyncManager(final RegisterSyncManagerEvent event) {
+        event.register(instance);
     }
 
     @Override

@@ -8,10 +8,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.ParentOverrideDefinition;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
-import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.animata4j.backend.skeleton.SkeletonLayout;
 import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
 import org.jspecify.annotations.NonNull;
@@ -19,6 +19,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.Map;
 
 @Slf4j
+@EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public final class ParentOverrideManager extends DataSyncManager<ParentOverrideDefinition> {
 
     public static final Identifier DISABLED
@@ -31,7 +32,7 @@ public final class ParentOverrideManager extends DataSyncManager<ParentOverrideD
             = createStreamCodec(ParentOverrideParser.STREAM_CODEC);
     
     private static final ParentOverrideManager instance 
-            = DataSyncSystem.register(ParentOverrideManager::new);
+            = new ParentOverrideManager();
     
     public static @NonNull ParentOverrideManager getInstance() {
         return instance;

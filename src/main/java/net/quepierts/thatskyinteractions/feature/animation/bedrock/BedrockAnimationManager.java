@@ -2,24 +2,23 @@ package net.quepierts.thatskyinteractions.feature.animation.bedrock;
 
 import com.google.common.collect.ImmutableMap;
 import io.netty.buffer.ByteBuf;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.bedrock.BedrockAnimation;
 import net.quepierts.thatskyinteractions.core.animation.model.bedrock.BedrockAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
-import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
+import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
-import java.util.function.IntFunction;
 
 @Slf4j
+@EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimationDefinition> {
 
     private static final String FOLDER
@@ -27,7 +26,7 @@ public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimat
 
     @Getter
     private static final BedrockAnimationManager instance
-            = DataSyncSystem.register(BedrockAnimationManager::new);
+            = new BedrockAnimationManager();
 
     private static final StreamCodec<ByteBuf, Map<Identifier, BedrockAnimationDefinition>> STREAM_CODEC
             = createStreamCodec(BedrockAnimationParser.ANIMATION_DEFINITION_STREAM_CODEC);
@@ -40,6 +39,11 @@ public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimat
                 BedrockAnimationParser.ANIMATION_DEFINITION_CODEC,
                 FOLDER
         );
+    }
+
+    @SubscribeEvent
+    public static void onRegisterSyncManager(final RegisterSyncManagerEvent event) {
+        event.register(instance);
     }
 
     @Override

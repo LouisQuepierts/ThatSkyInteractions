@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -11,6 +12,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.ParentOverrideManager;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationManager;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
+import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
 import net.quepierts.thatskyinteractions.feature.data.friendship.FriendshipTreeManager;
 import net.quepierts.thatskyinteractions.feature.network.SyncDatapackPacket;
 import org.jspecify.annotations.NonNull;
@@ -38,6 +40,8 @@ public class DataSyncSystem {
     public static final FriendshipTreeManager       FRIENDSHIP_TREE
             = FriendshipTreeManager.getInstance();
 
+    private static boolean initialized = false;
+
     @SubscribeEvent
     public static void onAddReloadListeners(final AddServerReloadListenersEvent event) {
         for (final var manager : MANAGERS) {
@@ -52,6 +56,18 @@ public class DataSyncSystem {
     @SubscribeEvent
     public static void onDatapackSync(final OnDatapackSyncEvent event) {
         event.getRelevantPlayers().forEach(DataSyncSystem::sync);
+    }
+
+    public static void register() {
+        if (initialized) {
+            return;
+        }
+
+        initialized = true;
+
+        final var event = new RegisterSyncManagerEvent(MANAGERS);
+        NeoForge.EVENT_BUS.post(event);
+        event.register();
     }
 
     private static void sync(@NonNull ServerPlayer player) {
@@ -74,14 +90,9 @@ public class DataSyncSystem {
         );
     }
 
-    public static <T extends DataSyncManager<?>> T register(Supplier<T> supplier) {
-        final var manager = supplier.get();
-        MANAGERS.add(manager);
-        return manager;
-    }
-
     public static void handle(final SyncDatapackPacket packet) {
         final DataSyncManager<?> manager = MANAGERS.get(packet.id());
         manager.handle(packet);
     }
+
 }
