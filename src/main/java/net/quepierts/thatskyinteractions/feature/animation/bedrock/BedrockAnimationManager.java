@@ -1,10 +1,8 @@
 package net.quepierts.thatskyinteractions.feature.animation.bedrock;
 
 import com.google.common.collect.ImmutableMap;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -28,15 +26,13 @@ public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimat
     private static final BedrockAnimationManager instance
             = new BedrockAnimationManager();
 
-    private static final StreamCodec<ByteBuf, Map<Identifier, BedrockAnimationDefinition>> STREAM_CODEC
-            = createStreamCodec(BedrockAnimationParser.ANIMATION_DEFINITION_STREAM_CODEC);
-
     private Map<Identifier, BedrockAnimationDefinition> definitions = Map.of();
     private Map<Identifier, BedrockAnimation>           animations  = Map.of();
 
     private BedrockAnimationManager() {
         super(
                 BedrockAnimationParser.ANIMATION_DEFINITION_CODEC,
+                BedrockAnimationParser.ANIMATION_DEFINITION_STREAM_CODEC,
                 FOLDER
         );
     }
@@ -67,11 +63,6 @@ public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimat
         this.animations     = builder2.build();
 
         log.info("Loaded {} bedrock animation sources from {} files", this.animations.size(), this.definitions.size());
-    }
-
-    @Override
-    protected @NonNull StreamCodec<ByteBuf, Map<Identifier, BedrockAnimationDefinition>> getStreamCodec() {
-        return STREAM_CODEC;
     }
 
     public BedrockAnimationDefinition getDefinition(Identifier identifier) {

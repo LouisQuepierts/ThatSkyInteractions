@@ -1,12 +1,11 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
 import com.google.common.collect.ImmutableMap;
-import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -29,22 +28,17 @@ public final class ParentOverrideManager extends DataSyncManager<ParentOverrideD
     
     public static final String FOLDER
             = "animation/override";
-    
-    public static final StreamCodec<ByteBuf, Map<Identifier, ParentOverrideDefinition>> STREAM_CODEC 
-            = createStreamCodec(ParentOverrideParser.STREAM_CODEC);
-    
+
+    @Getter
     private static final ParentOverrideManager instance 
             = new ParentOverrideManager();
-    
-    public static @NonNull ParentOverrideManager getInstance() {
-        return instance;
-    }
     
     private Map<Identifier, Holder> map = Map.of();
 
     ParentOverrideManager() {
         super(
                 ParentOverrideParser.CODEC,
+                ParentOverrideParser.STREAM_CODEC,
                 FOLDER
         );
     }
@@ -85,11 +79,6 @@ public final class ParentOverrideManager extends DataSyncManager<ParentOverrideD
         }
 
         return holder.get(layout);
-    }
-
-    @Override
-    protected @NonNull StreamCodec<ByteBuf, Map<Identifier, ParentOverrideDefinition>> getStreamCodec() {
-        return STREAM_CODEC;
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

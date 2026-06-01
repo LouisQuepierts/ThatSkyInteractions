@@ -1,10 +1,9 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
 import com.google.common.collect.ImmutableMap;
-import io.netty.buffer.ByteBuf;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -24,21 +23,16 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
     private static final String FOLDER
             = "animation/definition";
 
-    private static final StreamCodec<ByteBuf, Map<Identifier, PlayerAnimationDefinition>> STREAM_CODEC
-            = createStreamCodec(PlayerAnimationParser.ANIMATION_STREAM_CODEC);
-
+    @Getter
     private static final PlayerAnimationManager instance
             = new PlayerAnimationManager();
-
-    public static @NonNull PlayerAnimationManager getInstance() {
-        return instance;
-    }
 
     private Map<Identifier, Holder> map = Map.of();
 
     PlayerAnimationManager() {
         super(
                 PlayerAnimationParser.ANIMATION_CODEC,
+                PlayerAnimationParser.ANIMATION_STREAM_CODEC,
                 FOLDER
         );
     }
@@ -59,11 +53,6 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
         this.map = builder.build();
 
         log.info("Loaded {} player animations", this.map.size());
-    }
-
-    @Override
-    protected @NonNull StreamCodec<ByteBuf, Map<Identifier, PlayerAnimationDefinition>> getStreamCodec() {
-        return STREAM_CODEC;
     }
 
     public PlayerAnimation get(Identifier id) {

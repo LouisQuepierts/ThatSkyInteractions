@@ -27,16 +27,22 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
     @Getter
     private final PacketCache cache;
 
+    @Getter
+    private final StreamCodec<ByteBuf, Map<Identifier, T>> streamCodec;
+
     protected DataSyncManager(
-            final Codec<T>  codec,
-            final String    folder
+            final Codec<T>                  codec,
+            final StreamCodec<ByteBuf, T>   streamCodec,
+            final String                    folder
     ) {
         super(
                 codec,
                 FileToIdConverter.json(folder)
         );
-        this.identifier = ThatSkyInteractions.location(folder);
-        this.cache      = new PacketCache();
+        this.identifier     = ThatSkyInteractions.location(folder);
+        this.cache          = new PacketCache();
+
+        this.streamCodec    = createStreamCodec(streamCodec);
     }
 
     @Override
@@ -55,8 +61,6 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
     }
 
     protected abstract void apply(@NonNull Map<Identifier, T> preparations);
-
-    protected abstract @NonNull StreamCodec<ByteBuf, Map<Identifier, T>> getStreamCodec();
 
     protected static <T> StreamCodec<ByteBuf, Map<Identifier, T>> createStreamCodec(
             @NonNull final StreamCodec<ByteBuf, T> element

@@ -1,10 +1,8 @@
 package net.quepierts.thatskyinteractions.feature.data.friendship;
 
 import com.google.common.collect.ImmutableMap;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -22,9 +20,6 @@ public final class FriendshipTreeManager extends DataSyncManager<FriendshipTreeD
 
     public static final String FOLDER = "friendship/tree";
 
-    public static final StreamCodec<ByteBuf, Map<Identifier, FriendshipTreeDefinition>> STREAM_CODEC
-            = createStreamCodec(FriendshipTreeParser.TREE_STREAM_CODEC);
-
     @Getter
     private static final FriendshipTreeManager instance
             = new FriendshipTreeManager();
@@ -34,6 +29,7 @@ public final class FriendshipTreeManager extends DataSyncManager<FriendshipTreeD
     FriendshipTreeManager() {
         super(
                 FriendshipTreeParser.TREE_CODEC,
+                FriendshipTreeParser.TREE_STREAM_CODEC,
                 FOLDER
         );
     }
@@ -59,8 +55,4 @@ public final class FriendshipTreeManager extends DataSyncManager<FriendshipTreeD
         return this.trees.get(identifier);
     }
 
-    @Override
-    protected @NonNull StreamCodec<ByteBuf, Map<Identifier, FriendshipTreeDefinition>> getStreamCodec() {
-        return STREAM_CODEC;
-    }
 }
