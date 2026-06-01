@@ -8,6 +8,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationFactory;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import net.quepierts.thatskyinteractions.feature.registry.DataComponents;
@@ -32,6 +33,7 @@ public class ThatSkyInteractions {
 
     @SubscribeEvent
     private void onFmlCommonSetup(final FMLCommonSetupEvent event) {
+        PlayerAnimationFactory.register();
         DataSyncSystem.register();
     }
 }

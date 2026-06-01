@@ -97,9 +97,10 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
 
         private final PlayerAnimationDefinition definition;
         private PlayerAnimation                 animation;
+        private boolean                         initialized = false;
 
         public PlayerAnimation get() {
-            if (this.animation == null) {
+            if (!this.initialized) {
                 this.initialize();
             }
 
@@ -107,17 +108,8 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
         }
 
         private void initialize() {
-
-            switch (this.definition.type()) {
-                case "simple":
-                    this.animation = PlayerAnimation.simple(this.definition);
-                    break;
-                case "sequence":
-                    this.animation = PlayerAnimation.sequence(this.definition);
-                    break;
-                default:
-                    log.error("Unknown animation type: {}", this.definition.type());
-            }
+            this.animation      = PlayerAnimationFactory.create(this.definition);
+            this.initialized    = true;
         }
 
     }
