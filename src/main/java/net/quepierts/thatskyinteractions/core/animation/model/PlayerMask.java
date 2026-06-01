@@ -12,6 +12,9 @@ import java.util.List;
 @AllArgsConstructor(staticName = "direct")
 public final class PlayerMask {
 
+    public static final PlayerMask EMPTY    = new PlayerMask(0);
+    public static final PlayerMask ALL      = new PlayerMask(0xFFFFFFFF);
+
     private int mask;
 
     public static PlayerMask of(PlayerBone... bones) {
