@@ -51,7 +51,7 @@ public final class RegisterSyncManagerEvent extends Event {
 
         for (final var id : allIds) {
             for (final var other : this.afterDependencies.getOrDefault(id, Collections.emptySet())) {
-                inDeg.addTo(other, 1);
+                inDeg.addTo(id, 1);
                 graph.get(other).add(this.pending.get(id));
             }
         }
@@ -72,7 +72,7 @@ public final class RegisterSyncManagerEvent extends Event {
             progressed      ++;
 
             for (final var neighbor : graph.get(id)) {
-                var degree  = inDeg.merge(neighbor.getIdentifier(), -1, Integer::sum);
+                var degree  = inDeg.mergeInt(neighbor.getIdentifier(), -1, Integer::sum);
                 if (degree == 0) {
                     queue.enqueue(neighbor.getIdentifier());
                 }
