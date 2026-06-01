@@ -4,7 +4,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.player.LocalPlayer;
-import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
+import net.neoforged.neoforge.common.NeoForge;
+import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerTurnEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -24,7 +25,11 @@ public class MouseHandlerMixin {
             final double yo,
             final Operation<Void> original
     ) {
-        PlayerAnimationHook.onRestrictPlayerTurn(instance, xo, yo);
+        final var event = new LocalPlayerTurnEvent(instance, xo, yo);
+        NeoForge.EVENT_BUS.post(event);
+        if (!event.isCanceled()) {
+            instance.turn(event.getXo(), event.getYo());
+        }
     }
 
 }
