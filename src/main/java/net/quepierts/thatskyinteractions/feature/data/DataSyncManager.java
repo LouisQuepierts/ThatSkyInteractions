@@ -52,15 +52,28 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
             final @NonNull ProfilerFiller   filler
     ) {
         this.apply(preparations);
-        this.cache.encode(this.getStreamCodec(), preparations);
+
+        final Map<Identifier, T> payload = this.onHostLoaded(preparations);
+
+        this.cache.encode(
+                this.getStreamCodec(),
+                payload
+        );
     }
 
     void handle(@NonNull SyncDatapackPacket packet) {
         final var decode = packet.cache().decode(this.getStreamCodec());
         this.apply(decode);
+        this.onSynced();
     }
 
     protected abstract void apply(@NonNull Map<Identifier, T> preparations);
+
+    protected @NonNull Map<Identifier, T> onHostLoaded(@NonNull Map<Identifier, T> preparations) {
+        return preparations;
+    }
+
+    protected void onSynced() { }
 
     protected static <T> StreamCodec<ByteBuf, Map<Identifier, T>> createStreamCodec(
             @NonNull final StreamCodec<ByteBuf, T> element

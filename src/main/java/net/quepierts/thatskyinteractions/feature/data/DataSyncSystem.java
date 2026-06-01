@@ -43,7 +43,8 @@ public class DataSyncSystem {
 
     @SubscribeEvent
     public static void onDatapackSync(final OnDatapackSyncEvent event) {
-        event.getRelevantPlayers().forEach(DataSyncSystem::sync);
+        event.getRelevantPlayers().filter(player -> !player.isLocalPlayer())
+                .forEach(DataSyncSystem::sync);
     }
 
     public static void register() {

@@ -13,8 +13,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public final class RegisterSyncManagerEvent extends Event {
 
-    private final Map<Identifier, DataSyncManager<?>>   pending             = new HashMap<>();
-    private final Map<Identifier, Set<Identifier>>      afterDependencies   = new HashMap<>();
+    private final Map<Identifier, DataSyncManager<?>>   pending              = new HashMap<>();
+    private final Map<Identifier, Set<Identifier>>      afterDependencies    = new HashMap<>();
+    private final Map<Identifier, Set<Identifier>>      beforeDependencies   = new HashMap<>();
     private final List<DataSyncManager<?>>              managers;
 
     public void register(
@@ -37,6 +38,18 @@ public final class RegisterSyncManagerEvent extends Event {
         this.afterDependencies.computeIfAbsent(key, _ -> new HashSet<>()).add(identifier);
     }
 
+    public void registerBefore(
+            @NonNull DataSyncManager<?> manager,
+            @NonNull Identifier         identifier
+    ) {
+        final var key = manager.getIdentifier();
+        if (this.pending.put(key, manager) != null) {
+            throw new IllegalArgumentException("Duplicate manager: " + key);
+        }
+
+        this.beforeDependencies.computeIfAbsent(key, _ -> new HashSet<>()).add(identifier);
+    }
+
     public void register() {
 
         final var size      = this.pending.size();
@@ -53,6 +66,13 @@ public final class RegisterSyncManagerEvent extends Event {
             for (final var other : this.afterDependencies.getOrDefault(id, Collections.emptySet())) {
                 inDeg.addTo(id, 1);
                 graph.get(other).add(this.pending.get(id));
+            }
+        }
+
+        for (final var id : allIds) {
+            for (final var other : this.beforeDependencies.getOrDefault(id, Collections.emptySet())) {
+                inDeg.addTo(other, 1);
+                graph.get(id).add(this.pending.get(other));
             }
         }
 
