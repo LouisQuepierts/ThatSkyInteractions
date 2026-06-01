@@ -97,8 +97,9 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
                 "thatskyinteractions:modified",
                 sources,
                 PlayerMask.EMPTY,
+                false,
                 true,
-                true
+                false
         );
 
         final var id                = identifier.withSuffix(".requester");
@@ -134,8 +135,9 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
                 "thatskyinteractions:modified",
                 sources,
                 PlayerMask.EMPTY,
+                false,
                 true,
-                true
+                false
         );
 
         final var id                = identifier.withSuffix(".receiver");
