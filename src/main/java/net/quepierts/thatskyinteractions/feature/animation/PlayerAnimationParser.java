@@ -17,16 +17,16 @@ public class PlayerAnimationParser {
     public static final float DEFAULT_TRANSITION = 0.0f;
 
     public static final Codec<SourceDefinition> SOURCE_CODEC =
-            Codec.STRING.xmap(
-                    SourceDefinition::of,
-                    SourceDefinition::source
-            ).withAlternative(
-                    RecordCodecBuilder.create(instance -> instance.group(
-                            Codec.STRING.fieldOf("source").forGetter(SourceDefinition::source),
-                            Codec.FLOAT.optionalFieldOf("fadeIn", DEFAULT_TRANSITION).forGetter(SourceDefinition::fadeIn),
-                            Codec.FLOAT.optionalFieldOf("fadeOut", DEFAULT_TRANSITION).forGetter(SourceDefinition::fadeOut),
-                            Codec.STRING.optionalFieldOf("namespace").forGetter(SourceDefinition::namespace)
-                    ).apply(instance, SourceDefinition::new))
+            RecordCodecBuilder.<SourceDefinition>create(instance -> instance.group(
+                    Codec.STRING.fieldOf("source").forGetter(SourceDefinition::source),
+                    Codec.FLOAT.optionalFieldOf("fadeIn", DEFAULT_TRANSITION).forGetter(SourceDefinition::fadeIn),
+                    Codec.FLOAT.optionalFieldOf("fadeOut", DEFAULT_TRANSITION).forGetter(SourceDefinition::fadeOut),
+                    Codec.STRING.optionalFieldOf("namespace").forGetter(SourceDefinition::namespace)
+            ).apply(instance, SourceDefinition::new)).withAlternative(
+                    Codec.STRING.xmap(
+                            SourceDefinition::of,
+                            SourceDefinition::source
+                    )
             );
 
     public static final Codec<PlayerAnimationDefinition> ANIMATION_CODEC =
