@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.ParentOverrideDefinition;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.animata4j.backend.skeleton.SkeletonLayout;
 import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
+import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -45,6 +47,11 @@ public final class ParentOverrideManager extends DataSyncManager<ParentOverrideD
                 ParentOverrideParser.CODEC,
                 FOLDER
         );
+    }
+
+    @SubscribeEvent
+    public static void onRegisterSyncManager(final RegisterSyncManagerEvent event) {
+        event.register(instance);
     }
 
     @Override

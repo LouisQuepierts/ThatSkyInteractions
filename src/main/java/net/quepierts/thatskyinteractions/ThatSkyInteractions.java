@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import net.quepierts.thatskyinteractions.feature.registry.DataComponents;
@@ -21,10 +23,15 @@ public class ThatSkyInteractions {
         DataComponents.REGISTRAR.register(modBus);
 
         AttachmentTypes.register();
-        DataSyncSystem.register();
+        modBus.register(this);
     }
 
     public static Identifier location(String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);
+    }
+
+    @SubscribeEvent
+    private void onFmlCommonSetup(final FMLCommonSetupEvent event) {
+        DataSyncSystem.register();
     }
 }
