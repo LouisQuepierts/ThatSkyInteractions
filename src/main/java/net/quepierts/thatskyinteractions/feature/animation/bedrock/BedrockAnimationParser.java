@@ -32,15 +32,15 @@ public class BedrockAnimationParser {
      * }
      * */
     public static final Codec<BedrockKeyframe> KEYFRAME_CODEC =
-            ExtraCodecs.VECTOR3F.xmap(
-                    BedrockKeyframe::of,
-                    BedrockKeyframe::post
+            RecordCodecBuilder.<BedrockKeyframe>create(instance -> instance.group(
+                            ExtraCodecs.VECTOR3F.fieldOf("post").forGetter(BedrockKeyframe::post),
+                            ExtraCodecs.VECTOR3F.optionalFieldOf("pre").forGetter(BedrockKeyframe::pre),
+                            Codec.STRING.optionalFieldOf("interpolation", BedrockKeyframe.LERP).forGetter(BedrockKeyframe::interpolation)
+                    ).apply(instance, BedrockKeyframe::new)
             ).withAlternative(
-                    RecordCodecBuilder.create(instance -> instance.group(
-                                    ExtraCodecs.VECTOR3F.fieldOf("post").forGetter(BedrockKeyframe::post),
-                                    ExtraCodecs.VECTOR3F.optionalFieldOf("pre").forGetter(BedrockKeyframe::pre),
-                                    Codec.STRING.optionalFieldOf("interpolation", BedrockKeyframe.LERP).forGetter(BedrockKeyframe::interpolation)
-                            ).apply(instance, BedrockKeyframe::new)
+                    ExtraCodecs.VECTOR3F.xmap(
+                            BedrockKeyframe::of,
+                            BedrockKeyframe::post
                     )
             );
 
@@ -55,14 +55,14 @@ public class BedrockAnimationParser {
                     BedrockTimeline::new,
                     BedrockTimeline::keyframes
             ).withAlternative(
-                    Codec.FLOAT.xmap(
-                            BedrockTimeline::of,
-                            timeline -> timeline.keyframes().get(0f).post().x()
-                    )
-            ).withAlternative(
                     ExtraCodecs.VECTOR3F.xmap(
                             BedrockTimeline::of,
                             timeline -> timeline.keyframes().get(0f).post()
+                    )
+            ).withAlternative(
+                    Codec.FLOAT.xmap(
+                            BedrockTimeline::of,
+                            timeline -> timeline.keyframes().get(0f).post().x()
                     )
             );
 
@@ -96,71 +96,76 @@ public class BedrockAnimationParser {
                     ).optionalFieldOf("metadata").forGetter(BedrockAnimationDefinition::metadata)
             ).apply(instance, BedrockAnimationDefinition::new));
 
-    public static final StreamCodec<ByteBuf, BedrockKeyframe> KEYFRAME_STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VECTOR3F,
-            BedrockKeyframe::post,
-            ByteBufCodecs.VECTOR3F,
-            BedrockKeyframe::getPre,
-            ByteBufCodecs.STRING_UTF8,
-            BedrockKeyframe::interpolation,
-            (post, pre, interpolation) -> new BedrockKeyframe(
-                    post,
-                    Optional.of(pre),
-                    interpolation
-            )
-    );
-
-    public static final StreamCodec<ByteBuf, BedrockTimeline> TIMELINE_STREAM_CODEC = ByteBufCodecs.map(
-            (IntFunction<Map<Float, BedrockKeyframe>>) Float2ObjectArrayMap::new,
-            ByteBufCodecs.FLOAT,
-            KEYFRAME_STREAM_CODEC
-    ).map(
-            BedrockTimeline::new,
-            BedrockTimeline::keyframes
-    );
-
-    public static final StreamCodec<ByteBuf, BedrockBoneAnimation> BONE_ANIMATION_STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.optional(TIMELINE_STREAM_CODEC),
-            BedrockBoneAnimation::position,
-            ByteBufCodecs.optional(TIMELINE_STREAM_CODEC),
-            BedrockBoneAnimation::rotation,
-            ByteBufCodecs.optional(TIMELINE_STREAM_CODEC),
-            BedrockBoneAnimation::scale,
-            BedrockBoneAnimation::new
-    );
-
-    public static final StreamCodec<ByteBuf, BedrockAnimation> ANIMATION_STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.BOOL,
-            BedrockAnimation::loop,
-            ByteBufCodecs.FLOAT,
-            BedrockAnimation::length,
-            ByteBufCodecs.map(
-                    Object2ObjectOpenHashMap::new,
+    public static final StreamCodec<ByteBuf, BedrockKeyframe> KEYFRAME_STREAM_CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.VECTOR3F,
+                    BedrockKeyframe::post,
+                    ByteBufCodecs.VECTOR3F,
+                    BedrockKeyframe::getPre,
                     ByteBufCodecs.STRING_UTF8,
-                    BONE_ANIMATION_STREAM_CODEC
-            ),
-            BedrockAnimation::bones,
-            BedrockAnimation::new
-    );
+                    BedrockKeyframe::interpolation,
+                    (post, pre, interpolation) -> new BedrockKeyframe(
+                            post,
+                            Optional.of(pre),
+                            interpolation
+                    )
+            );
 
-    public static final StreamCodec<ByteBuf, BedrockAnimationDefinition> ANIMATION_DEFINITION_STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8,
-            BedrockAnimationDefinition::formatVersion,
+    public static final StreamCodec<ByteBuf, BedrockTimeline> TIMELINE_STREAM_CODEC =
             ByteBufCodecs.map(
-                    HashMap::new,
-                    ByteBufCodecs.STRING_UTF8,
-                    ANIMATION_STREAM_CODEC
-            ),
-            BedrockAnimationDefinition::animations,
-            ByteBufCodecs.optional(
+                    (IntFunction<Map<Float, BedrockKeyframe>>) Float2ObjectArrayMap::new,
+                    ByteBufCodecs.FLOAT,
+                    KEYFRAME_STREAM_CODEC
+            ).map(
+                    BedrockTimeline::new,
+                    BedrockTimeline::keyframes
+            );
+
+    public static final StreamCodec<ByteBuf, BedrockBoneAnimation> BONE_ANIMATION_STREAM_CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.optional(TIMELINE_STREAM_CODEC),
+                    BedrockBoneAnimation::position,
+                    ByteBufCodecs.optional(TIMELINE_STREAM_CODEC),
+                    BedrockBoneAnimation::rotation,
+                    ByteBufCodecs.optional(TIMELINE_STREAM_CODEC),
+                    BedrockBoneAnimation::scale,
+                    BedrockBoneAnimation::new
+            );
+
+    public static final StreamCodec<ByteBuf, BedrockAnimation> ANIMATION_STREAM_CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.BOOL,
+                    BedrockAnimation::loop,
+                    ByteBufCodecs.FLOAT,
+                    BedrockAnimation::length,
                     ByteBufCodecs.map(
                             Object2ObjectOpenHashMap::new,
                             ByteBufCodecs.STRING_UTF8,
-                            ByteBufCodecs.STRING_UTF8
-                    )
-            ),
-            BedrockAnimationDefinition::metadata,
-            BedrockAnimationDefinition::new
-    );
+                            BONE_ANIMATION_STREAM_CODEC
+                    ),
+                    BedrockAnimation::bones,
+                    BedrockAnimation::new
+            );
+
+    public static final StreamCodec<ByteBuf, BedrockAnimationDefinition> ANIMATION_DEFINITION_STREAM_CODEC =
+            StreamCodec.composite(
+                    ByteBufCodecs.STRING_UTF8,
+                    BedrockAnimationDefinition::formatVersion,
+                    ByteBufCodecs.map(
+                            HashMap::new,
+                            ByteBufCodecs.STRING_UTF8,
+                            ANIMATION_STREAM_CODEC
+                    ),
+                    BedrockAnimationDefinition::animations,
+                    ByteBufCodecs.optional(
+                            ByteBufCodecs.map(
+                                    Object2ObjectOpenHashMap::new,
+                                    ByteBufCodecs.STRING_UTF8,
+                                    ByteBufCodecs.STRING_UTF8
+                            )
+                    ),
+                    BedrockAnimationDefinition::metadata,
+                    BedrockAnimationDefinition::new
+            );
 
 }
