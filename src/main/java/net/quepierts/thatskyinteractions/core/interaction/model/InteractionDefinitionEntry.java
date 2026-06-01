@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.core.model.interaction;
+package net.quepierts.thatskyinteractions.core.interaction.model;
 
 public record InteractionDefinitionEntry(
         String requester,

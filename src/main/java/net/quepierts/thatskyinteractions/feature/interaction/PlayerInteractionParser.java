@@ -6,8 +6,8 @@ import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.quepierts.thatskyinteractions.core.model.interaction.InteractionDefinitionEntry;
-import net.quepierts.thatskyinteractions.core.model.interaction.InteractionDefinition;
+import net.quepierts.thatskyinteractions.core.interaction.model.InteractionDefinitionEntry;
+import net.quepierts.thatskyinteractions.core.interaction.model.InteractionDefinition;
 
 import java.util.ArrayList;
 

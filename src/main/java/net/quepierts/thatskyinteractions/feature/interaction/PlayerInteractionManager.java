@@ -10,7 +10,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
-import net.quepierts.thatskyinteractions.core.model.interaction.InteractionDefinition;
+import net.quepierts.thatskyinteractions.core.interaction.model.InteractionDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
@@ -93,7 +93,7 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
         );
 
         final var definition        = new PlayerAnimationDefinition(
-                "interaction_requester",
+                PlayerInteractionSystem.ANIMATION_TYPE_REQUESTER,
                 "thatskyinteractions:modified",
                 sources,
                 PlayerMask.EMPTY,
@@ -130,7 +130,7 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
         );
 
         final var definition        = new PlayerAnimationDefinition(
-                "interaction_receiver",
+                PlayerInteractionSystem.ANIMATION_TYPE_RECEIVER,
                 "thatskyinteractions:modified",
                 sources,
                 PlayerMask.EMPTY,
