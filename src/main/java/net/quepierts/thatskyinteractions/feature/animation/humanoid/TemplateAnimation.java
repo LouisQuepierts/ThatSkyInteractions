@@ -1,7 +1,9 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.quepierts.animata4j.core.util.LocationLookup;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
@@ -23,6 +25,8 @@ import net.quepierts.animata4j.core.fsm.FSMState;
 import net.quepierts.animata4j.core.fsm.FiniteStateMachine;
 import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
 import org.jspecify.annotations.NonNull;
+
+import java.util.ArrayList;
 
 public class TemplateAnimation extends BaseAnimation {
 
@@ -48,7 +52,7 @@ public class TemplateAnimation extends BaseAnimation {
         final var lookup    = fsm.getLookup();
         this.sysEnter       = lookup.find("system#enter");
         this.sysExit        = lookup.find("system#exit");
-        this.frozenEnds = new boolean[lookup.size()];
+        this.frozenEnds     = new boolean[lookup.size()];
 
         this.samplers       = samplers;
 
@@ -87,6 +91,15 @@ public class TemplateAnimation extends BaseAnimation {
         skeleton.submit(animationState.getSkeleton());
     }
 
+    public void setFrozenEnd(final String state) {
+        final var lookup    = this.fsm.getLookup();
+        final var id        = lookup.find(state);
+
+        if (id != -1) {
+            this.frozenEnds[id] = true;
+        }
+    }
+
     protected AnimationSampler resolveSampler(FSMState fsmState) {
         return this.samplers[Mth.clamp(
                 fsmState.getCurrentState() - 1,
@@ -112,6 +125,31 @@ public class TemplateAnimation extends BaseAnimation {
 
         return SamplingMode.DEFAULT;
 
+    }
+
+    public static TemplateAnimation template(
+            final @NonNull PlayerAnimationDefinition    definition,
+            final @NonNull FiniteStateMachine           fsm,
+            final @NonNull AnimationPipeline            apl,
+            final @NonNull SkeletonPipeline             spl
+    ) {
+        final var lookup    = fsm.getLookup();
+        final var builder   = new ArrayList<String>(lookup.size());
+        for (final var string : lookup) {
+            if (!string.startsWith("system#")) {
+                builder.add(string);
+            }
+        }
+
+        final var names    = builder.toArray(String[]::new);
+
+        return TemplateAnimation.template(
+                definition,
+                fsm,
+                apl,
+                spl,
+                names
+        );
     }
 
     public static TemplateAnimation template(
@@ -178,8 +216,7 @@ public class TemplateAnimation extends BaseAnimation {
                 definition,
                 DefaultMinecraftFSM.SINGLE,
                 DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
-                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
-                "main"
+                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID
         );
     }
 
@@ -189,8 +226,7 @@ public class TemplateAnimation extends BaseAnimation {
                 definition,
                 DefaultMinecraftFSM.SEQUENCE,
                 DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
-                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
-                "enter", "main", "exit"
+                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID
         );
 
         animation.frozenEnds[3] = true;
