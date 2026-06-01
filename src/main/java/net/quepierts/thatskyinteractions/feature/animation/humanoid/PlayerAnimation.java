@@ -11,11 +11,11 @@ import org.jspecify.annotations.NonNull;
 public interface PlayerAnimation {
 
     static PlayerAnimation simple(@NonNull PlayerAnimationDefinition definition) {
-        return SinglePlayerAnimation.parse(definition);
+        return TemplateAnimation.single(definition);
     }
 
     static PlayerAnimation sequence(@NonNull PlayerAnimationDefinition definition) {
-        return SequencePlayerAnimation.parse(definition);
+        return TemplateAnimation.sequence(definition);
     }
 
     void play(
