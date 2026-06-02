@@ -15,6 +15,7 @@ import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerA
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +24,7 @@ import java.util.Optional;
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public final class PlayerInteractionManager extends DataSyncManager<InteractionDefinition> {
 
-    private static final String AUTO = "auto";
+    public static final String AUTO = "auto";
 
     private static final String FOLDER
             = "interaction/definition";
@@ -32,7 +33,8 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
     private static final PlayerInteractionManager instance
             = new PlayerInteractionManager();
 
-    private Map<Identifier, InteractionDefinition> map = Map.of();
+    private Map<Identifier, InteractionDefinition> definitions = Map.of();
+    private Map<Identifier, PlayerInteraction> interactions = Map.of();
 
     PlayerInteractionManager() {
         super(
@@ -49,7 +51,7 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
 
     @SubscribeEvent
     public static void onRegisterPlayerAnimation(final RegisterPlayerAnimationEvent event) {
-        final var definitions       = instance.map;
+        final var definitions       = instance.definitions;
 
         for (final var entry : definitions.entrySet()) {
             final var identifier    = entry.getKey();
@@ -72,6 +74,33 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
                 level ++;
             }
         }
+    }
+
+    public @Nullable PlayerInteraction get(
+            @NonNull Identifier     identifier
+    ) {
+        return this.interactions.get(identifier);
+    }
+
+    public @Nullable PlayerInteraction get(
+            @NonNull Identifier     identifier,
+            int                     level
+    ) {
+        final var definition    = this.definitions.get(identifier);
+
+        if (definition == null) {
+            return null;
+        }
+
+        final var hasLevel      = definition.levels() > 1;
+        final var id            = hasLevel ? identifier.withSuffix("_" + level) : identifier;
+        return this.interactions.get(id);
+    }
+
+    public @Nullable InteractionDefinition getDefinition(
+            @NonNull Identifier     identifier
+    ) {
+        return this.definitions.get(identifier);
     }
 
     private static void parseRequester(
@@ -136,7 +165,7 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
         final var namespace         = Optional.of("receiver");
         final var prefix            = identifier.toString();
         final var sources           = Map.of(
-                "accept", new SourceDefinition(prefix + ".accept", 0.25f, 0.0f, namespace),
+//                "accept", new SourceDefinition(prefix + ".accept", 0.25f, 0.0f, namespace),
                 "main", new SourceDefinition(prefix + ".main", 0.0f, 0.0f, namespace),
                 "exit", new SourceDefinition(prefix + ".exit", 0.0f, 0.25f, namespace)
         );
@@ -157,14 +186,49 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
 
     @Override
     protected void apply(@NonNull final Map<Identifier, InteractionDefinition> preparations) {
-        final var builder = ImmutableMap.<Identifier, InteractionDefinition>builderWithExpectedSize(preparations.size());
-        preparations.forEach(builder::put);
-        this.map = builder.build();
+        final var builder   = ImmutableMap.<Identifier, InteractionDefinition>builderWithExpectedSize(preparations.size());
+        final var builder1  = ImmutableMap.<Identifier, PlayerInteraction>builderWithExpectedSize(preparations.size());
+        for (final var entry : preparations.entrySet()) {
+            final var identifier    = entry.getKey();
+            final var definition    = entry.getValue();
+            final var hasLevel      = definition.levels() > 1;
+
+            builder.put(identifier, definition);
+
+            if (!hasLevel) {
+                builder1.put(
+                        identifier,
+                        PlayerInteraction.parse(
+                                identifier,
+                                definition.interactions().getFirst(),
+                                1
+                        )
+                );
+            } else {
+                int level = 1;
+                for (final var interaction : definition.interactions()) {
+                    final var id = identifier.withSuffix("_" + level);
+                    builder1.put(
+                            id,
+                            PlayerInteraction.parse(
+                                    id,
+                                    interaction,
+                                    level
+                            )
+                    );
+
+                    level ++;
+                }
+            }
+        }
+        this.definitions    = builder.build();
+        this.interactions   = builder1.build();
 
         log.info("Loaded {} interaction definitions", preparations.size());
+        log.info("Loaded {} interaction definitions with level", interactions.size());
     }
 
     public Iterable<Identifier> identifiers() {
-        return map.keySet();
+        return this.interactions.keySet();
     }
 }

@@ -2,18 +2,33 @@ package net.quepierts.thatskyinteractions.feature.interaction;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
+import net.quepierts.thatskyinteractions.core.interaction.model.InteractionDefinitionEntry;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
+import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionSyncPacket;
+import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
+import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 import org.jspecify.annotations.NonNull;
+
+import java.util.UUID;
 
 @Slf4j
 @UtilityClass
@@ -41,6 +56,12 @@ public class PlayerInteractionSystem {
                 ANIMATION_TYPE_RECEIVER,
                 PlayerInteractionSystem::receiver
         );
+    }
+
+    public static PlayerInteractionData getInteractionData(
+            @NonNull final Entity entity
+    ) {
+        return entity.getData(AttachmentTypes.PLAYER_INTERACTION);
     }
 
     private static @NonNull PlayerAnimation requester(
@@ -81,4 +102,161 @@ public class PlayerInteractionSystem {
         return template;
     }
 
+    public static void invite(
+            final @NonNull ServerPlayer requester,
+            final @NonNull ServerPlayer receiver,
+            final @NonNull Identifier   interaction
+    ) {
+
+        if (requester.is(receiver)) {
+            return;
+        }
+
+        final var manager       = PlayerInteractionManager.getInstance();
+        final var definition    = manager.get(interaction);
+
+        if (definition == null) {
+            return;
+        }
+
+        final var level = requester.level();
+        if (level != receiver.level()) {
+            return;
+        }
+
+        if (requester.distanceToSqr(receiver) > 256) {
+            return;
+        }
+
+        final var reqData = PlayerInteractionSystem.getInteractionData(requester);
+        final var recData = PlayerInteractionSystem.getInteractionData(receiver);
+
+        if (reqData.hasSentRequest()) {
+            PlayerInteractionSystem.cancel(requester);
+        }
+
+        reqData.sendInvite(receiver, interaction);
+        recData.receiveInvite(requester, interaction);
+
+        PlayerAnimationSystem.play(
+                requester,
+                definition.requester()
+        );
+
+        PacketDistributor.sendToPlayer(
+                requester,
+                InteractionSyncPacket.invite(receiver, interaction, true)
+        );
+
+        PacketDistributor.sendToPlayer(
+                receiver,
+                InteractionSyncPacket.invite(requester, interaction, false)
+        );
+
+    }
+
+    public static void accept(
+            final @NonNull ServerPlayer requester,
+            final @NonNull ServerPlayer receiver,
+            final boolean               force
+    ) {
+
+        if (requester.is(receiver)) {
+            return;
+        }
+
+        final var reqData = PlayerInteractionSystem.getInteractionData(requester);
+        final var recData = PlayerInteractionSystem.getInteractionData(receiver);
+
+        final var sent = reqData.getSent();
+        if (sent == null || !sent.other().equals(receiver.getUUID())) {
+            return;
+        }
+
+        if (!recData.hasReceivedRequest(requester.getUUID())) {
+            return;
+        }
+
+        final var level = requester.level();
+        if (level != receiver.level()) {
+            return;
+        }
+
+        final var type      = sent.type();
+        final var manager   = PlayerInteractionManager.getInstance();
+
+        final var interaction = manager.get(type);
+
+        if (interaction == null) {
+            return;
+        }
+
+        final var position = PlayerUtils.getRelativePositionWorldSpace(requester, 1.0, 0.0);
+
+        if (!force && receiver.distanceToSqr(position) > 0.1) {
+            return;
+        }
+
+        receiver.setPos(position);
+        receiver.lookAt(EntityAnchorArgument.Anchor.EYES, requester.getEyePosition());
+
+        reqData.sendAccept(receiver);
+        recData.receiveAccept(requester);
+
+        PlayerAnimationSystem.play(
+                receiver,
+                interaction.receiver()
+        );
+
+        PlayerAnimationSystem.event(
+                requester,
+                "main"
+        );
+
+        PacketDistributor.sendToPlayer(
+                requester,
+                InteractionSyncPacket.accept(receiver, true)
+        );
+
+        PacketDistributor.sendToPlayer(
+                receiver,
+                InteractionSyncPacket.accept(requester, false)
+        );
+
+    }
+
+    public static void cancel(
+            final @NonNull ServerPlayer requester
+    ) {
+        final var reqData   = PlayerInteractionSystem.getInteractionData(requester);
+        final var sent      = reqData.getSent();
+
+        if (sent == null) {
+            return;
+        }
+
+        final var level     = requester.level();
+        final var other     = level.getPlayerByUUID(sent.other());
+
+        if (!(other instanceof ServerPlayer receiver)) {
+            return;
+        }
+
+        final var recData   = PlayerInteractionSystem.getInteractionData(receiver);
+
+        reqData.cancelSent();
+        recData.cancelReceived(requester);
+
+        PacketDistributor.sendToPlayer(
+                requester,
+                InteractionSyncPacket.cancel(receiver, true)
+        );
+
+        PacketDistributor.sendToPlayer(
+                receiver,
+                InteractionSyncPacket.cancel(requester, false)
+        );
+
+        PlayerAnimationSystem.exit(requester);
+    }
 }
