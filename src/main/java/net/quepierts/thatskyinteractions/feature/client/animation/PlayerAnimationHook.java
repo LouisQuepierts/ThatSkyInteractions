@@ -72,18 +72,22 @@ public class PlayerAnimationHook {
         final var cache = animation.getCache();
         final var root = cache.get(0);
 
+        final var head = adaptor.getSkeleton()
+                .get("head")
+                .part();
+
+        if (head == null) {
+            return false;
+        }
+
         var a           = animation.getAlpha() * 0.0625f;
-        var position    = new Vector3f(root.getTx(), root.getTy(), root.getTz());
+        var position    = new Vector3f(
+                root.getTx() + head.x,
+                root.getTy() + head.y,
+                root.getTz() + head.z
+        ).mul(a, -a, a);
 
         if (firstPerson) {
-
-            final var head = adaptor.getSkeleton()
-                    .get("head")
-                    .part();
-
-            if (head == null) {
-                return false;
-            }
 
             var yRot = (player.yHeadRot - player.yBodyRot);
             var xRot = player.getXRot();
@@ -94,23 +98,9 @@ public class PlayerAnimationHook {
                     -head.zRot
             ).mul(Mth.RAD_TO_DEG).sub(xRot, yRot, 0).mul(alpha);
             ioRotation.add(rotation);
-            position.add(
-                    head.x,
-                    head.y,
-                    head.z
-            );
         }
-
-        position.mul(a, -a, a);
         ioPosition.add(position);
 
         return true;
-    }
-
-    public static HumanoidAnimationState getClientAnimationState() {
-        final var player        = Minecraft.getInstance().player;
-        final var data          = PlayerAnimationSystem.getAnimationData(player);
-
-        return data.getAnimation();
     }
 }
