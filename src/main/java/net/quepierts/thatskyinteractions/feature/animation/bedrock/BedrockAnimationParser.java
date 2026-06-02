@@ -35,7 +35,7 @@ public class BedrockAnimationParser {
             RecordCodecBuilder.<BedrockKeyframe>create(instance -> instance.group(
                             ExtraCodecs.VECTOR3F.fieldOf("post").forGetter(BedrockKeyframe::post),
                             ExtraCodecs.VECTOR3F.optionalFieldOf("pre").forGetter(BedrockKeyframe::pre),
-                            Codec.STRING.optionalFieldOf("interpolation", BedrockKeyframe.LERP).forGetter(BedrockKeyframe::interpolation)
+                            Codec.STRING.optionalFieldOf("lerp_mode", BedrockKeyframe.LERP).forGetter(BedrockKeyframe::interpolation)
                     ).apply(instance, BedrockKeyframe::new)
             ).withAlternative(
                     ExtraCodecs.VECTOR3F.xmap(
