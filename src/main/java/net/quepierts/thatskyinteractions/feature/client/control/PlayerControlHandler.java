@@ -38,12 +38,12 @@ public class PlayerControlHandler {
         }
 
         final var animationData     = ClientPlayerAnimationSystem.getLocalAnimationData();
-        final var animState         = animationData.getAnimation();
+        final var controller        = animationData.getController();
 
-        if (animState.isPlaying()) {
-            final var definition    = animState.getDefinition();
-            final var fsmState      = animState.getFsmState();
-            final var animation     = animState.getAnimation();
+        if (controller.isPlaying()) {
+            final var definition    = controller.getDefinition();
+            final var fsmState      = controller.getFsmState();
+            final var animation     = controller.getAnimation();
 
             if (definition.abortable() || animation.isLooping(fsmState)) {
                 animation.exit(fsmState);
@@ -63,15 +63,15 @@ public class PlayerControlHandler {
         final var xo            = event.getXo();
 
         final var data          = PlayerAnimationSystem.getAnimationData(player);
-        final var animation     = data.getAnimation();
+        final var controller    = data.getController();
 
         PlayerControlHandler    .update(player);
 
-        if (!animation.isPlaying()) {
+        if (!controller.isPlaying()) {
             return;
         }
 
-        final var definition    = animation.getDefinition();
+        final var definition    = controller.getDefinition();
         final var minecraft     = Minecraft.getInstance();
 
         final var firstPerson   = minecraft.options.getCameraType().isFirstPerson();

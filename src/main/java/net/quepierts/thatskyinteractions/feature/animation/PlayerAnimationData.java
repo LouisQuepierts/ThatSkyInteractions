@@ -16,10 +16,14 @@ public final class PlayerAnimationData {
     public static final StreamCodec<ByteBuf, PlayerAnimationData> STREAM_CODEC
             = StreamCodecUtils.unit(PlayerAnimationData::new);
 
-    private final HumanoidAnimationState animation;
+    private final PlayerAnimationController controller;
 
     public PlayerAnimationData() {
-        this.animation = HumanoidAnimationState._default();
+        this.controller = new PlayerAnimationController();
+    }
+
+    public HumanoidAnimationState getAnimation() {
+        return this.controller.getState();
     }
 
 }

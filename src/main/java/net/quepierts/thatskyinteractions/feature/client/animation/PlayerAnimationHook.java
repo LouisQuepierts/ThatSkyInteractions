@@ -10,8 +10,7 @@ import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.extensions.IRenderStateExtension;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
-import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
-import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationController;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.render.EntityModelExtension;
 import net.quepierts.thatskyinteractions.feature.client.renderstate.AnimationStateModifier;
@@ -22,25 +21,25 @@ import org.joml.*;
 public class PlayerAnimationHook {
 
     public static void onSetupAnimation(
-            final HumanoidAnimationState    animation,
+            final PlayerAnimationController controller,
             final MinecraftModelAdaptor     adaptor
     ) {
-        if (!animation.isPlaying()) {
+        if (!controller.isPlaying()) {
             return;
         }
 
-        if (animation.isTicked() && !animation.isResolved()) {
-            animation.getAnimation().resolve(
-                    animation.getFsmState(),
-                    animation.getExecutionState(),
-                    animation,
-                    adaptor.link(DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID)
-            );
-            animation.markResolved();
+        if (controller.isTicked() && !controller.isResolved()) {
+            controller.getAnimation().resolve(
+                    controller.getFsmState(),
+                    controller.getExecutionState(),
+                    controller.getState(),
+                    controller.getCache(),
+                    adaptor.link(DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID));
+            controller.markResolved();
         }
 
-        adaptor.setAlpha(animation.getAlpha());
-        adaptor.accept(animation.getCache());
+        adaptor.setAlpha(controller.getAlpha());
+        adaptor.accept(controller.getCache());
     }
 
     public static <S> void onSetupRootAnimation(
@@ -53,16 +52,16 @@ public class PlayerAnimationHook {
             return;
         }
 
-        final var animation = extension.getRenderData(AnimationStateModifier.CONTEXT_KEY);
-        if (animation == null) {
+        final var controller = extension.getRenderData(AnimationStateModifier.CONTEXT_KEY);
+        if (controller == null) {
             return;
         }
 
-        if (!animation.isPlaying()) {
+        if (!controller.isPlaying()) {
             return;
         }
 
-        final var cache     = animation.getCache();
+        final var cache     = controller.getCache();
         final var root      = cache.get(0);
 
         final var quat      = new Quaternionf(
@@ -82,14 +81,14 @@ public class PlayerAnimationHook {
     }
 
     public static boolean onSetupCameraAnimation(
-            final HumanoidAnimationState    animation,
+            final PlayerAnimationController controller,
             final Camera                    camera,
             final Vector3d                  ioPosition,
             final Vector3f                  ioRotation,
             final float                     partialTicks
     ) {
 
-        if (!animation.isPlaying()) {
+        if (!controller.isPlaying()) {
             return false;
         }
 
@@ -103,14 +102,14 @@ public class PlayerAnimationHook {
 
         final var firstPerson = minecraft.options.getCameraType().isFirstPerson();
         if (firstPerson) {
-            animation.update(partialTicks);
+            controller.update(partialTicks);
 
             final var renderer = minecraft.getEntityRenderDispatcher().getPlayerRenderer(player);
             final var adaptor = ((EntityModelExtension) renderer.getModel()).a4j$GetModelAdaptor();
 
-            onSetupAnimation(animation, adaptor);
+            onSetupAnimation(controller, adaptor);
 
-            final var cache = animation.getCache();
+            final var cache = controller.getCache();
             final var root = cache.get(0);
 
             final var head = adaptor.getSkeleton()
@@ -121,7 +120,7 @@ public class PlayerAnimationHook {
                 return false;
             }
 
-            var a           = animation.getAlpha() * 0.0625f;
+            var a           = controller.getAlpha() * 0.0625f;
             var position    = new Vector3f(
                     root.getTx(),
                     root.getTy(),
@@ -130,7 +129,7 @@ public class PlayerAnimationHook {
 
             var yRot = (player.yHeadRot - player.yBodyRot);
             var xRot = player.getXRot();
-            final var alpha = animation.getAlpha();
+            final var alpha = controller.getAlpha();
             var rotation = new Vector3f(
                     head.xRot,
                     head.yRot,

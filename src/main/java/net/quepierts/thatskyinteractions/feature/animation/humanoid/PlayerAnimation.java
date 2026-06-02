@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
+import net.quepierts.animata4j.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 import net.quepierts.animata4j.backend.execution.ExecutionState;
@@ -31,6 +32,7 @@ public interface PlayerAnimation {
             @NonNull FSMState               fsmState,
             @NonNull ExecutionState         executionState,
             @NonNull HumanoidAnimationState animationState,
+            @NonNull PoseCache              target,
             @NonNull SkeletonPoseProvider   provider
     );
 

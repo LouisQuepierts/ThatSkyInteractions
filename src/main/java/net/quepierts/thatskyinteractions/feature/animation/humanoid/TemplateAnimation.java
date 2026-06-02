@@ -1,9 +1,8 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.quepierts.animata4j.core.util.LocationLookup;
+import net.quepierts.animata4j.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
@@ -20,7 +19,6 @@ import net.quepierts.animata4j.backend.skeleton.pass.definition.ParentOverridePa
 import net.quepierts.animata4j.backend.skeleton.pass.definition.PivotPassDefinition;
 import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPipeline;
 import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPoseProvider;
-import net.quepierts.animata4j.backend.source.AnimationSource;
 import net.quepierts.animata4j.core.fsm.FSMState;
 import net.quepierts.animata4j.core.fsm.FiniteStateMachine;
 import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
@@ -68,10 +66,11 @@ public class TemplateAnimation extends BaseAnimation {
 
     @Override
     public void resolve(
-            @NonNull final FSMState fsmState,
-            @NonNull final ExecutionState executionState,
-            @NonNull final HumanoidAnimationState animationState,
-            @NonNull final SkeletonPoseProvider provider
+            @NonNull final FSMState                 fsmState,
+            @NonNull final ExecutionState           executionState,
+            @NonNull final HumanoidAnimationState   animationState,
+            @NonNull final PoseCache                target,
+            @NonNull final SkeletonPoseProvider     provider
     ) {
         final var animation = this.apl;
         final var skeleton  = this.spl;
@@ -93,7 +92,7 @@ public class TemplateAnimation extends BaseAnimation {
         skeleton.bindUbo(ParentOverridePassDefinition.REQUIRED_UBO, parentOverride.getBuffer());
         skeleton.bindUbo(MinecraftModelPoseProvider.REQUIRED_UBO, animationState.getUboModelOverride().getBuffer());
         skeleton.bindProvider(0, provider);
-        skeleton.bindTarget("Output", animationState.getCache());
+        skeleton.bindTarget("Output", target);
         skeleton.submit(animationState.getSkeleton());
     }
 

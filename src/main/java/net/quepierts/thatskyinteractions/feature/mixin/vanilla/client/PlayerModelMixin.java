@@ -39,10 +39,10 @@ public class PlayerModelMixin implements EntityModelExtension {
             )
     )
     public void tsi$setupAnim(final AvatarRenderState state, final CallbackInfo ci) {
-        final var animation     = state.getRenderData(AnimationStateModifier.CONTEXT_KEY);
+        final var controller    = state.getRenderData(AnimationStateModifier.CONTEXT_KEY);
 
-        if (animation != null) {
-            PlayerAnimationHook.onSetupAnimation(animation, this.a4j$ModelAdaptor);
+        if (controller != null) {
+            PlayerAnimationHook.onSetupAnimation(controller, this.a4j$ModelAdaptor);
         }
     }
 

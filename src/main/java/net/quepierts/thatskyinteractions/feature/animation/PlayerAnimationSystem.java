@@ -12,9 +12,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationControlPacket;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
-import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
-import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
-import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
@@ -76,15 +73,15 @@ public class PlayerAnimationSystem {
 
     @SubscribeEvent
     public static void onPlayerTick(final EntityTickEvent.Pre event) {
-        final var entity    = event.getEntity();
+        final var entity        = event.getEntity();
 
         if (!(entity instanceof Avatar)) {
             return;
         }
 
-        final var data      = PlayerAnimationSystem.getAnimationData(entity);
+        final var data          = PlayerAnimationSystem.getAnimationData(entity);
 
-        data.getAnimation() .tick(entity.tickCount);
+        data.getController()    .tick(entity.tickCount);
     }
 
 }

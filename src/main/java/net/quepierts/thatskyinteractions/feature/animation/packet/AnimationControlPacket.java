@@ -89,30 +89,30 @@ public record AnimationControlPacket(
             return;
         }
 
-        final var data      = PlayerAnimationSystem.getAnimationData(target);
-        final var state     = data.getAnimation();
+        final var data          = PlayerAnimationSystem.getAnimationData(target);
+        final var controller    = data.getController();
 
         switch (this.operation) {
             case PLAY: {
-                state.play(this.identifier.get());
+                controller.play(this.identifier.get());
                 break;
             }
             case ABORT: {
-                state.abort();
+                controller.abort();
                 break;
             }
             case EXIT: {
-                state.exit();
+                controller.exit();
                 break;
             }
             case EVENT: {
-                if (state.isPlaying()) {
-                    final var animation = state.getAnimation();
+                if (controller.isPlaying()) {
+                    final var animation = controller.getAnimation();
                     final var fsm       = animation.getFsm();
                     final var path      = this.identifier.get().getPath();
                     final var event     = path.equals("exit") ? -1 : fsm.getLookup().find(path);
 
-                    animation.event(state.getFsmState(), event);
+                    animation.event(controller.getFsmState(), event);
                 }
             }
         }
