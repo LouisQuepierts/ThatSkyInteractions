@@ -19,12 +19,12 @@ public interface PlayerAnimation {
     }
 
     void play(
-            @NonNull FSMState state
+            @NonNull FSMState               fsmState
     );
 
     void update(
-            @NonNull FSMState state,
-            float delta
+            @NonNull FSMState               fsmState,
+            float                           delta
     );
 
     void resolve(
@@ -35,7 +35,24 @@ public interface PlayerAnimation {
     );
 
     void cleanup(
-            @NonNull FSMState state
+            @NonNull FSMState               fsmState
+    );
+
+    void event(
+            @NonNull FSMState               fsmState,
+            final int                       event
+    );
+
+    void abort(
+            @NonNull FSMState               fsmState
+    );
+
+    void exit(
+            @NonNull FSMState               fsmState
+    );
+
+    boolean isLooping(
+            @NonNull FSMState               fsmState
     );
 
     FiniteStateMachine getFsm();

@@ -1,0 +1,76 @@
+package net.quepierts.thatskyinteractions.feature.command.animata;
+
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
+import lombok.experimental.UtilityClass;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionManager;
+import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
+
+import java.util.ArrayList;
+
+@UtilityClass
+public final class InteractionCommand {
+
+    static final SuggestionProvider<CommandSourceStack> OTHERS
+            = (context, builder) -> {
+                    final var source    = context.getSource();
+                    if (source == null || !source.isPlayer()) {
+                        return Suggestions.empty();
+                    }
+                    final var player    = source.getPlayer();
+                    final var name      = player.getGameProfile().name();
+                    final var names     = source.getOnlinePlayerNames();
+                    final var removed   = names.stream()
+                            .filter(n -> !n.equals(name))
+                            .toList();
+                    return SharedSuggestionProvider.suggest(removed, builder);
+            };
+
+    static final SuggestionProvider<CommandSourceStack> WAITING
+            = (context, builder) -> {
+                    final var source    = context.getSource();
+                    if (source == null || !source.isPlayer()) {
+                        return Suggestions.empty();
+                    }
+
+                    final var player        = source.getPlayer();
+                    final var level         = source.getLevel();
+                    final var data          = player.getData(AttachmentTypes.PLAYER_INTERACTION);
+                    final var controller    = data.getController();
+
+                    final var requests      = controller.getReceivedRequests();
+                    final var names         = new ArrayList<String>(requests.size());
+                    for (final var request : requests) {
+                        final var uuid      = request.other();
+                        final var other     = level.getPlayerInAnyDimension(uuid);
+
+                        if (other != null) {
+                            names.add(other.getGameProfile().name());
+                        }
+                    }
+
+                    return SharedSuggestionProvider.suggest(names, builder);
+            };
+
+    static final SuggestionProvider<CommandSourceStack> INTERACTIONS
+            = (_, builder)
+            -> SharedSuggestionProvider.suggestResource(
+                    PlayerInteractionManager.getInstance().identifiers(), builder
+            );
+
+    static LiteralArgumentBuilder<CommandSourceStack> command() {
+        return Commands.literal("interact").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("invite")
+                        .then(Commands.argument("receiver", EntityArgument.player()).suggests(OTHERS)
+                                .then(Commands.argument("interaction", IdentifierArgument.id()).suggests(INTERACTIONS))))
+                .then(Commands.literal("accept")
+                        .then(Commands.argument("requester", EntityArgument.player()).suggests(WAITING)));
+    }
+
+}

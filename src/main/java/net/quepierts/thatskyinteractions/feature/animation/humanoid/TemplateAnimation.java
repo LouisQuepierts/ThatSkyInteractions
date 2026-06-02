@@ -27,6 +27,7 @@ import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TemplateAnimation extends BaseAnimation {
 
@@ -39,6 +40,7 @@ public class TemplateAnimation extends BaseAnimation {
     protected final int                             sysEnter;
     protected final int                             sysExit;
     protected final boolean[]                       frozenEnds;
+    protected final int[]                           exitPoints;
 
     public TemplateAnimation(
             final FiniteStateMachine                fsm,
@@ -53,6 +55,9 @@ public class TemplateAnimation extends BaseAnimation {
         this.sysEnter       = lookup.find("system#enter");
         this.sysExit        = lookup.find("system#exit");
         this.frozenEnds     = new boolean[lookup.size()];
+        this.exitPoints     = new int[lookup.size()];
+
+        Arrays.fill(this.exitPoints, this.sysExit);
 
         this.samplers       = samplers;
 
@@ -71,10 +76,11 @@ public class TemplateAnimation extends BaseAnimation {
         final var animation = this.apl;
         final var skeleton  = this.spl;
 
-        final var mode = this.resolveSamplingMode(fsmState);
+        final var mode      = this.resolveSamplingMode(fsmState);
+        final var sampler   = this.resolveSampler(fsmState);
 
         animation.setSamplingMode(1, mode);
-        animation.bindSource(1, this.resolveSampler(fsmState));
+        animation.bindSource(1, sampler);
         animation.submit(animationState, skeleton.getAdapter());
 
         final var parentOverride = animationState.getUboParentOverride();
@@ -91,20 +97,44 @@ public class TemplateAnimation extends BaseAnimation {
         skeleton.submit(animationState.getSkeleton());
     }
 
-    public void setFrozenEnd(final String state) {
-        final var lookup    = this.fsm.getLookup();
-        final var id        = lookup.find(state);
-
-        if (id != -1) {
-            this.frozenEnds[id] = true;
+    @Override
+    public void exit(final @NonNull FSMState fsmState) {
+        final var state     = fsmState.getCurrentState();
+        final var exitPoint = this.exitPoints[state];
+        if (exitPoint != state) {
+            this.fsm.event(fsmState, exitPoint);
         }
     }
 
+    public void setFrozenEnd(
+            final int       state,
+            final boolean   frozen
+    ) {
+        this.frozenEnds[state] = frozen;
+    }
+
+    public void setExitPoint(
+            final int   state,
+            final int   point
+    ) {
+        this.exitPoints[state] = point;
+    }
+
+    public boolean hasSource(final String state) {
+        final var lookup    = this.fsm.getLookup();
+        final var id        = lookup.find(state);
+
+        return id != -1 && this.samplers[id - 1] != null;
+    }
+
     protected AnimationSampler resolveSampler(FSMState fsmState) {
-        return this.samplers[Mth.clamp(
-                fsmState.getCurrentState() - 1,
+        final var currentState  = fsmState.getCurrentState();
+        final var lastState     = fsmState.getLastState();
+        final var clamped       = Mth.clamp(
+                (lastState != -1 && this.frozenEnds[lastState] ? lastState : currentState) - 1,
                 0, this.samplers.length - 1
-        )];
+        );
+        return this.samplers[clamped];
     }
 
     protected SamplingMode resolveSamplingMode(FSMState fsmState) {

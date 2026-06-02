@@ -10,7 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.animation.packet.PlayAnimationPacket;
+import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationControlPacket;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import org.jspecify.annotations.NonNull;
 
@@ -29,10 +29,41 @@ public class PlayerAnimationSystem {
 
         PacketDistributor.sendToPlayersInDimension(
                 player.level(),
-                new PlayAnimationPacket(
-                        animation,
-                        player.getId()
-                )
+                AnimationControlPacket.play(player, animation)
+        );
+
+    }
+
+    public static void abort(
+            @NonNull ServerPlayer   player
+    ) {
+
+        PacketDistributor.sendToPlayersInDimension(
+                player.level(),
+                AnimationControlPacket.abort(player)
+        );
+
+    }
+
+    public static void exit(
+            @NonNull ServerPlayer   player
+    ) {
+
+        PacketDistributor.sendToPlayersInDimension(
+                player.level(),
+                AnimationControlPacket.exit(player)
+        );
+
+    }
+
+    public static void event(
+            @NonNull ServerPlayer   player,
+            Identifier              event
+    ) {
+
+        PacketDistributor.sendToPlayersInDimension(
+                player.level(),
+                AnimationControlPacket.event(player, event)
         );
 
     }

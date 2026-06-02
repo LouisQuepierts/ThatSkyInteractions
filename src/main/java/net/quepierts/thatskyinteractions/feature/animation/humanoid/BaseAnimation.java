@@ -15,9 +15,9 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 @Slf4j
+@Getter
 public abstract class BaseAnimation implements PlayerAnimation {
 
-    @Getter
     protected final FiniteStateMachine  fsm;
     protected final FSMParameter        uniform;
 
@@ -46,6 +46,33 @@ public abstract class BaseAnimation implements PlayerAnimation {
     @Override
     public void cleanup(@NonNull final FSMState state) {
         this.fsm.reset(state);
+    }
+
+    @Override
+    public void event(
+            @NonNull final FSMState fsmState,
+            final int               event
+    ) {
+        this.fsm.event(fsmState, event);
+    }
+
+    @Override
+    public void abort(@NonNull final FSMState fsmState) {
+        this.fsm.abort(fsmState);
+    }
+
+    @Override
+    public void exit(@NonNull final FSMState fsmState) {
+        if (this.fsm.getTerminal() == fsmState.getCurrentState()) {
+            return;
+        }
+
+        this.fsm.exit(fsmState);
+    }
+
+    @Override
+    public boolean isLooping(@NonNull final FSMState fsmState) {
+        return this.fsm.isLooping(fsmState);
     }
 
     protected static AnimationSource parse(

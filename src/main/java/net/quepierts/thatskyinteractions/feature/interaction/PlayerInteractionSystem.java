@@ -2,12 +2,14 @@ package net.quepierts.thatskyinteractions.feature.interaction;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
+import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
@@ -32,25 +34,51 @@ public class PlayerInteractionSystem {
     public static void onRegisterAnimationType(final RegisterPlayerAnimationTypeEvent event) {
         event.register(
                 ANIMATION_TYPE_REQUESTER,
-                PlayerInteractionSystem::typeRequester
+                PlayerInteractionSystem::requester
         );
 
         event.register(
                 ANIMATION_TYPE_RECEIVER,
-                PlayerInteractionSystem::typeReceiver
+                PlayerInteractionSystem::receiver
         );
     }
 
-    private static @NonNull PlayerAnimation typeRequester(
+    private static @NonNull PlayerAnimation requester(
             @NonNull final PlayerAnimationDefinition definition
     ) {
-        throw new UnsupportedOperationException();
+
+        final var template  = TemplateAnimation.template(
+                definition,
+                DefaultInteractionFSM.REQUESTER,
+                DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
+                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID
+        );
+
+        template.setFrozenEnd(DefaultInteractionFSM.REQUESTER_CANCEL, true);
+        template.setFrozenEnd(DefaultInteractionFSM.REQUESTER_EXIT, true);
+
+        template.setExitPoint(
+                DefaultInteractionFSM.REQUESTER_WAITING,
+                DefaultInteractionFSM.REQUESTER_CANCEL
+        );
+
+        return template;
     }
 
-    private static @NonNull PlayerAnimation typeReceiver(
+    private static @NonNull PlayerAnimation receiver(
             @NonNull final PlayerAnimationDefinition definition
     ) {
-        throw new UnsupportedOperationException();
+
+        final var template  = TemplateAnimation.template(
+                definition,
+                DefaultInteractionFSM.RECEIVER,
+                DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
+                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID
+        );
+
+        template.setFrozenEnd(DefaultInteractionFSM.RECEIVER_EXIT, true);
+
+        return template;
     }
 
 }

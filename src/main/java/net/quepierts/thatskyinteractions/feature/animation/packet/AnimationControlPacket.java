@@ -1,0 +1,142 @@
+package net.quepierts.thatskyinteractions.feature.animation.packet;
+
+import dev.anvilcraft.lib.v2.network.packet.IClientboundPacket;
+import dev.anvilcraft.lib.v2.network.packet.IPacket;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import org.jspecify.annotations.NonNull;
+
+import java.util.Optional;
+
+public record AnimationControlPacket(
+        Operation               operation,
+        int                     id,
+        Optional<Identifier>    identifier
+) implements IClientboundPacket {
+
+    public static final Type<AnimationControlPacket> TYPE
+            = IPacket.type(ThatSkyInteractions.location("animation_control"));
+
+    public static final StreamCodec<ByteBuf, AnimationControlPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.BYTE.map(
+                    Operation::decode,
+                    Operation::encode
+            ),
+            AnimationControlPacket::operation,
+            ByteBufCodecs.VAR_INT,
+            AnimationControlPacket::id,
+            ByteBufCodecs.optional(Identifier.STREAM_CODEC),
+            AnimationControlPacket::identifier,
+            AnimationControlPacket::new
+    );
+
+    public static AnimationControlPacket play(
+            @NonNull Player     player,
+            @NonNull Identifier animation
+    ) {
+        return new AnimationControlPacket(
+                Operation.PLAY,
+                player.getId(),
+                Optional.of(animation)
+        );
+    }
+
+    public static AnimationControlPacket abort(
+            @NonNull Player     player
+    ) {
+        return new AnimationControlPacket(
+                Operation.ABORT,
+                player.getId(),
+                Optional.empty()
+        );
+    }
+
+    public static AnimationControlPacket exit(
+            @NonNull Player     player
+    ) {
+        return new AnimationControlPacket(
+                Operation.EXIT,
+                player.getId(),
+                Optional.empty()
+        );
+    }
+
+    public static AnimationControlPacket event(
+            @NonNull Player     player,
+            @NonNull Identifier event
+    ) {
+        return new AnimationControlPacket(
+                Operation.EVENT,
+                player.getId(),
+                Optional.of(event)
+        );
+    }
+
+    @Override
+    public void handleOnClient(final @NonNull Player player) {
+        final var level     = player.level();
+        final var entity    = level.getEntity(this.id());
+
+        if (!(entity instanceof Player)) {
+            return;
+        }
+
+        final var data      = PlayerAnimationSystem.getAnimationData(entity);
+        final var state     = data.getAnimation();
+
+        switch (this.operation) {
+            case PLAY: {
+                state.play(this.identifier.get());
+                break;
+            }
+            case ABORT: {
+                state.abort();
+                break;
+            }
+            case EXIT: {
+                state.exit();
+                break;
+            }
+            case EVENT: {
+                if (state.isPlaying()) {
+                    final var animation = state.getAnimation();
+                    final var fsm       = animation.getFsm();
+                    final var path      = this.identifier.get().getPath();
+                    final var event     = path.equals("exit") ? -1 : fsm.getLookup().find(path);
+
+                    animation.event(state.getFsmState(), event);
+                }
+            }
+        }
+    }
+
+    @Override
+    public @NonNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public enum Operation {
+        PLAY,
+        ABORT,
+        EXIT,
+        EVENT;
+
+        static final Operation[] VALUES = values();
+
+        public static Operation decode(byte id) {
+            return VALUES[id];
+        }
+
+        public byte encode() {
+            return (byte) ordinal();
+        }
+
+    }
+
+}

@@ -55,12 +55,21 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
             final var identifier    = entry.getKey();
             final var definition    = entry.getValue();
 
+            final var hasLevel      = definition.levels() > 1;
+            var level               = 1;
+
             for (final var interaction : definition.interactions()) {
                 final var requester = interaction.requester();
                 final var receiver  = interaction.receiver();
 
-                parseRequester(event, identifier, requester);
-                parseReceiver(event, identifier, receiver);
+                final var id        = hasLevel ?
+                                    identifier.withSuffix("_" + level) :
+                                    identifier;
+
+                parseRequester(event, id, requester);
+                parseReceiver(event, id, receiver);
+
+                level ++;
             }
         }
     }
@@ -84,12 +93,13 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
         }
 
         final var namespace         = Optional.of("requester");
+        final var prefix            = identifier.toString();
         final var sources           = Map.of(
-                "inviting", new SourceDefinition("inviting", 0.25f, 0.0f, namespace),
-                "waiting", new SourceDefinition("waiting", 0.0f, 0.0f, namespace),
-                "cancel", new SourceDefinition("cancel", 0.0f, 0.25f, namespace),
-                "main", new SourceDefinition("main", 0.0f, 0.0f, namespace),
-                "exit", new SourceDefinition("exit", 0.0f, 0.25f, namespace)
+                "invite", new SourceDefinition(prefix + ".invite", 0.25f, 0.0f, namespace),
+                "waiting", new SourceDefinition(prefix + ".waiting", 0.0f, 0.0f, namespace),
+                "cancel", new SourceDefinition(prefix + ".cancel", 0.0f, 0.25f, namespace),
+                "main", new SourceDefinition(prefix + ".main", 0.0f, 0.0f, namespace),
+                "exit", new SourceDefinition(prefix + ".exit", 0.0f, 0.25f, namespace)
         );
 
         final var definition        = new PlayerAnimationDefinition(
@@ -124,10 +134,11 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
         }
 
         final var namespace         = Optional.of("receiver");
+        final var prefix            = identifier.toString();
         final var sources           = Map.of(
-                "accept", new SourceDefinition("accept", 0.25f, 0.0f, namespace),
-                "main", new SourceDefinition("main", 0.0f, 0.0f, namespace),
-                "exit", new SourceDefinition("exit", 0.0f, 0.25f, namespace)
+                "accept", new SourceDefinition(prefix + ".accept", 0.25f, 0.0f, namespace),
+                "main", new SourceDefinition(prefix + ".main", 0.0f, 0.0f, namespace),
+                "exit", new SourceDefinition(prefix + ".exit", 0.0f, 0.25f, namespace)
         );
 
         final var definition        = new PlayerAnimationDefinition(
@@ -151,5 +162,9 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
         this.map = builder.build();
 
         log.info("Loaded {} interaction definitions", preparations.size());
+    }
+
+    public Iterable<Identifier> identifiers() {
+        return map.keySet();
     }
 }
