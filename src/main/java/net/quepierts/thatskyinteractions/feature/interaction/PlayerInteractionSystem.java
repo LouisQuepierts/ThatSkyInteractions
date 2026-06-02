@@ -4,11 +4,8 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -18,17 +15,14 @@ import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimatio
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
-import net.quepierts.thatskyinteractions.core.interaction.model.InteractionDefinitionEntry;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
-import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionSyncPacket;
+import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionControlPacket;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 import org.jspecify.annotations.NonNull;
-
-import java.util.UUID;
 
 @Slf4j
 @UtilityClass
@@ -145,12 +139,12 @@ public class PlayerInteractionSystem {
 
         PacketDistributor.sendToPlayer(
                 requester,
-                InteractionSyncPacket.invite(receiver, interaction, true)
+                InteractionControlPacket.invite(receiver, interaction, true)
         );
 
         PacketDistributor.sendToPlayer(
                 receiver,
-                InteractionSyncPacket.invite(requester, interaction, false)
+                InteractionControlPacket.invite(requester, interaction, false)
         );
 
     }
@@ -215,12 +209,12 @@ public class PlayerInteractionSystem {
 
         PacketDistributor.sendToPlayer(
                 requester,
-                InteractionSyncPacket.accept(receiver, true)
+                InteractionControlPacket.accept(receiver, true)
         );
 
         PacketDistributor.sendToPlayer(
                 receiver,
-                InteractionSyncPacket.accept(requester, false)
+                InteractionControlPacket.accept(requester, false)
         );
 
     }
@@ -249,12 +243,12 @@ public class PlayerInteractionSystem {
 
         PacketDistributor.sendToPlayer(
                 requester,
-                InteractionSyncPacket.cancel(receiver, true)
+                InteractionControlPacket.cancel(receiver, true)
         );
 
         PacketDistributor.sendToPlayer(
                 receiver,
-                InteractionSyncPacket.cancel(requester, false)
+                InteractionControlPacket.cancel(requester, false)
         );
 
         PlayerAnimationSystem.exit(requester);

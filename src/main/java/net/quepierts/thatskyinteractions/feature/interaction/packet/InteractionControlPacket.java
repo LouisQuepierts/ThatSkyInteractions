@@ -16,58 +16,58 @@ import org.jspecify.annotations.NonNull;
 import java.util.Optional;
 import java.util.UUID;
 
-public record InteractionSyncPacket(
+public record InteractionControlPacket(
         Operation               operation,
         UUID                    uuid,
         Optional<Identifier>    identifier
 ) implements IClientboundPacket {
 
-    public static final Type<InteractionSyncPacket> TYPE
+    public static final Type<InteractionControlPacket> TYPE
             = IPacket.type(ThatSkyInteractions.location("interaction/sync"));
 
-    public static final StreamCodec<ByteBuf, InteractionSyncPacket> STREAM_CODEC
+    public static final StreamCodec<ByteBuf, InteractionControlPacket> STREAM_CODEC
             = StreamCodec.composite(
                     ByteBufCodecs.BYTE.map(
                             Operation::decode,
                             Operation::encode
                     ),
-                    InteractionSyncPacket::operation,
+                    InteractionControlPacket::operation,
                     UUIDUtil.STREAM_CODEC,
-                    InteractionSyncPacket::uuid,
+                    InteractionControlPacket::uuid,
                     ByteBufCodecs.optional(Identifier.STREAM_CODEC),
-                    InteractionSyncPacket::identifier,
-                    InteractionSyncPacket::new
+                    InteractionControlPacket::identifier,
+                    InteractionControlPacket::new
             );
 
 
-    public static InteractionSyncPacket invite(
+    public static InteractionControlPacket invite(
             final @NonNull Player       requester,
             final @NonNull Identifier   type,
             final boolean               send
     ) {
-        return new InteractionSyncPacket(
+        return new InteractionControlPacket(
                 send ? Operation.INVITE_REQ : Operation.INVITE_REC,
                 requester.getUUID(),
                 Optional.of(type)
         );
     }
 
-    public static InteractionSyncPacket accept(
+    public static InteractionControlPacket accept(
             final @NonNull Player       requester,
             final boolean               send
     ) {
-        return new InteractionSyncPacket(
+        return new InteractionControlPacket(
                 send ? Operation.ACCEPT_REQ :Operation.ACCEPT_REC,
                 requester.getUUID(),
                 Optional.empty()
         );
     }
 
-    public static InteractionSyncPacket cancel(
+    public static InteractionControlPacket cancel(
             final @NonNull Player       requester,
             final boolean               send
     ) {
-        return new InteractionSyncPacket(
+        return new InteractionControlPacket(
                 send ? Operation.CANCEL_REQ :Operation.CANCEL_REC,
                 requester.getUUID(),
                 Optional.empty()
