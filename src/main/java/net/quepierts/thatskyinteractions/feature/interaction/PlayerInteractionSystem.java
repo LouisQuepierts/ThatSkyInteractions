@@ -163,7 +163,7 @@ public class PlayerInteractionSystem {
         final var recData = PlayerInteractionSystem.getInteractionData(receiver);
 
         final var sent = reqData.getSent();
-        if (sent == null || !sent.other().equals(receiver.getUUID())) {
+        if (sent == null || !sent.getOther().equals(receiver.getUUID())) {
             return;
         }
 
@@ -176,7 +176,7 @@ public class PlayerInteractionSystem {
             return;
         }
 
-        final var type      = sent.type();
+        final var type      = sent.getType();
         final var manager   = PlayerInteractionManager.getInstance();
 
         final var interaction = manager.get(type);
@@ -230,7 +230,7 @@ public class PlayerInteractionSystem {
         }
 
         final var level     = requester.level();
-        final var other     = level.getPlayerByUUID(sent.other());
+        final var other     = level.getPlayerByUUID(sent.getOther());
 
         if (!(other instanceof ServerPlayer receiver)) {
             return;

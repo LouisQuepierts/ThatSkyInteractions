@@ -1,19 +1,21 @@
 package net.quepierts.thatskyinteractions.feature.interaction;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import org.jspecify.annotations.NonNull;
 
-import java.util.Objects;
 import java.util.UUID;
 
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InteractionRequest {
 
     private final UUID other;
     private final Identifier type;
     private final long expireTime;
+
+    private State state = State.WAITING;
 
     public InteractionRequest(
             UUID other,
@@ -30,7 +32,7 @@ public final class InteractionRequest {
             Identifier type,
             long tick
     ) {
-        return new InteractionRequest(other, type, tick + 20 * 60);
+        return new InteractionRequest(other, type, tick + 20 * 60, State.WAITING);
     }
 
     public static InteractionRequest receive(
@@ -38,28 +40,37 @@ public final class InteractionRequest {
             Identifier type,
             long expireTime
     ) {
-        return new InteractionRequest(other, type, expireTime);
+        return new InteractionRequest(other, type, expireTime, State.WAITING);
     }
 
     public boolean isExpired(long tick) {
         return tick >= this.expireTime;
     }
 
-    public UUID other() {
-        return other;
+    public void cancel() {
+        this.state = State.CANCELED;
     }
 
-    public Identifier type() {
-        return type;
+    public void accept() {
+        this.state = State.DONE;
     }
 
-    public long expireTime() {
-        return expireTime;
+    public boolean isWaiting() {
+        return this.state == State.WAITING;
+    }
+
+    public boolean isCanceled() {
+        return this.state == State.CANCELED;
+    }
+
+    public boolean isDone() {
+        return this.state == State.DONE;
     }
 
     public enum State {
         WAITING,
-        ONGOING
+        DONE,
+        CANCELED,
     }
 
 }

@@ -82,7 +82,7 @@ public final class PlayerInteractionData {
             final @NonNull Player       other
     ) {
 
-        if (this.hasSentRequest() && this.sent.other().equals(other.getUUID())) {
+        if (this.hasSentRequest() && this.sent.getOther().equals(other.getUUID())) {
             this.sent = null;
         }
 

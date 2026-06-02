@@ -10,7 +10,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import org.jspecify.annotations.NonNull;
@@ -40,6 +39,37 @@ public record InteractionRequestPacket(
                     InteractionRequestPacket::identifier,
                     InteractionRequestPacket::new
             );
+
+    private static final UUID EMPTY_UUID = new UUID(0, 0);
+
+    public static InteractionRequestPacket invite(
+            final @NonNull Player       target,
+            final @NonNull Identifier   type
+    ) {
+        return new InteractionRequestPacket(
+                Operation.INVITE,
+                target.getUUID(),
+                Optional.of(type)
+        );
+    }
+
+    public static InteractionRequestPacket accept(
+            final @NonNull Player       target
+    ) {
+        return new InteractionRequestPacket(
+                Operation.ACCEPT,
+                target.getUUID(),
+                Optional.empty()
+        );
+    }
+
+    public static InteractionRequestPacket cancel() {
+        return new InteractionRequestPacket(
+                Operation.CANCEL,
+                EMPTY_UUID,
+                Optional.empty()
+        );
+    }
 
     @Override
     public void handleOnServer(final @NonNull Player player) {

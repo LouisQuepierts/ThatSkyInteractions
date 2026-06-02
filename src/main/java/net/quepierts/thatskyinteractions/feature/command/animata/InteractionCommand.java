@@ -49,7 +49,7 @@ public final class InteractionCommand {
                     final var requests      = data.getReceivedRequests();
                     final var names         = new ArrayList<String>(requests.size());
                     for (final var request : requests) {
-                        final var uuid      = request.other();
+                        final var uuid      = request.getOther();
                         final var other     = level.getPlayerInAnyDimension(uuid);
 
                         if (other != null) {
@@ -115,7 +115,7 @@ public final class InteractionCommand {
         final var player        = source.getPlayerOrException();
 
         PlayerInteractionSystem.cancel(player);
-        return 0;
+        return 1;
     }
 
 }

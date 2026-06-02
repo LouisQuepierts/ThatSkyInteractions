@@ -12,6 +12,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationControlPacket;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
+import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
+import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
+import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
