@@ -2,10 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.model;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonContext;
-import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPipeline;
-import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPoseBuffer;
-import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPoseProvider;
+import net.quepierts.animata4j.backend.skeleton.pipeline.*;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.NonNull;
 
@@ -42,6 +39,11 @@ public final class MinecraftModelPoseProvider implements SkeletonPoseProvider {
         final var quaternion    = this.quaternion;
         final var overrides     = this.override;
         reader.readFloat(0, overrides.length, overrides);
+
+        final var root          = target.get(0);
+        root.setPosition(0, 0, 0);
+        root.setRotation(quaternion.identity());
+        root.setScale(1, 1, 1);
 
         for (final var entry : this.skeleton.getEntries()) {
             final var part      = entry.part();
