@@ -106,6 +106,22 @@ public final class HumanoidAnimationState extends AnimationState {
         this.progress       = 0.0f;
     }
 
+    public void abort() {
+        if (!this.isPlaying()) {
+            return;
+        }
+
+        this.cleanup();
+    }
+
+    public void exit() {
+        if (!this.isPlaying()) {
+            return;
+        }
+
+        this.animation.exit(this.fsmState);
+    }
+
     public void tick(int current) {
         if (this.playing) {
             final var delta = (current - last) * 0.05f;
@@ -115,10 +131,7 @@ public final class HumanoidAnimationState extends AnimationState {
             this.progress   = this.fsmState.getElapsed();
 
             if (this.fsmState.isFinished()) {
-                this.animation.cleanup(this.fsmState);
-                this.playing = false;
-                this.current = null;
-                this.animation = null;
+                this.cleanup();
             }
         }
 
@@ -131,14 +144,20 @@ public final class HumanoidAnimationState extends AnimationState {
             final var delta = partialTicks * 0.05f;
             this.progress               = this.fsmState.getElapsed() + delta;
             var progress                = Math.min(
-                    (this.fsmState.getBlendElapsed() + delta) / this.fsmState.getBlendDuration(),
-                    1.0f
-            );
+                                                    (this.fsmState.getBlendElapsed() + delta)
+                                                            / this.fsmState.getBlendDuration(),
+                                                    1.0f
+                                            );
             this.alpha                  = getAlpha(this.fsmState, progress);
         }
     }
 
-
+    private void cleanup() {
+        this.animation.cleanup(this.fsmState);
+        this.playing    = false;
+        this.current    = null;
+        this.animation  = null;
+    }
 
     private float getAlpha(final FSMState fsmState, float progress) {
         var alpha = 1.0f;
