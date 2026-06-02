@@ -26,7 +26,7 @@ public class DefaultInteractionFSM {
             .sequence()
 
             .withState("system#enter")
-            .withState("accept")
+//            .withState("accept")
             .withState("main")
             .withState("exit")
             .withState("system#exit")
