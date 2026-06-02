@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.animation.packet;
 import dev.anvilcraft.lib.v2.network.packet.IClientboundPacket;
 import dev.anvilcraft.lib.v2.network.packet.IPacket;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -13,15 +14,16 @@ import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public record AnimationControlPacket(
         Operation               operation,
-        int                     id,
+        UUID                    uuid,
         Optional<Identifier>    identifier
 ) implements IClientboundPacket {
 
     public static final Type<AnimationControlPacket> TYPE
-            = IPacket.type(ThatSkyInteractions.location("animation_control"));
+            = IPacket.type(ThatSkyInteractions.location("animation/control"));
 
     public static final StreamCodec<ByteBuf, AnimationControlPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BYTE.map(
@@ -29,8 +31,8 @@ public record AnimationControlPacket(
                     Operation::encode
             ),
             AnimationControlPacket::operation,
-            ByteBufCodecs.VAR_INT,
-            AnimationControlPacket::id,
+            UUIDUtil.STREAM_CODEC,
+            AnimationControlPacket::uuid,
             ByteBufCodecs.optional(Identifier.STREAM_CODEC),
             AnimationControlPacket::identifier,
             AnimationControlPacket::new
@@ -42,7 +44,7 @@ public record AnimationControlPacket(
     ) {
         return new AnimationControlPacket(
                 Operation.PLAY,
-                player.getId(),
+                player.getUUID(),
                 Optional.of(animation)
         );
     }
@@ -52,7 +54,7 @@ public record AnimationControlPacket(
     ) {
         return new AnimationControlPacket(
                 Operation.ABORT,
-                player.getId(),
+                player.getUUID(),
                 Optional.empty()
         );
     }
@@ -62,7 +64,7 @@ public record AnimationControlPacket(
     ) {
         return new AnimationControlPacket(
                 Operation.EXIT,
-                player.getId(),
+                player.getUUID(),
                 Optional.empty()
         );
     }
@@ -73,7 +75,7 @@ public record AnimationControlPacket(
     ) {
         return new AnimationControlPacket(
                 Operation.EVENT,
-                player.getId(),
+                player.getUUID(),
                 Optional.of(event)
         );
     }
@@ -81,13 +83,13 @@ public record AnimationControlPacket(
     @Override
     public void handleOnClient(final @NonNull Player player) {
         final var level     = player.level();
-        final var entity    = level.getEntity(this.id());
+        final var target    = level.getPlayerByUUID(this.uuid());
 
-        if (!(entity instanceof Player)) {
+        if (target == null) {
             return;
         }
 
-        final var data      = PlayerAnimationSystem.getAnimationData(entity);
+        final var data      = PlayerAnimationSystem.getAnimationData(target);
         final var state     = data.getAnimation();
 
         switch (this.operation) {
