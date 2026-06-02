@@ -2,7 +2,7 @@
 minecraft   = "26.1.2"
 neoforge    = "26.1.2.0-beta"
 anvillib    = "2.0.0+snapshot.424"
-animata4j   = "1.0.0+build.102"
+animata4j   = "1.0.0+build.103"
 
 [libraries]
 anvillib-registrum  = { group = 'dev.anvilcraft.lib', name = 'anvillib-registrum-neoforge-26.1', version.ref = "anvillib" }
