@@ -58,12 +58,15 @@ public class PlayerAnimationSystem {
 
     public static void event(
             @NonNull ServerPlayer   player,
-            Identifier              event
+            String                  event
     ) {
 
         PacketDistributor.sendToPlayersInDimension(
                 player.level(),
-                AnimationControlPacket.event(player, event)
+                AnimationControlPacket.event(
+                        player,
+                        Identifier.fromNamespaceAndPath("e", event)
+                )
         );
 
     }

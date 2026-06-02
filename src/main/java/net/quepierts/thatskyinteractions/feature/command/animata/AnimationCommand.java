@@ -2,13 +2,13 @@ package net.quepierts.thatskyinteractions.feature.command.animata;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import lombok.experimental.UtilityClass;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.IdentifierArgument;
-import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationManager;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 
@@ -35,77 +35,48 @@ public final class AnimationCommand {
                                 .executes(AnimationCommand::event)));
     }
 
-    private static int play(CommandContext<CommandSourceStack> context) {
-        final var name = IdentifierArgument.getId(context, "name");
+    private static int play(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var name      = IdentifierArgument.getId(context, "name");
 
-        final var source = context.getSource();
-        if (!source.isPlayer()) {
-            source.sendFailure(
-                    source.getDisplayName().copy()
-                            .append(" is not a player")
-            );
-            return 0;
-        }
+        final var source    = context.getSource();
+        final var player    = source.getPlayerOrException();
 
         PlayerAnimationSystem.play(
-                source.getPlayer(),
+                player,
                 name
         );
 
         return 1;
     }
 
-    private static int abort(CommandContext<CommandSourceStack> context) {
-        final var source = context.getSource();
-        if (!source.isPlayer()) {
-            source.sendFailure(
-                    source.getDisplayName().copy()
-                            .append(" is not a player")
-            );
-            return 0;
-        }
+    private static int abort(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var source    = context.getSource();
+        final var player   = source.getPlayerOrException();
 
-        PlayerAnimationSystem.abort(
-                source.getPlayer()
-        );
+        PlayerAnimationSystem.abort(player);
 
         return 1;
     }
 
-    private static int exit(CommandContext<CommandSourceStack> context) {
-        final var source = context.getSource();
-        if (!source.isPlayer()) {
-            source.sendFailure(
-                    source.getDisplayName().copy()
-                            .append(" is not a player")
-            );
-        }
+    private static int exit(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var source    = context.getSource();
+        final var player   = source.getPlayerOrException();
 
-        PlayerAnimationSystem.exit(
-                source.getPlayer()
-        );
+        PlayerAnimationSystem.exit(player);
 
         return 0;
     }
 
-    private static int event(CommandContext<CommandSourceStack> context) {
+    private static int event(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
         final var eventArg  = IdentifierArgument.getId(context, "event");
 
         final var source    = context.getSource();
-        if (!source.isPlayer()) {
-            source.sendFailure(
-                    source.getDisplayName().copy()
-                            .append(" is not a player")
-            );
-            return 0;
-        }
-
-        final var event     = Identifier.fromNamespaceAndPath("e", eventArg.getPath());
+        final var player    = source.getPlayerOrException();
 
         PlayerAnimationSystem.event(
-                source.getPlayer(),
-                event
+                player,
+                eventArg.getPath()
         );
 
         return 1;
