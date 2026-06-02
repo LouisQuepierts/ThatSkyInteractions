@@ -2,23 +2,21 @@ package net.quepierts.thatskyinteractions.feature.client.control;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.ClientInput;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Input;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec2;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.client.ClientPlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.client.ClientPlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerMovedEvent;
 import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerTurnEvent;
-import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionData;
+import net.quepierts.thatskyinteractions.feature.control.packet.UpdatePlayerBodyPacket;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
-import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.ClientInputAccessor;
 
 @UtilityClass
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
@@ -26,10 +24,21 @@ public class PlayerControlHandler {
 
     @SubscribeEvent
     public static void onLocalPlayerMoved(final LocalPlayerMovedEvent event) {
-        final var player        = event.getPlayer();
+        final var player            = event.getPlayer();
 
-        final var animationData = PlayerAnimationSystem.getAnimationData(player);
-        final var animState     = animationData.getAnimation();
+        final var interactionData   = PlayerInteractionSystem.getInteractionData(player);
+        final var sent              = interactionData.getSent();
+        if (sent != null) {
+            if (sent.isWaiting()) {
+                ClientPlayerInteractionSystem.cancel();
+            }
+
+            event.setCanceled(true);
+            return;
+        }
+
+        final var animationData     = ClientPlayerAnimationSystem.getLocalAnimationData();
+        final var animState         = animationData.getAnimation();
 
         if (animState.isPlaying()) {
             final var definition    = animState.getDefinition();
@@ -45,7 +54,6 @@ public class PlayerControlHandler {
             }
         }
 
-        final var interactionData   = PlayerInteractionSystem.getInteractionData(player);
 
     }
 
@@ -56,6 +64,8 @@ public class PlayerControlHandler {
 
         final var data          = PlayerAnimationSystem.getAnimationData(player);
         final var animation     = data.getAnimation();
+
+        PlayerControlHandler    .update(player);
 
         if (!animation.isPlaying()) {
             return;
@@ -84,6 +94,16 @@ public class PlayerControlHandler {
         if (headDiff0 > maxDiff && headDiff1 < headDiff0) {
             event.setXo(0.0);
         }
+    }
+
+    private static void update(final LocalPlayer player) {
+        if (player.level().players().size() < 2) {
+            return;
+        }
+
+        ClientPacketDistributor.sendToServer(
+                UpdatePlayerBodyPacket.client(player)
+        );
     }
 
 }
