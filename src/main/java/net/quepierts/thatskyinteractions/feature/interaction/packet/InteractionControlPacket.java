@@ -23,7 +23,7 @@ public record InteractionControlPacket(
 ) implements IClientboundPacket {
 
     public static final Type<InteractionControlPacket> TYPE
-            = IPacket.type(ThatSkyInteractions.location("interaction/sync"));
+            = IPacket.type(ThatSkyInteractions.location("interaction/control"));
 
     public static final StreamCodec<ByteBuf, InteractionControlPacket> STREAM_CODEC
             = StreamCodec.composite(
