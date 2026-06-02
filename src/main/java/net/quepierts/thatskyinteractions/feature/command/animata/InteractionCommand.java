@@ -1,6 +1,8 @@
 package net.quepierts.thatskyinteractions.feature.command.animata;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import lombok.experimental.UtilityClass;
@@ -10,6 +12,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionManager;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 
 import java.util.ArrayList;
@@ -42,9 +45,8 @@ public final class InteractionCommand {
                     final var player        = source.getPlayer();
                     final var level         = source.getLevel();
                     final var data          = player.getData(AttachmentTypes.PLAYER_INTERACTION);
-                    final var controller    = data.getController();
 
-                    final var requests      = controller.getReceivedRequests();
+                    final var requests      = data.getReceivedRequests();
                     final var names         = new ArrayList<String>(requests.size());
                     for (final var request : requests) {
                         final var uuid      = request.other();
@@ -68,9 +70,52 @@ public final class InteractionCommand {
         return Commands.literal("interact").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("invite")
                         .then(Commands.argument("receiver", EntityArgument.player()).suggests(OTHERS)
-                                .then(Commands.argument("interaction", IdentifierArgument.id()).suggests(INTERACTIONS))))
+                                .then(Commands.argument("interaction", IdentifierArgument.id()).suggests(INTERACTIONS)
+                                        .executes(InteractionCommand::invite))))
                 .then(Commands.literal("accept")
-                        .then(Commands.argument("requester", EntityArgument.player()).suggests(WAITING)));
+                        .then(Commands.argument("requester", EntityArgument.player()).suggests(WAITING)
+                                .executes(InteractionCommand::accept)))
+                .then(Commands.literal("cancel")
+                        .executes(InteractionCommand::cancel));
+    }
+
+    private static int invite(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var source        = context.getSource();
+        final var player        = source.getPlayerOrException();
+
+        final var receiver      = EntityArgument.getPlayer(context, "receiver");
+        final var interaction   = IdentifierArgument.getId(context, "interaction");
+
+        PlayerInteractionSystem.invite(
+                player,
+                receiver,
+                interaction
+        );
+
+        return 1;
+    }
+
+    private static int accept(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var source        = context.getSource();
+        final var player        = source.getPlayerOrException();
+
+        final var requester     = EntityArgument.getPlayer(context, "requester");
+
+        PlayerInteractionSystem.accept(
+                requester,
+                player,
+                true
+        );
+
+        return 1;
+    }
+
+    private static int cancel(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var source        = context.getSource();
+        final var player        = source.getPlayerOrException();
+
+        PlayerInteractionSystem.cancel(player);
+        return 0;
     }
 
 }
