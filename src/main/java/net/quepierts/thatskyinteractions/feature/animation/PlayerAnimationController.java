@@ -3,11 +3,13 @@ package net.quepierts.thatskyinteractions.feature.animation;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.animata4j.backend.execution.ExecutionState;
 import net.quepierts.animata4j.core.fsm.FSMState;
 import net.quepierts.animata4j.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
+import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 
 @Slf4j
@@ -35,21 +37,32 @@ public final class PlayerAnimationController {
     }
 
     public void play(Identifier identifier) {
-        final var manager   = PlayerAnimationManager.getInstance();
-        final var animation = manager.get(identifier);
-        final var definition= manager.getDefinition(identifier);
+        final var manager       = PlayerAnimationManager.getInstance();
+        final var animation     = manager.get(identifier);
+        final var definition    = manager.getDefinition(identifier);
+
+        final var pre           = NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.PrePlay(
+                this,
+                identifier
+        ));
+
+        if (pre.isCanceled()) {
+            return;
+        }
 
         if (animation == null) {
             log.warn("Animation source not found: {}", identifier);
             return;
         }
 
-        this.current        = identifier;
-        this.animation      = animation;
-        this.definition     = definition;
+        this.current            = identifier;
+        this.animation          = animation;
+        this.definition         = definition;
 
-        this.playing        = true;
-        this.state.progress = 0.0f;
+        this.playing            = true;
+        this.state.progress     = 0.0f;
+
+        NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.PostPlay(this));
     }
 
     public void abort() {
@@ -73,11 +86,22 @@ public final class PlayerAnimationController {
             final var delta         = (current - last) * 0.05f;
             this.ticked             = current != last;
 
+            final var lastElapsed   = this.fsmState.getElapsed();
             this.animation          .update(this.fsmState, delta);
-            this.state.progress     = this.fsmState.getElapsed();
+            final var elapsed       = this.fsmState.getElapsed();
+            this.state.progress     = elapsed;
+
+            if (lastElapsed > elapsed) { // state may change
+                NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.StateChanged(
+                        this,
+                        this.fsmState.getLastState(),
+                        this.fsmState.getCurrentState()
+                ));
+            }
 
             if (this.fsmState.isFinished()) {
                 this.cleanup();
+                NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Finished(this));
             }
         }
 
