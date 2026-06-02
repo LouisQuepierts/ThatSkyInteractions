@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.feature.client.control;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.phys.Vec2;
@@ -18,20 +17,33 @@ import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.C
 
 @UtilityClass
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
-public class PlayerInputHook {
+public class PlayerControlHook {
 
     @SubscribeEvent
     public static void onRestrictPlayerMotion(final MovementInputUpdateEvent event) {
         final var player        = event.getEntity();
         final var input         = event.getInput();
         final var data          = PlayerAnimationSystem.getAnimationData(player);
-        final var animation     = data.getAnimation();
+        final var animState     = data.getAnimation();
 
-        if (!animation.isPlaying()) {
+        if (!animState.isPlaying()) {
             return;
         }
 
-        final var definition    = animation.getDefinition();
+        final var moveVector    = input.getMoveVector();
+        final var moved         = moveVector.x != 0.0 || moveVector.y != 0.0;
+
+        if (!moved) {
+            return;
+        }
+
+        final var definition    = animState.getDefinition();
+        final var fsmState      = animState.getFsmState();
+        final var animation     = animState.getAnimation();
+
+        if (definition.abortable() || animation.isLooping(fsmState)) {
+            animation.exit(fsmState);
+        }
 
         if (definition.restrictMotion()) {
             input.keyPresses    = Input.EMPTY;
