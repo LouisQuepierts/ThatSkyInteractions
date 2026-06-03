@@ -75,6 +75,16 @@ public final class FriendshipTreeData {
         this.states         = new Object2ByteOpenHashMap<>(states);
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        return (obj instanceof FriendshipTreeData data) && data.friend.equals(this.friend);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.friend.hashCode();
+    }
+
     public enum State {
         LOCKED,
         UNLOCKABLE,
