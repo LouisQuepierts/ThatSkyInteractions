@@ -2,11 +2,11 @@ package net.quepierts.thatskyinteractions.core.property;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import net.quepierts.animata4j.core.adapter.Consumer1f;
+import net.quepierts.thatskyinteractions.infra.animation.tween.consumer.Consumer1i;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class IntProperty implements Consumer1f {
+public class IntProperty implements Consumer1i {
 
     private int value;
 
@@ -27,7 +27,7 @@ public class IntProperty implements Consumer1f {
     }
 
     @Override
-    public void accept(final float value) {
-        this.value = (int) value;
+    public void accept(final int value) {
+        this.value = value;
     }
 }
