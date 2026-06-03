@@ -9,8 +9,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
+import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
@@ -88,27 +90,35 @@ public record InteractionControlPacket(
 
         switch (this.operation()) {
             case INVITE_REQ: {
-                data.sendInvite(target, this.identifier().get());
+                final var interaction = this.identifier().orElseThrow(); // it supposes to be present
+                data.sendInvite(target, interaction);
+                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Post(player, target, interaction));
                 break;
             }
             case ACCEPT_REQ: {
                 data.sendAccept(target);
+                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(player, target));
                 break;
             }
             case CANCEL_REQ: {
                 data.cancelSent();
+                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(player, target));
                 break;
             }
             case INVITE_REC: {
-                data.receiveInvite(target, this.identifier().get());
+                final var interaction = this.identifier().orElseThrow(); // it supposes to be present
+                data.receiveInvite(target, interaction);
+                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Post(player, target, interaction));
                 break;
             }
             case ACCEPT_REC: {
                 data.receiveAccept(target);
+                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(player, target));
                 break;
             }
             case CANCEL_REC: {
                 data.cancelReceived(target);
+                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(player, target));
                 break;
             }
         }

@@ -6,8 +6,10 @@ import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
@@ -19,6 +21,7 @@ import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
+import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionControlPacket;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
@@ -113,6 +116,11 @@ public class PlayerInteractionSystem {
             return;
         }
 
+        final ICancellableEvent event = NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Pre(requester, receiver, interaction));
+        if (event.isCanceled()) {
+            return;
+        }
+
         final var level = requester.level();
         if (level != receiver.level()) {
             return;
@@ -146,6 +154,8 @@ public class PlayerInteractionSystem {
                 receiver,
                 InteractionControlPacket.invite(requester, interaction, false)
         );
+
+        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Post(requester, receiver, interaction));
 
     }
 
@@ -185,6 +195,11 @@ public class PlayerInteractionSystem {
             return;
         }
 
+        final var event     = NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Pre(requester, receiver));
+        if (event.isCanceled()) {
+            return;
+        }
+
         final var position = PlayerUtils.getRelativePositionWorldSpace(requester, 1.0, 0.0);
 
         if (!force && receiver.distanceToSqr(position) > 0.1) {
@@ -216,6 +231,8 @@ public class PlayerInteractionSystem {
                 receiver,
                 InteractionControlPacket.accept(requester, false)
         );
+
+        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(requester, receiver));
 
     }
 
@@ -252,5 +269,7 @@ public class PlayerInteractionSystem {
         );
 
         PlayerAnimationSystem.exit(requester);
+
+        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(requester, receiver));
     }
 }
