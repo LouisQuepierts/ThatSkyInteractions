@@ -4,7 +4,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationController;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
 import org.joml.*;
@@ -47,11 +46,11 @@ public abstract class CameraMixin {
             final float partialTicks,
             final CallbackInfo ci
     ) {
-        if (!(this.entity instanceof Avatar)) {
+        if (!(this.entity instanceof Avatar avatar)) {
             return;
         }
 
-        final var data          = PlayerAnimationSystem.getAnimationData(this.entity);
+        final var data          = PlayerAnimationSystem.getAnimationData(avatar);
         final var controller    = data.getController();
 
         final var position = new Vector3d(this.position.x(), this.position.y(), this.position.z());
