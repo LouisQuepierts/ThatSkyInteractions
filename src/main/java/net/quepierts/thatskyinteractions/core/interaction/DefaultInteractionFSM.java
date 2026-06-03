@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.core.interaction;
 
 import lombok.experimental.UtilityClass;
 import net.quepierts.animata4j.core.fsm.FiniteStateMachine;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 
 @UtilityClass
 public class DefaultInteractionFSM {
@@ -20,6 +21,7 @@ public class DefaultInteractionFSM {
             .withTransition("waiting", "waiting")
             .withTransition("cancel", "system#exit")
 
+            .withHook(DefaultMinecraftFSM.HOOK)
             .compile();
 
     public static final FiniteStateMachine RECEIVER = FiniteStateMachine.compiler()
@@ -31,6 +33,7 @@ public class DefaultInteractionFSM {
             .withState("exit")
             .withState("system#exit")
 
+            .withHook(DefaultMinecraftFSM.HOOK)
             .compile();
 
     public static final int REQUESTER_INVITE        = REQUESTER.getLookup().find("invite");
