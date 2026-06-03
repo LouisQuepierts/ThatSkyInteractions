@@ -25,7 +25,7 @@ public final class FriendshipScreen extends SlideScreen<FriendshipTreeData, Frie
     protected Control createView() {
 
         final var tree      = FriendshipTreeManager.getInstance().get(ThatSkyInteractions.location("friend"));
-        final var layout    = new FriendshipTreeLayout(tree, 0, 0, this.getSliderWide().get(), this.height);
+        final var layout    = new FriendshipTreeLayout(tree, 0, 0, this.getSliderWide().get());
 
         final var scroll    = new VScrollPane(0, 0, this.width, this.height, Component.empty());
         scroll.addChild(layout);
@@ -34,5 +34,10 @@ public final class FriendshipScreen extends SlideScreen<FriendshipTreeData, Frie
         scroll.layout();
 
         return scroll;
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 }

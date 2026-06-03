@@ -57,10 +57,8 @@ public class VScrollPane extends Pane {
         final var pose      = graphics.pose();
         final var scroll    = this.scroll0.get() * this.direction.get().getDirection();
 
-        final var transform = pose.transform(new Vector3f(this.getX(), this.getY(), 0.0f));
-
-        final var left      = (int) transform.x();
-        final var top       = (int) transform.y();
+        final var left      = this.getX();
+        final var top       = this.getY();
 
         graphics.enableScissor(
                 left,
@@ -70,7 +68,11 @@ public class VScrollPane extends Pane {
         );
 
         pose.translate(0, -scroll);
-        super.extractWidgetRenderState(graphics, mouseX, (int) (mouseY + scroll), delta);
+
+        for (final var child : this.getChildren()) {
+            child.extractRenderState(graphics, mouseX, (int) (mouseY + scroll), delta);
+        }
+
         pose.translate(0, scroll);
 
         graphics.disableScissor();

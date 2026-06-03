@@ -1,6 +1,8 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.friendship;
 
 import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
@@ -9,25 +11,22 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.Vis
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
-import org.joml.Matrix3x2fStack;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import org.joml.Vector2fc;
 import org.jspecify.annotations.NonNull;
 
 public final class FriendshipTreeLine extends Control {
 
-    private final Vector2f  direction;
-
-    public FriendshipTreeLine(final Vector2f direction) {
+    public FriendshipTreeLine(final Vector2fc direction) {
         super(0, 0, 2, 0, Component.empty());
-        this.direction = direction;
 
-        this.setVisualNodes(new Visual());
+        this.setVisualNodes(new Visual(direction));
     }
 
-    private final class Visual implements VisualNode {
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static final class Visual implements VisualNode {
 
-        private final FloatProperty progress = new FloatProperty(1.0f);
+        private final FloatProperty progress    = new FloatProperty(0.0f);
+        private final Vector2fc     direction;
 
         @Override
         public void extractRenderState(
@@ -39,13 +38,13 @@ public final class FriendshipTreeLine extends Control {
         ) {
 
             final var pose  = graphics.pose();
-            final var point = pose.transform(new Vector3f(control.getX(), control.getY(), 0));
+            final var py    = control.getY() + pose.m21;
 
-            /*if (point.y() < 0.0f) {
+            if (py < 32.0f) {
                 return;
-            }*/
+            }
 
-            /*final var progress = this.progress.get();
+            final var progress = this.progress.get();
             if (progress == 0.0f) {
                 this.progress.set(1e-6f);
                 Tween.to(
@@ -54,23 +53,27 @@ public final class FriendshipTreeLine extends Control {
                         1.0f,
                         1.0f,
                         Interpolators.FLOAT,
-                        Eases.QUAD_IN
+                        Eases.QUAD_OUT
                 );
-            }*/
+            }
 
-            final var factor = control.getHeight() * progress.get();
+            final var factor    = control.getHeight() * progress;
+            final var px0       = control.getX() + direction.x() * 16.0f;
+            final var py0       = control.getY() + direction.y() * 16.0f;
+            final var px1       = px0 + direction.x() * factor;
+            final var py1       = py0 + direction.y() * factor;
 
             SdfGraphics.getInstance()
                     .reset()
 
+                    .round(0.5f)
+                    .color(0xfffffee0)
+
+                    .light(5.0f)
                     .segment(
-                            point.x(),
-                            point.y(),
-                            point.x() + direction.x() * factor,
-                            point.y() + direction.y() * factor
+                            px0, py0,
+                            px1, py1
                     )
-                    .round(1.0f)
-                    .color(0xff000000)
                     .draw(graphics);
 
         }

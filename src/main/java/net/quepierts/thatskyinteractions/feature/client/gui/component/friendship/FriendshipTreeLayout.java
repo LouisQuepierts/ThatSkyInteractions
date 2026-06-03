@@ -3,7 +3,6 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.friendshi
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
@@ -11,6 +10,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.Pan
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTree;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeNode;
 import org.joml.Vector2f;
+import org.joml.Vector2fc;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -18,27 +18,21 @@ import java.util.List;
 
 public final class FriendshipTreeLayout extends Pane {
 
-    public static final int VERTICAL_GAP_FULL       = 64;
-    public static final int VERTICAL_GAP_SIMPLE     = 32;
-    public static final int HORIZONTAL_GAP          = 32;
+    public static final int VERTICAL_GAP_FULL       = 48;
+    public static final int VERTICAL_GAP_SIMPLE     = 24;
+    public static final int HORIZONTAL_GAP          = 24;
     public static final int NODE_SIZE               = 32;
 
-    private static final Vector2f[] DEGREES = new Vector2f[] {
-            new Vector2f(-Mth.SQRT_OF_TWO, -Mth.SQRT_OF_TWO),
-            new Vector2f(0, 1),
-            new Vector2f(Mth.SQRT_OF_TWO, Mth.SQRT_OF_TWO),
+    private static final Vector2fc[] DEGREES = new Vector2fc[] {
+            new Vector2f(-0.8f, -0.8f),
+            new Vector2f(0, -1),
+            new Vector2f(0.8f, -0.8f),
     };
 
     private final List<FriendshipTreeLine>          lines;
     private final List<Control>                     buttons;
     private final FriendshipTree                    tree;
 
-    private int                                   contentHeight;
-
-
-    private final int leftX;
-    private final int centerX;
-    private final int rightX;
 
     private final int[] branchX;
 
@@ -46,8 +40,7 @@ public final class FriendshipTreeLayout extends Pane {
             final FriendshipTree tree,
             final int x,
             final int y,
-            final int width,
-            final float screenHeight
+            final int width
     ) {
         super(
                 x, y,
@@ -89,18 +82,18 @@ public final class FriendshipTreeLayout extends Pane {
 
         this.getChildren().addAll(this.buttons);
 
-        int center = width / 2 - NODE_SIZE / 2;
-        this.leftX = center - NODE_SIZE - HORIZONTAL_GAP;
-        this.centerX = center;
-        this.rightX = center + NODE_SIZE + HORIZONTAL_GAP;
+        final var center = width / 2 - NODE_SIZE / 2;
+        final var leftX = center - NODE_SIZE - HORIZONTAL_GAP;
+        final var rightX = center + NODE_SIZE + HORIZONTAL_GAP;
 
         this.branchX = new int[] {
-                this.leftX,
-                this.centerX,
-                this.rightX
+                leftX,
+                center,
+                rightX
         };
 
-        this.layout();
+        this.calculatePositions();
+        this.height = this.calculateContentHeight();
     }
 
     @Override
@@ -110,18 +103,27 @@ public final class FriendshipTreeLayout extends Pane {
 
     @Override
     protected void extractWidgetRenderState(final @NonNull GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
-        final var pose = graphics.pose();
+
 //        pose.pushMatrix().translate(this.getX(), this.getY());
+//        SdfGraphics.debug(true);
         super.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
+//        SdfGraphics.debug(false);
 //        pose.popMatrix();
     }
 
     @Override
     public void layout() {
 
-        this.calculatePositions();
+        final var diff  = this.buttons.getFirst().getY() - this.getContentBottom();
+        for (final var button : this.buttons) {
+            final var y = button.getY();
+            button.setY(y - diff);
+        }
 
-        this.height = this.updateContentHeight();
+        for (final var line : this.lines) {
+            final var y = line.getY();
+            line.setY(y - diff);
+        }
 
     }
 
@@ -141,32 +143,26 @@ public final class FriendshipTreeLayout extends Pane {
             final var pControl  = this.buttons.get(node.getParent());
             final var branch    = node.getBranch();
 
-            final var offset    = (branch == FriendshipTreeNode.Branch.MIDDLE &&
+            final var same      = branch == FriendshipTreeNode.Branch.MIDDLE;
+            final var offset    = (same &&
                     (parent.hasLeft() || parent.hasRight())) ?
                     NODE_SIZE + VERTICAL_GAP_FULL :
                     NODE_SIZE + VERTICAL_GAP_SIMPLE;
 
+            final var columnX = this.getColumnX(node.getBranch());
             tControl.setPosition(
-                    this.getColumnX(node.getBranch()),
+                    columnX,
                     pControl.getY() - offset
             );
 
             final var line      = this.lines.get(i - 1);
-            final var lineSize  = offset / 2;
+            final var lineSize  = same ? (offset - 32) : 38;
 
-            if (branch == parent.getBranch()) {
-                line.setPosition(
-                        tControl.getX() + 6,
-                        pControl.getY() - lineSize - 18
-                );
-                line.setHeight(lineSize);
-            } else {
-                line.setPosition(
-                        (tControl.getX() + pControl.getX() + 12) / 2,
-                        pControl.getY() - lineSize - 12
-                );
-                line.setHeight(lineSize);
-            }
+            line.setPosition(
+                    pControl.getX() + 16,
+                    pControl.getY() + 16
+            );
+            line.setHeight(lineSize);
         }
     }
 
@@ -197,9 +193,9 @@ public final class FriendshipTreeLayout extends Pane {
         }
     }
 
-    public int updateContentHeight() {
+    public int calculateContentHeight() {
+        int contentHeight;
         if (this.buttons.isEmpty()) {
-            this.contentHeight = 0;
             return 0;
         }
 
@@ -212,11 +208,11 @@ public final class FriendshipTreeLayout extends Pane {
         }
 
         final var padding = this.getPadding();
-        this.contentHeight = (int) (maxY - minY + padding.getTop() + padding.getBottom());
+        contentHeight = (int) (maxY - minY + padding.getTop() + padding.getBottom());
 
 //        normalizePositions(minY);
 
-        return this.contentHeight;
+        return contentHeight;
     }
 
     @Override

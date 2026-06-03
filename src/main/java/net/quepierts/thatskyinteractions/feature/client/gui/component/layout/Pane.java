@@ -62,9 +62,8 @@ public abstract class Pane
 
         final var clip = this.clip.get();
         if (clip) {
-            final var transform = graphics.pose().transform(new Vector3f(this.getX(), this.getY(), 0.0f));
-            final var left      = (int) transform.x();
-            final var top       = (int) transform.y();
+            final var left      = this.getY();
+            final var top       = this.getX();
             graphics.enableScissor(
                     left,
                     top,

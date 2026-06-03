@@ -22,7 +22,15 @@ public class TSIKeys {
             "key.thatskyinteractions.interact",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_KP_ENTER,
+            GLFW.GLFW_KEY_TAB,
+            CATEGORY
+    );
+
+    public static final KeyMapping KEY_OPEN_EXPRESSION = new KeyMapping(
+            "key.thatskyinteractions.open_expression",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_KP_0,
             CATEGORY
     );
 
@@ -31,6 +39,7 @@ public class TSIKeys {
     public static void onRegisterKeyMapping(final RegisterKeyMappingsEvent event) {
         event.registerCategory(CATEGORY);
         event.register(KEY_INTERACT);
+        event.register(KEY_OPEN_EXPRESSION);
     }
 
 }
