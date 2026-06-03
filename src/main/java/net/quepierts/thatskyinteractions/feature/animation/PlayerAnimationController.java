@@ -41,7 +41,7 @@ public final class PlayerAnimationController {
         final var animation     = manager.get(identifier);
         final var definition    = manager.getDefinition(identifier);
 
-        final var pre           = NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.PrePlay(
+        final var pre           = NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Play.Pre(
                 this,
                 identifier
         ));
@@ -62,7 +62,10 @@ public final class PlayerAnimationController {
         this.playing            = true;
         this.state.progress     = 0.0f;
 
-        NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.PostPlay(this));
+        NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Play.Post(
+                this,
+                identifier
+        ));
     }
 
     public void abort() {
