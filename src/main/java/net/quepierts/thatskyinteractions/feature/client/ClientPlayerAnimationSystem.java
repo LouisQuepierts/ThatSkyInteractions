@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationData;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
 import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationRequestPacket;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import org.jspecify.annotations.NonNull;
@@ -42,7 +42,7 @@ public class ClientPlayerAnimationSystem {
         );
     }
 
-    public static PlayerAnimationData getLocalAnimationData() {
+    public static PlayerAnimationAttachment getLocalAnimationData() {
         return Minecraft.getInstance().player.getData(AttachmentTypes.PLAYER_ANIMATION);
     }
 

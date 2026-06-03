@@ -18,7 +18,7 @@ import org.jspecify.annotations.NonNull;
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public class PlayerAnimationSystem {
 
-    public static PlayerAnimationData getAnimationData(final @NonNull Entity entity) {
+    public static PlayerAnimationAttachment getAnimationData(final @NonNull Entity entity) {
         return entity.getData(AttachmentTypes.PLAYER_ANIMATION);
     }
 

@@ -8,17 +8,17 @@ import net.minecraft.network.codec.StreamCodec;
 import net.quepierts.thatskyinteractions.feature.network.StreamCodecUtils;
 
 @Getter
-public final class PlayerAnimationData {
+public final class PlayerAnimationAttachment {
 
-    public static final Codec<PlayerAnimationData> CODEC
-            = MapCodec.unitCodec(PlayerAnimationData::new);
+    public static final Codec<PlayerAnimationAttachment> CODEC
+            = MapCodec.unitCodec(PlayerAnimationAttachment::new);
 
-    public static final StreamCodec<ByteBuf, PlayerAnimationData> STREAM_CODEC
-            = StreamCodecUtils.unit(PlayerAnimationData::new);
+    public static final StreamCodec<ByteBuf, PlayerAnimationAttachment> STREAM_CODEC
+            = StreamCodecUtils.unit(PlayerAnimationAttachment::new);
 
     private final PlayerAnimationController controller;
 
-    public PlayerAnimationData() {
+    public PlayerAnimationAttachment() {
         this.controller = new PlayerAnimationController();
     }
 
