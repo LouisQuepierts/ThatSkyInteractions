@@ -2,6 +2,8 @@ package net.quepierts.thatskyinteractions.feature.client;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -12,6 +14,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.FriendshipScreen;
 import net.quepierts.thatskyinteractions.feature.client.input.TSIKeys;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
+import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 
 @UtilityClass
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
@@ -43,7 +46,8 @@ public class ClientPlayerFriendshipSystem {
 
         final var tree      = data.get(uuid, PlayerFriendshipAttachment.FRIEND);
 
-        Minecraft.getInstance().mouseHandler.releaseMouse();
+        event.setCancellationResult(InteractionResult.SUCCESS);
+        event.setCanceled(true);
         ScreenLoader.open(FriendshipScreen.class, tree);
     }
 

@@ -37,29 +37,29 @@ public final class FriendshipTreeLine extends Control {
                 final float delta
         ) {
 
-            final var pose  = graphics.pose();
-            final var py    = control.getY() + pose.m21;
+            final var pose      = graphics.pose();
+            final var py        = control.getY() + pose.m21;
 
-            if (py < 32.0f) {
+            final var progress  = this.progress.get();
+            final var empty     = progress == 0.0f;
+            if (empty) {
+                if (py > 64.0f) {
+                    this.progress.set(0.0f);
+                    Tween.to(
+                            this.progress,
+                            0.0f,
+                            1.0f,
+                            1.0f,
+                            Interpolators.FLOAT,
+                            Eases.QUAD_OUT
+                    );
+                }
                 return;
             }
 
-            final var progress = this.progress.get();
-            if (progress == 0.0f) {
-                this.progress.set(1e-6f);
-                Tween.to(
-                        this.progress,
-                        1e-6f,
-                        1.0f,
-                        1.0f,
-                        Interpolators.FLOAT,
-                        Eases.QUAD_OUT
-                );
-            }
-
             final var factor    = control.getHeight() * progress;
-            final var px0       = control.getX() + direction.x() * 16.0f;
-            final var py0       = control.getY() + direction.y() * 16.0f;
+            final var px0       = control.getX() + direction.x() * 20.0f;
+            final var py0       = control.getY() + direction.y() * 20.0f;
             final var px1       = px0 + direction.x() * factor;
             final var py1       = py0 + direction.y() * factor;
 
