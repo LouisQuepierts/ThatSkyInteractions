@@ -11,13 +11,13 @@ public class AttachmentTypes {
 
     public static final AttachmentEntry<PlayerAnimationAttachment> PLAYER_ANIMATION
             = ThatSkyInteractions.REGISTRUM.attachment(
-                    "player_animation",
+                    "player/animation",
                     PlayerAnimationAttachment::new
             ).register();
 
     public static final AttachmentEntry<PlayerInteractionAttachment> PLAYER_INTERACTION
             = ThatSkyInteractions.REGISTRUM.attachment(
-                    "player_interaction",
+                    "player/interaction",
                     PlayerInteractionAttachment::new
             )
             .register();
