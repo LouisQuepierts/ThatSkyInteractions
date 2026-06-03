@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -23,7 +23,6 @@ import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimat
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionControlPacket;
-import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 import org.jspecify.annotations.NonNull;
 
@@ -55,10 +54,10 @@ public class PlayerInteractionSystem {
         );
     }
 
-    public static PlayerInteractionData getInteractionData(
-            @NonNull final Entity entity
+    public static PlayerInteractionAttachment getInteractionData(
+            @NonNull final Player player
     ) {
-        return entity.getData(AttachmentTypes.PLAYER_INTERACTION);
+        return PlayerInteractionAttachment.getAttachment(player);
     }
 
     private static @NonNull PlayerAnimation requester(

@@ -4,7 +4,7 @@ import dev.anvilcraft.lib.v2.registrum.util.entry.data.AttachmentEntry;
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
-import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionData;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 
 @UtilityClass
 public class AttachmentTypes {
@@ -15,10 +15,10 @@ public class AttachmentTypes {
                     PlayerAnimationAttachment::new
             ).register();
 
-    public static final AttachmentEntry<PlayerInteractionData> PLAYER_INTERACTION
+    public static final AttachmentEntry<PlayerInteractionAttachment> PLAYER_INTERACTION
             = ThatSkyInteractions.REGISTRUM.attachment(
                     "player_interaction",
-                    PlayerInteractionData::new
+                    PlayerInteractionAttachment::new
             )
             .register();
 

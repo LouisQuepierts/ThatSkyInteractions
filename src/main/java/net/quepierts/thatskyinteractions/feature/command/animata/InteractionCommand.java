@@ -11,6 +11,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionManager;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
@@ -26,7 +27,7 @@ public final class InteractionCommand {
                     if (source == null || !source.isPlayer()) {
                         return Suggestions.empty();
                     }
-                    final var player    = source.getPlayer();
+                    final var player    = source.getPlayerOrException();
                     final var name      = player.getGameProfile().name();
                     final var names     = source.getOnlinePlayerNames();
                     final var removed   = names.stream()
@@ -42,9 +43,9 @@ public final class InteractionCommand {
                         return Suggestions.empty();
                     }
 
-                    final var player        = source.getPlayer();
+                    final var player        = source.getPlayerOrException();
                     final var level         = source.getLevel();
-                    final var data          = player.getData(AttachmentTypes.PLAYER_INTERACTION);
+                    final var data          = PlayerInteractionAttachment.getAttachment(player);
 
                     final var requests      = data.getReceivedRequests();
                     final var names         = new ArrayList<String>(requests.size());

@@ -6,9 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionData;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionRequestPacket;
-import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 
 @UtilityClass
 @SuppressWarnings({"unused", "DataFlowIssue"})
@@ -42,8 +41,8 @@ public class ClientPlayerInteractionSystem {
         );
     }
 
-    public static PlayerInteractionData getLocalInteractionData() {
-        return Minecraft.getInstance().player.getData(AttachmentTypes.PLAYER_INTERACTION);
+    public static PlayerInteractionAttachment getLocalInteractionData() {
+        return PlayerInteractionAttachment.getAttachment(Minecraft.getInstance().player);
     }
 
 }

@@ -10,6 +10,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.feature.network.StreamCodecUtils;
+import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
@@ -19,19 +20,23 @@ import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PlayerInteractionData {
+public final class PlayerInteractionAttachment {
 
-    public static final Codec<PlayerInteractionData> CODEC
-            = MapCodec.unitCodec(PlayerInteractionData::new);
+    public static final Codec<PlayerInteractionAttachment> CODEC
+            = MapCodec.unitCodec(PlayerInteractionAttachment::new);
 
     // todo
-    public static final StreamCodec<ByteBuf, PlayerInteractionData> STREAM_CODEC
-            = StreamCodecUtils.unit(PlayerInteractionData::new);
+    public static final StreamCodec<ByteBuf, PlayerInteractionAttachment> STREAM_CODEC
+            = StreamCodecUtils.unit(PlayerInteractionAttachment::new);
 
     private final Map<UUID, InteractionRequest> received;
     private InteractionRequest                  sent;
 
-    public PlayerInteractionData() {
+    public static PlayerInteractionAttachment getAttachment(@NonNull final Player player) {
+        return player.getData(AttachmentTypes.PLAYER_INTERACTION);
+    }
+
+    public PlayerInteractionAttachment() {
         this.received   = new HashMap<>();
     }
 
