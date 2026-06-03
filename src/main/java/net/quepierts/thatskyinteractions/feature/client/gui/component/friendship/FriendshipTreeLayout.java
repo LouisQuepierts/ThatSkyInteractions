@@ -3,12 +3,14 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.friendshi
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.Pane;
-import net.quepierts.thatskyinteractions.feature.data.friendship.FriendshipTree;
-import net.quepierts.thatskyinteractions.feature.data.friendship.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTree;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeNode;
+import org.joml.Vector2f;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -21,7 +23,11 @@ public final class FriendshipTreeLayout extends Pane {
     public static final int HORIZONTAL_GAP          = 32;
     public static final int NODE_SIZE               = 32;
 
-    private static final int[] DEGREES = new int[] { -45, 0, 45 };
+    private static final Vector2f[] DEGREES = new Vector2f[] {
+            new Vector2f(-Mth.SQRT_OF_TWO, -Mth.SQRT_OF_TWO),
+            new Vector2f(0, 1),
+            new Vector2f(Mth.SQRT_OF_TWO, Mth.SQRT_OF_TWO),
+    };
 
     private final List<FriendshipTreeLine>          lines;
     private final List<Control>                     buttons;

@@ -10,23 +10,24 @@ import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
 import org.joml.Matrix3x2fStack;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
 public final class FriendshipTreeLine extends Control {
 
-    private final float         degree;
+    private final Vector2f  direction;
 
-    public FriendshipTreeLine(final float degree) {
+    public FriendshipTreeLine(final Vector2f direction) {
         super(0, 0, 2, 0, Component.empty());
-        this.degree = degree;
+        this.direction = direction;
 
         this.setVisualNodes(new Visual());
     }
 
     private final class Visual implements VisualNode {
 
-        private final FloatProperty progress = new FloatProperty(0.0f);
+        private final FloatProperty progress = new FloatProperty(1.0f);
 
         @Override
         public void extractRenderState(
@@ -40,11 +41,11 @@ public final class FriendshipTreeLine extends Control {
             final var pose  = graphics.pose();
             final var point = pose.transform(new Vector3f(control.getX(), control.getY(), 0));
 
-            if (point.y() < 0.0f) {
+            /*if (point.y() < 0.0f) {
                 return;
-            }
+            }*/
 
-            final var progress = this.progress.get();
+            /*final var progress = this.progress.get();
             if (progress == 0.0f) {
                 this.progress.set(1e-6f);
                 Tween.to(
@@ -55,20 +56,21 @@ public final class FriendshipTreeLine extends Control {
                         Interpolators.FLOAT,
                         Eases.QUAD_IN
                 );
-            }
+            }*/
+
+            final var factor = control.getHeight() * progress.get();
 
             SdfGraphics.getInstance()
                     .reset()
-                    .box(
-                            control.getX() - 0.5f,
-                            control.getY(),
-                            1.0f,
-                            control.getHeight() * progress
+
+                    .segment(
+                            point.x(),
+                            point.y(),
+                            point.x() + direction.x() * factor,
+                            point.y() + direction.y() * factor
                     )
-                    .round(0.5f)
-                    .light(9.43f)
-                    .color(0xfffffee0)
-                    .rotate(FriendshipTreeLine.this.degree)
+                    .round(1.0f)
+                    .color(0xff000000)
                     .draw(graphics);
 
         }

@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.data.friendship;
+package net.quepierts.thatskyinteractions.feature.friendship;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

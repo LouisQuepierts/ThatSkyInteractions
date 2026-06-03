@@ -1,6 +1,5 @@
-package net.quepierts.thatskyinteractions.feature.data.friendship;
+package net.quepierts.thatskyinteractions.feature.friendship;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.core.model.Currency;

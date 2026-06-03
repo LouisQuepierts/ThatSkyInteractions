@@ -1,6 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.controller;
 
-import net.quepierts.thatskyinteractions.feature.data.friendship.FriendshipTreeData;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 
 public final class FriendshipScreenController extends ScreenController<FriendshipTreeData> {
 

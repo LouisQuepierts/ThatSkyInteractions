@@ -7,9 +7,8 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.friendship
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.ScrollDirection;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VScrollPane;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
-import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
-import net.quepierts.thatskyinteractions.feature.data.friendship.FriendshipTreeData;
-import net.quepierts.thatskyinteractions.feature.data.friendship.FriendshipTreeManager;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeManager;
 import org.jspecify.annotations.NonNull;
 
 public final class FriendshipScreen extends SlideScreen<FriendshipTreeData, FriendshipScreenController> {

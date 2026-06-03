@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.data.friendship;
+package net.quepierts.thatskyinteractions.feature.friendship;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import lombok.AccessLevel;
