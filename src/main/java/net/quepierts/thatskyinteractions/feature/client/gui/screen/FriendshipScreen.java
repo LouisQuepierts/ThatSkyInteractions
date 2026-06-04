@@ -9,6 +9,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VSc
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeManager;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
 
 public final class FriendshipScreen extends SlideScreen<FriendshipTreeData, FriendshipScreenController> {
@@ -23,11 +24,22 @@ public final class FriendshipScreen extends SlideScreen<FriendshipTreeData, Frie
 
     @Override
     protected Control createView() {
+        final var tween     = this.tween();
 
         final var tree      = FriendshipTreeManager.getInstance().get(ThatSkyInteractions.location("friend"));
-        final var layout    = new FriendshipTreeLayout(tree, 0, 0, this.getSliderWide().get());
+        final var layout    = new FriendshipTreeLayout(
+                            tween,
+                            tree,
+                            0, 0,
+                            this.getSliderWide().get()
+        );
 
-        final var scroll    = new VScrollPane(0, 0, this.width, this.height, Component.empty());
+        final var scroll    = new VScrollPane(
+                            tween,
+                            0, 0,
+                            this.width, this.height,
+                            Component.empty()
+        );
         scroll.addChild(layout);
         scroll.getDirection().set(ScrollDirection.BACKWARD);
         scroll.getScrollSpeed().set(16.0f);

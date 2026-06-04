@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.screen;
 
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.core.property.IntProperty;
@@ -87,6 +88,18 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
             final float delta
     ) {
 
+    }
+
+    @Override
+    protected MouseButtonEvent remapButtonEvent(final MouseButtonEvent event) {
+        final var width = this.sliderWide.get();
+        final var x     = this.width - this.transition.get() * width;
+
+        return new MouseButtonEvent(
+                event.x() - x,
+                event.y(),
+                event.buttonInfo()
+        );
     }
 
     private void transit(final float to) {

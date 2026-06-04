@@ -9,6 +9,7 @@ import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
 import org.joml.Vector2fc;
@@ -16,8 +17,11 @@ import org.jspecify.annotations.NonNull;
 
 public final class FriendshipTreeLine extends Control {
 
-    public FriendshipTreeLine(final Vector2fc direction) {
-        super(0, 0, 2, 0, Component.empty());
+    public FriendshipTreeLine(
+            final @NonNull TweenScope   tween,
+            final @NonNull Vector2fc    direction
+    ) {
+        super(tween, 0, 0, 2, 0, Component.empty());
 
         this.setVisualNodes(new Visual(direction));
     }
@@ -30,11 +34,13 @@ public final class FriendshipTreeLine extends Control {
 
         @Override
         public void extractRenderState(
-                final @NonNull Control control,
+                final @NonNull Control              control,
                 final @NonNull GuiGraphicsExtractor graphics,
-                final int mouseX,
-                final int mouseY,
-                final float delta
+                final @NonNull TweenScope           tween,
+
+                final int                           mouseX,
+                final int                           mouseY,
+                final float                         delta
         ) {
 
             final var pose      = graphics.pose();

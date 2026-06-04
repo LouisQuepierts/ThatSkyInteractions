@@ -2,12 +2,14 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.layout;
 
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.EnumProperty;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
 import org.joml.Vector3f;
@@ -30,8 +32,15 @@ public class VScrollPane extends Pane {
 
     private TweenHandle tween;
 
-    public VScrollPane(final int x, final int y, final int width, final int height, final Component message) {
-        super(x, y, width, height, message);
+    public VScrollPane(
+            final @NonNull TweenScope tween,
+            final int                   x,
+            final int                   y,
+            final int                   width,
+            final int                   height,
+            final Component             message
+    ) {
+        super(tween, x, y, width, height, message);
     }
 
     @Override
@@ -52,7 +61,12 @@ public class VScrollPane extends Pane {
     }
 
     @Override
-    protected void extractWidgetRenderState(final @NonNull GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
+    protected void extractWidgetRenderState(
+            final @NonNull GuiGraphicsExtractor graphics,
+            final int mouseX,
+            final int mouseY,
+            final float delta
+    ) {
 
         final var pose      = graphics.pose();
         final var scroll    = this.scroll0.get() * this.direction.get().getDirection();
@@ -146,6 +160,16 @@ public class VScrollPane extends Pane {
             this.tween.cancel();
             this.tween = null;
         }
+    }
+
+    @Override
+    protected MouseButtonEvent remapMouseButtonEvent(final MouseButtonEvent event) {
+        final var scroll    = this.scroll0.get() * this.direction.get().getDirection();
+        return new MouseButtonEvent(
+                event.x() - this.getX(),
+                event.y() - this.getY() + scroll,
+                event.buttonInfo()
+        );
     }
 
 }

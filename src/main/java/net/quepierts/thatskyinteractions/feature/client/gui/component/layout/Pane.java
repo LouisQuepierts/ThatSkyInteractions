@@ -7,6 +7,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -19,22 +20,23 @@ public abstract class Pane
         implements Layout {
 
     @Getter(AccessLevel.PROTECTED)
-    private final List<Control> children;
+    protected @Nullable Control   clicked;
 
     @Getter(AccessLevel.PROTECTED)
-    private @Nullable Control   clicked;
+    private final List<Control> children;
 
     @Getter
     private final BooleanProperty   clip    = new BooleanProperty(false);
 
     public Pane(
-            final int x,
-            final int y,
-            final int width,
-            final int height,
-            final Component message
+            final @NonNull TweenScope   tween,
+            final int                   x,
+            final int                   y,
+            final int                   width,
+            final int                   height,
+            final Component             message
     ) {
-        super(x, y, width, height, message);
+        super(tween, x, y, width, height, message);
         this.children = new ArrayList<>();
     }
 
@@ -49,9 +51,10 @@ public abstract class Pane
     @Override
     protected void extractWidgetRenderState(
             final @NonNull GuiGraphicsExtractor graphics,
-            final int mouseX,
-            final int mouseY,
-            final float delta
+
+            final int                           mouseX,
+            final int                           mouseY,
+            final float                         delta
     ) {
 
         final var children  = this.getChildren();
@@ -94,9 +97,10 @@ public abstract class Pane
 
         if (isMouseOver) {
             final var children = this.children;
+            final var remapped = this.remapMouseButtonEvent(event);
             for (var i = children.size() - 1; i != -1; i--) {
                 final var control = children.get(i);
-                if (control.mouseClicked(event, doubleClick)) {
+                if (control.mouseClicked(remapped, doubleClick)) {
                     this.clicked = control;
                     return true;
                 }
@@ -114,7 +118,8 @@ public abstract class Pane
         final var control = this.clicked;
         if (control != null) {
             this.clicked = null;
-            return control.mouseReleased(event);
+            final var remapped = this.remapMouseButtonEvent(event);
+            return control.mouseReleased(remapped);
         }
 
         return false;
@@ -127,7 +132,8 @@ public abstract class Pane
             final double dy
     ) {
         if (this.clicked != null) {
-            return this.clicked.mouseDragged(event, dx, dy);
+            final var remapped = this.remapMouseButtonEvent(event);
+            return this.clicked.mouseDragged(remapped, dx, dy);
         }
         return false;
     }
@@ -144,6 +150,10 @@ public abstract class Pane
             }
         }
         return false;
+    }
+
+    protected MouseButtonEvent remapMouseButtonEvent(final MouseButtonEvent event) {
+        return event;
     }
 
     public abstract void fit();

@@ -1,26 +1,14 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.screen;
 
 import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;
-import lombok.Setter;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.model.ui.Alignment;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.friendship.FriendshipTreeLayout;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.GridPane;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.ScrollDirection;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VBox;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VScrollPane;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.ExpressionScreenController;
-import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
-import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
-import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
-import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenController> {
 
@@ -36,7 +24,7 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
     @Override
     protected Control createView() {
 
-        VisualNode visualNode = (control, graphics, mouseX, mouseY, delta) -> {
+        VisualNode visualNode = (control, graphics, tween, mouseX, mouseY, delta) -> {
             final var x = control.getX() + control.getWidth() / 2;
             final var y = control.getY() + control.getHeight() / 2;
 
@@ -68,12 +56,25 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
             }
         };
 
-        var vBox     = new VBox(0, 0, this.getSliderWide().get(), this.height, Component.empty());
+        var tween       = this.tween();
+        var vBox        = new VBox(
+                tween,
+                0, 0,
+                this.getSliderWide().get(),
+                this.height,
+                Component.empty()
+        );
+
         vBox.setAlignment(Alignment.TOP_CENTER);
         final var padding = vBox.getPadding();
         padding.top = 16;
 
-        var grid = new GridPane(0, 0, 0, 0, Component.empty());
+        var grid = new GridPane(
+                tween,
+                0, 0,
+                0, 0,
+                Component.empty()
+        );
         grid.setAlignment(Alignment.TOP_CENTER);
         grid.setHgap(4);
         grid.setVgap(4);
@@ -83,7 +84,13 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
         var column          = 0;
 
         for (int i = 0; i < 23; i++) {
-            var button = new Button(0, 0, 24, 24, Component.empty());
+            var button = new Button(
+                    tween,
+                    0, 0,
+                    24, 24,
+                    Component.empty()
+            );
+
             button.setVisualNodes(visualNode);
 
             // calculate row and column

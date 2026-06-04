@@ -9,6 +9,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Co
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.Pane;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTree;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.jspecify.annotations.NonNull;
@@ -37,12 +38,14 @@ public final class FriendshipTreeLayout extends Pane {
     private final int[] branchX;
 
     public FriendshipTreeLayout(
-            final FriendshipTree tree,
-            final int x,
-            final int y,
-            final int width
+            final @NonNull TweenScope   tween,
+            final FriendshipTree        tree,
+            final int                   x,
+            final int                   y,
+            final int                   width
     ) {
         super(
+                tween,
                 x, y,
                 width, 0,
                 Component.translatable("gui.thatskyinteractions.friendship.tree")
@@ -62,6 +65,7 @@ public final class FriendshipTreeLayout extends Pane {
                 final var branch = node.getBranch();
                 final var parent = tree.get(node.getParent());
                 final var line = new FriendshipTreeLine(
+                        tween,
                         branch == parent.getBranch() ? DEGREES[1] : DEGREES[branch.ordinal()]
                 );
                 this.lines.add(line);
@@ -69,6 +73,7 @@ public final class FriendshipTreeLayout extends Pane {
             }
 
             final var button = new Button(
+                    tween,
                     0, 0,
                     NODE_SIZE, NODE_SIZE,
                     Component.empty()

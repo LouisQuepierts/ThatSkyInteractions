@@ -7,6 +7,8 @@ import net.quepierts.thatskyinteractions.core.model.ui.HPos;
 import net.quepierts.thatskyinteractions.core.model.ui.VPos;
 import net.quepierts.thatskyinteractions.core.property.EnumProperty;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
+import org.jspecify.annotations.NonNull;
 
 @Getter
 public class HBox extends Pane {
@@ -15,13 +17,14 @@ public class HBox extends Pane {
     private final EnumProperty<Alignment> alignment = new EnumProperty<>(null);
 
     public HBox(
-            final int x,
-            final int y,
-            final int width,
-            final int height,
-            final Component message
+            final @NonNull TweenScope tween,
+            final int                   x,
+            final int                   y,
+            final int                   width,
+            final int                   height,
+            final Component             message
     ) {
-        super(x, y, width, height, message);
+        super(tween, x, y, width, height, message);
     }
 
     public void setSpacing(float spacing) {

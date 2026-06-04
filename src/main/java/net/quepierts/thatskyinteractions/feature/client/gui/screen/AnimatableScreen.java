@@ -73,14 +73,16 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
             final @NonNull MouseButtonEvent event,
             final boolean doubleClick
     ) {
-        return this.root.mouseClicked(event, doubleClick);
+        final var remapped = this.remapButtonEvent(event);
+        return this.root.mouseClicked(remapped, doubleClick);
     }
 
     @Override
     public boolean mouseReleased(
             final @NonNull MouseButtonEvent event
     ) {
-        return this.root.mouseReleased(event);
+        final var remapped = this.remapButtonEvent(event);
+        return this.root.mouseReleased(remapped);
     }
 
     @Override
@@ -89,7 +91,12 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
             final double dx,
             final double dy
     ) {
-        return this.isDragging() && event.button() == 0 && this.root.mouseDragged(event, dx, dy);
+        if (!this.isDragging() || event.button() != 0) {
+            return false;
+        }
+
+        final var remapped = this.remapButtonEvent(event);
+        return this.root.mouseDragged(remapped, dx, dy);
     }
 
     @Override
@@ -135,6 +142,10 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
         if (this.layout != null) {
             this.layout.layout();
         }
+    }
+
+    protected MouseButtonEvent remapButtonEvent(final MouseButtonEvent event) {
+        return event;
     }
 
     protected abstract Controller createController(final Model model);

@@ -8,6 +8,8 @@ import net.quepierts.thatskyinteractions.core.model.ui.HPos;
 import net.quepierts.thatskyinteractions.core.model.ui.VPos;
 import net.quepierts.thatskyinteractions.core.property.EnumProperty;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,13 +29,14 @@ public class GridPane extends Pane {
     private int cols;
 
     public GridPane(
-            final int       x,
-            final int       y,
-            final int       width,
-            final int       height,
-            final Component message
+            final @NonNull TweenScope   tween,
+            final int                   x,
+            final int                   y,
+            final int                   width,
+            final int                   height,
+            final Component             message
     ) {
-        super(x, y, width, height, message);
+        super(tween, x, y, width, height, message);
     }
 
     @Override
