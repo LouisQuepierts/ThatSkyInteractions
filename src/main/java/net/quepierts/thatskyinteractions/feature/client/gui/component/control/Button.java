@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.control;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
@@ -53,4 +54,7 @@ public class Button extends Control {
             this.onClick.run();
         }
     }
+
+    @Override
+    public void playDownSound(final @NonNull SoundManager soundManager) { }
 }
