@@ -12,5 +12,7 @@ public final class FriendshipScreenController extends ScreenController<Friendshi
         final var model         = this.getModel();
         final var structure     = model.getStructure();
 
+        final var state         = model.getState(index);
+
     }
 }

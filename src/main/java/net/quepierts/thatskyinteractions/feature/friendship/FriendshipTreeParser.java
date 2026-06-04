@@ -6,7 +6,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.quepierts.thatskyinteractions.core.friendship.FriendshipAction;
 import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeDefinition;
 import net.quepierts.thatskyinteractions.core.friendship.model.TreeNodeDefinition;

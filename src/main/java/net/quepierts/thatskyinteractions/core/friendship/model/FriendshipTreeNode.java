@@ -1,8 +1,7 @@
-package net.quepierts.thatskyinteractions.feature.friendship;
+package net.quepierts.thatskyinteractions.core.friendship.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.core.model.Currency;
 
 import java.util.Map;

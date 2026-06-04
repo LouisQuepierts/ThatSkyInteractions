@@ -18,7 +18,8 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.Vis
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonRenderOps;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.SpinButtonNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
-import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
+import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -32,6 +33,10 @@ import java.util.Collection;
 
 @UtilityClass
 public class FriendshipTreeComponentFactory {
+
+    public static final int COLOR_LOCKED            = 0xff52677a;
+    public static final int COLOR_UNLOCKABLE        = 0xffc8f9fd;
+    public static final int COLOR_UNLOCKED          = 0xfffffee0;
 
     public static final int VERTICAL_GAP_FULL       = 48;
     public static final int VERTICAL_GAP_SIMPLE     = 24;
@@ -50,6 +55,13 @@ public class FriendshipTreeComponentFactory {
                     - NODE_SIZE - HORIZONTAL_GAP,
                     0,
                     + NODE_SIZE + HORIZONTAL_GAP
+            };
+
+    private static final int[] STATED_COLORS
+            = new int[] {
+                    COLOR_LOCKED,
+                    COLOR_UNLOCKABLE,
+                    COLOR_UNLOCKED
             };
 
     public static FriendshipTreeComponents create(
@@ -73,10 +85,10 @@ public class FriendshipTreeComponentFactory {
                                         Component.empty()
                                     );
 
-            final var icon          = extractIcon(node);
             final var index         = i;
+            final var state         = model.getState(index);
 
-            button                  .setVisualNode(vButton(icon));
+            button                  .setVisualNode(vButton(node, model, state));
             button                  .setOnClick(() -> controller.onButtonClicked(index));
             buttons                 .add(button);
 
@@ -111,7 +123,7 @@ public class FriendshipTreeComponentFactory {
                                     DIRECTIONS[1] :
                                     DIRECTIONS[branch.ordinal()];
 
-                line                .setVisualNode(vLine(direction));
+                line                .setVisualNode(vLine(direction, state));
                 lines               .add(line);
             }
 
@@ -147,8 +159,14 @@ public class FriendshipTreeComponentFactory {
     }
 
     private static Identifier extractIcon(
-            @NonNull final FriendshipTreeNode node
+            final FriendshipTreeNode       node,
+            final FriendshipTreeData.State state
     ) {
+
+        if (state == FriendshipTreeData.State.LOCKED) {
+            return ThatSkyInteractions.location("textures/gui/locked.png");
+        }
+
         final var type = node.getType();
         switch (type) {
             case "interaction": {
@@ -172,9 +190,15 @@ public class FriendshipTreeComponentFactory {
     }
 
     public static VisualNode vButton(
-            final @NonNull Identifier icon
+            final FriendshipTreeNode        node,
+            final FriendshipTreeData        model,
+            final FriendshipTreeData.State  state
     ) {
-        final var content   = SpinButtonNode.of((graphics, _, _, width, height, color) -> {
+
+        final var icon          = extractIcon(node, state);
+        final var mColor        = STATED_COLORS[state.ordinal()];
+
+        final var content       = SpinButtonNode.of((graphics, _, _, width, height, _) -> {
             graphics.blit(
                     RenderPipelines.GUI_TEXTURED,
                     icon,
@@ -188,7 +212,7 @@ public class FriendshipTreeComponentFactory {
                     32,
                     32,
                     32,
-                    0xFFFFFFFF
+                    mColor
             );
         });
 
@@ -198,9 +222,11 @@ public class FriendshipTreeComponentFactory {
     }
 
     public static VisualNode vLine(
-            final @NonNull Vector2fc direction
+            final @NonNull Vector2fc        direction,
+            final FriendshipTreeData.State  state
     ) {
-        return new Line(direction);
+        final var color = STATED_COLORS[state.ordinal()];
+        return new Line(direction, color);
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -208,6 +234,7 @@ public class FriendshipTreeComponentFactory {
 
         private final FloatProperty progress    = new FloatProperty(0.0f);
         private final Vector2fc     direction;
+        private final int           color;
 
         @Override
         public void extractRenderState(
@@ -250,7 +277,7 @@ public class FriendshipTreeComponentFactory {
                     .reset()
 
                     .round(0.5f)
-                    .color(0xfffffee0)
+                    .color(this.color)
 
                     .light(5.0f)
                     .segment(

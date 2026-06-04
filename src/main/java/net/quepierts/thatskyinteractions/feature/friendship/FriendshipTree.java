@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeDefinition;
+import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.veynir.core.util.ArrayIterator;
 import net.quepierts.veynir.core.util.LocationLookup;
 import org.jspecify.annotations.NonNull;
