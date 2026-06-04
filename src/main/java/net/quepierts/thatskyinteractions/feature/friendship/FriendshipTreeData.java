@@ -13,6 +13,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
@@ -30,8 +31,8 @@ public final class FriendshipTreeData {
                     Codec.unboundedMap(
                             Codec.STRING,
                             Codec.BYTE.xmap(
-                                    State::byOrdinal,
-                                    State::toByte
+                                    NodeState::byOrdinal,
+                                    NodeState::toByte
                             )
                     ).fieldOf("states").forGetter(FriendshipTreeData::getStates)
             ).apply(instance, FriendshipTreeData::new));
@@ -46,15 +47,15 @@ public final class FriendshipTreeData {
                             HashMap::new,
                             ByteBufCodecs.STRING_UTF8,
                             ByteBufCodecs.BYTE.map(
-                                    State::byOrdinal,
-                                    State::toByte
+                                    NodeState::byOrdinal,
+                                    NodeState::toByte
                             )
                     ),
                     FriendshipTreeData::getStates,
                     FriendshipTreeData::new
             );
 
-    private transient final State[]                 flatMapping;
+    private transient final NodeState[]                 flatMapping;
     @Getter // TODO: redirect when data reloaded
     private transient final FriendshipTree          structure;
 
@@ -62,7 +63,7 @@ public final class FriendshipTreeData {
     private final Identifier                        type;
     @Getter
     private final UUID                              friend;
-    private final Object2ObjectMap<String, State>   states;
+    private final Object2ObjectMap<String, NodeState>   states;
 
     public FriendshipTreeData(
             @NonNull final Identifier           type,
@@ -75,9 +76,9 @@ public final class FriendshipTreeData {
         final var structure = manager.get(type);
 
         this.structure      = structure;
-        this.flatMapping    = new State[structure.size()];
-        Arrays.fill(this.flatMapping, State.LOCKED);
-        this.flatMapping[0] = State.UNLOCKED;
+        this.flatMapping    = new NodeState[structure.size()];
+        Arrays.fill(this.flatMapping, NodeState.LOCKED);
+        this.flatMapping[0] = NodeState.UNLOCKED;
 
         this.states         = new Object2ObjectOpenHashMap<>();
     }
@@ -85,7 +86,7 @@ public final class FriendshipTreeData {
     private FriendshipTreeData(
             @NonNull final Identifier           type,
             @NonNull final UUID                 friend,
-            @NonNull final Map<String, State>   states
+            @NonNull final Map<String, NodeState>   states
     ) {
         this.type           = type;
         this.friend         = friend;
@@ -95,7 +96,7 @@ public final class FriendshipTreeData {
         final var lookup    = structure.getLookup();
 
         this.structure      = structure;
-        this.flatMapping    = new State[structure.size()];
+        this.flatMapping    = new NodeState[structure.size()];
         this.states         = new Object2ObjectOpenHashMap<>(states);
 
         for (final var entry : states.entrySet()) {
@@ -109,20 +110,20 @@ public final class FriendshipTreeData {
         }
     }
 
-    public State getState(final int index) {
+    public NodeState getState(final int index) {
         return this.flatMapping[index];
     }
 
     public boolean isLocked(final int index) {
-        return this.isValid(index) && this.getState(index) == State.LOCKED;
+        return this.isValid(index) && this.getState(index) == NodeState.LOCKED;
     }
 
     public boolean isUnlockable(final int index) {
-        return this.isValid(index) && this.getState(index) == State.UNLOCKABLE;
+        return this.isValid(index) && this.getState(index) == NodeState.UNLOCKABLE;
     }
 
     public boolean isUnlocked(final int index) {
-        return this.isValid(index) && this.getState(index) == State.UNLOCKED;
+        return this.isValid(index) && this.getState(index) == NodeState.UNLOCKED;
     }
 
     public boolean unlock(final int index) {
@@ -130,24 +131,24 @@ public final class FriendshipTreeData {
             return false;
         }
 
-        this.flatMapping[index] = State.UNLOCKED;
-        this.states             .put(this.structure.get(index).getId(), State.UNLOCKED);
+        this.flatMapping[index] = NodeState.UNLOCKED;
+        this.states             .put(this.structure.get(index).getId(), NodeState.UNLOCKED);
 
         this                    .update(index);
 
         return true;
     }
 
-    public State getState(final @NonNull String name) {
+    public NodeState getState(final @NonNull String name) {
         return this.states.get(name);
     }
 
     public void reset() {
-        Arrays.fill(this.flatMapping, State.LOCKED);
-        this.flatMapping[0] = State.UNLOCKED;
+        Arrays.fill(this.flatMapping, NodeState.LOCKED);
+        this.flatMapping[0] = NodeState.UNLOCKED;
 
         this.states.clear();
-        this.states.put(this.structure.getRoot().getId(), State.UNLOCKED);
+        this.states.put(this.structure.getRoot().getId(), NodeState.UNLOCKED);
 
         this.update(0);
     }
@@ -159,7 +160,7 @@ public final class FriendshipTreeData {
     public boolean isCompleted() {
         var completed = true;
         for (final var value : this.states.values()) {
-            if (value != State.UNLOCKED) {
+            if (value != NodeState.UNLOCKED) {
                 completed = false;
                 break;
             }
@@ -183,21 +184,21 @@ public final class FriendshipTreeData {
 
     private void update(final int src) {
 
-        final var queue = new ObjectArrayFIFOQueue<IntObjectPair<State>>();
+        final var queue = new ObjectArrayFIFOQueue<IntObjectPair<NodeState>>();
         queue           .enqueue(
                         IntObjectPair.of(
                                 src,
-                                State.byUnlocked(this.isUnlocked(src))
+                                NodeState.byUnlocked(this.isUnlocked(src))
                         )
         );
 
         while (!queue.isEmpty()) {
             final var pair  = queue.dequeue();
             final var index = pair.leftInt();
-            final var state = State.byUnlocked(this.isUnlocked(index), pair.right());
+            final var state = NodeState.byUnlocked(this.isUnlocked(index), pair.right());
 
             final var node  = this.structure.get(index);
-            final var put   = node.getUnlockCost().isFree() ? State.UNLOCKED : state;
+            final var put   = node.getUnlockCost().isFree() ? NodeState.UNLOCKED : state;
             this            .put(index, put);
 
             final var next  = state.next();
@@ -233,56 +234,16 @@ public final class FriendshipTreeData {
     }
 
     private void put(
-            final int   index,
-            final State state
+            final int       index,
+            final NodeState state
     ) {
         this.flatMapping[index] = state;
 
         final var name          = this.structure.get(index).getId();
-        if (state == State.LOCKED) {
+        if (state == NodeState.LOCKED) {
             this.states.remove(name);
         } else {
             this.states.put(name, state);
         }
     }
-
-    public enum State {
-        LOCKED,
-        UNLOCKABLE,
-        UNLOCKED;
-
-        private static final State[] VALUES = values();
-
-        public static State byOrdinal(
-                final byte id
-        ) {
-            return VALUES[id];
-        }
-
-        public static State byUnlocked(
-                final boolean   unlocked,
-                final State     $default
-        ) {
-            return unlocked ? UNLOCKED : $default;
-        }
-
-        public static State byUnlocked(
-                final boolean unlocked
-        ) {
-            return byUnlocked(unlocked, LOCKED);
-        }
-
-        public State next() {
-            return VALUES[(ordinal() + 1) % VALUES.length];
-        }
-
-        public boolean hasNext() {
-            return this != UNLOCKED;
-        }
-
-        public byte toByte() {
-            return (byte) ordinal();
-        }
-    }
-
 }

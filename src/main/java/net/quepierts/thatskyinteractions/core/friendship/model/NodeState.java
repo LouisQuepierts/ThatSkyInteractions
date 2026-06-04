@@ -4,20 +4,37 @@ public enum NodeState {
     LOCKED,
     UNLOCKABLE,
     UNLOCKED;
+    
+    private static final NodeState[] VALUES = values();
 
-    public static NodeState getNextState(NodeState type) {
-        return type == UNLOCKED ? UNLOCKABLE : LOCKED;
+    public static NodeState byOrdinal(
+            final byte id
+    ) {
+        return VALUES[id];
     }
 
-    public static NodeState byUnlocked(boolean unlocked) {
-        return unlocked ? UNLOCKED : UNLOCKABLE;
+    public static NodeState byUnlocked(
+            final boolean   unlocked,
+            final NodeState $default
+    ) {
+        return unlocked ? UNLOCKED : $default;
     }
 
-    public static NodeState byUnlocked(boolean unlocked, NodeState def) {
-        return unlocked ? UNLOCKED : def;
+    public static NodeState byUnlocked(
+            final boolean unlocked
+    ) {
+        return byUnlocked(unlocked, LOCKED);
     }
 
-    public static NodeState byOrdinal(byte aByte) {
-        return values()[aByte];
+    public NodeState next() {
+        return VALUES[(ordinal() + 1) % VALUES.length];
+    }
+
+    public boolean hasNext() {
+        return this != UNLOCKED;
+    }
+
+    public byte toByte() {
+        return (byte) ordinal();
     }
 }

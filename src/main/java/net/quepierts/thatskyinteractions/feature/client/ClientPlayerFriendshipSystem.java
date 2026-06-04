@@ -19,8 +19,13 @@ import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 
 @UtilityClass
+@SuppressWarnings({"unused", "DataFlowIssue"})
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
 public class ClientPlayerFriendshipSystem {
+
+    public static PlayerFriendshipAttachment getLocalFriendshipData() {
+        return PlayerFriendshipAttachment.getAttachment(Minecraft.getInstance().player);
+    }
 
     @SubscribeEvent
     public static void onInteractPlayer(final PlayerInteractEvent.EntityInteract event) {

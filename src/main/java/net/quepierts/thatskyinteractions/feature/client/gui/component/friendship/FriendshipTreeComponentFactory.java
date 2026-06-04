@@ -9,8 +9,9 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
+import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.HoverNode;
@@ -20,6 +21,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.but
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -160,10 +162,19 @@ public class FriendshipTreeComponentFactory {
 
     private static Identifier extractIcon(
             final FriendshipTreeNode       node,
-            final FriendshipTreeData.State state
+            final NodeState                 state
     ) {
 
-        if (state == FriendshipTreeData.State.LOCKED) {
+        final var behaviour     = FriendshipBehaviourFactory.get(node);
+        final var attachment    = ClientPlayerFriendshipSystem.getLocalFriendshipData();
+        
+        return behaviour.getIcon(
+                attachment,
+                node,
+                state
+        );
+
+        /*if (state == NodeState.LOCKED) {
             return ThatSkyInteractions.location("textures/gui/locked.png");
         }
 
@@ -186,13 +197,13 @@ public class FriendshipTreeComponentFactory {
                 return ThatSkyInteractions.location("textures/gui/like_off.png");
             }
         }
-        return ThatSkyInteractions.location("textures/gui/" + type + ".png");
+        return ThatSkyInteractions.location("textures/gui/" + type + ".png");*/
     }
 
     public static VisualNode vButton(
             final FriendshipTreeNode        node,
             final FriendshipTreeData        model,
-            final FriendshipTreeData.State  state
+            final NodeState  state
     ) {
 
         final var icon          = extractIcon(node, state);
@@ -223,7 +234,7 @@ public class FriendshipTreeComponentFactory {
 
     public static VisualNode vLine(
             final @NonNull Vector2fc        direction,
-            final FriendshipTreeData.State  state
+            final NodeState                 state
     ) {
         final var color = STATED_COLORS[state.ordinal()];
         return new Line(direction, color);
