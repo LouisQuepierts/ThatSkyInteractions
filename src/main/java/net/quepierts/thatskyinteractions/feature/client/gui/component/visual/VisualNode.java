@@ -95,7 +95,10 @@ public interface VisualNode {
                 final int                           mouseY,
                 final float                         delta
         ) {
+
+            final var pose = graphics.pose();
             for (final var node : nodes) {
+                pose.pushMatrix();
                 node.extractRenderState(
                         control,
                         graphics,
@@ -105,6 +108,7 @@ public interface VisualNode {
                         mouseY,
                         delta
                 );
+                pose.popMatrix();
             }
         }
 

@@ -65,6 +65,8 @@ public class Control extends AbstractWidget {
     ) {
 
         if (this.visualNode != null) {
+            final var pose = graphics.pose();
+            pose.pushMatrix();
             this.visualNode.extractRenderState(
                     this,
                     graphics,
@@ -73,6 +75,7 @@ public class Control extends AbstractWidget {
                     mouseY,
                     delta
             );
+            pose.popMatrix();
         }
     }
 
