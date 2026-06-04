@@ -44,7 +44,7 @@ public final class FriendshipTreeData {
                     FriendshipTreeData::new
             );
 
-    private transient final FriendshipTree      model;
+    private transient final FriendshipTree      structure;
 
     private final Identifier                    type;
     private final UUID                          friend;
@@ -58,7 +58,7 @@ public final class FriendshipTreeData {
         this.friend         = friend;
 
         final var manager   = FriendshipTreeManager.getInstance();
-        this.model          = manager.get(type);
+        this.structure      = manager.get(type);
         this.states         = new Object2ByteOpenHashMap<>();
     }
 
@@ -71,7 +71,7 @@ public final class FriendshipTreeData {
         this.friend         = friend;
 
         final var manager   = FriendshipTreeManager.getInstance();
-        this.model          = manager.get(type);
+        this.structure      = manager.get(type);
         this.states         = new Object2ByteOpenHashMap<>(states);
     }
 
