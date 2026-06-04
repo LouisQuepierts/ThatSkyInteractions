@@ -64,6 +64,12 @@ public class PlayerAnimationHook {
         final var cache     = controller.getCache();
         final var root      = cache.get(0);
 
+        poseStack.translate(
+                root.getTx() * 0.0625f,
+                root.getTy() * 0.0625f,
+                root.getTz() * 0.0625f
+        );
+
         final var quat      = new Quaternionf(
                 root.getRx(),
                 root.getRy(),
@@ -72,12 +78,6 @@ public class PlayerAnimationHook {
         );
 
         poseStack.mulPose(quat);
-
-        poseStack.translate(
-                root.getTx() * 0.0625f,
-                root.getTy() * 0.0625f,
-                root.getTz() * 0.0625f
-        );
     }
 
     public static boolean onSetupCameraAnimation(
