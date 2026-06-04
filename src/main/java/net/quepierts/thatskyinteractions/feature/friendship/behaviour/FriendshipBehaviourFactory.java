@@ -25,6 +25,11 @@ public class FriendshipBehaviourFactory {
 
     static {
         final var builder = ImmutableMap.<String, FriendshipBehaviour>builder();
+
+        builder.put(InteractionBehaviour.TYPE,  InteractionBehaviour.INSTANCE);
+        builder.put(FriendBehaviour.TYPE,       FriendBehaviour.INSTANCE);
+        builder.put(BlockBehaviour.TYPE,        BlockBehaviour.INSTANCE);
+
         NeoForge.EVENT_BUS.post(new RegisterFriendshipBehaviourEvent(builder));
         BEHAVIOURS = builder.build();
     }
