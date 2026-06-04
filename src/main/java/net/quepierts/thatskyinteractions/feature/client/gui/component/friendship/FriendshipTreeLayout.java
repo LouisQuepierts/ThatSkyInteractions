@@ -30,7 +30,7 @@ public final class FriendshipTreeLayout extends Pane {
             new Vector2f(0.8f, -0.8f),
     };
 
-    private final List<FriendshipTreeLine>          lines;
+    private final List<Control>                     lines;
     private final List<Control>                     buttons;
     private final FriendshipTree                    tree;
 
@@ -64,10 +64,8 @@ public final class FriendshipTreeLayout extends Pane {
             if (node.getParent() != -1) {
                 final var branch = node.getBranch();
                 final var parent = tree.get(node.getParent());
-                final var line = new FriendshipTreeLine(
-                        tween,
-                        branch == parent.getBranch() ? DEGREES[1] : DEGREES[branch.ordinal()]
-                );
+                final var line = new Control(tween, 0, 0, 2, 0, Component.empty());
+                line.setVisualNode(FriendshipTreeVisualNode.line(branch == parent.getBranch() ? DEGREES[1] : DEGREES[branch.ordinal()]));
                 this.lines.add(line);
                 super.addChild(line);
             }
@@ -80,7 +78,7 @@ public final class FriendshipTreeLayout extends Pane {
             );
 
             final var icon  = this.extractIcon(node);
-            button.setVisualNode(new FriendshipTreeVisualNode(icon));
+            button.setVisualNode(FriendshipTreeVisualNode.button(icon));
 
             this.buttons.add(button);
         }
