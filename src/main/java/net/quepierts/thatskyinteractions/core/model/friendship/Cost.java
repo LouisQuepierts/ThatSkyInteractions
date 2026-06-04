@@ -7,4 +7,8 @@ public record Cost(
         int price
 ) {
     public static final Cost FREE = new Cost(Currency.WHITE_CANDLE, 0);
+
+    public boolean isFree() {
+        return this == FREE || this.price < 1;
+    }
 }
