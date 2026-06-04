@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.screen;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -17,12 +18,14 @@ import org.jspecify.annotations.Nullable;
 
 public abstract class AnimatableScreen<Model, Controller extends ScreenController<Model>> extends Screen {
 
-    private final TweenScope    tween;
+    private final TweenScope        tween;
+    private final TweenTickHandler handler;
 
     @Getter
-    private final Controller    controller;
-    private Control             root;
-    private @Nullable Layout    layout;
+    private final Controller        controller;
+    @Getter(AccessLevel.PROTECTED)
+    private Control                 root;
+    private @Nullable Layout        layout;
 
     @Getter
     private boolean closed;
@@ -40,22 +43,27 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
             final Model         model
     ) {
         super(title);
-        this.tween  = tween;
+        this.tween      = tween;
+        this.handler    = (tween != Tween.GLOBAL && tween instanceof TweenTickHandler h) ? h : null;
         this.controller = this.createController(model);
     }
 
     @Override
     protected void init() {
-        this.root   = this.createView();
-        this.layout = (this.root instanceof Layout l) ? l : null;
+        if (this.root == null) {
+            this.root       = this.createView();
+            this.layout     = (this.root instanceof Layout l) ? l : null;
+        } else if (this.layout != null) {
+            this.layout.layout();
+        }
     }
 
     @Override
     public void tick() {
 
         final var delta = Minecraft.getInstance().getDeltaTracker().getRealtimeDeltaTicks() * 0.05f;
-        if (this.tween != Tween.GLOBAL && this.tween instanceof TweenTickHandler handler) {
-            handler.tick(delta * 0.05f);
+        if (this.handler != null) {
+            this.handler.tick(delta * 0.05f);
         }
     }
 
@@ -128,7 +136,7 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
     }
 
     public boolean isAnimating() {
-        return this.tween != Tween.GLOBAL && this.tween.isRunning();
+        return this.handler != null && this.tween.isRunning();
     }
 
     @Override
