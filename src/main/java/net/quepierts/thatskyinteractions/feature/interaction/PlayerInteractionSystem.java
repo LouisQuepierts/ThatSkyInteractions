@@ -205,7 +205,7 @@ public class PlayerInteractionSystem {
             return;
         }
 
-        receiver.setPos(position);
+        receiver.teleportTo(position.x, position.y, position.z);
         receiver.lookAt(EntityAnchorArgument.Anchor.EYES, requester.getEyePosition());
 
         reqData.sendAccept(receiver);
