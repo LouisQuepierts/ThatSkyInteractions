@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.registry;
 import dev.anvilcraft.lib.v2.registrum.util.entry.data.AttachmentEntry;
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
@@ -30,6 +31,13 @@ public class AttachmentTypes {
             )
             .serialize(PlayerFriendshipAttachment.MAP_CODEC)
             .copyOnDeath()
+            .register();
+
+    public static final AttachmentEntry<PhysicalTweenAttachment> PHYSICAL_TWEEN
+            = ThatSkyInteractions.REGISTRUM.attachment(
+                    "tween/physical",
+                    PhysicalTweenAttachment::new
+            )
             .register();
 
     public static void register() { }
