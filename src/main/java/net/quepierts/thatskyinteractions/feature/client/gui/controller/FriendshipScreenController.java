@@ -8,4 +8,9 @@ public final class FriendshipScreenController extends ScreenController<Friendshi
         super(model);
     }
 
+    public void onButtonClicked(final int index) {
+        final var model         = this.getModel();
+        final var structure     = model.getStructure();
+
+    }
 }

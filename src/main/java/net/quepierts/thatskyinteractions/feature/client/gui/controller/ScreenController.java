@@ -1,10 +1,9 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.controller;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter(AccessLevel.PROTECTED)
+@Getter
 @RequiredArgsConstructor
 public abstract class ScreenController<Model> {
 

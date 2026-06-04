@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.screen;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.friendship.FriendshipTreeComponentFactory;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.friendship.FriendshipTreeLayout;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.ScrollDirection;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VScrollPane;
@@ -24,28 +25,36 @@ public final class FriendshipScreen extends SlideScreen<FriendshipTreeData, Frie
 
     @Override
     protected Control createView() {
-        final var tween     = this.tween();
+        final var tween         = this.tween();
 
-        final var tree      = FriendshipTreeManager.getInstance().get(ThatSkyInteractions.location("friend"));
-        final var layout    = new FriendshipTreeLayout(
-                            tween,
-                            tree,
-                            0, 0,
-                            this.getSliderWide().get()
-        );
+        final var controller    = this.getController();
+        final var component     = FriendshipTreeComponentFactory.create(tween, controller);
+        final var layout        = new FriendshipTreeLayout(
+                                    tween,
+                                    component,
+                                    0, 0,
+                                    this.getSliderWide().get()
+                                );
 
-        final var scroll    = new VScrollPane(
-                            tween,
-                            0, 0,
-                            this.width, this.height,
-                            Component.empty()
-        );
-        scroll.addChild(layout);
-        scroll.getDirection().set(ScrollDirection.BACKWARD);
-        scroll.getScrollSpeed().set(16.0f);
-        scroll.layout();
+        final var scroll        = new VScrollPane(
+                                    tween,
+                                    0, 0,
+                                    this.width, this.height,
+                                    Component.empty()
+                                );
+
+        scroll                  .addChild(layout);
+        scroll                  .getDirection().set(ScrollDirection.BACKWARD);
+        scroll                  .getScrollSpeed().set(16.0f);
+        scroll                  .layout();
 
         return scroll;
+    }
+
+    @Override
+    protected void repositionElements() {
+        this.getRoot().setSize(this.width, this.height);
+        super.repositionElements();
     }
 
     @Override
