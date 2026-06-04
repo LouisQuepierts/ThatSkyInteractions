@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.command.animata;
+package net.quepierts.thatskyinteractions.feature.command.veynir;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;

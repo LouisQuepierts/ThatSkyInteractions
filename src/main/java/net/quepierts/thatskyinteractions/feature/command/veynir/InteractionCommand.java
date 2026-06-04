@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.command.animata;
+package net.quepierts.thatskyinteractions.feature.command.veynir;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -14,7 +14,6 @@ import net.minecraft.commands.arguments.IdentifierArgument;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionManager;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
-import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 
 import java.util.ArrayList;
 
