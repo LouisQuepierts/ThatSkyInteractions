@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
@@ -19,8 +20,8 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.Vis
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonRenderOps;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.SpinButtonNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
-import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviour;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
@@ -35,6 +36,8 @@ import java.util.Collection;
 
 @UtilityClass
 public class FriendshipTreeComponentFactory {
+
+    public static final Identifier ICON_LOCKED      = ThatSkyInteractions.location("textures/gui/locked.png");
 
     public static final int COLOR_LOCKED            = 0xff52677a;
     public static final int COLOR_UNLOCKABLE        = 0xffc8f9fd;
@@ -90,7 +93,7 @@ public class FriendshipTreeComponentFactory {
             final var index         = i;
             final var state         = model.getState(index);
 
-            button                  .setVisualNode(vButton(node, model, state));
+            button                  .setVisualNode(vButton(node, state));
             button                  .setOnClick(() -> controller.onButtonClicked(index));
             buttons                 .add(button);
 
@@ -165,14 +168,20 @@ public class FriendshipTreeComponentFactory {
             final NodeState                 state
     ) {
 
-        final var behaviour     = FriendshipBehaviourFactory.get(node);
+        if (state == NodeState.LOCKED) {
+            return ICON_LOCKED;
+        }
+
         final var attachment    = ClientPlayerFriendshipSystem.getLocalFriendshipData();
+        final var behaviour     = FriendshipBehaviourFactory.get(node);
         
-        return behaviour.getIcon(
-                attachment,
-                node,
-                state
-        );
+        return behaviour == null ?
+                FriendshipBehaviour.DEFAULT_ICON :
+                behaviour.getIcon(
+                    attachment,
+                    node,
+                    state
+                );
 
         /*if (state == NodeState.LOCKED) {
             return ThatSkyInteractions.location("textures/gui/locked.png");
@@ -201,9 +210,8 @@ public class FriendshipTreeComponentFactory {
     }
 
     public static VisualNode vButton(
-            final FriendshipTreeNode        node,
-            final FriendshipTreeData        model,
-            final NodeState  state
+            final FriendshipTreeNode    node,
+            final NodeState             state
     ) {
 
         final var icon          = extractIcon(node, state);
