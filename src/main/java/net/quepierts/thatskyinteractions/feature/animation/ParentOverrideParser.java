@@ -7,8 +7,8 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.quepierts.thatskyinteractions.core.animation.model.ParentOverrideDefinition;
-import net.quepierts.animata4j.backend.skeleton.SkeletonLayout;
-import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
+import net.quepierts.veynir.backend.skeleton.SkeletonLayout;
+import net.quepierts.veynir.core.model.ParentOverrideConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;

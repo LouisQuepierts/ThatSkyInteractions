@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.model.geom.ModelPart;
 import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.ModelPartAccessor;
-import net.quepierts.animata4j.backend.skeleton.SkeletonLayout;
-import net.quepierts.animata4j.core.adapter.TransformAccessor;
+import net.quepierts.veynir.backend.skeleton.SkeletonLayout;
+import net.quepierts.veynir.core.adapter.TransformAccessor;
 import org.joml.Math;
 import org.jspecify.annotations.NonNull;
 

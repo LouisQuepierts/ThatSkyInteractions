@@ -1,11 +1,11 @@
 package net.quepierts.thatskyinteractions.core.animation;
 
 import lombok.experimental.UtilityClass;
-import net.quepierts.animata4j.backend.skeleton.pass.definition.FetchPassDefinition;
-import net.quepierts.animata4j.backend.skeleton.pass.definition.MergePassDefinition;
-import net.quepierts.animata4j.backend.skeleton.pass.definition.ParentOverridePassDefinition;
-import net.quepierts.animata4j.backend.skeleton.pass.definition.PivotPassDefinition;
-import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPipeline;
+import net.quepierts.veynir.backend.skeleton.pass.definition.FetchPassDefinition;
+import net.quepierts.veynir.backend.skeleton.pass.definition.MergePassDefinition;
+import net.quepierts.veynir.backend.skeleton.pass.definition.ParentOverridePassDefinition;
+import net.quepierts.veynir.backend.skeleton.pass.definition.PivotPassDefinition;
+import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPipeline;
 
 @UtilityClass
 public class DefaultMinecraftSkeletonPipeline {

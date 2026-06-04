@@ -1,8 +1,8 @@
 package net.quepierts.thatskyinteractions.core.animation;
 
 import lombok.experimental.UtilityClass;
-import net.quepierts.animata4j.core.fsm.FSMHook;
-import net.quepierts.animata4j.core.fsm.FiniteStateMachine;
+import net.quepierts.veynir.core.fsm.FSMHook;
+import net.quepierts.veynir.core.fsm.FiniteStateMachine;
 import net.quepierts.thatskyinteractions.infra.Services;
 
 @UtilityClass

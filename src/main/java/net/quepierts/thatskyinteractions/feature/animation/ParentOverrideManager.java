@@ -12,8 +12,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.ParentOverrideDefinition;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
-import net.quepierts.animata4j.backend.skeleton.SkeletonLayout;
-import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
+import net.quepierts.veynir.backend.skeleton.SkeletonLayout;
+import net.quepierts.veynir.core.model.ParentOverrideConfiguration;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
 import org.jspecify.annotations.NonNull;
 

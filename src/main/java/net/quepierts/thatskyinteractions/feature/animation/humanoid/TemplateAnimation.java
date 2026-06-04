@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.quepierts.animata4j.core.skeleton.PoseCache;
+import net.quepierts.veynir.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
@@ -11,17 +11,17 @@ import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationStat
 import net.quepierts.thatskyinteractions.feature.animation.ParentOverrideManager;
 import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
-import net.quepierts.animata4j.backend.execution.ExecutionState;
-import net.quepierts.animata4j.backend.pipeline.AnimationPipeline;
-import net.quepierts.animata4j.backend.sampler.AnimationSampler;
-import net.quepierts.animata4j.backend.sampler.SamplingMode;
-import net.quepierts.animata4j.backend.skeleton.pass.definition.ParentOverridePassDefinition;
-import net.quepierts.animata4j.backend.skeleton.pass.definition.PivotPassDefinition;
-import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPipeline;
-import net.quepierts.animata4j.backend.skeleton.pipeline.SkeletonPoseProvider;
-import net.quepierts.animata4j.core.fsm.FSMState;
-import net.quepierts.animata4j.core.fsm.FiniteStateMachine;
-import net.quepierts.animata4j.core.model.ParentOverrideConfiguration;
+import net.quepierts.veynir.backend.execution.ExecutionState;
+import net.quepierts.veynir.backend.pipeline.AnimationPipeline;
+import net.quepierts.veynir.backend.sampler.AnimationSampler;
+import net.quepierts.veynir.backend.sampler.SamplingMode;
+import net.quepierts.veynir.backend.skeleton.pass.definition.ParentOverridePassDefinition;
+import net.quepierts.veynir.backend.skeleton.pass.definition.PivotPassDefinition;
+import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPipeline;
+import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPoseProvider;
+import net.quepierts.veynir.core.fsm.FSMState;
+import net.quepierts.veynir.core.fsm.FiniteStateMachine;
+import net.quepierts.veynir.core.model.ParentOverrideConfiguration;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;

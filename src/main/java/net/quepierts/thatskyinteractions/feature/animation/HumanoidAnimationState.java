@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftChannelLayout;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.core.animation.parameter.ModelOverrideParameter;
-import net.quepierts.animata4j.backend.channel.ChannelFormat;
-import net.quepierts.animata4j.backend.channel.DefaultChannelFormats;
-import net.quepierts.animata4j.backend.uniform.UniformInstance;
-import net.quepierts.animata4j.core.AnimationState;
-import net.quepierts.animata4j.core.SkeletonState;
-import net.quepierts.animata4j.core.skeleton.ParentOverrideParameter;
-import net.quepierts.animata4j.core.skeleton.PivotModificationParameter;
+import net.quepierts.veynir.backend.channel.ChannelFormat;
+import net.quepierts.veynir.backend.channel.DefaultChannelFormats;
+import net.quepierts.veynir.backend.uniform.UniformInstance;
+import net.quepierts.veynir.core.AnimationState;
+import net.quepierts.veynir.core.SkeletonState;
+import net.quepierts.veynir.core.skeleton.ParentOverrideParameter;
+import net.quepierts.veynir.core.skeleton.PivotModificationParameter;
 
 @Slf4j
 public final class HumanoidAnimationState extends AnimationState {

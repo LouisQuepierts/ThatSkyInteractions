@@ -1,6 +1,6 @@
 package net.quepierts.thatskyinteractions.core.animation;
 
-import net.quepierts.animata4j.core.fsm.FSMHook;
+import net.quepierts.veynir.core.fsm.FSMHook;
 
 public interface TsiFsmHook extends FSMHook {
 }

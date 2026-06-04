@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.core.animation.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.quepierts.animata4j.core.util.ArrayIterator;
+import net.quepierts.veynir.core.util.ArrayIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;

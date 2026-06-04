@@ -5,8 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.thatskyinteractions.core.model.friendship.FriendshipTreeDefinition;
-import net.quepierts.animata4j.core.util.ArrayIterator;
-import net.quepierts.animata4j.core.util.LocationLookup;
+import net.quepierts.veynir.core.util.ArrayIterator;
+import net.quepierts.veynir.core.util.LocationLookup;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;

@@ -1,7 +1,7 @@
 package net.quepierts.thatskyinteractions.infra.animation.tween;
 
-import net.quepierts.animata4j.core.adapter.Consumer1f;
-import net.quepierts.animata4j.core.adapter.TransformAccessor;
+import net.quepierts.veynir.core.adapter.Consumer1f;
+import net.quepierts.veynir.core.adapter.TransformAccessor;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;

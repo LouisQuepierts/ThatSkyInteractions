@@ -1,6 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
-import net.quepierts.animata4j.core.fsm.FSMState;
+import net.quepierts.veynir.core.fsm.FSMState;
 import net.quepierts.thatskyinteractions.core.animation.TsiFsmHook;
 
 public final class NeoForgeFsmHook implements TsiFsmHook {

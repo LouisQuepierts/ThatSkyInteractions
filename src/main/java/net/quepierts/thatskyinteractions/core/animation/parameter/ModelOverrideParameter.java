@@ -1,10 +1,10 @@
 package net.quepierts.thatskyinteractions.core.animation.parameter;
 
-import net.quepierts.animata4j.backend.skeleton.SkeletonLayout;
-import net.quepierts.animata4j.backend.uniform.UboDefinition;
-import net.quepierts.animata4j.backend.uniform.UniformBuffer;
-import net.quepierts.animata4j.backend.uniform.UniformParameter;
-import net.quepierts.animata4j.backend.uniform.UniformType;
+import net.quepierts.veynir.backend.skeleton.SkeletonLayout;
+import net.quepierts.veynir.backend.uniform.UboDefinition;
+import net.quepierts.veynir.backend.uniform.UniformBuffer;
+import net.quepierts.veynir.backend.uniform.UniformParameter;
+import net.quepierts.veynir.backend.uniform.UniformType;
 import org.jspecify.annotations.NonNull;
 
 public final class ModelOverrideParameter extends UniformParameter {

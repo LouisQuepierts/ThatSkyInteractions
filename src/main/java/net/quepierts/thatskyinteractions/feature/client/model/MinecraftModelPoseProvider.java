@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.model;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.quepierts.animata4j.backend.skeleton.pipeline.*;
+import net.quepierts.veynir.backend.skeleton.pipeline.*;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.NonNull;
 
