@@ -2,8 +2,8 @@ package net.quepierts.thatskyinteractions.feature.friendship;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.core.model.Currency;
-import net.quepierts.thatskyinteractions.core.model.friendship.Cost;
 
 import java.util.Map;
 
@@ -25,7 +25,7 @@ public final class FriendshipTreeNode {
 
     private final Map<String, String> metadata;
 
-    private final Cost      cost;
+    private final Cost cost;
 
     private final Branch    branch;
 

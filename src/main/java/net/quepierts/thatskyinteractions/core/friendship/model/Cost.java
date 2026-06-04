@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.core.model.friendship;
+package net.quepierts.thatskyinteractions.core.friendship.model;
 
 import net.quepierts.thatskyinteractions.core.model.Currency;
 

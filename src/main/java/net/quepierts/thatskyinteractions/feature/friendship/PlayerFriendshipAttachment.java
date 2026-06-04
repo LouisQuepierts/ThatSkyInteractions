@@ -98,7 +98,7 @@ public final class PlayerFriendshipAttachment {
         final var iterator = this.serializable.iterator();
         while (iterator.hasNext()) {
             final var data = iterator.next();
-            if (data.getStates().isEmpty()) {
+            if (data.isEmpty()) {
                 iterator.remove();
                 this.byUuid.remove(data.getFriend());
             }

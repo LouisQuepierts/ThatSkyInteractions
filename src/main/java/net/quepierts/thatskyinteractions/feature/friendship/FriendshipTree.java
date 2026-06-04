@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.quepierts.thatskyinteractions.core.model.friendship.FriendshipTreeDefinition;
+import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeDefinition;
 import net.quepierts.veynir.core.util.ArrayIterator;
 import net.quepierts.veynir.core.util.LocationLookup;
 import org.jspecify.annotations.NonNull;
