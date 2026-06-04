@@ -80,7 +80,7 @@ public final class FriendshipTreeLayout extends Pane {
             );
 
             final var icon  = this.extractIcon(node);
-            button.setVisualNodes(new FriendshipTreeVisualNode(icon));
+            button.setVisualNode(new FriendshipTreeVisualNode(icon));
 
             this.buttons.add(button);
         }

@@ -23,7 +23,7 @@ public final class FriendshipTreeLine extends Control {
     ) {
         super(tween, 0, 0, 2, 0, Component.empty());
 
-        this.setVisualNodes(new Visual(direction));
+        this.setVisualNode(new Visual(direction));
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

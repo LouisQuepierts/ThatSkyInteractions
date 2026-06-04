@@ -12,7 +12,6 @@ import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
-import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
 public class VScrollPane extends Pane {
@@ -63,10 +62,22 @@ public class VScrollPane extends Pane {
     @Override
     protected void extractWidgetRenderState(
             final @NonNull GuiGraphicsExtractor graphics,
-            final int mouseX,
-            final int mouseY,
-            final float delta
+            final int                           mouseX,
+            final int                           mouseY,
+            final float                         delta
     ) {
+
+        final var visualNode = this.getVisualNode();
+        if (visualNode != null) {
+            visualNode.extractRenderState(
+                    this,
+                    graphics,
+                    this.tween(),
+                    mouseX,
+                    mouseY,
+                    delta
+            );
+        }
 
         final var pose      = graphics.pose();
         final var scroll    = this.scroll0.get() * this.direction.get().getDirection();
@@ -84,7 +95,12 @@ public class VScrollPane extends Pane {
         pose.translate(0, -scroll);
 
         for (final var child : this.getChildren()) {
-            child.extractRenderState(graphics, mouseX, (int) (mouseY + scroll), delta);
+            child.extractRenderState(
+                    graphics,
+                    mouseX,
+                    (int) (mouseY + scroll),
+                    delta
+            );
         }
 
         pose.translate(0, scroll);

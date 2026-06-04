@@ -91,7 +91,7 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
                     Component.empty()
             );
 
-            button.setVisualNodes(visualNode);
+            button.setVisualNode(visualNode);
 
             // calculate row and column
             if (column == maxColumn) {

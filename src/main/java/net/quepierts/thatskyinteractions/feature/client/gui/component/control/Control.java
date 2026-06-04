@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.control;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -9,7 +10,6 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.core.model.ui.Insets;
-import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.joml.Vector2fc;
 import org.jspecify.annotations.NonNull;
@@ -34,7 +34,8 @@ public class Control extends AbstractWidget {
     private final Insets                margin;
 
     @Setter
-    private VisualNode                  visualNodes;
+    @Getter(AccessLevel.PROTECTED)
+    private VisualNode                  visualNode;
 
     public Control(
             final TweenScope    tween,
@@ -63,8 +64,8 @@ public class Control extends AbstractWidget {
             final float delta
     ) {
 
-        if (this.visualNodes != null) {
-            this.visualNodes.extractRenderState(
+        if (this.visualNode != null) {
+            this.visualNode.extractRenderState(
                     this,
                     graphics,
                     this.tween,

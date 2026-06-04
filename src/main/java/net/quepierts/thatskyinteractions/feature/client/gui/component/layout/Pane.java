@@ -57,6 +57,13 @@ public abstract class Pane
             final float                         delta
     ) {
 
+        super.extractWidgetRenderState(
+                graphics,
+                mouseX,
+                mouseY,
+                delta
+        );
+
         final var children  = this.getChildren();
 
         if (children.isEmpty()) {
