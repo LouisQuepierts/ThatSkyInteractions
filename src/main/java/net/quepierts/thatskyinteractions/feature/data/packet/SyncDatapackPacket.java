@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.network;
+package net.quepierts.thatskyinteractions.feature.data.packet;
 
 import dev.anvilcraft.lib.v2.network.packet.IClientboundPacket;
 import dev.anvilcraft.lib.v2.network.packet.IPacket;
@@ -8,8 +8,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationManager;
-import net.quepierts.thatskyinteractions.feature.animation.bedrock.BedrockAnimationManager;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import org.jspecify.annotations.NonNull;
 

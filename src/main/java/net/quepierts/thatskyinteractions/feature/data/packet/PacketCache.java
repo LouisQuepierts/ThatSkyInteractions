@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.network;
+package net.quepierts.thatskyinteractions.feature.data.packet;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

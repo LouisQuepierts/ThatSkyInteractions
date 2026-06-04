@@ -10,7 +10,7 @@ import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
-import net.quepierts.thatskyinteractions.feature.network.SyncDatapackPacket;
+import net.quepierts.thatskyinteractions.feature.data.packet.SyncDatapackPacket;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
