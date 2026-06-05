@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.command.veynir;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -31,7 +32,7 @@ public final class AnimationCommand {
                 .then(Commands.literal("exit")
                         .executes(AnimationCommand::exit))
                 .then(Commands.literal("event")
-                        .then(Commands.argument("event", IdentifierArgument.id())
+                        .then(Commands.argument("event", StringArgumentType.word())
                                 .executes(AnimationCommand::event)));
     }
 
@@ -69,14 +70,14 @@ public final class AnimationCommand {
 
     private static int event(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
-        final var eventArg  = IdentifierArgument.getId(context, "event");
+        final var eventArg  = StringArgumentType.getString(context, "event");
 
         final var source    = context.getSource();
         final var player    = source.getPlayerOrException();
 
         PlayerAnimationSystem.event(
                 player,
-                eventArg.getPath()
+                eventArg
         );
 
         return 1;

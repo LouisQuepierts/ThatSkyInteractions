@@ -11,6 +11,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
+import net.quepierts.thatskyinteractions.feature.command.TsiSuggestions;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionManager;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
@@ -19,21 +20,6 @@ import java.util.ArrayList;
 
 @UtilityClass
 public final class InteractionCommand {
-
-    static final SuggestionProvider<CommandSourceStack> OTHERS
-            = (context, builder) -> {
-                    final var source    = context.getSource();
-                    if (source == null || !source.isPlayer()) {
-                        return Suggestions.empty();
-                    }
-                    final var player    = source.getPlayerOrException();
-                    final var name      = player.getGameProfile().name();
-                    final var names     = source.getOnlinePlayerNames();
-                    final var removed   = names.stream()
-                            .filter(n -> !n.equals(name))
-                            .toList();
-                    return SharedSuggestionProvider.suggest(removed, builder);
-            };
 
     static final SuggestionProvider<CommandSourceStack> WAITING
             = (context, builder) -> {
@@ -69,7 +55,7 @@ public final class InteractionCommand {
     static LiteralArgumentBuilder<CommandSourceStack> command() {
         return Commands.literal("interact").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("invite")
-                        .then(Commands.argument("receiver", EntityArgument.player()).suggests(OTHERS)
+                        .then(Commands.argument("receiver", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
                                 .then(Commands.argument("interaction", IdentifierArgument.id()).suggests(INTERACTIONS)
                                         .executes(InteractionCommand::invite))))
                 .then(Commands.literal("accept")
