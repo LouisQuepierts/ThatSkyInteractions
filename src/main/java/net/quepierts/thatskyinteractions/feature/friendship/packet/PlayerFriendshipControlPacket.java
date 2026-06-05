@@ -41,6 +41,8 @@ public record PlayerFriendshipControlPacket(
                     PlayerFriendshipControlPacket::new
             );
 
+    private static final UUID DUMMY = new UUID(0, 0);
+
     public static PlayerFriendshipControlPacket unlock(
             final @NonNull UUID target,
             final int index
@@ -58,6 +60,10 @@ public record PlayerFriendshipControlPacket(
             final @NonNull UUID target
     ) {
         return new PlayerFriendshipControlPacket(Operation.RESET, target, -1);
+    }
+
+    public static PlayerFriendshipControlPacket drop() {
+        return new PlayerFriendshipControlPacket(Operation.DROP, DUMMY, -1);
     }
 
     @Override
@@ -79,6 +85,10 @@ public record PlayerFriendshipControlPacket(
                 data.reset();
                 break;
             }
+            case DROP: {
+                attachment.drop();;
+                break;
+            }
         }
     }
 
@@ -90,7 +100,8 @@ public record PlayerFriendshipControlPacket(
     public enum Operation {
         UNLOCK,
         COMPLETE,
-        RESET;
+        RESET,
+        DROP;
 
         static final Operation[] VALUES = values();
 

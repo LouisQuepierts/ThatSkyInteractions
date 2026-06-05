@@ -4,11 +4,13 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipControlPacket;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
 @UtilityClass
+@SuppressWarnings("unused")
 public class PlayerFriendshipSystem {
 
     public static boolean unlock(
@@ -16,10 +18,6 @@ public class PlayerFriendshipSystem {
             final @NonNull ServerPlayer receiver,
             final int node
     ) {
-        if (requester.level().isClientSide()) {
-            log.debug("Cannot unlock friendship tree on client side!");
-            return false;
-        }
 
         final var   data = PlayerFriendshipAttachment.union(requester, receiver);
 
@@ -43,9 +41,6 @@ public class PlayerFriendshipSystem {
                 )
         );
 
-        final var name = data.getStructure().getLookup().name(node);
-        log.debug("{} unlocked friendship tree node {}", requester.getName().getString(), name);
-
         return true;
     }
 
@@ -53,10 +48,6 @@ public class PlayerFriendshipSystem {
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver
     ) {
-        if (requester.level().isClientSide()) {
-            log.debug("Cannot compile friendship tree on client side!");
-            return false;
-        }
 
         final var data = PlayerFriendshipAttachment.union(requester, receiver);
 
@@ -87,10 +78,6 @@ public class PlayerFriendshipSystem {
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver
     ) {
-        if (requester.level().isClientSide()) {
-            log.debug("Cannot reset friendship tree on client side!");
-            return false;
-        }
 
         final var data = PlayerFriendshipAttachment.union(requester, receiver);
 
@@ -117,18 +104,41 @@ public class PlayerFriendshipSystem {
         return true;
     }
 
-    public static void interact(
+    public static void drop(final ServerPlayer player) {
+
+        PlayerFriendshipAttachment.getAttachment(player).drop();
+
+        PacketDistributor.sendToPlayer(
+                player,
+                PlayerFriendshipControlPacket.drop()
+        );
+
+    }
+
+    public static boolean interact(
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver,
             final int node
     ) {
 
-    }
+        final var data      = PlayerFriendshipAttachment.union(requester, receiver);
+        if (!data.isUnlocked(node)) {
+            return false;
+        }
 
-    public static PlayerFriendshipAttachment getFriendshipAttachment(
-            final @NonNull ServerPlayer player
-    ) {
-        return PlayerFriendshipAttachment.getAttachment(player);
-    }
+        final var structure = data.getStructure();
+        final var def       = structure.get(node);
 
+        final var behaviour = FriendshipBehaviourFactory.get(def);
+        if (behaviour == null) {
+            return false;
+        }
+
+        behaviour.execute(
+                PlayerFriendshipAttachment.getAttachment(requester),
+                def
+        );
+
+        return true;
+    }
 }

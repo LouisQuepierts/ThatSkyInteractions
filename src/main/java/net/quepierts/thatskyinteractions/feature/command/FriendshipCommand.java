@@ -48,7 +48,9 @@ public class FriendshipCommand {
                                 .executes(FriendshipCommand::reset)))
                 .then(Commands.literal("complete")
                         .then(Commands.argument("other", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
-                                .executes(FriendshipCommand::complete)));
+                                .executes(FriendshipCommand::complete)))
+                .then(Commands.literal("drop")
+                        .executes(FriendshipCommand::drop));
     }
 
     private static int unlock(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -121,6 +123,16 @@ public class FriendshipCommand {
             source.sendFailure(Component.translatable("command.thatskyinteractions.friendship.complete.fail"));
             return 0;
         }
+
+        return 1;
+    }
+
+    private static int drop(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+
+        final var source        = context.getSource();
+        final var player        = source.getPlayerOrException();
+
+        PlayerFriendshipSystem.drop(player);
 
         return 1;
     }
