@@ -23,7 +23,7 @@ public class PlayerUtils {
     }
 
     public static Vec3 getRelativePositionWorldSpace(Player player, double forward, double left) {
-        Vec2 vec2 = new Vec2(0, player.getYRot());
+        Vec2 vec2 = new Vec2(0, player.yBodyRot);
         Vec3 vec3 = player.position();
         final float f = Mth.cos((vec2.y + 90.0F) * ((float)Math.PI / 180F));
         final float f1 = Mth.sin((vec2.y + 90.0F) * ((float)Math.PI / 180F));
@@ -33,7 +33,7 @@ public class PlayerUtils {
     }
 
     public static Vec3 getRelativePosition(Player player, double forward, double left) {
-        Vec2 vec2 = new Vec2(0, player.getYRot());
+        Vec2 vec2 = new Vec2(0, player.yBodyRot);
         final float f = Mth.cos((vec2.y + 90.0F) * ((float)Math.PI / 180F));
         final float f1 = Mth.sin((vec2.y + 90.0F) * ((float)Math.PI / 180F));
         return new Vec3(f * forward - f1 * left, 0, f1 * forward + f * left);
