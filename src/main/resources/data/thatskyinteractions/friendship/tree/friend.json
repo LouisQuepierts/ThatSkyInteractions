@@ -46,7 +46,10 @@
     },
     "lock_1": {
       "type": "lock",
-      "price": 1,
+      "price": {
+        "amount": 8,
+        "currency": "ascended_candle"
+      },
       "middle": "double_high_five_1"
     },
     "double_high_five_1": {

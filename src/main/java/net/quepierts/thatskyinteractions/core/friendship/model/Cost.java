@@ -4,11 +4,11 @@ import net.quepierts.thatskyinteractions.core.model.Currency;
 
 public record Cost(
         Currency currency,
-        int price
+        int amount
 ) {
     public static final Cost FREE = new Cost(Currency.WHITE_CANDLE, 0);
 
     public boolean isFree() {
-        return this == FREE || this.price < 1;
+        return this == FREE || this.amount < 1;
     }
 }

@@ -18,17 +18,18 @@ import java.util.Map;
 public class FriendshipTreeParser {
 
     public static final Codec<Cost> COST_CODEC
-            = Codec.INT.xmap(
-                    i -> new Cost(Currency.WHITE_CANDLE, i),
-                    Cost::price
-            )
-            .withAlternative(RecordCodecBuilder.create(instance -> instance.group(
+            = RecordCodecBuilder.<Cost>create(instance -> instance.group(
                     Codec.STRING.fieldOf("currency").xmap(
                             Currency::parse,
                             Currency::name
                     ).forGetter(Cost::currency),
-                    Codec.INT.fieldOf("price").forGetter(Cost::price)
-            ).apply(instance, Cost::new)));
+                    Codec.INT.fieldOf("amount").forGetter(Cost::amount)
+            ).apply(instance, Cost::new)).withAlternative(
+                    Codec.INT.xmap(
+                            i -> new Cost(Currency.WHITE_CANDLE, i),
+                            Cost::amount
+                    )
+            );
 
     public static final Codec<TreeNodeDefinition> NODE_CODEC
             = RecordCodecBuilder.create(instance -> instance.group(
@@ -56,7 +57,7 @@ public class FriendshipTreeParser {
                     ),
                     Cost::currency,
                     ByteBufCodecs.VAR_INT,
-                    Cost::price,
+                    Cost::amount,
                     Cost::new
             );
 
