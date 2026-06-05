@@ -29,7 +29,8 @@ public class AttachmentTypes {
                     "player/friendship",
                     PlayerFriendshipAttachment::new
             )
-            .serialize(PlayerFriendshipAttachment.MAP_CODEC)
+            .serialize(PlayerFriendshipAttachment.SERIALIZER)
+            .sync(PlayerFriendshipAttachment.STREAM_CODEC)
             .copyOnDeath()
             .register();
 

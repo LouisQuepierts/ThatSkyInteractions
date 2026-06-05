@@ -3,13 +3,9 @@
   "nodes": {
     "root": {
       "type": "friend",
-      "left": "like",
       "price": 3,
       "middle": "high_five_1",
       "right": "block"
-    },
-    "like": {
-      "type": "like"
     },
     "block": {
       "type": "block"

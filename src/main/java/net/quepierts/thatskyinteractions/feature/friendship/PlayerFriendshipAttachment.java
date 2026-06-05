@@ -1,15 +1,22 @@
 package net.quepierts.thatskyinteractions.feature.friendship;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.model.PlayerPair;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -24,8 +31,33 @@ public final class PlayerFriendshipAttachment {
                     PlayerFriendshipAttachment::serialize
             );
 
-    public static final MapCodec<PlayerFriendshipAttachment> MAP_CODEC
-            = CODEC.fieldOf("player_friendship_attachment");
+    public static final IAttachmentSerializer<PlayerFriendshipAttachment> SERIALIZER
+            = new IAttachmentSerializer<>() {
+        @Override
+        public PlayerFriendshipAttachment read(
+                final @NonNull IAttachmentHolder holder,
+                final @NonNull ValueInput input
+        ) {
+
+            if (!(holder instanceof LivingEntity entity)) {
+                return null;
+            }
+
+            final var result = input.read("friendship_attachment", CODEC);
+            final var attachment = result.orElseThrow(() -> new IllegalArgumentException("Unable to read Friendship Attachment"));
+            attachment.setup(entity.getUUID());
+            return attachment;
+        }
+
+        @Override
+        public boolean write(
+                final PlayerFriendshipAttachment attachment,
+                final @NonNull ValueOutput output
+        ) {
+            output.storeNullable("friendship_attachment", CODEC, attachment);
+            return true;
+        }
+    };
 
     public static final StreamCodec<ByteBuf, PlayerFriendshipAttachment> STREAM_CODEC
             = StreamCodec.composite(
@@ -41,12 +73,17 @@ public final class PlayerFriendshipAttachment {
             = ThatSkyInteractions.location("friend");
 
     public static PlayerFriendshipAttachment getAttachment(@NonNull final Player player) {
-        return player.getData(AttachmentTypes.PLAYER_FRIENDSHIP);
+        final var attachment = player.getData(AttachmentTypes.PLAYER_FRIENDSHIP);
+        attachment.setup(player.getUUID());
+        return attachment;
     }
 
+    private transient UUID                                  me;
+    private transient final Map<UUID, FriendshipTreeData>   byUuid;
+    private transient final IntSet                          linked  = new IntArraySet();
+
     @Getter(AccessLevel.PRIVATE)
-    private final List<FriendshipTreeData>      serializable;
-    private final Map<UUID, FriendshipTreeData> byUuid;
+    private final List<FriendshipTreeData>                  serializable;
 
     public PlayerFriendshipAttachment() {
         this.serializable   = new ArrayList<>();
@@ -57,10 +94,70 @@ public final class PlayerFriendshipAttachment {
             final @NonNull List<FriendshipTreeData> serializable
     ) {
         this.serializable   = serializable;
-        this.byUuid         = new HashMap<>(serializable.size());
-        for (final var data : serializable) {
-            this.byUuid.put(data.getFriend(), data);
+        this.byUuid         = new HashMap<>(serializable.size() + 1);
+
+        this.tryExtract();
+    }
+
+    public static FriendshipTreeData union(
+            @NonNull final Player a,
+            @NonNull final Player b
+    ) {
+        final var aAttachment   = getAttachment(a);
+        final var bAttachment   = getAttachment(b);
+
+        if (aAttachment.linked.contains(b.getId()) && bAttachment.linked.contains(a.getId())) {
+            return aAttachment.get(b);
         }
+
+        aAttachment.linked.add(b.getId());
+        bAttachment.linked.add(a.getId());
+
+        final var aUuid     = a.getUUID();
+        final var bUuid     = b.getUUID();
+
+        final var aData     = aAttachment.get(b);
+        bAttachment.byUuid.put(aUuid, aData);
+
+        final var list      = bAttachment.serializable;
+        final var size      = list.size();
+        int i = 0;
+        for (; i < size; i++) {
+            final var bData = list.get(i);
+
+            if (!bData.getOther(bUuid).equals(aUuid)) {
+                continue;
+            }
+
+            list.set(i, aData);
+        }
+
+        if (i == size) {
+            list.add(aData);
+        }
+
+        return aData;
+    }
+
+    public boolean has(
+            final @NonNull Player       player
+    ) {
+        return this.byUuid.containsKey(player.getUUID());
+    }
+
+    public boolean has(
+            final @NonNull UUID         uuid
+    ) {
+        return this.byUuid.containsKey(uuid);
+    }
+
+    public @NonNull FriendshipTreeData get(
+            final @NonNull Player       player
+    ) {
+        return this.get(
+                player.getUUID(),
+                FRIEND
+        );
     }
 
     public @Nullable FriendshipTreeData get(
@@ -74,18 +171,17 @@ public final class PlayerFriendshipAttachment {
             final @NonNull Identifier   type
     ) {
         final var data = this.byUuid.get(uuid);
-        if (data == null) {
-            return new FriendshipTreeData(type, uuid);
+        if (data != null && data.getType().equals(type)) {
+            return data;
         }
 
         final var fresh = new FriendshipTreeData(
                 type,
-                uuid
+                PlayerPair.of(this.me, uuid)
         );
 
         this.byUuid.put(uuid, fresh);
         this.serializable.add(fresh);
-
         return fresh;
     }
 
@@ -100,7 +196,7 @@ public final class PlayerFriendshipAttachment {
             final var data = iterator.next();
             if (data.isEmpty()) {
                 iterator.remove();
-                this.byUuid.remove(data.getFriend());
+                this.byUuid.remove(data.getOther(this.me));
             }
         }
     }
@@ -108,6 +204,55 @@ public final class PlayerFriendshipAttachment {
     private List<FriendshipTreeData> serialize() {
         this.compact();
         return this.serializable;
+    }
+
+    private void tryExtract() {
+
+        final var list      = this.serializable;
+        final var size      = list.size();
+        if (size == 0) {
+            return;
+        }
+
+        final var map       = this.byUuid;
+
+        final var first     = list.getFirst();
+        final var frl       = first.getRelation();
+        final var l         = frl.getLeft();
+        final var r         = frl.getRight();
+
+        if (size == 1) {
+            map.put(l, first);
+            map.put(r, first);
+            return; // do it later
+        }
+
+        for (final var data : list) {
+            final var relation = data.getRelation();
+
+            if (this.me != null) {
+                map.put(relation.getOther(this.me), data);
+                continue;
+            }
+
+            if (relation.getLeft().equals(l) || relation.getRight().equals(l)) {
+                this.me = l;
+            } else {
+                this.me = r;
+            }
+
+            map.put(relation.getOther(this.me), data);
+
+        }
+    }
+
+    private void setup(final @NonNull UUID me) {
+        if (this.me != null) {
+            return;
+        }
+
+        this.me = me;
+        this.byUuid.remove(me);
     }
 
 }

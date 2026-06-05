@@ -9,11 +9,12 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
+import net.quepierts.thatskyinteractions.core.model.PlayerPair;
+import net.quepierts.thatskyinteractions.feature.data.PlayerPairParser;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
@@ -27,7 +28,7 @@ public final class FriendshipTreeData {
     public static final Codec<FriendshipTreeData> CODEC
             = RecordCodecBuilder.create(instance -> instance.group(
                     Identifier.CODEC.fieldOf("type").forGetter(FriendshipTreeData::getType),
-                    UUIDUtil.CODEC.fieldOf("friend").forGetter(FriendshipTreeData::getFriend),
+                    PlayerPairParser.CODEC.fieldOf("relation").forGetter(FriendshipTreeData::getRelation),
                     Codec.unboundedMap(
                             Codec.STRING,
                             Codec.BYTE.xmap(
@@ -41,8 +42,8 @@ public final class FriendshipTreeData {
             = StreamCodec.composite(
                     Identifier.STREAM_CODEC,
                     FriendshipTreeData::getType,
-                    UUIDUtil.STREAM_CODEC,
-                    FriendshipTreeData::getFriend,
+                    PlayerPairParser.STREAM_CODEC,
+                    FriendshipTreeData::getRelation,
                     ByteBufCodecs.map(
                             HashMap::new,
                             ByteBufCodecs.STRING_UTF8,
@@ -57,20 +58,20 @@ public final class FriendshipTreeData {
 
     private transient final NodeState[]                 flatMapping;
     @Getter // TODO: redirect when data reloaded
-    private transient final FriendshipTree          structure;
+    private transient final FriendshipTree              structure;
 
     @Getter
-    private final Identifier                        type;
+    private final Identifier                            type;
     @Getter
-    private final UUID                              friend;
+    private final PlayerPair                            relation;
     private final Object2ObjectMap<String, NodeState>   states;
 
     public FriendshipTreeData(
             @NonNull final Identifier           type,
-            @NonNull final UUID                 friend
+            @NonNull final PlayerPair           relation
     ) {
         this.type           = type;
-        this.friend         = friend;
+        this.relation       = relation;
 
         final var manager   = FriendshipTreeManager.getInstance();
         final var structure = manager.get(type);
@@ -78,18 +79,18 @@ public final class FriendshipTreeData {
         this.structure      = structure;
         this.flatMapping    = new NodeState[structure.size()];
         Arrays.fill(this.flatMapping, NodeState.LOCKED);
-        this.flatMapping[0] = NodeState.UNLOCKED;
+        this.flatMapping[0] = NodeState.UNLOCKABLE;
 
         this.states         = new Object2ObjectOpenHashMap<>();
     }
 
     private FriendshipTreeData(
-            @NonNull final Identifier           type,
-            @NonNull final UUID                 friend,
+            @NonNull final Identifier               type,
+            @NonNull final PlayerPair               relation,
             @NonNull final Map<String, NodeState>   states
     ) {
         this.type           = type;
-        this.friend         = friend;
+        this.relation       = relation;
 
         final var manager   = FriendshipTreeManager.getInstance();
         final var structure = manager.get(type);
@@ -139,13 +140,24 @@ public final class FriendshipTreeData {
         return true;
     }
 
+    public void complete() {
+        Arrays.fill(this.flatMapping, NodeState.UNLOCKED);
+        for (final var node : this.structure) {
+            this.states.put(node.getId(), NodeState.UNLOCKED);
+        }
+    }
+
     public NodeState getState(final @NonNull String name) {
         return this.states.get(name);
     }
 
+    public UUID getOther(final UUID uuid) {
+        return this.relation.getOther(uuid);
+    }
+
     public void reset() {
         Arrays.fill(this.flatMapping, NodeState.LOCKED);
-        this.flatMapping[0] = NodeState.UNLOCKED;
+        this.flatMapping[0] = NodeState.UNLOCKABLE;
 
         this.states.clear();
         this.states.put(this.structure.getRoot().getId(), NodeState.UNLOCKED);
@@ -170,12 +182,12 @@ public final class FriendshipTreeData {
 
     @Override
     public boolean equals(final Object obj) {
-        return (obj instanceof FriendshipTreeData data) && data.friend.equals(this.friend);
+        return (obj instanceof FriendshipTreeData data) && data.relation.equals(this.relation);
     }
 
     @Override
     public int hashCode() {
-        return this.friend.hashCode();
+        return this.relation.hashCode();
     }
 
     private boolean isValid(final int index) {
@@ -201,7 +213,7 @@ public final class FriendshipTreeData {
             final var put   = node.getUnlockCost().isFree() ? NodeState.UNLOCKED : state;
             this            .put(index, put);
 
-            final var next  = state.next();
+            final var next  = state.pass();
 
             if (node.hasMiddle()) {
                 queue.enqueue(

@@ -182,31 +182,6 @@ public class FriendshipTreeComponentFactory {
                     node,
                     state
                 );
-
-        /*if (state == NodeState.LOCKED) {
-            return ThatSkyInteractions.location("textures/gui/locked.png");
-        }
-
-        final var type = node.getType();
-        switch (type) {
-            case "interaction": {
-                final var metadata      = node.getMetadata();
-                final var interaction   = metadata.get("interaction");
-
-                final var raw           = Identifier.parse(interaction);
-                return Identifier.fromNamespaceAndPath(
-                        raw.getNamespace(),
-                        "textures/icon/interaction/" + raw.getPath() + ".png"
-                );
-            }
-            case "friend": {
-                return ThatSkyInteractions.location("textures/gui/be_friend.png");
-            }
-            case "like": {
-                return ThatSkyInteractions.location("textures/gui/like_off.png");
-            }
-        }
-        return ThatSkyInteractions.location("textures/gui/" + type + ".png");*/
     }
 
     public static VisualNode vButton(

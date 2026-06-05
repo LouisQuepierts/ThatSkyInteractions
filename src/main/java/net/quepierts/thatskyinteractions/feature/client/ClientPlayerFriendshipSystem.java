@@ -1,22 +1,23 @@
 package net.quepierts.thatskyinteractions.feature.client;
 
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.FriendshipScreen;
 import net.quepierts.thatskyinteractions.feature.client.input.TSIKeys;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
-import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
-import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
+import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipRequestPacket;
 
 @UtilityClass
 @SuppressWarnings({"unused", "DataFlowIssue"})
@@ -27,10 +28,49 @@ public class ClientPlayerFriendshipSystem {
         return PlayerFriendshipAttachment.getAttachment(Minecraft.getInstance().player);
     }
 
+    public static void unlockFriendshipNode(
+            final @NonNull FriendshipTreeData data,
+            final int node
+    ) {
+
+        if (!data.isUnlockable(node)) {
+            return;
+        }
+
+        final var local = Minecraft.getInstance().player;
+        final var other = data.getOther(local.getUUID());
+
+        ClientPacketDistributor.sendToServer(
+                PlayerFriendshipRequestPacket.unlock(
+                        other,
+                        node
+                )
+        );
+    }
+
+    public static void interactFriendshipNode(
+            final @NonNull FriendshipTreeData data,
+            final int node
+    ) {
+        if (!data.isUnlocked(node)) {
+            return;
+        }
+
+        final var local = Minecraft.getInstance().player;
+        final var other = data.getOther(local.getUUID());
+
+        ClientPacketDistributor.sendToServer(
+                PlayerFriendshipRequestPacket.interact(
+                        other,
+                        node
+                )
+        );
+    }
+
     @SubscribeEvent
     public static void onInteractPlayer(final PlayerInteractEvent.EntityInteract event) {
 
-        final var player    = event.getEntity();
+        final var player        = event.getEntity();
         if (!player.isLocalPlayer()) {
             return;
         }
@@ -43,28 +83,26 @@ public class ClientPlayerFriendshipSystem {
             return;
         }
 
-        final var target    = event.getTarget();
-        if (!(target instanceof LivingEntity other)) {
+        final var target        = event.getTarget();
+        if (!(target instanceof Player other)) {
             return;
         }
 
-        final var uuid      = target.getUUID();
-        final var data      = PlayerFriendshipAttachment.getAttachment(player);
+        final var attachment    = PlayerFriendshipAttachment.getAttachment(player);
+        final var data          = attachment.get(other);
 
-        final var tree      = data.get(uuid, PlayerFriendshipAttachment.FRIEND);
+        final var tween         = PhysicalTweenAttachment.tween(player.level());
+        tween                   .wait(
+                                    () -> {
+                                        if (Minecraft.getInstance().screen == null) {
+                                            ScreenLoader.open(FriendshipScreen.class, data);
+                                        }
+                                    },
+                                    0.2f
+                                );
 
-        final var tween     = PhysicalTweenAttachment.tween(player.level());
-        tween               .wait(
-                                () -> {
-                                    if (Minecraft.getInstance().screen == null) {
-                                        ScreenLoader.open(FriendshipScreen.class, tree);
-                                    }
-                                },
-                                0.2f
-                            );
-
-        event               .setCancellationResult(InteractionResult.SUCCESS);
-        event               .setCanceled(true);
+        event                   .setCancellationResult(InteractionResult.SUCCESS);
+        event                   .setCanceled(true);
     }
 
 }

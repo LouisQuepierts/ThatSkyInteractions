@@ -30,6 +30,10 @@ public enum NodeState {
         return VALUES[(ordinal() + 1) % VALUES.length];
     }
 
+    public NodeState pass() {
+        return this == UNLOCKED ? UNLOCKABLE : LOCKED;
+    }
+
     public boolean hasNext() {
         return this != UNLOCKED;
     }
