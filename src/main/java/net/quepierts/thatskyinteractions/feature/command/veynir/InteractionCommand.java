@@ -11,6 +11,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.feature.command.TsiSuggestions;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionManager;
@@ -70,6 +71,12 @@ public final class InteractionCommand {
         final var player        = source.getPlayerOrException();
 
         final var receiver      = EntityArgument.getPlayer(context, "receiver");
+
+        if (player.is(receiver)) {
+            source.sendFailure(Component.translatable("command.thatskyinteractions.interaction.invite.self"));
+            return 0;
+        }
+
         final var interaction   = IdentifierArgument.getId(context, "interaction");
 
         PlayerInteractionSystem.invite(
@@ -86,6 +93,11 @@ public final class InteractionCommand {
         final var player        = source.getPlayerOrException();
 
         final var requester     = EntityArgument.getPlayer(context, "requester");
+
+        if (player.is(requester)) {
+            source.sendFailure(Component.translatable("command.thatskyinteractions.interaction.accept.self"));
+            return 0;
+        }
 
         PlayerInteractionSystem.accept(
                 requester,
