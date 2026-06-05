@@ -5,11 +5,14 @@ import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
@@ -211,8 +214,11 @@ public class FriendshipTreeComponentFactory {
         });
 
         final var hover     = HoverNode.of(ButtonRenderOps.HOVER);
+        final var price     = state == NodeState.UNLOCKABLE ?
+                            Price.of(node.getCost()) :
+                            VisualNode.EMPTY;
 
-        return VisualNode.combine(content, hover);
+        return VisualNode.combine(content, hover, price);
     }
 
     public static VisualNode vLine(
@@ -224,7 +230,7 @@ public class FriendshipTreeComponentFactory {
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private static class Line implements VisualNode {
+    private static final class Line implements VisualNode {
 
         private final FloatProperty progress    = new FloatProperty(0.0f);
         private final Vector2fc     direction;
@@ -281,6 +287,70 @@ public class FriendshipTreeComponentFactory {
                     .draw(graphics);
 
         }
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    private static final class Price implements VisualNode {
+
+        private static final Identifier WHITE       = Identifier.withDefaultNamespace("textures/item/candle.png");
+        private static final Identifier ASCENDED    = Identifier.withDefaultNamespace("textures/item/red_candle.png");
+
+        public static VisualNode of(@NonNull final Cost cost) {
+            if (cost.isFree()) {
+                return VisualNode.EMPTY;
+            }
+
+            final var icon = switch (cost.currency()) {
+                case WHITE_CANDLE -> WHITE;
+                case ASCENDED_CANDLE -> ASCENDED;
+            };
+
+            return new Price(
+                    icon,
+                    Integer.toString(cost.amount())
+            );
+        }
+
+        private final Font          font = Minecraft.getInstance().font;
+        private final Identifier    icon;
+        private final String        price;
+
+        @Override
+        public void extractRenderState(
+                final @NonNull Control              control,
+                final @NonNull GuiGraphicsExtractor graphics,
+                final @NonNull TweenScope           tween,
+
+                final int                           mouseX,
+                final int                           mouseY,
+                final float                         delta
+        ) {
+
+            graphics.text(
+                    this.font,
+                    this.price,
+                    control.getX() + 32,
+                    control.getY() + 32,
+                    0xFFFFFFFF
+            );
+            graphics.blit(
+                    RenderPipelines.GUI_TEXTURED,
+                    this.icon,
+                    control.getX() + 20,
+                    control.getY() + 28,
+                    0,
+                    0,
+                    12,
+                    12,
+                    14,
+                    16,
+                    16,
+                    16,
+                    0xFFFFFFFF
+            );
+
+        }
+
     }
 
 }

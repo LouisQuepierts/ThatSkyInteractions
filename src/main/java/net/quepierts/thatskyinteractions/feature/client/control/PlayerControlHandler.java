@@ -101,9 +101,9 @@ public class PlayerControlHandler {
             return;
         }
 
-        ClientPacketDistributor.sendToServer(
+        /*ClientPacketDistributor.sendToServer(
                 UpdatePlayerBodyPacket.client(player)
-        );
+        );*/
     }
 
 }

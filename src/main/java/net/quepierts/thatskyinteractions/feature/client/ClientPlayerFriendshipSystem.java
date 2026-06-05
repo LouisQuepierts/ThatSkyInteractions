@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -84,12 +85,12 @@ public class ClientPlayerFriendshipSystem {
         }
 
         final var target        = event.getTarget();
-        if (!(target instanceof Player other)) {
+        if (!(target instanceof Avatar other)) {
             return;
         }
 
         final var attachment    = PlayerFriendshipAttachment.getAttachment(player);
-        final var data          = attachment.get(other);
+        final var data          = attachment.get(other.getUUID(), PlayerFriendshipAttachment.FRIEND);
 
         final var tween         = PhysicalTweenAttachment.tween(player.level());
         tween                   .wait(

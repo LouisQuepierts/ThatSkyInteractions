@@ -96,6 +96,7 @@ public final class FriendshipTreeData {
 
         this.structure      = structure;
         this.flatMapping    = new NodeState[structure.size()];
+        Arrays.fill(this.flatMapping, NodeState.LOCKED);
         this.states         = new Object2ObjectOpenHashMap<>(states);
 
         for (final var entry : states.entrySet()) {

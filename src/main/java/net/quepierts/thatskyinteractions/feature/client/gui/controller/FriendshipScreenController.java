@@ -28,7 +28,7 @@ public final class FriendshipScreenController extends ScreenController<Friendshi
                 } else {
                     this.clicks         ++;
 
-                    if (this.clicks     >= Math.min(3, node.getCost().price())) {
+                    if (this.clicks     >= Math.min(3, node.getCost().amount())) {
                         this            .unlock(index);
                         this.clicked    = -1;
                         this.clicks     = 0;
