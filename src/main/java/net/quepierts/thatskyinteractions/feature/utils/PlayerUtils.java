@@ -15,36 +15,6 @@ public class PlayerUtils {
         return player != null && player.getVehicle() != null;
     }
 
-    public static Vector3f normalizeRadians(Vector3f vector3f) {
-        return vector3f.set(
-                normalizeRadians(vector3f.x),
-                normalizeRadians(vector3f.y),
-                normalizeRadians(vector3f.z)
-        );
-    }
-
-    public static double normalizeAngle(float angle) {
-        angle = angle % 360;
-        if (angle >= 180) {
-            angle -= 360;
-        }
-        if (angle < -180) {
-            angle += 360;
-        }
-        return angle;
-    }
-
-    public static float normalizeRadians(float rad) {
-        // 将角度规范化到 -PI 到 PI 范围内
-        rad = rad % ((float)Math.PI * 2);
-        if (rad > Math.PI) {
-            rad -= (float)Math.PI * 2;
-        } else if (rad < -Math.PI) {
-            rad += (float)Math.PI * 2;
-        }
-        return rad;
-    }
-
     public static float getLookAtRotY(Player player, Vec3 vec3) {
         Vec3 vec32 = EntityAnchorArgument.Anchor.EYES.apply(player);
         double d = vec3.x - vec32.x;
@@ -53,7 +23,7 @@ public class PlayerUtils {
     }
 
     public static Vec3 getRelativePositionWorldSpace(Player player, double forward, double left) {
-        Vec2 vec2 = new Vec2(0, player.yBodyRot);
+        Vec2 vec2 = new Vec2(0, player.getYRot());
         Vec3 vec3 = player.position();
         final float f = Mth.cos((vec2.y + 90.0F) * ((float)Math.PI / 180F));
         final float f1 = Mth.sin((vec2.y + 90.0F) * ((float)Math.PI / 180F));
@@ -63,7 +33,7 @@ public class PlayerUtils {
     }
 
     public static Vec3 getRelativePosition(Player player, double forward, double left) {
-        Vec2 vec2 = new Vec2(0, player.yBodyRot);
+        Vec2 vec2 = new Vec2(0, player.getYRot());
         final float f = Mth.cos((vec2.y + 90.0F) * ((float)Math.PI / 180F));
         final float f1 = Mth.sin((vec2.y + 90.0F) * ((float)Math.PI / 180F));
         return new Vec3(f * forward - f1 * left, 0, f1 * forward + f * left);
