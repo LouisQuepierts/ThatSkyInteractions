@@ -10,8 +10,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class FriendshipTreeNode {
 
-    private static final Cost DEFAULT_COST    = new Cost(Currency.WHITE_CANDLE, 0);
-
     private final String    id;
     private final String    type;
 
@@ -24,7 +22,7 @@ public final class FriendshipTreeNode {
 
     private final Map<String, String> metadata;
 
-    private final Cost cost;
+    private final Cost      cost;
 
     private final Branch    branch;
 
@@ -41,7 +39,7 @@ public final class FriendshipTreeNode {
     }
 
     public Cost getUnlockCost() {
-        return DEFAULT_COST;
+        return this.cost;
     }
 
     public enum Branch {
