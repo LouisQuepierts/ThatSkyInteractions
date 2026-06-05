@@ -8,9 +8,14 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
+import net.quepierts.thatskyinteractions.feature.utils.Interpolators;
+import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
+import net.quepierts.veynir.core.adapter.Consumer1f;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
@@ -94,6 +99,17 @@ public record AnimationControlPacket(
 
         switch (this.operation) {
             case PLAY: {
+
+                final var difference = Mth.degreesDifference(target.yBodyRot, target.getYHeadRot());
+
+                PhysicalTweenAttachment.getAttachment(player.level()).tween().to(
+                        target::setYBodyRot,
+                        target.yBodyRot,
+                        target.getYHeadRot(),
+                        Mth.abs(difference) * 0.01f,
+                        Interpolators.DEGREE,
+                        Eases.CUBIC_OUT
+                );
                 controller.play(this.identifier.get());
                 break;
             }

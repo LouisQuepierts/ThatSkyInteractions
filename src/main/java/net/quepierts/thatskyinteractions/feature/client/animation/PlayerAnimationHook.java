@@ -38,8 +38,10 @@ public class PlayerAnimationHook {
             controller.markResolved();
         }
 
-        adaptor.setAlpha(controller.getAlpha());
-        adaptor.accept(controller.getCache());
+        if (controller.isResolved()) {
+            adaptor.setAlpha(controller.getAlpha());
+            adaptor.accept(controller.getCache());
+        }
     }
 
     public static <S> void onSetupRootAnimation(
@@ -57,7 +59,7 @@ public class PlayerAnimationHook {
             return;
         }
 
-        if (!controller.isPlaying()) {
+        if (!controller.isPlaying() || !controller.isResolved()) {
             return;
         }
 
@@ -127,14 +129,13 @@ public class PlayerAnimationHook {
                     root.getTz()
             );
 
-            var yRot = (player.yHeadRot - player.yBodyRot);
             var xRot = player.getXRot();
             final var alpha = controller.getAlpha();
             var rotation = new Vector3f(
                     head.xRot,
                     head.yRot,
                     -head.zRot
-            ).mul(Mth.RAD_TO_DEG).sub(xRot, yRot, 0).mul(alpha);
+            ).mul(Mth.RAD_TO_DEG).sub(xRot, 0, 0).mul(alpha);
             ioRotation.add(rotation);
             position.add(
                     head.x,

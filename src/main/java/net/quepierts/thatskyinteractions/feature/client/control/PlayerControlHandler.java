@@ -46,7 +46,7 @@ public class PlayerControlHandler {
             final var animation     = controller.getAnimation();
 
             if (definition.abortable() || animation.isLooping(fsmState)) {
-                animation.exit(fsmState);
+                ClientPlayerAnimationSystem.exit();
             }
 
             if (definition.restrictMotion()) {
