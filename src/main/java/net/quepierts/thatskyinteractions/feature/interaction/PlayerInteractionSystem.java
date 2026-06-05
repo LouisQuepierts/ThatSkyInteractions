@@ -6,11 +6,13 @@ import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
@@ -21,6 +23,8 @@ import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
+import net.quepierts.thatskyinteractions.feature.control.PlayerNavigator;
+import net.quepierts.thatskyinteractions.feature.control.packet.NavigatePacket;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionControlPacket;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
@@ -201,7 +205,14 @@ public class PlayerInteractionSystem {
 
         final var position = PlayerUtils.getRelativePositionWorldSpace(requester, 1.0, 0.0);
 
-        if (!force && receiver.distanceToSqr(position) > 0.1) {
+        if (!force && receiver.distanceToSqr(position) > 1e-3) {
+
+            final var lookTarget = EntityAnchorArgument.Anchor.EYES.apply(requester);
+
+            PacketDistributor.sendToPlayer(
+                    receiver,
+                    new NavigatePacket(position, lookTarget)
+            );
             return;
         }
 

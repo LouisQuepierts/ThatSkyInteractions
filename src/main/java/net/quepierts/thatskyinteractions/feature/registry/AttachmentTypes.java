@@ -2,9 +2,11 @@ package net.quepierts.thatskyinteractions.feature.registry;
 
 import dev.anvilcraft.lib.v2.registrum.util.entry.data.AttachmentEntry;
 import lombok.experimental.UtilityClass;
+import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
+import net.quepierts.thatskyinteractions.feature.control.PlayerNavigator;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 
@@ -21,6 +23,18 @@ public class AttachmentTypes {
             = ThatSkyInteractions.REGISTRUM.attachment(
                     "player/interaction",
                     PlayerInteractionAttachment::new
+            )
+            .register();
+
+    public static final AttachmentEntry<PlayerNavigator> PLAYER_NAVIGATOR
+            = ThatSkyInteractions.REGISTRUM.attachment(
+                    "player/navigator",
+                    holder -> {
+                        if (!(holder instanceof Player player)) {
+                            throw new IllegalArgumentException("PlayerNavigator can only attach on Player!");
+                        }
+                        return new PlayerNavigator(player);
+                    }
             )
             .register();
 

@@ -13,6 +13,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
+import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
@@ -113,6 +114,12 @@ public record InteractionControlPacket(
             }
             case ACCEPT_REC: {
                 data.receiveAccept(target);
+                final var pos = PlayerUtils.getRelativePositionWorldSpace(target, 1.0f, 0.0f);
+                data.getStandPosition().set(
+                        pos.x,
+                        pos.y,
+                        pos.z
+                );
                 NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(player, target));
                 break;
             }

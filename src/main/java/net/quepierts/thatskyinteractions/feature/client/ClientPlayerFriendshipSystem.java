@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Avatar;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -104,6 +103,7 @@ public class ClientPlayerFriendshipSystem {
 
         event                   .setCancellationResult(InteractionResult.SUCCESS);
         event                   .setCanceled(true);
+
     }
 
 }

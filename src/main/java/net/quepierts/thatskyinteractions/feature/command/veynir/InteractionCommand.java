@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.command.veynir;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -61,7 +62,9 @@ public final class InteractionCommand {
                                         .executes(InteractionCommand::invite))))
                 .then(Commands.literal("accept")
                         .then(Commands.argument("requester", EntityArgument.player()).suggests(WAITING)
-                                .executes(InteractionCommand::accept)))
+                                .executes(context -> accept(context, true))
+                                .then(Commands.argument("forced", BoolArgumentType.bool())
+                                        .executes(context -> accept(context, BoolArgumentType.getBool(context, "forced"))))))
                 .then(Commands.literal("cancel")
                         .executes(InteractionCommand::cancel));
     }
@@ -88,7 +91,7 @@ public final class InteractionCommand {
         return 1;
     }
 
-    private static int accept(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int accept(CommandContext<CommandSourceStack> context, boolean force) throws CommandSyntaxException {
         final var source        = context.getSource();
         final var player        = source.getPlayerOrException();
 
@@ -102,7 +105,7 @@ public final class InteractionCommand {
         PlayerInteractionSystem.accept(
                 requester,
                 player,
-                true
+                force
         );
 
         return 1;
