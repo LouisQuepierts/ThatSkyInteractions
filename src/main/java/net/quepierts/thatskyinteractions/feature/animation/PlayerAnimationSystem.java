@@ -54,6 +54,28 @@ public class PlayerAnimationSystem {
 
     }
 
+    public static void pause(
+            @NonNull ServerPlayer   player
+    ) {
+
+        PacketDistributor.sendToPlayersInDimension(
+                player.level(),
+                AnimationControlPacket.pause(player)
+        );
+
+    }
+
+    public static void resume(
+            @NonNull ServerPlayer   player
+    ) {
+
+        PacketDistributor.sendToPlayersInDimension(
+                player.level(),
+                AnimationControlPacket.resume(player)
+        );
+
+    }
+
     public static void event(
             @NonNull ServerPlayer   player,
             String                  event

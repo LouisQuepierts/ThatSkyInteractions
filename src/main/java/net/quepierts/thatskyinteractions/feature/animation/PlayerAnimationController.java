@@ -29,8 +29,10 @@ public final class PlayerAnimationController {
     private float   alpha = 0.0f;
     private int     last;
     private boolean playing;
-    private boolean ticked = false;
-    private boolean resolved = false;
+    private boolean ticked      = false;
+    private boolean resolved    = false;
+
+    private boolean paused      = false;
 
     public PlayerAnimationController() {
         this.state  = HumanoidAnimationState._default();
@@ -85,7 +87,7 @@ public final class PlayerAnimationController {
     }
 
     public void tick(int current) {
-        if (this.playing) {
+        if (this.playing && !this.paused) {
             final var delta         = (current - last) * 0.05f;
             this.ticked             = current != last;
 
@@ -112,7 +114,7 @@ public final class PlayerAnimationController {
     }
 
     public void update(float partialTicks) {
-        if (this.playing) {
+        if (this.playing && !this.paused) {
             this.resolved   = false;
             final var delta = partialTicks * 0.05f;
             this.state.progress         = this.fsmState.getElapsed() + delta;
@@ -125,11 +127,24 @@ public final class PlayerAnimationController {
         }
     }
 
+    public void pause() {
+        if (this.playing) {
+            this.paused = true;
+        }
+    }
+
+    public void resume() {
+        if (this.playing) {
+            this.paused = false;
+        }
+    }
+
     private void cleanup() {
         this.animation.cleanup(this.fsmState);
         this.playing    = false;
         this.current    = null;
         this.animation  = null;
+        this.paused     = false;;
     }
 
     private float getAlpha(final FSMState fsmState, float progress) {

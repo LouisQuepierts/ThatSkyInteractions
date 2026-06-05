@@ -31,6 +31,10 @@ public final class AnimationCommand {
                         .executes(AnimationCommand::abort))
                 .then(Commands.literal("exit")
                         .executes(AnimationCommand::exit))
+                .then(Commands.literal("pause")
+                        .executes(AnimationCommand::pause))
+                .then(Commands.literal("resume")
+                        .executes(AnimationCommand::resume))
                 .then(Commands.literal("event")
                         .then(Commands.argument("event", StringArgumentType.word())
                                 .executes(AnimationCommand::event)));
@@ -66,6 +70,24 @@ public final class AnimationCommand {
         PlayerAnimationSystem.exit(player);
 
         return 0;
+    }
+
+    private static int pause(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var source    = context.getSource();
+        final var player    = source.getPlayerOrException();
+
+        PlayerAnimationSystem.pause(player);
+
+        return 1;
+    }
+
+    private static int resume(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        final var source    = context.getSource();
+        final var player    = source.getPlayerOrException();
+
+        PlayerAnimationSystem.resume(player);
+
+        return 1;
     }
 
     private static int event(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

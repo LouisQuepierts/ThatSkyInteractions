@@ -74,6 +74,26 @@ public record AnimationControlPacket(
         );
     }
 
+    public static AnimationControlPacket pause(
+            @NonNull Player     player
+    ) {
+        return new AnimationControlPacket(
+                Operation.PAUSE,
+                player.getUUID(),
+                Optional.empty()
+        );
+    }
+
+    public static AnimationControlPacket resume(
+            @NonNull Player     player
+    ) {
+        return new AnimationControlPacket(
+                Operation.RESUME,
+                player.getUUID(),
+                Optional.empty()
+        );
+    }
+
     public static AnimationControlPacket event(
             @NonNull Player     player,
             @NonNull Identifier event
@@ -113,6 +133,14 @@ public record AnimationControlPacket(
                 controller.play(this.identifier.get());
                 break;
             }
+            case PAUSE: {
+                controller.pause();
+                break;
+            }
+            case RESUME: {
+                controller.resume();
+                break;
+            }
             case ABORT: {
                 controller.abort();
                 break;
@@ -143,6 +171,8 @@ public record AnimationControlPacket(
         PLAY,
         ABORT,
         EXIT,
+        PAUSE,
+        RESUME,
         EVENT;
 
         static final Operation[] VALUES = values();
