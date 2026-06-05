@@ -185,7 +185,7 @@ public final class PlayerFriendshipAttachment {
         return fresh;
     }
 
-    public void clear() {
+    public void drop() {
         this.byUuid.clear();
         this.serializable.clear();
     }
