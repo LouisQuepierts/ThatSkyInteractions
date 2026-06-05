@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.friendship;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
@@ -17,10 +18,7 @@ import net.quepierts.thatskyinteractions.core.model.PlayerPair;
 import net.quepierts.thatskyinteractions.feature.data.PlayerPairParser;
 import org.jspecify.annotations.NonNull;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Getter(AccessLevel.PRIVATE)
 public final class FriendshipTreeData {
@@ -155,14 +153,26 @@ public final class FriendshipTreeData {
         return this.relation.getOther(uuid);
     }
 
+    public Collection<String> getUnlockableNames() {
+        if (this.states.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        final var builder = ImmutableList.<String>builder();
+        for (final var entry : this.states.entrySet()) {
+            if (entry.getValue() == NodeState.UNLOCKABLE) {
+                builder.add(entry.getKey());
+            }
+        }
+        return builder.build();
+    }
+
     public void reset() {
         Arrays.fill(this.flatMapping, NodeState.LOCKED);
         this.flatMapping[0] = NodeState.UNLOCKABLE;
 
         this.states.clear();
         this.states.put(this.structure.getRoot().getId(), NodeState.UNLOCKED);
-
-        this.update(0);
     }
 
     public boolean isEmpty() {

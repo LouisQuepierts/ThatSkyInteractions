@@ -49,7 +49,7 @@ public class PlayerFriendshipSystem {
         return true;
     }
 
-    public static boolean compile(
+    public static boolean complete(
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver
     ) {

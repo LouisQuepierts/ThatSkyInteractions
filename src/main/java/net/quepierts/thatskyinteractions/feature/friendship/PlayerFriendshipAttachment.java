@@ -93,7 +93,7 @@ public final class PlayerFriendshipAttachment {
     private PlayerFriendshipAttachment(
             final @NonNull List<FriendshipTreeData> serializable
     ) {
-        this.serializable   = serializable;
+        this.serializable   = new ArrayList<>(serializable);
         this.byUuid         = new HashMap<>(serializable.size() + 1);
 
         this.tryExtract();
