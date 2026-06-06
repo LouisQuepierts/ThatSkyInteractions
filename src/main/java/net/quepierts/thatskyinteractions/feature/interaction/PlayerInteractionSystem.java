@@ -192,9 +192,9 @@ public class PlayerInteractionSystem {
                 interaction.receiver()
         );
 
-        PlayerAnimationSystem.event(
+        PlayerAnimationSystem.signal(
                 requester,
-                "main"
+                DefaultInteractionFSM.REQUESTER_ACCEPT
         );
 
         PacketDistributor.sendToPlayer(
@@ -309,21 +309,21 @@ public class PlayerInteractionSystem {
             case "cancel":
             case "exit": {
 
-                final var last      = getter.get(index - 2);
-                fsmParameter.duration()[index] = 0.25f;
-                fsmParameter.fadeIn()[index]   = 0.0f;
-                fsmParameter.fadeOut()[index]  = 0.25f;
-                return              WrappedSampler.wrap(last, SamplingMode.FREEZE_END);
+                final var last                  = getter.get(index - 2);
+                fsmParameter.duration()[index]  = 0.25f;
+                fsmParameter.fadeIn()[index]    = 0.0f;
+                fsmParameter.fadeOut()[index]   = 0.25f;
+                return                          WrappedSampler.wrap(last, SamplingMode.FREEZE_END);
 
             }
 
             case "accept": {
 
-                final var next      = getter.get(index);
-                fsmParameter.duration()[index] = 0.25f;
-                fsmParameter.fadeIn()[index]   = 0.25f;
-                fsmParameter.fadeOut()[index]  = 0.0f;
-                return              WrappedSampler.wrap(next, SamplingMode.FREEZE_START);
+                final var next                  = getter.get(index);
+                fsmParameter.duration()[index]  = 0.25f;
+                fsmParameter.fadeIn()[index]    = 0.25f;
+                fsmParameter.fadeOut()[index]   = 0.0f;
+                return                          WrappedSampler.wrap(next, SamplingMode.FREEZE_START);
 
             }
         }
