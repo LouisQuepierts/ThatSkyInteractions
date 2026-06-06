@@ -10,6 +10,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationControlPacket;
+import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationSignalPacket;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
@@ -86,6 +87,21 @@ public class PlayerAnimationSystem {
                 AnimationControlPacket.event(
                         player,
                         Identifier.fromNamespaceAndPath("e", event)
+                )
+        );
+
+    }
+
+    public static void signal(
+            @NonNull ServerPlayer   player,
+            int                     signal
+    ) {
+
+        PacketDistributor.sendToPlayersInDimension(
+                player.level(),
+                AnimationSignalPacket.of(
+                        player,
+                        signal
                 )
         );
 
