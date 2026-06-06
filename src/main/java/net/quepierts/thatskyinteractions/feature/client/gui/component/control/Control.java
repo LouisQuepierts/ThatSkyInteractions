@@ -79,15 +79,19 @@ public class Control extends AbstractWidget {
         }
     }
 
+    public float x() {
+        return this.getX();
+    }
+
+    public float y() {
+        return this.getY();
+    }
+
     @Override
     protected void updateWidgetNarration(
             final @NonNull NarrationElementOutput output
     ) {
         output.add(NarratedElementType.TITLE, this.getMessage());
-    }
-
-    protected boolean areCoordinatesInRectangle(double x, double y) {
-        return x >= (double)this.getX() && y >= (double)this.getY() && x < (double)this.getRight() && y < (double)this.getBottom();
     }
 
     protected TweenScope tween() {
