@@ -1,0 +1,10 @@
+{
+  "icon": "auto",
+  "interactions": [
+    {
+      "requester": "thatskyinteractions:unlock_invite",
+      "receiver": "thatskyinteractions:unlock_accept",
+      "positional": false
+    }
+  ]
+}

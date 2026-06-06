@@ -1,0 +1,7 @@
+{
+  "type": "interaction.receiver",
+  "sources": {
+    "main": "thatskyinteractions:unlock_accept.main"
+  },
+  "override": "thatskyinteractions:modified"
+}

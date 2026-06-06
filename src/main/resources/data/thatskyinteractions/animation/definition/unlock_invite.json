@@ -1,10 +1,11 @@
 {
-  "type": "sequence",
+  "type": "interaction.requester",
   "sources": {
-    "enter": {
+    "invite": {
       "source": "thatskyinteractions:unlock_invite.enter",
       "fadeIn": 0.25
     },
+    "waiting": "thatskyinteractions:unlock_invite.main",
     "main": "thatskyinteractions:unlock_invite.main",
     "exit": {
       "source": "thatskyinteractions:unlock_invite.exit",
