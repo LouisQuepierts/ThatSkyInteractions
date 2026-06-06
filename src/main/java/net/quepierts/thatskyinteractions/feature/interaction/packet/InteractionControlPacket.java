@@ -98,9 +98,9 @@ public record InteractionControlPacket(
                 break;
             }
             case ACCEPT_REQ: {
-                final var request = data.getReceived().get(this.uuid());
-                if (request != null) {
-                    final var interaction = request.getType();
+                final var send = data.getSent();
+                if (send != null) {
+                    final var interaction = send.getType();
                     data.sendAccept(target);
                     NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(player, target, interaction));
                 }
@@ -118,7 +118,7 @@ public record InteractionControlPacket(
             case INVITE_REC: {
                 final var interaction = this.identifier().orElseThrow(); // it supposes to be present
                 data.receiveInvite(target, interaction);
-                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Post(player, target, interaction));
+                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Post(target, player, interaction));
                 break;
             }
             case ACCEPT_REC: {
@@ -126,7 +126,7 @@ public record InteractionControlPacket(
                 if (request != null) {
                     final var interaction = request.getType();
                     data.receiveAccept(target);
-                    NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(player, target, interaction));
+                    NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(target, player, interaction));
                 }
                 break;
             }
@@ -135,7 +135,7 @@ public record InteractionControlPacket(
                 if (request != null) {
                     final var interaction = request.getType();
                     data.cancelReceived(target);
-                    NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(player, target, interaction));
+                    NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(target, player, interaction));
                 }
                 break;
             }

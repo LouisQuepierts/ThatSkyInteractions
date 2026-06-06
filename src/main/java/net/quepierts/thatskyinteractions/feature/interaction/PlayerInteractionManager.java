@@ -165,7 +165,7 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
         final var namespace         = Optional.of("receiver");
         final var prefix            = identifier.toString();
         final var sources           = Map.of(
-//                "accept", new SourceDefinition(prefix + ".accept", 0.25f, 0.0f, namespace),
+                "accept", new SourceDefinition(prefix + ".accept", 0.25f, 0.0f, namespace),
                 "main", new SourceDefinition(prefix + ".main", 0.0f, 0.0f, namespace),
                 "exit", new SourceDefinition(prefix + ".exit", 0.0f, 0.25f, namespace)
         );

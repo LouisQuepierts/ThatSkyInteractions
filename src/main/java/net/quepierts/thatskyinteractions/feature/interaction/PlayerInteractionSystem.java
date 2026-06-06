@@ -181,8 +181,10 @@ public class PlayerInteractionSystem {
             return;
         }
 
-        receiver.teleportTo(position.x, position.y, position.z);
-        receiver.lookAt(EntityAnchorArgument.Anchor.EYES, requester.getEyePosition());
+        if (interaction.positional()) {
+            receiver.teleportTo(position.x, position.y, position.z);
+            receiver.lookAt(EntityAnchorArgument.Anchor.EYES, requester.getEyePosition());
+        }
 
         reqData.sendAccept(receiver);
         recData.receiveAccept(requester);
