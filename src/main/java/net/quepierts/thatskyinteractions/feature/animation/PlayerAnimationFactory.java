@@ -31,7 +31,12 @@ public class PlayerAnimationFactory {
             return null;
         }
 
-        return factory.apply(definition);
+        try {
+            return factory.apply(definition);
+        } catch (Exception e) {
+            log.error("Failed to create animation: {}", type, e);
+            return null;
+        }
     }
 
     public static void register() {

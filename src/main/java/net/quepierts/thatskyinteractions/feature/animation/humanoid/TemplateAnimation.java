@@ -1,7 +1,13 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
+import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.quepierts.veynir.core.fsm.FSMParameter;
 import net.quepierts.veynir.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
@@ -23,9 +29,11 @@ import net.quepierts.veynir.core.fsm.FSMState;
 import net.quepierts.veynir.core.fsm.FiniteStateMachine;
 import net.quepierts.veynir.core.model.ParentOverrideConfiguration;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class TemplateAnimation extends BaseAnimation {
 
@@ -163,37 +171,44 @@ public class TemplateAnimation extends BaseAnimation {
             final @NonNull SkeletonPipeline             spl
     ) {
         final var lookup    = fsm.getLookup();
-        final var builder   = new ArrayList<String>(lookup.size());
+        final var builder   = ImmutableList.<String>builderWithExpectedSize(lookup.size());
         for (final var string : lookup) {
             if (!string.startsWith("system#")) {
                 builder.add(string);
             }
         }
 
-        final var names    = builder.toArray(String[]::new);
-
-        return TemplateAnimation.template(
-                definition,
+        final var names     = builder.build();
+        final var context   = new ParsingContext(
                 fsm,
                 apl,
                 spl,
-                names
+                names,
+                LinkFallback.DEFAULT
+        );
+
+        return TemplateAnimation.template(
+                definition,
+                context
         );
     }
 
     public static TemplateAnimation template(
             final @NonNull PlayerAnimationDefinition    definition,
-            final @NonNull FiniteStateMachine           fsm,
-            final @NonNull AnimationPipeline            apl,
-            final @NonNull SkeletonPipeline             spl,
-            final @NonNull String...                    names
+            final @NonNull ParsingContext               context
     ) {
+
+        final var fsm       = context.fsm;
+        final var apl       = context.apl;
+        final var spl       = context.spl;
+        final var names     = context.names;
+
         final var manager   = BedrockAnimationManager.getInstance();
         final var overrides = ParentOverrideManager.getInstance();
 
         final var lookup    = fsm.getLookup();
 
-        final var size      = names.length;
+        final var size      = names.size();
 
         final var sources   = definition.sources();
         final var samplers  = new AnimationSampler[size];
@@ -210,8 +225,15 @@ public class TemplateAnimation extends BaseAnimation {
                 samplers
         );
 
+        final var fallbacks = new IntArrayList();
+
         for (final String name : names) {
             if (name.startsWith("system#")) {
+                continue;
+            }
+
+            final var id        = lookup.find(name);
+            if (id == -1) {
                 continue;
             }
 
@@ -219,11 +241,7 @@ public class TemplateAnimation extends BaseAnimation {
             final var source    = parse(def, manager);
 
             if (source == null) {
-                continue;
-            }
-
-            final var id        = lookup.find(name);
-            if (id == -1) {
+                fallbacks.add(id);
                 continue;
             }
 
@@ -234,6 +252,22 @@ public class TemplateAnimation extends BaseAnimation {
                     animation.uniform,
                     def,
                     source
+            );
+        }
+
+        if (fallbacks.size() == names.size()) {
+            // all empty, illegal
+            throw new IllegalArgumentException("All animation sources are empty.");
+        }
+
+        for (final var id : fallbacks) {
+            final var name = lookup.name(id);
+
+            samplers[id - 1] = context.fallback.apply(
+                    i -> samplers[i],
+                    animation.uniform,
+                    name,
+                    id
             );
         }
 
@@ -262,4 +296,28 @@ public class TemplateAnimation extends BaseAnimation {
 
         return animation;
     }
+
+    @RequiredArgsConstructor(staticName = "of")
+    public static final class ParsingContext {
+        final @NonNull FiniteStateMachine           fsm;
+        final @NonNull AnimationPipeline            apl;
+        final @NonNull SkeletonPipeline             spl;
+        final @NonNull List<String>                 names;
+
+        final @NonNull LinkFallback                 fallback;
+    }
+
+    @FunctionalInterface
+    public interface LinkFallback {
+
+        LinkFallback DEFAULT = (_, _, _, _) -> null;
+
+        @Nullable AnimationSampler apply(
+                @NonNull final  Int2ObjectFunction<AnimationSampler>    getter,
+                @NonNull final  FSMParameter                            fsmParameter,
+                final           String                                  name,
+                final           int                                     index
+        );
+    }
+
 }
