@@ -14,4 +14,10 @@ public interface TweenHandle {
     boolean isCancelled();
 
     float getProgress();
+
+    TweenHandle delay(final float duration);
+
+    TweenHandle onStart(Runnable runtime);
+
+    TweenHandle onFinish(Runnable runtime);
 }

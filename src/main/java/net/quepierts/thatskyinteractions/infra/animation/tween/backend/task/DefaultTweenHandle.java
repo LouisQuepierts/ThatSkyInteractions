@@ -44,4 +44,22 @@ public final class DefaultTweenHandle implements TweenHandle {
     public float getProgress() {
         return this.task.elapsed / this.task.duration;
     }
+
+    @Override
+    public TweenHandle delay(final float duration) {
+        this.task.delay(duration);
+        return this;
+    }
+
+    @Override
+    public TweenHandle onStart(final Runnable runnable) {
+        this.task.setOnStart(runnable);
+        return this;
+    }
+
+    @Override
+    public TweenHandle onFinish(final Runnable runnable) {
+        this.task.setOnFinish(runnable);
+        return this;
+    }
 }
