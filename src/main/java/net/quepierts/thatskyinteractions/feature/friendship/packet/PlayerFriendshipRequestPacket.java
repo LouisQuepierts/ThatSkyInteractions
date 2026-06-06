@@ -1,7 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.friendship.packet;
 
 import dev.anvilcraft.lib.v2.network.packet.IPacket;
-import dev.anvilcraft.lib.v2.network.packet.ISensitiveBiPacket;
 import dev.anvilcraft.lib.v2.network.packet.IServerboundPacket;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.UUIDUtil;
@@ -77,7 +76,7 @@ public record PlayerFriendshipRequestPacket(
 
         switch (this.operation) {
             case UNLOCK: {
-                PlayerFriendshipSystem.unlock(requester, receiver, this.index);
+                PlayerFriendshipSystem.invite(requester, receiver, this.index);
                 break;
             }
             case INTERACT: {

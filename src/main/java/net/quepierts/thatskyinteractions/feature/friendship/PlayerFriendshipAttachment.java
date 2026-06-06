@@ -4,11 +4,14 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.ValueInput;
@@ -81,6 +84,8 @@ public final class PlayerFriendshipAttachment {
     private transient UUID                                  me;
     private transient final Map<UUID, FriendshipTreeData>   byUuid;
     private transient final IntSet                          linked  = new IntArraySet();
+
+    private transient final Object2IntMap<UUID>             invites = new Object2IntArrayMap<>();
 
     @Getter(AccessLevel.PRIVATE)
     private final List<FriendshipTreeData>                  serializable;
@@ -255,4 +260,28 @@ public final class PlayerFriendshipAttachment {
         this.byUuid.remove(me);
     }
 
+    public void sendInvite(
+            final @NonNull Player requester,
+            final int node
+    ) {
+        this.invites.put(requester.getUUID(), node);
+    }
+
+    public boolean hasInvite(
+            final @NonNull Player requester
+    ) {
+        return this.invites.containsKey(requester.getUUID());
+    }
+
+    public int getInvite(
+            final @NonNull Player requester
+    ) {
+        return this.invites.getOrDefault(requester.getUUID(), -1);
+    }
+
+    public void removeInvite(
+            final @NonNull Player requester
+    ) {
+        this.invites.removeInt(requester.getUUID());
+    }
 }

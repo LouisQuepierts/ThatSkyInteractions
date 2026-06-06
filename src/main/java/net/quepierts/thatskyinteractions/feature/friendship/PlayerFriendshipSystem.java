@@ -2,16 +2,70 @@ package net.quepierts.thatskyinteractions.feature.friendship;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipControlPacket;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
+import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
 @UtilityClass
 @SuppressWarnings("unused")
+@EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public class PlayerFriendshipSystem {
+
+    public static final Identifier INTERACTION
+            = ThatSkyInteractions.location("unlock");
+
+    public static void invite(
+            final @NonNull ServerPlayer requester,
+            final @NonNull ServerPlayer receiver,
+            final int                   node
+    ) {
+        final var data      = PlayerFriendshipAttachment.union(requester, receiver);
+
+        if (!data.isUnlockable(node)) {
+            return;
+        }
+
+        PlayerFriendshipAttachment.getAttachment(receiver).sendInvite(requester, node);
+        PlayerInteractionSystem.invite(requester, receiver, INTERACTION);
+
+    }
+
+    // call by Event
+    private static void cancel(
+            final @NonNull ServerPlayer requester,
+            final @NonNull ServerPlayer receiver
+    ) {
+
+        PlayerFriendshipAttachment.getAttachment(receiver).removeInvite(requester);
+
+    }
+
+    // call by Event
+    private static void accept(
+            final @NonNull ServerPlayer requester,
+            final @NonNull ServerPlayer receiver
+    ) {
+
+        final var attachment    = PlayerFriendshipAttachment.getAttachment(receiver);
+        final var id            = attachment.getInvite(requester);
+        if (id == -1) {
+            return;
+        }
+
+        attachment.removeInvite(requester);
+
+        PlayerFriendshipSystem.unlock(requester, receiver, id);
+
+    }
 
     public static boolean unlock(
             final @NonNull ServerPlayer requester,
@@ -140,5 +194,41 @@ public class PlayerFriendshipSystem {
         );
 
         return true;
+    }
+
+    @SubscribeEvent
+    public static void onCancelInteraction(final PlayerInteractionEvent.Cancel event) {
+
+        if (event.isClient()) {
+            return;
+        }
+
+        if (!event.getInteraction().equals(PlayerFriendshipSystem.INTERACTION)) {
+            return;
+        }
+
+        PlayerFriendshipSystem.cancel(
+                (ServerPlayer) event.getRequester(),
+                (ServerPlayer) event.getReceiver()
+        );
+
+    }
+
+    @SubscribeEvent
+    public static void onAcceptedInteraction(final PlayerInteractionEvent.Accept.Post event) {
+
+        if (event.isClient()) {
+            return;
+        }
+
+        if (!event.getInteraction().equals(PlayerFriendshipSystem.INTERACTION)) {
+            return;
+        }
+
+        PlayerFriendshipSystem.accept(
+                (ServerPlayer) event.getRequester(),
+                (ServerPlayer) event.getReceiver()
+        );
+
     }
 }
