@@ -10,31 +10,32 @@ import org.jspecify.annotations.NonNull;
 @Getter
 public abstract sealed class PlayerInteractionEvent extends Event {
 
-    private final Player    requester;
-    private final Player    receiver;
-    private final boolean   isClient;
+    private final Player        requester;
+    private final Player        receiver;
+    private final boolean       isClient;
+    private final Identifier    interaction;
 
     protected PlayerInteractionEvent(
             final @NonNull Player requester,
-            final @NonNull Player receiver
+            final @NonNull Player receiver,
+            final Identifier interaction
     ) {
         this.requester      = requester;
         this.receiver       = receiver;
         this.isClient       = requester.level().isClientSide();
+        this.interaction = interaction;
     }
 
     @Getter
     public static abstract sealed class Invite extends PlayerInteractionEvent {
 
-        private final Identifier    interaction;
 
         protected Invite(
                 final @NonNull Player       requester,
                 final @NonNull Player       receiver,
                 final @NonNull Identifier   interaction
         ) {
-            super(requester, receiver);
-            this.interaction    = interaction;
+            super(requester, receiver, interaction);
         }
 
         public static final class Pre extends Invite implements ICancellableEvent {
@@ -72,18 +73,20 @@ public abstract sealed class PlayerInteractionEvent extends Event {
 
         public Accept(
                 final @NonNull Player       requester,
-                final @NonNull Player       receiver
+                final @NonNull Player       receiver,
+                final @NonNull Identifier   interaction
         ) {
-            super(requester, receiver);
+            super(requester, receiver, interaction);
         }
 
         public static final class Pre extends Accept implements ICancellableEvent {
 
             public Pre(
                     final @NonNull Player       requester,
-                    final @NonNull Player       receiver
+                    final @NonNull Player       receiver,
+                    final @NonNull Identifier   interaction
             ) {
-                super(requester, receiver);
+                super(requester, receiver, interaction);
             }
 
             @Override
@@ -97,9 +100,10 @@ public abstract sealed class PlayerInteractionEvent extends Event {
 
             public Post(
                     final @NonNull Player       requester,
-                    final @NonNull Player       receiver
+                    final @NonNull Player       receiver,
+                    final @NonNull Identifier   interaction
             ) {
-                super(requester, receiver);
+                super(requester, receiver, interaction);
             }
 
         }
@@ -110,9 +114,10 @@ public abstract sealed class PlayerInteractionEvent extends Event {
 
         public Cancel(
                 final @NonNull Player       requester,
-                final @NonNull Player       receiver
+                final @NonNull Player       receiver,
+                final @NonNull Identifier   interaction
         ) {
-            super(requester, receiver);
+            super(requester, receiver, interaction);
         }
 
     }

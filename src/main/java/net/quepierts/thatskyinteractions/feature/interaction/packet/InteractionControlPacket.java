@@ -11,6 +11,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.interaction.InteractionRequest;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
@@ -97,13 +98,21 @@ public record InteractionControlPacket(
                 break;
             }
             case ACCEPT_REQ: {
-                data.sendAccept(target);
-                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(player, target));
+                final var request = data.getReceived().get(this.uuid());
+                if (request != null) {
+                    final var interaction = request.getType();
+                    data.sendAccept(target);
+                    NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(player, target, interaction));
+                }
                 break;
             }
             case CANCEL_REQ: {
-                data.cancelSent();
-                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(player, target));
+                final var sent = data.getSent();
+                if (sent != null) {
+                    final var interaction = sent.getType();
+                    data.cancelSent();
+                    NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(player, target, interaction));
+                }
                 break;
             }
             case INVITE_REC: {
@@ -113,13 +122,21 @@ public record InteractionControlPacket(
                 break;
             }
             case ACCEPT_REC: {
-                data.receiveAccept(target);
-                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(player, target));
+                final var request = data.getReceived().get(this.uuid());
+                if (request != null) {
+                    final var interaction = request.getType();
+                    data.receiveAccept(target);
+                    NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(player, target, interaction));
+                }
                 break;
             }
             case CANCEL_REC: {
-                data.cancelReceived(target);
-                NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(player, target));
+                final var request = data.getReceived().get(this.uuid());
+                if (request != null) {
+                    final var interaction = request.getType();
+                    data.cancelReceived(target);
+                    NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(player, target, interaction));
+                }
                 break;
             }
         }

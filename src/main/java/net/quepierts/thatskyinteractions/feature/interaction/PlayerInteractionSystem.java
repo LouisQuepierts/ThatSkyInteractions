@@ -163,14 +163,14 @@ public class PlayerInteractionSystem {
             return;
         }
 
-        final var event     = NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Pre(requester, receiver));
+        final var event     = NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Pre(requester, receiver, type));
         if (event.isCanceled()) {
             return;
         }
 
         final var position = PlayerUtils.getRelativePositionWorldSpace(requester, 1.0, 0.0);
 
-        if (!force && receiver.distanceToSqr(position) > 1e-3) {
+        if (interaction.positional() && !force && receiver.distanceToSqr(position) > 1e-3) {
 
             final var lookTarget = EntityAnchorArgument.Anchor.EYES.apply(requester);
 
@@ -207,7 +207,7 @@ public class PlayerInteractionSystem {
                 InteractionControlPacket.accept(requester, false)
         );
 
-        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(requester, receiver));
+        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(requester, receiver, type));
 
     }
 
@@ -229,6 +229,11 @@ public class PlayerInteractionSystem {
         }
 
         final var recData   = PlayerInteractionSystem.getInteractionData(receiver);
+        if (!reqData.hasSentRequest()) {
+            return;
+        }
+
+        final var type      = reqData.getSent().getType();
 
         reqData.cancelSent();
         recData.cancelReceived(requester);
@@ -245,7 +250,7 @@ public class PlayerInteractionSystem {
 
         PlayerAnimationSystem.exit(requester);
 
-        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(requester, receiver));
+        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(requester, receiver, type));
     }
 
     private static @NonNull PlayerAnimation requester(

@@ -17,7 +17,8 @@ public class PlayerInteractionParser {
     public static final Codec<InteractionDefinitionEntry> ENTRY_CODEC =
             RecordCodecBuilder.create(instance -> instance.group(
                     Codec.STRING.fieldOf("requester").forGetter(InteractionDefinitionEntry::requester),
-                    Codec.STRING.fieldOf("receiver").forGetter(InteractionDefinitionEntry::receiver)
+                    Codec.STRING.fieldOf("receiver").forGetter(InteractionDefinitionEntry::receiver),
+                    Codec.BOOL.optionalFieldOf("positional", true).forGetter(InteractionDefinitionEntry::positional)
             ).apply(instance, InteractionDefinitionEntry::new));
 
     public static final Codec<InteractionDefinition> DEFINITION_CODEC =
@@ -33,6 +34,8 @@ public class PlayerInteractionParser {
                     InteractionDefinitionEntry::requester,
                     ByteBufCodecs.STRING_UTF8,
                     InteractionDefinitionEntry::receiver,
+                    ByteBufCodecs.BOOL,
+                    InteractionDefinitionEntry::positional,
                     InteractionDefinitionEntry::new
             );
 

@@ -7,7 +7,8 @@ import org.jspecify.annotations.NonNull;
 public record PlayerInteraction(
         Identifier  requester,
         Identifier  receiver,
-        int         level
+        int         level,
+        boolean     positional
 ) {
 
     public static PlayerInteraction parse(
@@ -22,7 +23,8 @@ public record PlayerInteraction(
                 PlayerInteractionManager.AUTO.equals(definition.receiver()) ?
                     identifier.withSuffix(".receiver") :
                     Identifier.parse(definition.receiver()),
-                level
+                level,
+                definition.positional()
         );
     }
 
