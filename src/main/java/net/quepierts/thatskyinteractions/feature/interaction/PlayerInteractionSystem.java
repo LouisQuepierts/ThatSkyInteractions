@@ -1,34 +1,37 @@
 package net.quepierts.thatskyinteractions.feature.interaction;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
+import net.quepierts.thatskyinteractions.core.animation.sampler.WrappedSampler;
 import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
-import net.quepierts.thatskyinteractions.feature.control.PlayerNavigator;
 import net.quepierts.thatskyinteractions.feature.control.packet.NavigatePacket;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionControlPacket;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
+import net.quepierts.veynir.backend.sampler.AnimationSampler;
+import net.quepierts.veynir.backend.sampler.SamplingMode;
+import net.quepierts.veynir.core.fsm.FSMParameter;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Slf4j
 @UtilityClass
@@ -62,44 +65,6 @@ public class PlayerInteractionSystem {
             @NonNull final Player player
     ) {
         return PlayerInteractionAttachment.getAttachment(player);
-    }
-
-    private static @NonNull PlayerAnimation requester(
-            @NonNull final PlayerAnimationDefinition definition
-    ) {
-
-        final var template  = TemplateAnimation.template(
-                definition,
-                DefaultInteractionFSM.REQUESTER,
-                DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
-                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID
-        );
-
-        template.setFrozenEnd(DefaultInteractionFSM.REQUESTER_CANCEL, true);
-        template.setFrozenEnd(DefaultInteractionFSM.REQUESTER_EXIT, true);
-
-        template.setExitPoint(
-                DefaultInteractionFSM.REQUESTER_WAITING,
-                DefaultInteractionFSM.REQUESTER_CANCEL
-        );
-
-        return template;
-    }
-
-    private static @NonNull PlayerAnimation receiver(
-            @NonNull final PlayerAnimationDefinition definition
-    ) {
-
-        final var template  = TemplateAnimation.template(
-                definition,
-                DefaultInteractionFSM.RECEIVER,
-                DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
-                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID
-        );
-
-        template.setFrozenEnd(DefaultInteractionFSM.RECEIVER_EXIT, true);
-
-        return template;
     }
 
     public static void invite(
@@ -281,5 +246,88 @@ public class PlayerInteractionSystem {
         PlayerAnimationSystem.exit(requester);
 
         NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(requester, receiver));
+    }
+
+    private static @NonNull PlayerAnimation requester(
+            @NonNull final PlayerAnimationDefinition definition
+    ) {
+
+        final var context   = TemplateAnimation.ParsingContext.of(
+                DefaultInteractionFSM.REQUESTER,
+                DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
+                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
+                DefaultInteractionFSM.REQUESTER_STATES,
+                PlayerInteractionSystem::fallback
+        );
+
+        final var template  = TemplateAnimation.template(
+                definition,
+                context
+        );
+
+        template.setFrozenEnd(DefaultInteractionFSM.REQUESTER_CANCEL, true);
+        template.setFrozenEnd(DefaultInteractionFSM.REQUESTER_EXIT, true);
+
+        template.setExitPoint(
+                DefaultInteractionFSM.REQUESTER_WAITING,
+                DefaultInteractionFSM.REQUESTER_CANCEL
+        );
+
+        return template;
+    }
+
+    private static @NonNull PlayerAnimation receiver(
+            @NonNull final PlayerAnimationDefinition definition
+    ) {
+
+        final var context   = TemplateAnimation.ParsingContext.of(
+                DefaultInteractionFSM.RECEIVER,
+                DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
+                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
+                DefaultInteractionFSM.RECEIVER_STATES,
+                PlayerInteractionSystem::fallback
+        );
+
+        final var template  = TemplateAnimation.template(
+                definition,
+                context
+        );
+
+        template.setFrozenEnd(DefaultInteractionFSM.RECEIVER_EXIT, true);
+
+        return template;
+    }
+
+    private static @Nullable AnimationSampler fallback(
+            @NonNull final  Int2ObjectFunction<AnimationSampler>    getter,
+            @NonNull final  FSMParameter                            fsmParameter,
+            final           String                                  name,
+            final           int                                     index
+    ) {
+
+        switch (name) {
+            case "cancel":
+            case "exit": {
+
+                final var last      = getter.get(index - 2);
+                fsmParameter.duration()[index] = 0.25f;
+                fsmParameter.fadeIn()[index]   = 0.0f;
+                fsmParameter.fadeOut()[index]  = 0.25f;
+                return              WrappedSampler.wrap(last, SamplingMode.FREEZE_END);
+
+            }
+
+            case "accept": {
+
+                final var next      = getter.get(index);
+                fsmParameter.duration()[index] = 0.25f;
+                fsmParameter.fadeIn()[index]   = 0.25f;
+                fsmParameter.fadeOut()[index]  = 0.0f;
+                return              WrappedSampler.wrap(next, SamplingMode.FREEZE_START);
+
+            }
+        }
+
+        return null;
     }
 }
