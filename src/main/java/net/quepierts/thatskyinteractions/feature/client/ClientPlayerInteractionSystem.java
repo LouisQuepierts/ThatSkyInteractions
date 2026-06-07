@@ -3,14 +3,11 @@ package net.quepierts.thatskyinteractions.feature.client;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.quepierts.thatskyinteractions.feature.control.PlayerNavigator;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionRequestPacket;
-import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 
 @UtilityClass
 @SuppressWarnings({"unused", "DataFlowIssue"})

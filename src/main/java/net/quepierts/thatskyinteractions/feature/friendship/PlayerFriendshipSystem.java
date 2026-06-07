@@ -10,6 +10,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipControlPacket;
+import net.quepierts.thatskyinteractions.feature.gui.packet.PlayerFriendshipUiPacket;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import org.jspecify.annotations.NonNull;
@@ -37,6 +38,11 @@ public class PlayerFriendshipSystem {
         PlayerFriendshipAttachment.getAttachment(receiver).sendInvite(requester, node);
         PlayerInteractionSystem.invite(requester, receiver, INTERACTION);
 
+        PacketDistributor.sendToPlayer(
+                receiver,
+                PlayerFriendshipUiPacket.invite(requester)
+        );
+
     }
 
     // call by Event
@@ -46,6 +52,11 @@ public class PlayerFriendshipSystem {
     ) {
 
         PlayerFriendshipAttachment.getAttachment(receiver).removeInvite(requester);
+
+        PacketDistributor.sendToPlayer(
+                receiver,
+                PlayerFriendshipUiPacket.cancel(requester)
+        );
 
     }
 

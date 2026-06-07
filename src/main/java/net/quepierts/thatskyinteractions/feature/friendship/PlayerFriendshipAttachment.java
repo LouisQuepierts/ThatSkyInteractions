@@ -98,7 +98,7 @@ public final class PlayerFriendshipAttachment {
     private PlayerFriendshipAttachment(
             final @NonNull List<FriendshipTreeData> serializable
     ) {
-        this.serializable   = new ArrayList<>(serializable);
+        this.serializable   = new ArrayList<>(new HashSet<>(serializable));
         this.byUuid         = new HashMap<>(serializable.size() + 1);
 
         this.tryExtract();
@@ -130,11 +130,10 @@ public final class PlayerFriendshipAttachment {
         for (; i < size; i++) {
             final var bData = list.get(i);
 
-            if (!bData.getOther(bUuid).equals(aUuid)) {
-                continue;
+            if (bData.getOther(bUuid).equals(aUuid)) {
+                list.set(i, aData);
+                break;
             }
-
-            list.set(i, aData);
         }
 
         if (i == size) {

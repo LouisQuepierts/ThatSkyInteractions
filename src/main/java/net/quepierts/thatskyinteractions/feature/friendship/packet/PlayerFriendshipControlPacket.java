@@ -86,7 +86,7 @@ public record PlayerFriendshipControlPacket(
                 break;
             }
             case DROP: {
-                attachment.drop();;
+                attachment.drop();
                 break;
             }
         }
