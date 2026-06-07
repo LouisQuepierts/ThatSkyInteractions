@@ -1,0 +1,102 @@
+package net.quepierts.thatskyinteractions.feature.client.gui.component.visual;
+
+import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;
+import lombok.experimental.UtilityClass;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
+import org.jspecify.annotations.NonNull;
+
+@UtilityClass
+public class GeneralVisualNodes {
+
+    public static final VisualNode BASE = (control, graphics, _, _, _, _) -> GeneralRenderOps.BASE.render(
+            graphics,
+            control.getX(),
+            control.getY(),
+            control.getWidth(),
+            control.getHeight(),
+            0x80000000
+    );
+
+    public static final VisualNode ROUNDED_BASE = (control, graphics, _, _, _, _) -> GeneralRenderOps.ROUND_BASE.render(
+            graphics,
+            control.getX(),
+            control.getY(),
+            control.getWidth(),
+            control.getHeight(),
+            0x80000000
+    );
+
+    public static VisualNode fill(
+            final int   color
+    ) {
+        return (control, graphics, _, _, _, _) -> graphics.fill(
+                control.getX(),
+                control.getY(),
+                control.getX() + control.getWidth(),
+                control.getY() + control.getHeight(),
+                color
+        );
+    }
+
+    public static VisualNode base(
+            final int   color,
+            final float round
+    ) {
+        return (control, graphics, _, _, _, _) -> {
+
+            final var hw = control.getWidth() / 2;
+            final var hh = control.getHeight() / 2;
+            final var x  = control.getX() + hw;
+            final var y  = control.getY() + hh;
+
+            SdfGraphics.getInstance()
+                    .reset()
+                    .center(true)
+                    .color(color)
+                    .round(round)
+                    .box(
+                            x, y,
+                            control.getWidth(),
+                            control.getHeight()
+                    )
+                    .draw(graphics);
+        };
+    }
+
+    public static VisualNode texture(
+            final @NonNull Identifier               texture,
+            final          int                      textureWidth,
+            final          int                      textureHeight
+    ) {
+        return (control, graphics, _, _, _, _) -> graphics.blit(
+                RenderPipelines.GUI_TEXTURED,
+                texture,
+                control.getX(),
+                control.getY(),
+                0, 0,
+                textureWidth,
+                textureHeight,
+                textureWidth,
+                textureHeight
+        );
+    }
+
+    public static VisualNode message(
+            final @NonNull Component message
+    ) {
+        return (control, graphics, _, _, _, _) -> graphics.centeredText(
+                Minecraft.getInstance().font,
+                message,
+                control.getX() + control.getWidth() / 2,
+                control.getY() + control.getHeight() / 2,
+                0xFFFFFFFF
+        );
+    }
+
+}

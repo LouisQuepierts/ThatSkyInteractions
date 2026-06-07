@@ -9,20 +9,6 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.Ren
 @UtilityClass
 public class ButtonRenderOps {
 
-    public static final RenderOp BASE = (graphics, x, y, width, height, color) -> {
-        SdfGraphics.getInstance()
-                .reset()
-                .center(true)
-                .round(6.0f)
-                .color(0x80101010)
-                .box(
-                        x, y,
-                        width,
-                        height
-                )
-                .draw(graphics);
-    };
-
     public static final RenderOp HOVER = (graphics, x, y, width, height, color) -> {
         SdfGraphics.getInstance()
                 .reset()
