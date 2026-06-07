@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.screen;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
@@ -18,6 +19,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.but
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.SqueezeButtonNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.ConfirmScreenController;
 import net.quepierts.thatskyinteractions.feature.gui.ConfirmData;
+import org.jspecify.annotations.NonNull;
 
 public class ConfirmScreen extends AnimatableScreen<ConfirmData, ConfirmScreenController> {
 
@@ -136,5 +138,20 @@ public class ConfirmScreen extends AnimatableScreen<ConfirmData, ConfirmScreenCo
         );
 
         super.repositionElements();
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
+    public void extractBackground(
+            final @NonNull GuiGraphicsExtractor graphics,
+            final int mouseX,
+            final int mouseY,
+            final float delta
+    ) {
+
     }
 }
