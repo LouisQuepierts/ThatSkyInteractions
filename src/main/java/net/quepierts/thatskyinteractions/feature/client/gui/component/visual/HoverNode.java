@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.visual;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.quepierts.thatskyinteractions.core.property.IntProperty;
+import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
@@ -15,9 +16,7 @@ public class HoverNode implements VisualNode {
 
     private final @NonNull RenderOp renderOp;
 
-    private final IntProperty   hoverProperty   = new IntProperty(0);
-    private TweenHandle         hoverHandle;
-    private boolean             hovering;
+    private final BooleanTransition hoverTransition = new BooleanTransition(Eases.CUBIC_OUT, 0.25f);
 
     @Override
     public void extractRenderState(
@@ -35,35 +34,11 @@ public class HoverNode implements VisualNode {
         final var x             = control.getX() + hw;
         final var y             = control.getY() + hh;
 
-        final var alpha         = this.hoverProperty.get();
         final var mouseOver     = control.isMouseOver(mouseX, mouseY);
-        if (mouseOver && !this.hovering) {
-            this.hovering = true;
-            if (this.hoverHandle != null) {
-                this.hoverHandle.cancel();
-            }
-            this.hoverHandle = tween.to(
-                    this.hoverProperty,
-                    alpha,
-                    255,
-                    0.25f,
-                    Interpolators.INT,
-                    Eases.CUBIC_OUT
-            );
-        } else if (!mouseOver && this.hovering) {
-            this.hovering = false;
-            if (this.hoverHandle != null) {
-                this.hoverHandle.cancel();
-            }
-            this.hoverHandle = tween.to(
-                    this.hoverProperty,
-                    alpha,
-                    0,
-                    0.25f,
-                    Interpolators.INT,
-                    Eases.CUBIC_OUT
-            );
-        }
+        this.hoverTransition    .update(tween, mouseOver);
+
+        final var t             = this.hoverTransition.getValue();
+        final var alpha         = (int) (255 * t);
 
         if (alpha != 0) {
             this.renderOp.render(
