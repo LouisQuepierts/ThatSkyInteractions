@@ -11,7 +11,7 @@ public final class ColorStack {
     private int[] g;
     private int[] b;
     private int[] a;
-    private int top = -1;
+    private int top = 0;
 
     public ColorStack() {
         this.r = new int[INITIAL_CAPACITY];
@@ -49,7 +49,7 @@ public final class ColorStack {
     }
 
     public void pop() {
-        if (this.top > 0) {
+        if (this.top > 1) {
             this.top--;
         }
     }
