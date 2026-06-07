@@ -17,5 +17,7 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "mixins": []
+  "mixins": [
+    "vanilla.client.ClientHookMixin"
+  ]
 }

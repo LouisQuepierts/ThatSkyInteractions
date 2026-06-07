@@ -41,6 +41,10 @@ public final class AnimatableScreenLayer {
                 continue;
             }
 
+            if (screen.isHided() && !screen.isAnimating()) {
+                continue;
+            }
+
             screen.extractAnimatableRenderState(
                     graphics,
                     mouseX,

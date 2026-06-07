@@ -2,11 +2,13 @@ package net.quepierts.thatskyinteractions.feature.client.gui.screen;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.quepierts.thatskyinteractions.core.model.ui.Alignment;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.Layout;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.ScreenController;
@@ -19,7 +21,7 @@ import org.jspecify.annotations.Nullable;
 public abstract class AnimatableScreen<Model, Controller extends ScreenController<Model>> extends Screen {
 
     private final TweenScope        tween;
-    private final TweenTickHandler handler;
+    private final TweenTickHandler  handler;
 
     @Getter
     private final Controller        controller;
@@ -29,6 +31,9 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
 
     @Getter
     private boolean closed;
+
+    @Getter
+    private boolean hided;
 
     protected AnimatableScreen(
             final Component     title,
@@ -56,6 +61,8 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
         } else if (this.layout != null) {
             this.layout.layout();
         }
+
+        this.show();
     }
 
     @Override
@@ -123,8 +130,15 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
             final int                           mouseY,
             final float                         delta
     ) {
-
         this.root.extractRenderState(graphics, mouseX, mouseY, delta);
+    }
+
+    public void hide() {
+        this.hided = true;
+    }
+
+    public void show() {
+        this.hided = false;
     }
 
     public TweenScope tween() {
@@ -141,7 +155,22 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
 
     @Override
     public void onClose() {
+        if (this.closed) {
+            return;
+        }
+        this.hide();
+
         super.onClose();
+        this.closed = true;
+    }
+
+    @Override
+    public void removed() {
+        if (this.closed) {
+            return;
+        }
+
+        this.hide();
         this.closed = true;
     }
 
