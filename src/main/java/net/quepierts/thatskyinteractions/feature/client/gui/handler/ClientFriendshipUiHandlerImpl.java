@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.handler;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingButton;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.floating.FloatingButtonNode;
@@ -29,12 +30,12 @@ public final class ClientFriendshipUiHandlerImpl implements ClientFriendshipUiHa
                                                     (float) requester.getY() + 2.0f,
                                                     (float) requester.getZ()
                                             ),
-                                            () -> {
+                                            _ -> {
                                                 // todo
                                             }
-                                    ).withVisualNode(
-                                            new FloatingButtonNode()
-                                    )
+                                    ).withVisualNode(FloatingButtonNode.texture(
+                                            ThatSkyInteractions.location("textures/gui/be_friend.png")
+                                    ))
                                 );
         attachment              .sendInvite(requester, handle.id());
 

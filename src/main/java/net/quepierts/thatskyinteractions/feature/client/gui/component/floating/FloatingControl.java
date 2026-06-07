@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
+import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.core.property.Vector2fProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;
@@ -18,10 +19,13 @@ import org.jspecify.annotations.NonNull;
 public class FloatingControl extends Control {
 
     @Getter
-    private final Vector2fProperty      positionProperty = new Vector2fProperty();
+    private final Vector2fProperty      positionProperty    = new Vector2fProperty();
 
     @Getter
-    private final BooleanProperty       restrictPosition = new BooleanProperty(false);
+    private final BooleanProperty       restrictPosition    = new BooleanProperty(false);
+
+    @Getter
+    private final FloatProperty         showDistance        = new FloatProperty(16);
 
     @Getter
     private final FloatingControlHandle handle;
@@ -100,8 +104,12 @@ public class FloatingControl extends Control {
         this.killPositionTween();
     }
 
-    public interface WorldPositionSupplier {
-        void get(@NonNull final Vector3f dest);
+    public void onInteract() {
+
+    }
+
+    public float distanceTo(float x, float y) {
+        return Float.POSITIVE_INFINITY;
     }
 
     @Override
@@ -118,7 +126,7 @@ public class FloatingControl extends Control {
         return this.restrictPosition.get();
     }
 
-    public void setPosition(
+    public void updatePosition(
             final float x,
             final float y
     ) {
@@ -134,7 +142,7 @@ public class FloatingControl extends Control {
     ) {
 
         if (!this.initialized) {
-            this.setPosition(x, y);
+            this.updatePosition(x, y);
             this.initialized = true;
         }
 
@@ -163,4 +171,9 @@ public class FloatingControl extends Control {
             this.positionTween = null;
         }
     }
+
+    public interface WorldPositionSupplier {
+        void get(@NonNull final Vector3f dest);
+    }
+
 }

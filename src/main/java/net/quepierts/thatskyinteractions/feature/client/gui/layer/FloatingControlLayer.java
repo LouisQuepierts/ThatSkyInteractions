@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.feature.client.gui.layer;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -11,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingButton;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControl;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControlConstructor;
@@ -19,13 +19,13 @@ import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenTickHandler;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public final class FloatingControlLayer implements GuiLayer {
 
@@ -36,13 +36,13 @@ public final class FloatingControlLayer implements GuiLayer {
     private final ConcurrentLinkedDeque<Runnable>   pending     = new ConcurrentLinkedDeque<>();
     private final AtomicInteger                     nextId      = new AtomicInteger(0);
 
-    private final Matrix4f projection                           = new Matrix4f();
-    private final Vector3f position                             = new Vector3f();
+    private final Matrix4f                          projection  = new Matrix4f();
+    private final Vector3f                          position    = new Vector3f();
 
-    private final TweenScope tween                              = TweenScope.create();
-    private final TweenTickHandler tickHandler                  = (TweenTickHandler) this.tween;
+    private final TweenScope                        tween       = TweenScope.create();
+    private final TweenTickHandler                  tickHandler = (TweenTickHandler) this.tween;
 
-    private float counter;
+    private long                                    selected    = -1;
 
     private FloatingControlLayer() {
 
@@ -50,8 +50,10 @@ public final class FloatingControlLayer implements GuiLayer {
         this.add(FloatingButton.fixed(
                 Component.empty(),
                 new Vector3f(0.0f, 64.0f, 0.0f),
-                () -> {}
-        ).withVisualNode(new FloatingButtonNode()));
+                _ -> {}
+        ).withVisualNode(FloatingButtonNode.texture(
+                ThatSkyInteractions.location("textures/gui/ignite.png")
+        )));
 
 
     }
@@ -107,6 +109,15 @@ public final class FloatingControlLayer implements GuiLayer {
 
     }
 
+    public void interact() {
+        if (this.selected != -1) {
+            final var control = this.controls.get(this.selected);
+            if (control != null) {
+                control.onInteract();
+            }
+        }
+    }
+
     void render(
             @NonNull final GuiGraphicsExtractor graphics,
             @NonNull final DeltaTracker         tracker,
@@ -115,13 +126,9 @@ public final class FloatingControlLayer implements GuiLayer {
     ) {
 
         final var delta = tracker.getRealtimeDeltaTicks();
-        this.counter += delta;
         this.tickHandler.tick(delta * 0.05f);
 
-        if (this.counter > 1.0f) {
-            this.update();
-            this.counter %= 1.0f;
-        }
+        this.update(mouseX, mouseY);
 
         if (this.controls.isEmpty()) {
             return;
@@ -133,13 +140,18 @@ public final class FloatingControlLayer implements GuiLayer {
 
     }
 
-    private void update() {
+    private void update(
+            final int                           mouseX,
+            final int                           mouseY
+    ) {
 
         Runnable op;
         while ((op = this.pending.poll()) != null) {
             op.run();
         }
 
+
+        this.selected           = -1;
         if (this.controls.isEmpty()) {
             return;
         }
@@ -152,10 +164,22 @@ public final class FloatingControlLayer implements GuiLayer {
         final int screenWidth   = minecraft.getWindow().getGuiScaledWidth();
         final int screenHeight  = minecraft.getWindow().getGuiScaledHeight();
 
+        final int centerX       = screenWidth / 2;
+        final int centerY       = screenHeight / 2;
+
         final var projection    = camera.getViewRotationProjectionMatrix(this.projection);
+        final var useMouse      = !minecraft.mouseHandler.isMouseGrabbed();
+
+        float nearest           = Float.MAX_VALUE;
 
         for (final var control : this.controls.values()) {
+            control             .setFocused(false);
+
             final var position  = control.getWorldPosition(this.position).sub(cameraPos);
+            final var distance  = position.length();
+
+            control             .active = distance < control.getShowDistance().get();
+
             final var vs        = new Vector4f(position, 1.0f).mul(projection);
 
             if (vs.w <= 0.0f) {
@@ -166,14 +190,55 @@ public final class FloatingControlLayer implements GuiLayer {
             final var x         = (vs.x() / vs.z() * 0.5F + 0.5F) * screenWidth;
             final var y         = (1.0F - (vs.y() / vs.z() * 0.5F + 0.5F)) * screenHeight;
 
+            float screenX, screenY;
+
             if (control.isRestrictPosition()) {
-                control.toPosition(
-                        Mth.clamp(x, 0, screenWidth),
-                        Mth.clamp(y, 0, screenHeight)
-                );
+                final var hw    = control.getWidth() / 2;
+                final var hh    = control.getHeight() / 2;
+                screenX         = Mth.clamp(x, hw, screenWidth - hw);
+                screenY         = Mth.clamp(y, hh, screenHeight - hh);
             } else {
-                control.toPosition(x, y);
+                screenX         = x;
+                screenY         = y;
             }
+
+            control             .updatePosition(screenX, screenY);
+
+            if (!control.active) {
+                continue;
+            }
+
+            if (useMouse) {
+                if (this.selected != -1) {
+                    continue;
+                }
+
+                final var d = control.distanceTo(mouseX, mouseY);
+
+                if (d > 0) {
+                    continue;
+                }
+
+                if (d < nearest) {
+                    nearest = d;
+                    this.selected = control.getHandle().id();
+                }
+            } else {
+                if (Mth.abs(screenX - centerX) > (screenWidth >> 3)) {
+                    continue;
+                }
+
+                final var d = Vector2f.distance(screenX, screenY, centerX, centerY);
+                if (d < nearest) {
+                    nearest = d;
+                    this.selected = control.getHandle().id();
+                }
+            }
+        }
+
+        if (this.selected != -1) {
+            final var control   = this.controls.get(this.selected);
+            control             .setFocused(true);
         }
 
     }
