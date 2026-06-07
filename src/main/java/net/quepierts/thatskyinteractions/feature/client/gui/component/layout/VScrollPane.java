@@ -6,6 +6,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.EnumProperty;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
@@ -60,8 +61,9 @@ public class VScrollPane extends Pane {
     }
 
     @Override
-    protected void extractWidgetRenderState(
+    protected void extractControlRenderState(
             final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
             final float                         delta

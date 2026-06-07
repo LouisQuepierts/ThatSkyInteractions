@@ -11,6 +11,7 @@
     "vanilla.client.ModelFeatureRendererMixin",
     "vanilla.client.MouseHandlerMixin",
     "vanilla.client.PlayerModelMixin",
+    "vanilla.client.accessor.AbstractWidgetAccessor",
     "vanilla.client.accessor.ClientInputAccessor",
     "vanilla.client.accessor.ModelPartAccessor"
   ],

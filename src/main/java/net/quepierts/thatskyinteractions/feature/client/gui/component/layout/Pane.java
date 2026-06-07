@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.joml.Vector3f;
@@ -59,8 +60,9 @@ public abstract class Pane
     }
 
     @Override
-    protected void extractWidgetRenderState(
+    protected void extractControlRenderState(
             final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ColorStack           colors,
 
             final int                           mouseX,
             final int                           mouseY,

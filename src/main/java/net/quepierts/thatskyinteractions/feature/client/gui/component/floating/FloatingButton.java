@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.floating;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
 import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
@@ -86,8 +87,9 @@ public class FloatingButton extends FloatingControl {
     }
 
     @Override
-    protected void extractWidgetRenderState(
+    protected void extractControlRenderState(
             final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
             final float                         delta
@@ -96,7 +98,7 @@ public class FloatingButton extends FloatingControl {
         this.activeTransition.update(tween(), this.isActive());
         this.focusTransition.update(tween(), this.isFocused());
 
-        super.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
+        super.extractControlRenderState(graphics, colors, mouseX, mouseY, delta);
     }
 
 

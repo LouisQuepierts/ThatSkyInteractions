@@ -4,16 +4,13 @@ import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.core.property.IntProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.ScreenController;
-import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
-import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public abstract class SlideScreen<Model, Controller extends ScreenController<Model>>
         extends AnimatableScreen<Model, Controller> {
@@ -54,7 +51,13 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
     }
 
     @Override
-    public void extractAnimatableRenderState(final @NonNull GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
+    public void extractAnimatableRenderState(
+            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ColorStack           colors,
+            final int                           mouseX,
+            final int                           mouseY,
+            final float                         delta
+    ) {
         final var pose  = graphics.pose();
         final var width = this.sliderWide.get();
         final var x     = this.width - this.transition.getValue() * width;
@@ -70,7 +73,7 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
                 0xc0101010
         );
 
-        super.extractAnimatableRenderState(graphics, (int) (mouseX - x), mouseY, delta);
+        super.extractAnimatableRenderState(graphics, colors, (int) (mouseX - x), mouseY, delta);
 
         pose.popMatrix();
     }

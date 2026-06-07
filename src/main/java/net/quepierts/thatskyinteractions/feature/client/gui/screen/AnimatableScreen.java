@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.model.ui.Alignment;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.Layout;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.ScreenController;
@@ -126,11 +127,12 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
 
     public void extractAnimatableRenderState(
             @NonNull final GuiGraphicsExtractor graphics,
+            @NonNull final ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
             final float                         delta
     ) {
-        this.root.extractRenderState(graphics, mouseX, mouseY, delta);
+        this.root.extractRenderState(graphics, colors, mouseX, mouseY, delta);
     }
 
     public void hide() {

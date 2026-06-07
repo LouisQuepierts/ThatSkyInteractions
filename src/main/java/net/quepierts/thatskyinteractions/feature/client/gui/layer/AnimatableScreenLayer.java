@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.layer;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.AnimatableScreen;
 import org.jspecify.annotations.NonNull;
 
@@ -30,8 +31,10 @@ public final class AnimatableScreenLayer {
             final int mouseX,
             final int mouseY
     ) {
-        final var delta = tracker.getRealtimeDeltaTicks();
-        final var iterator = screens.iterator();
+        final var delta         = tracker.getRealtimeDeltaTicks();
+        final var iterator      = screens.iterator();
+
+        final var colors        = new ColorStack();
 
         while (iterator.hasNext()) {
             final var screen = iterator.next();
@@ -47,10 +50,10 @@ public final class AnimatableScreenLayer {
 
             screen.extractAnimatableRenderState(
                     graphics,
+                    colors,
                     mouseX,
                     mouseY,
-                    delta
-            );
+                    delta);
         }
     }
 

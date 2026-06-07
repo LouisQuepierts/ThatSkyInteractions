@@ -8,11 +8,13 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeHolder;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.IAttributeHolder;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.core.model.ui.Insets;
+import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.AbstractWidgetAccessor;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.joml.Vector2fc;
 import org.jspecify.annotations.NonNull;
@@ -62,11 +64,39 @@ public class Control extends AbstractWidget implements IAttributeHolder {
     }
 
     @Override
-    protected void extractWidgetRenderState(
+    protected final void extractWidgetRenderState(
             final @NonNull GuiGraphicsExtractor graphics,
-            final int mouseX,
-            final int mouseY,
-            final float delta
+            final int                           mouseX,
+            final int                           mouseY,
+            final float                         delta
+    ) { }
+
+    public final void extractRenderState(
+            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ColorStack           colors,
+            final int                           mouseX,
+            final int                           mouseY,
+            final float                         delta
+    ) {
+        if (this.visible) {
+            this.isHovered  = graphics.containsPointInScissor(mouseX, mouseY) && this.isMouseOver(mouseX, mouseY);
+            this.extractControlRenderState(
+                    graphics,
+                    colors,
+                    mouseX,
+                    mouseY,
+                    delta
+            );
+            ((AbstractWidgetAccessor) this).getTooltip().refreshTooltipForNextRenderPass(graphics, mouseX, mouseY, this.isHovered(), this.isFocused(), this.getRectangle());
+        }
+    }
+
+    protected void extractControlRenderState(
+            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ColorStack           colors,
+            final int                           mouseX,
+            final int                           mouseY,
+            final float                         delta
     ) {
 
         this.renderDebug(graphics);

@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.model.ui.HPos;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
 
@@ -53,8 +54,9 @@ public class TextBlock extends Control {
     }
 
     @Override
-    protected void extractWidgetRenderState(
+    protected void extractControlRenderState(
             final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
             final float                         delta
