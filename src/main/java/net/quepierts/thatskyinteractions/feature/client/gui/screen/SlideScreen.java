@@ -6,6 +6,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.core.property.IntProperty;
+import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.ScreenController;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
@@ -20,9 +21,10 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
     @Getter
     private final IntProperty       sliderWide      = new IntProperty(160);
 
-    private final FloatProperty     transition      = new FloatProperty(0.0f);
-
-    private @Nullable TweenHandle   slide;
+    private final BooleanTransition transition     = new BooleanTransition(
+            Eases.CUBIC_OUT,
+            0.5f
+    );
 
     protected SlideScreen(
             final Component     title,
@@ -40,24 +42,22 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
     }
 
     @Override
-    protected void init() {
-        super.init();
-
-        this.transit(1.0f);
+    public void show() {
+        super.show();
+        this.transition.update(this.tween(), true);
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
-
-        this.transit(0.0f);
+    public void hide() {
+        super.hide();
+        this.transition.update(this.tween(), false);
     }
 
     @Override
     public void extractAnimatableRenderState(final @NonNull GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
         final var pose  = graphics.pose();
         final var width = this.sliderWide.get();
-        final var x     = this.width - this.transition.get() * width;
+        final var x     = this.width - this.transition.getValue() * width;
 
         pose.pushMatrix();
         pose.translate(x, 0);
@@ -77,7 +77,7 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
 
     @Override
     public boolean isAnimating() {
-        return this.slide != null && !this.slide.isFinished();
+        return this.transition.isAnimating();
     }
 
     @Override
@@ -93,38 +93,12 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
     @Override
     protected MouseButtonEvent remapButtonEvent(final MouseButtonEvent event) {
         final var width = this.sliderWide.get();
-        final var x     = this.width - this.transition.get() * width;
+        final var x     = this.width - this.transition.getValue() * width;
 
         return new MouseButtonEvent(
                 event.x() - x,
                 event.y(),
                 event.buttonInfo()
         );
-    }
-
-    private void transit(final float to) {
-
-        if (this.slide != null) {
-            this.slide.cancel();
-            this.slide = null;
-        }
-
-        final var from = this.transition.get();
-        final var diff = Math.abs(from - to);
-
-        if (diff < 0.05f) {
-            this.transition.set(to);
-            return;
-        }
-
-        this.slide = this.tween().to(
-                this.transition,
-                from,
-                to,
-                diff * 0.5f,
-                Interpolators.FLOAT,
-                Eases.QUAD_OUT
-        );
-
     }
 }

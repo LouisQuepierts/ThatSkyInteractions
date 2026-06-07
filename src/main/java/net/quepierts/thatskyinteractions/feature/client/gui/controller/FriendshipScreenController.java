@@ -1,7 +1,12 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.controller;
 
+import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
+import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
+import net.quepierts.thatskyinteractions.feature.client.gui.screen.ConfirmScreen;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
+import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
+import net.quepierts.thatskyinteractions.feature.gui.ConfirmData;
 
 public final class FriendshipScreenController extends ScreenController<FriendshipTreeData> {
 
@@ -47,7 +52,27 @@ public final class FriendshipScreenController extends ScreenController<Friendshi
     }
 
     private void unlock(final int index) {
-        ClientPlayerFriendshipSystem.unlockFriendshipNode(this.getModel(), index);
+        final var model         = this.getModel();
+        final var node          = model.getStructure().get(index);
+
+        final var behaviour     = FriendshipBehaviourFactory.get(node);
+        final var attachment    = ClientPlayerFriendshipSystem.getLocalFriendshipData();
+
+        final var state         = model.getState(index);
+        final var icon          = behaviour.getIcon(attachment, node, state);
+
+        final var confirm = new ConfirmData(
+                icon,
+                new Component[] {
+                        Component.literal("test message1"),
+                        Component.literal("test message2 its a long message")
+                },
+                () -> ClientPlayerFriendshipSystem.unlockFriendshipNode(model, index),
+                null
+        );
+
+        ScreenLoader.open(ConfirmScreen.class, confirm);
+
     }
 
     private void interact(final int index) {
