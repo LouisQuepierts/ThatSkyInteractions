@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 
 public class Control extends AbstractWidget implements IAttributeHolder {
 
+    private static boolean              debug       = false;
+
     private final AttributeHolder       attributes  = new AttributeHolder();
     private final TweenScope            tween;
 
@@ -66,6 +68,8 @@ public class Control extends AbstractWidget implements IAttributeHolder {
             final int mouseY,
             final float delta
     ) {
+
+        this.renderDebug(graphics);
 
         if (this.visualNode != null) {
             final var pose = graphics.pose();
@@ -121,5 +125,44 @@ public class Control extends AbstractWidget implements IAttributeHolder {
             final @NonNull AttributeKey<T>  key
     ) {
         return this.attributes.hasAttribute(key);
+    }
+
+    protected void renderDebug(
+            final @NonNull GuiGraphicsExtractor graphics
+    ) {
+        if (Control.debug) {
+            // if hover, render margin and padding
+            if (true) {
+
+                final var margin = this.getMargin();
+                if (!margin.equals(Insets.NONE)) {
+                    graphics.fill(
+                            (int) margin.left,
+                            (int) margin.top,
+                            (int) (this.getRight() - margin.right),
+                            (int) (this.getBottom() - margin.bottom),
+                            0xFFFF0000
+                    );
+                }
+
+                final var padding = this.getPadding();
+                if (!padding.equals(Insets.NONE)) {
+                    graphics.fill(
+                            (int) (this.getX() + padding.left),
+                            (int) (this.getY() + padding.top),
+                            (int) (this.getRight() - padding.right),
+                            (int) (this.getBottom() - padding.bottom),
+                            0xFF00FF00
+                    );
+                }
+
+            }
+        }
+    }
+
+    public static void debug(
+            final boolean debug
+    ) {
+        Control.debug = debug;
     }
 }

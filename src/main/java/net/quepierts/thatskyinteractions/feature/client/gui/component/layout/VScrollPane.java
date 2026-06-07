@@ -67,9 +67,14 @@ public class VScrollPane extends Pane {
             final float                         delta
     ) {
 
-        final var visualNode = this.getVisualNode();
-        if (visualNode != null) {
-            visualNode.extractRenderState(
+        this.renderDebug(graphics);
+
+        final var visual    = this.getVisualNode();
+        final var pose      = graphics.pose();
+
+        if (visual != null) {
+            pose.pushMatrix();
+            visual.extractRenderState(
                     this,
                     graphics,
                     this.tween(),
@@ -77,9 +82,9 @@ public class VScrollPane extends Pane {
                     mouseY,
                     delta
             );
+            pose.popMatrix();
         }
 
-        final var pose      = graphics.pose();
         final var scroll    = this.scroll0.get() * this.direction.get().getDirection();
 
         final var left      = this.getX();

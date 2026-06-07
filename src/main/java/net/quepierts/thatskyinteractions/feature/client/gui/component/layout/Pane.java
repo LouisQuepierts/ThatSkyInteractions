@@ -13,6 +13,8 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class Pane
@@ -42,6 +44,14 @@ public abstract class Pane
 
     public void addChild(Control child) {
         this.children.add(child);
+    }
+
+    public void addChildren(
+            Control     child,
+            Control...  children
+    ) {
+        this.children.add(child);
+        Collections.addAll(this.children, children);
     }
 
     public void removeChild(Control child) {
