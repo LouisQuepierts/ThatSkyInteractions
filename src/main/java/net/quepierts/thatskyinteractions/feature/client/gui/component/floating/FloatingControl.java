@@ -1,0 +1,166 @@
+package net.quepierts.thatskyinteractions.feature.client.gui.component.floating;
+
+import lombok.Getter;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
+import net.quepierts.thatskyinteractions.core.property.Vector2fProperty;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
+import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
+import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
+import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
+import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.jspecify.annotations.NonNull;
+
+public class FloatingControl extends Control {
+
+    @Getter
+    private final Vector2fProperty      positionProperty = new Vector2fProperty();
+
+    @Getter
+    private final BooleanProperty       restrictPosition = new BooleanProperty(false);
+
+    @Getter
+    private final FloatingControlHandle handle;
+
+    private final WorldPositionSupplier worldPosition;
+
+    private boolean                     initialized = false;
+
+    private float                       tx;
+    private float                       ty;
+    private TweenHandle                 positionTween;
+
+    public static @NonNull FloatingControlConstructor fixed(
+            final int                   width,
+            final int                   height,
+            final Component             message,
+            final Vector3f              position
+    ) {
+        return new FloatingControlConstructor() {
+            @Override
+            protected @NonNull FloatingControl construct(@NonNull final FloatingControlHandle handle, @NonNull final TweenScope tween) {
+                return new FloatingControl(
+                        tween,
+                        width,
+                        height,
+                        message,
+                        handle,
+                        (dest) -> dest.set(position)
+                );
+            }
+        };
+    }
+
+    public static @NonNull FloatingControlConstructor dynamic(
+            final int                   width,
+            final int                   height,
+            final Component             message,
+            final WorldPositionSupplier supplier
+    ) {
+        return new FloatingControlConstructor() {
+            @Override
+            protected @NonNull FloatingControl construct(@NonNull final FloatingControlHandle handle, @NonNull final TweenScope tween) {
+                return new FloatingControl(
+                        tween,
+                        width,
+                        height,
+                        message,
+                        handle,
+                        supplier
+                );
+            }
+        };
+    }
+
+    protected FloatingControl(
+            final TweenScope            tween,
+            final int                   width,
+            final int                   height,
+            final Component             message,
+            final FloatingControlHandle handle,
+            final WorldPositionSupplier worldPosition
+    ) {
+        super(tween, 0, 0, width, height, message);
+        this.handle = handle;
+        this.worldPosition = worldPosition;
+    }
+
+    public Vector3f getWorldPosition(
+            @NonNull final Vector3f dest
+    ) {
+        this.worldPosition.get(dest);
+        return dest;
+    }
+
+    public void onRemoved() {
+        this.killPositionTween();
+    }
+
+    public interface WorldPositionSupplier {
+        void get(@NonNull final Vector3f dest);
+    }
+
+    @Override
+    public float x() {
+        return this.getPositionProperty().x();
+    }
+
+    @Override
+    public float y() {
+        return this.getPositionProperty().y();
+    }
+
+    public boolean isRestrictPosition() {
+        return this.restrictPosition.get();
+    }
+
+    public void setPosition(
+            final float x,
+            final float y
+    ) {
+        this.killPositionTween();
+        this.getPositionProperty().set(x, y);
+        this.tx = x;
+        this.ty = y;
+    }
+
+    public void toPosition(
+            final float x,
+            final float y
+    ) {
+
+        if (!this.initialized) {
+            this.setPosition(x, y);
+            this.initialized = true;
+        }
+
+        // check distance first
+        if (this.tx == x && this.ty == y) {
+            return;
+        }
+
+        final var distance = this.getPositionProperty().distance(x, y);
+        Ease ease = t -> Mth.sin(t * Mth.HALF_PI);
+
+        this.killPositionTween();
+        this.positionTween = this.tween().to(
+                this.getPositionProperty(),
+                new Vector2f(this.getPositionProperty()),
+                new Vector2f(x, y),
+                Math.clamp(distance * 0.01f, 0.1f, 0.2f),
+                Interpolators.FLOAT2,
+                ease
+        );
+    }
+
+    private void killPositionTween() {
+        if (this.positionTween != null) {
+            this.positionTween.cancel();
+            this.positionTween = null;
+        }
+    }
+}
