@@ -8,6 +8,9 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeHolder;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.IAttributeHolder;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.core.model.ui.Insets;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
@@ -16,9 +19,9 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.function.Consumer;
 
-public class Control extends AbstractWidget {
+public class Control extends AbstractWidget implements IAttributeHolder {
 
-
+    private final AttributeHolder       attributes  = new AttributeHolder();
     private final TweenScope            tween;
 
     @Getter
@@ -96,5 +99,27 @@ public class Control extends AbstractWidget {
 
     protected TweenScope tween() {
         return this.tween;
+    }
+
+    @Override
+    public <T> void setAttribute(
+            final @NonNull AttributeKey<T>  key,
+            @NonNull final T                value
+    ) {
+        this.attributes.setAttribute(key, value);
+    }
+
+    @Override
+    public <T> T getAttribute(
+            final @NonNull AttributeKey<T>  key
+    ) {
+        return this.attributes.getAttribute(key);
+    }
+
+    @Override
+    public <T> boolean hasAttribute(
+            final @NonNull AttributeKey<T>  key
+    ) {
+        return this.attributes.hasAttribute(key);
     }
 }
