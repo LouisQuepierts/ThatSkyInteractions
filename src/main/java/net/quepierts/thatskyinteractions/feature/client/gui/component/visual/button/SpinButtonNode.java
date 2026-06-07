@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.visual.bu
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.RenderOp;
@@ -19,6 +20,7 @@ public class SpinButtonNode implements VisualNode {
     public void extractRenderState(
             @NonNull final Control              control,
             @NonNull final GuiGraphicsExtractor graphics,
+            @NonNull final ColorStack           colors,
             @NonNull final TweenScope           tween,
 
             final int                           mouseX,
@@ -44,11 +46,10 @@ public class SpinButtonNode implements VisualNode {
 
         this.renderOp           .render(
                                     graphics,
-                                    0, 0,
+                colors, 0, 0,
                                     control.getWidth(),
-                                    control.getHeight(),
-                                    0xFFFFFFFF
-                                );
+                                    control.getHeight()
+        );
 
     }
 }

@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 @FunctionalInterface
 public interface VisualNode {
 
-    VisualNode EMPTY = (_, _, _, _, _, _) -> {};
+    VisualNode EMPTY = (_, _, _, _, _, _, _) -> {};
 
     static VisualNode combine(@NonNull VisualNode... nodes) {
 
@@ -73,6 +74,7 @@ public interface VisualNode {
     void extractRenderState(
             @NonNull final Control              control,
             @NonNull final GuiGraphicsExtractor graphics,
+            @NonNull final ColorStack           colors,
             @NonNull final TweenScope           tween,
 
             final int                           mouseX,
@@ -89,6 +91,7 @@ public interface VisualNode {
         public void extractRenderState(
                 @NonNull final Control              control,
                 @NonNull final GuiGraphicsExtractor graphics,
+                @NonNull final ColorStack           colors,
                 @NonNull final TweenScope           tween,
 
                 final int                           mouseX,
@@ -102,6 +105,7 @@ public interface VisualNode {
                 node.extractRenderState(
                         control,
                         graphics,
+                        colors,
                         tween,
 
                         mouseX,

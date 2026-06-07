@@ -16,6 +16,7 @@ import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.HoverNode;
@@ -195,7 +196,7 @@ public class FriendshipTreeComponentFactory {
         final var icon          = extractIcon(node, state);
         final var mColor        = STATED_COLORS[state.ordinal()];
 
-        final var content       = SpinButtonNode.of((graphics, _, _, width, height, _) -> {
+        final var content       = SpinButtonNode.of((graphics, colors, _, _, width, height) -> {
             graphics.blit(
                     RenderPipelines.GUI_TEXTURED,
                     icon,
@@ -240,6 +241,7 @@ public class FriendshipTreeComponentFactory {
         public void extractRenderState(
                 final @NonNull Control              control,
                 final @NonNull GuiGraphicsExtractor graphics,
+                final @NonNull ColorStack           colors,
                 final @NonNull TweenScope           tween,
 
                 final int                           mouseX,
@@ -319,6 +321,7 @@ public class FriendshipTreeComponentFactory {
         public void extractRenderState(
                 final @NonNull Control              control,
                 final @NonNull GuiGraphicsExtractor graphics,
+                final @NonNull ColorStack           colors,
                 final @NonNull TweenScope           tween,
 
                 final int                           mouseX,

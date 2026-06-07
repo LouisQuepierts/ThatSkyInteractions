@@ -3,39 +3,36 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.visual;
 import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
-import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
 public class GeneralVisualNodes {
 
-    public static final VisualNode BASE = (control, graphics, _, _, _, _) -> GeneralRenderOps.BASE.render(
+    public static final VisualNode BASE = (control, graphics, colors, _, _, _, _) -> GeneralRenderOps.BASE.render(
             graphics,
+            colors,
             control.getX(),
             control.getY(),
             control.getWidth(),
-            control.getHeight(),
-            0x80000000
+            control.getHeight()
     );
 
-    public static final VisualNode ROUNDED_BASE = (control, graphics, _, _, _, _) -> GeneralRenderOps.ROUND_BASE.render(
+    public static final VisualNode ROUNDED_BASE = (control, graphics, colors, _, _, _, _) -> GeneralRenderOps.ROUND_BASE.render(
             graphics,
+            colors,
             control.getX(),
             control.getY(),
             control.getWidth(),
-            control.getHeight(),
-            0x80000000
+            control.getHeight()
     );
 
     public static VisualNode fill(
             final int   color
     ) {
-        return (control, graphics, _, _, _, _) -> graphics.fill(
+        return (control, graphics, _, _, _, _, _) -> graphics.fill(
                 control.getX(),
                 control.getY(),
                 control.getX() + control.getWidth(),
@@ -48,7 +45,7 @@ public class GeneralVisualNodes {
             final int   color,
             final float round
     ) {
-        return (control, graphics, _, _, _, _) -> {
+        return (control, graphics, _, _, _, _, _) -> {
 
             final var hw = control.getWidth() / 2;
             final var hh = control.getHeight() / 2;
@@ -74,7 +71,7 @@ public class GeneralVisualNodes {
             final          int                      textureWidth,
             final          int                      textureHeight
     ) {
-        return (control, graphics, _, _, _, _) -> graphics.blit(
+        return (control, graphics, _, _, _, _, _) -> graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 texture,
                 control.getX(),
@@ -90,7 +87,7 @@ public class GeneralVisualNodes {
     public static VisualNode message(
             final @NonNull Component message
     ) {
-        return (control, graphics, _, _, _, _) -> graphics.centeredText(
+        return (control, graphics, _, _, _, _, _) -> graphics.centeredText(
                 Minecraft.getInstance().font,
                 message,
                 control.getX() + control.getWidth() / 2,

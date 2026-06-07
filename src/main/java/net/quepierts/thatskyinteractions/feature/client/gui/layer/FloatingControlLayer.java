@@ -11,6 +11,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingButton;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControl;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControlConstructor;
@@ -47,14 +48,14 @@ public final class FloatingControlLayer implements GuiLayer {
     private FloatingControlLayer() {
 
         // test
-        this.add(FloatingButton.fixed(
+        /*this.add(FloatingButton.fixed(
                 Component.empty(),
                 new Vector3f(0.0f, 64.0f, 0.0f),
                 _ -> {}
         ).withVisualNode(FloatingButtonNode.texture(
                 ThatSkyInteractions.location("textures/gui/ignite.png")
         )));
-
+*/
 
     }
 
@@ -125,7 +126,7 @@ public final class FloatingControlLayer implements GuiLayer {
             final int                           mouseY
     ) {
 
-        final var delta = tracker.getRealtimeDeltaTicks();
+        final var delta     = tracker.getRealtimeDeltaTicks();
         this.tickHandler.tick(delta * 0.05f);
 
         this.update(mouseX, mouseY);
@@ -134,8 +135,10 @@ public final class FloatingControlLayer implements GuiLayer {
             return;
         }
 
+        final var colors    = new ColorStack();
+
         for (final var control : this.controls.values()) {
-            control.extractRenderState(graphics, mouseX, mouseY, delta);
+            control.extractRenderState(graphics, colors, mouseX, mouseY, delta);
         }
 
     }

@@ -9,21 +9,21 @@ import org.jspecify.annotations.NonNull;
 @UtilityClass
 public class GeneralRenderOps {
 
-    public static final RenderOp BASE = (graphics, x, y, width, height, color) -> {
+    public static final RenderOp BASE = (graphics, colors, x, y, width, height) -> {
         graphics.fill(
                 (int) x,
                 (int) y,
                 (int) (x + width),
                 (int) (y + height),
-                color
+                colors.argb()
         );
     };
 
-    public static final RenderOp ROUND_BASE = (graphics, x, y, width, height, color) -> {
+    public static final RenderOp ROUND_BASE = (graphics, colors, x, y, width, height) -> {
         SdfGraphics.getInstance()
                 .reset()
                 .round(6.0f)
-                .color(color)
+                .color(colors.argb())
                 .box(
                         x, y,
                         width,
@@ -37,7 +37,7 @@ public class GeneralRenderOps {
             final          int                      textureWidth,
             final          int                      textureHeight
     ) {
-        return (graphics, x, y, width, height, color) -> graphics.blit(
+        return (graphics, colors, x, y, width, height) -> graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 texture,
                 (int) (x - width / 2),
@@ -49,7 +49,7 @@ public class GeneralRenderOps {
                 textureHeight,
                 textureWidth,
                 textureHeight,
-                color
+                colors.argb()
         );
     }
 

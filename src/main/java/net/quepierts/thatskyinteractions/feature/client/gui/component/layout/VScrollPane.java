@@ -79,6 +79,7 @@ public class VScrollPane extends Pane {
             visual.extractRenderState(
                     this,
                     graphics,
+                    colors,
                     this.tween(),
                     mouseX,
                     mouseY,

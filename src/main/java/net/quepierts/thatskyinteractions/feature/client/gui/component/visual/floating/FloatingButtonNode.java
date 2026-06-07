@@ -8,13 +8,12 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingButton;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.RenderOp;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
-import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import org.jspecify.annotations.NonNull;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -28,7 +27,7 @@ public final class FloatingButtonNode implements VisualNode {
             @NonNull final Identifier identifier
     ) {
         return new FloatingButtonNode(
-                (graphics, _, _, _, _, color) -> {
+                (graphics, colors, _, _, _, _) -> {
                     graphics.blit(
                             RenderPipelines.GUI_TEXTURED,
                             identifier,
@@ -37,7 +36,7 @@ public final class FloatingButtonNode implements VisualNode {
                             28, 28,
                             32, 32,
                             32, 32,
-                            color
+                            colors.argb()
                     );
                 }
         );
@@ -47,7 +46,7 @@ public final class FloatingButtonNode implements VisualNode {
             @NonNull final Identifier identifier
     ) {
         return new FloatingButtonNode(
-                (graphics, _, _, _, _, color) -> {
+                (graphics, colors, _, _, _, _) -> {
                     graphics.blitSprite(
                             RenderPipelines.GUI_TEXTURED,
                             identifier,
@@ -55,7 +54,7 @@ public final class FloatingButtonNode implements VisualNode {
                             -14, -28,
                             0, 0,
                             32, 32,
-                            color
+                            colors.argb()
                     );
                 }
         );
@@ -65,6 +64,7 @@ public final class FloatingButtonNode implements VisualNode {
     public void extractRenderState(
             @NonNull final Control              control,
             @NonNull final GuiGraphicsExtractor graphics,
+            @NonNull final ColorStack           colors,
             @NonNull final TweenScope           tween,
 
             final int                           mouseX,
@@ -108,10 +108,9 @@ public final class FloatingButtonNode implements VisualNode {
 
             this.renderOp           .render(
                                             graphics,
-                                            0, 0,
-                                            0, 0,
-                                            0x00ffffff | alpha8 << 24
-                                    );
+                    colors, 0, 0,
+                                            0, 0
+            );
 
         }
 

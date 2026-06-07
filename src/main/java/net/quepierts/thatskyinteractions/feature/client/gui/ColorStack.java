@@ -1,5 +1,7 @@
 package net.quepierts.thatskyinteractions.feature.client.gui;
 
+import net.minecraft.util.ARGB;
+
 import java.util.Arrays;
 
 public final class ColorStack {
@@ -97,6 +99,29 @@ public final class ColorStack {
                 | (this.r[this.top] << 16)
                 | (this.g[this.top] << 8)
                 | this.b[this.top];
+    }
+
+    public int argb(
+            int alpha,
+            int red,
+            int green,
+            int blue
+    ) {
+        return ARGB.color(
+                clamp(alpha * this.a[this.top] / 255),
+                clamp(red   * this.r[this.top] / 255),
+                clamp(green * this.g[this.top] / 255),
+                clamp(blue  * this.b[this.top] / 255)
+        );
+    }
+
+    public int argb(int argb) {
+        return this.argb(
+                ARGB.alpha(argb),
+                ARGB.red(argb),
+                ARGB.green(argb),
+                ARGB.blue(argb)
+        );
     }
 
     public void clear() {

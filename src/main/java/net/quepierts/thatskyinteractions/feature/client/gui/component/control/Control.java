@@ -107,6 +107,7 @@ public class Control extends AbstractWidget implements IAttributeHolder {
             this.visualNode.extractRenderState(
                     this,
                     graphics,
+                    colors,
                     this.tween,
                     mouseX,
                     mouseY,

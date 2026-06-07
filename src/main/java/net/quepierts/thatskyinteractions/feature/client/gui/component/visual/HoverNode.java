@@ -2,13 +2,11 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.visual;
 
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.quepierts.thatskyinteractions.core.property.IntProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
-import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
-import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolators;
 import org.jspecify.annotations.NonNull;
 
 @RequiredArgsConstructor(staticName = "of")
@@ -22,6 +20,7 @@ public class HoverNode implements VisualNode {
     public void extractRenderState(
             @NonNull final Control              control,
             @NonNull final GuiGraphicsExtractor graphics,
+            @NonNull final ColorStack           colors,
             @NonNull final TweenScope           tween,
 
             final int                           mouseX,
@@ -43,10 +42,10 @@ public class HoverNode implements VisualNode {
         if (alpha != 0) {
             this.renderOp.render(
                     graphics,
+                    colors,
                     x, y,
                     control.getWidth(),
-                    control.getHeight(),
-                    0x00fffee0 | alpha << 24
+                    control.getHeight()
             );
         }
 

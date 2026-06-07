@@ -24,7 +24,7 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
     @Override
     protected Control createView() {
 
-        VisualNode visualNode = (control, graphics, tween, mouseX, mouseY, delta) -> {
+        VisualNode visualNode = (control, graphics, colors, tween, mouseX, mouseY, delta) -> {
             final var x = control.getX() + control.getWidth() / 2;
             final var y = control.getY() + control.getHeight() / 2;
 
