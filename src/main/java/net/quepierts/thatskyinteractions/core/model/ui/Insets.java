@@ -32,4 +32,12 @@ public final class Insets {
         this.set(h, v, h, v);
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        return obj instanceof Insets other &&
+                this.left == other.left &&
+                this.top == other.top &&
+                this.right == other.right &&
+                this.bottom == other.bottom;
+    }
 }
