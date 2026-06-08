@@ -5,32 +5,32 @@ import net.neoforged.api.distmarker.Dist;
 import net.quepierts.thatskyinteractions.feature.utils.DistServices;
 import org.jspecify.annotations.NonNull;
 
-public interface ClientFriendshipUiHandler {
+public abstract class ClientFriendshipUiHandler {
 
-    @NonNull ClientFriendshipUiHandler INSTANCE
+    private static final @NonNull ClientFriendshipUiHandler INSTANCE
             = DistServices.load(Dist.CLIENT, ClientFriendshipUiHandler.class);
 
     @DistServices.Default
-    @NonNull ClientFriendshipUiHandler DEFAULT
+    private static final @NonNull ClientFriendshipUiHandler DEFAULT
             = new ClientFriendshipUiHandler() {};
 
-    static void invite(
+    public static void invite(
             @NonNull final Player requester
     ) {
         INSTANCE._invite(requester);
     }
 
-    static void cancel(
+    public static void cancel(
             @NonNull final Player requester
     ) {
         INSTANCE._cancel(requester);
     }
 
-    default void _invite(
+    protected void _invite(
             @NonNull final Player requester
     ) { }
 
-    default void _cancel(
+    protected void _cancel(
             @NonNull final Player requester
     ) { }
 

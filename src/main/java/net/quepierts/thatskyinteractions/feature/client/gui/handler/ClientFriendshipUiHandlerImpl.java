@@ -11,10 +11,10 @@ import net.quepierts.thatskyinteractions.feature.gui.handler.ClientFriendshipUiH
 import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;
 import org.jspecify.annotations.NonNull;
 
-public final class ClientFriendshipUiHandlerImpl implements ClientFriendshipUiHandler {
+public final class ClientFriendshipUiHandlerImpl extends ClientFriendshipUiHandler {
 
     @Override
-    public void _invite(final @NonNull Player requester) {
+    protected void _invite(final @NonNull Player requester) {
         final var attachment    = ClientPlayerFriendshipSystem.getLocalFriendshipData();
         final var invite        = attachment.getInvite(requester);
 
@@ -30,9 +30,13 @@ public final class ClientFriendshipUiHandlerImpl implements ClientFriendshipUiHa
                                                     (float) requester.getY() + 2.0f,
                                                     (float) requester.getZ()
                                             ),
-                                            h -> {
+                                            (btn, tween) -> {
                                                 ClientPlayerFriendshipSystem.acceptUnlock(requester);
-                                                FloatingControlLayer.INSTANCE.remove(h);
+
+                                                tween.wait(
+                                                        btn::markRemoved,
+                                                        0.5f
+                                                );
                                             }
                                     ).withVisualNode(FloatingButtonNode.texture(
                                             ThatSkyInteractions.location("textures/gui/be_friend.png")
@@ -43,7 +47,7 @@ public final class ClientFriendshipUiHandlerImpl implements ClientFriendshipUiHa
     }
 
     @Override
-    public void _cancel(final @NonNull Player requester) {
+    protected void _cancel(final @NonNull Player requester) {
         final var attachment    = ClientPlayerFriendshipSystem.getLocalFriendshipData();
         final var handle        = attachment.getInvite(requester);
 
