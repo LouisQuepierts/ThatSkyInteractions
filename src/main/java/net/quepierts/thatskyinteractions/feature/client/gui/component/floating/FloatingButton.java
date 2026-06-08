@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.floating;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
+import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
 import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;

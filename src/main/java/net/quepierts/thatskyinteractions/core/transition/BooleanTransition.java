@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.client.gui;
+package net.quepierts.thatskyinteractions.core.transition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

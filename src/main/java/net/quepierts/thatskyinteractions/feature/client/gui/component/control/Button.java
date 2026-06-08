@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.EnumProperty;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.core.property.PropertyEnum;
-import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
+import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;

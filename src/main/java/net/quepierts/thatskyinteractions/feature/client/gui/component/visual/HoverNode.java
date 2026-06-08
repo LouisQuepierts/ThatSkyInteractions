@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.visual;
 
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
+import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
