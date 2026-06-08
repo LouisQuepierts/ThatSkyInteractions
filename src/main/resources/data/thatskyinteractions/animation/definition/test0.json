@@ -1,0 +1,10 @@
+{
+  "sources": {
+    "main": {
+      "source": "thatskyinteractions:debug.test0",
+      "fadeIn": 0.25,
+      "fadeOut": 0.25
+    }
+  },
+  "override": "thatskyinteractions:modified"
+}
