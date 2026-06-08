@@ -135,6 +135,11 @@ public final class TweenScopeImpl
     }
 
     @Override
+    public void clear() {
+        this.scheduler.clear();
+    }
+
+    @Override
     public void tick(final float delta) {
         this.scheduler.update(delta);
     }

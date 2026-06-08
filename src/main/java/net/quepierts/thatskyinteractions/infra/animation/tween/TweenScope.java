@@ -95,6 +95,8 @@ public interface TweenScope {
 
     boolean isRunning();
 
+    void clear();
+
     class Global {
         private static TweenScope instance;
     }

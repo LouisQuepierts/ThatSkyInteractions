@@ -28,4 +28,8 @@ public final class TweenScheduler {
     public boolean isRunning() {
         return !this.tasks.isEmpty();
     }
+
+    public void clear() {
+        this.tasks.clear();
+    }
 }
