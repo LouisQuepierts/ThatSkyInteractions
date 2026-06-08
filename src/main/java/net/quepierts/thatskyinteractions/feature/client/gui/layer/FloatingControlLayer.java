@@ -2,6 +2,8 @@ package net.quepierts.thatskyinteractions.feature.client.gui.layer;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -31,6 +33,7 @@ public final class FloatingControlLayer implements GuiLayer {
 
     private final Long2ObjectMap<FloatingControl>   controls    = new Long2ObjectOpenHashMap<>();
     private final ConcurrentLinkedDeque<Runnable>   pending     = new ConcurrentLinkedDeque<>();
+    private final LongList                          removing    = new LongArrayList();
     private final AtomicInteger                     nextId      = new AtomicInteger(0);
 
     private final Matrix4f                          projection  = new Matrix4f();
@@ -72,10 +75,8 @@ public final class FloatingControlLayer implements GuiLayer {
             @NonNull FloatingControlHandle handle
     ) {
         this.pending.offer(() -> {
-            final var removed = this.controls.remove(handle.id());
-            if (removed != null) {
-                removed.onRemoved();
-            }
+            final var removed = this.controls.get(handle.id());
+            removed.markRemoved();
         });
     }
 
@@ -171,10 +172,24 @@ public final class FloatingControlLayer implements GuiLayer {
         final var projection    = camera.getViewRotationProjectionMatrix(this.projection);
         final var useMouse      = !minecraft.mouseHandler.isMouseGrabbed();
 
+        float cx, cy;
+        if (useMouse) {
+            cx                  = mouseX;
+            cy                  = mouseY;
+        } else {
+            cx                  = centerX;
+            cy                  = centerY;
+        }
+
         float nearest           = Float.MAX_VALUE;
 
         for (final var control : this.controls.values()) {
             control             .setFocused(false);
+
+            if (control.isRemoved()) {
+                this.removing.add(control.getHandle().id());
+                continue;
+            }
 
             final var position  = control.getWorldPosition(this.position).sub(cameraPos);
             final var distance  = position.length();
@@ -209,7 +224,22 @@ public final class FloatingControlLayer implements GuiLayer {
                 continue;
             }
 
-            if (useMouse) {
+            if (this.selected != -1) {
+                continue;
+            }
+
+            final var d = control.distanceTo(cx, cy);
+
+            if (d > 0) {
+                continue;
+            }
+
+            if (d < nearest) {
+                nearest = d;
+                this.selected = control.getHandle().id();
+            }
+
+            /*if (useMouse) {
                 if (this.selected != -1) {
                     continue;
                 }
@@ -234,13 +264,22 @@ public final class FloatingControlLayer implements GuiLayer {
                     nearest = d;
                     this.selected = control.getHandle().id();
                 }
-            }
+            }*/
         }
 
         if (this.selected != -1) {
             final var control   = this.controls.get(this.selected);
             control             .setFocused(true);
         }
+
+        for (final long id : this.removing) {
+            final var removed = this.controls.remove(id);
+            if (removed != null) {
+                removed.onRemoved();
+            }
+        }
+
+        this.removing.clear();
 
     }
 

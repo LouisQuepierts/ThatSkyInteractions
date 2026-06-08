@@ -115,11 +115,14 @@ public class FloatingButton extends FloatingControl {
     @Override
     public void onInteract() {
         if (this.callback != null) {
-            this.callback.run(this.getHandle());
+            this.callback.run(this, this.tween());
         }
     }
 
     public interface InteractCallback {
-        void run(@NonNull final FloatingControlHandle handle);
+        void run(
+                @NonNull final FloatingButton       button,
+                @NonNull final TweenScope           scope
+        );
     }
 }

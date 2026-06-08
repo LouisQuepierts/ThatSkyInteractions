@@ -34,6 +34,9 @@ public class FloatingControl extends Control {
 
     private boolean                     initialized = false;
 
+    @Getter
+    private boolean                     removed;
+
     private float                       tx;
     private float                       ty;
     private TweenHandle                 positionTween;
@@ -98,6 +101,10 @@ public class FloatingControl extends Control {
     ) {
         this.worldPosition.get(dest);
         return dest;
+    }
+
+    public void markRemoved() {
+        this.removed = true;
     }
 
     public void onRemoved() {
