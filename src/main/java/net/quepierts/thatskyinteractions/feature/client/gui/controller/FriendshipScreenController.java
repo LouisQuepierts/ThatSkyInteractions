@@ -63,10 +63,7 @@ public final class FriendshipScreenController extends ScreenController<Friendshi
 
         final var confirm = new ConfirmData(
                 icon,
-                new Component[] {
-                        Component.literal("test message1"),
-                        Component.literal("test message2 its a long message")
-                },
+                new Component[] { behaviour.getUnlockMessage(node) },
                 () -> ClientPlayerFriendshipSystem.unlockFriendshipNode(model, index),
                 null
         );

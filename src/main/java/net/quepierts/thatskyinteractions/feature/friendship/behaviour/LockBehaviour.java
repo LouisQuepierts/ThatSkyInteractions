@@ -1,5 +1,7 @@
 package net.quepierts.thatskyinteractions.feature.friendship.behaviour;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
@@ -28,6 +30,20 @@ public final class LockBehaviour implements FriendshipBehaviour {
             final @NonNull  NodeState                   state
     ) {
         return ICON;
+    }
+
+    @Override
+    public @NonNull Component getUnlockMessage(
+            final @NonNull FriendshipTreeNode           node
+    ) {
+        return Component.translatable(
+                "gui.thatskyinteractions.message.unlock.lock.request",
+                Component.object(FriendshipBehaviour.SPRITE_CANDLE)
+                        .withStyle(Styles.SHADOWLESS),
+                Component.translatable("gui.thatskyinteractions.message.unlock.lock.intimacy")
+                        .withStyle(Styles.BOLD)
+                        .withColor(FriendshipBehaviour.HIGHLIGHT_TEXT_COLOR)
+        ).withColor(FriendshipBehaviour.NORMAL_TEXT_COLOR);
     }
 
 }

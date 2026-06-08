@@ -2,9 +2,12 @@ package net.quepierts.thatskyinteractions.feature.friendship.behaviour;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
+import net.quepierts.thatskyinteractions.core.model.Currency;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import org.jspecify.annotations.NonNull;
 
@@ -36,5 +39,27 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
                 raw.getNamespace(),
                 "textures/icon/interaction/" + raw.getPath() + ".png"
         );
+    }
+
+    @Override
+    public @NonNull Component getUnlockMessage(
+            final @NonNull FriendshipTreeNode           node
+    ) {
+
+        // format: "id" or "namespace:id"
+        // required: "id"
+        final var identifier    = node.getMetadata().get("interaction");
+        final var idx           = identifier.indexOf(':');
+        final var name          = idx == -1 ? identifier : identifier.substring(idx + 1);
+
+        return Component.translatable(
+                "gui.thatskyinteractions.message.unlock.interaction.request",
+                Component.object(node.getCost().currency() == Currency.WHITE_CANDLE ? SPRITE_CANDLE : SPRITE_ACS)
+                        .withStyle(Styles.SHADOWLESS),
+                Component.translatable("interaction.thatskyinteractions." + name)
+                        .withColor(FriendshipBehaviour.HIGHLIGHT_TEXT_COLOR)
+                        .withStyle(Styles.BOLD)
+        ).withColor(FriendshipBehaviour.NORMAL_TEXT_COLOR);
+
     }
 }
