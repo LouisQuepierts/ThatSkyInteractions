@@ -52,6 +52,16 @@ public record PlayerFriendshipRequestPacket(
         );
     }
 
+    public static PlayerFriendshipRequestPacket accept(
+            final @NonNull UUID target
+    ) {
+        return new PlayerFriendshipRequestPacket(
+                Operation.ACCEPT,
+                target,
+                -1
+        );
+    }
+
     public static PlayerFriendshipRequestPacket interact(
             final @NonNull UUID target,
             final int index
@@ -79,6 +89,11 @@ public record PlayerFriendshipRequestPacket(
                 PlayerFriendshipSystem.invite(requester, receiver, this.index);
                 break;
             }
+            case ACCEPT: {
+                // should swap the order, because the sender is receiver instead of requester
+                PlayerFriendshipSystem.accept(receiver, requester);
+                break;
+            }
             case INTERACT: {
                 PlayerFriendshipSystem.interact(requester, receiver, this.index);
                 break;
@@ -93,6 +108,7 @@ public record PlayerFriendshipRequestPacket(
 
     public enum Operation {
         UNLOCK,
+        ACCEPT,
         INTERACT;
 
         static final Operation[] VALUES = values();

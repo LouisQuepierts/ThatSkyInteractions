@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -14,7 +15,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.FriendshipScreen;
-import net.quepierts.thatskyinteractions.feature.client.input.TSIKeys;
+import net.quepierts.thatskyinteractions.feature.client.input.TsiKeys;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipRequestPacket;
@@ -48,6 +49,18 @@ public class ClientPlayerFriendshipSystem {
         );
     }
 
+    public static void acceptUnlock(
+            final Player requester
+    ) {
+
+        ClientPacketDistributor.sendToServer(
+                PlayerFriendshipRequestPacket.accept(
+                        requester.getUUID()
+                )
+        );
+
+    }
+
     public static void interactFriendshipNode(
             final @NonNull FriendshipTreeData data,
             final int node
@@ -79,7 +92,7 @@ public class ClientPlayerFriendshipSystem {
             return;
         }
 
-        if (!TSIKeys.KEY_INTERACT.isDown()) {
+        if (!TsiKeys.KEY_INTERACT.isDown()) {
             return;
         }
 
@@ -105,5 +118,4 @@ public class ClientPlayerFriendshipSystem {
         event                   .setCanceled(true);
 
     }
-
 }

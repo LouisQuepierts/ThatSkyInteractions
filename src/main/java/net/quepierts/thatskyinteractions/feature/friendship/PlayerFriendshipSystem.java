@@ -60,8 +60,7 @@ public class PlayerFriendshipSystem {
 
     }
 
-    // call by Event
-    private static void accept(
+    public static void accept(
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver
     ) {
@@ -74,6 +73,7 @@ public class PlayerFriendshipSystem {
 
         attachment.removeInvite(requester);
 
+        PlayerInteractionSystem.accept(requester, receiver, true);
         PlayerFriendshipSystem.unlock(requester, receiver, id);
 
     }
@@ -225,7 +225,7 @@ public class PlayerFriendshipSystem {
 
     }
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onAcceptedInteraction(final PlayerInteractionEvent.Accept.Post event) {
 
         if (event.isClient()) {
@@ -241,5 +241,5 @@ public class PlayerFriendshipSystem {
                 (ServerPlayer) event.getReceiver()
         );
 
-    }
+    }*/
 }

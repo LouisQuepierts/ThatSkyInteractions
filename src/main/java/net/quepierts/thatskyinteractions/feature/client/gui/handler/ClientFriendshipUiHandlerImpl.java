@@ -30,8 +30,9 @@ public final class ClientFriendshipUiHandlerImpl implements ClientFriendshipUiHa
                                                     (float) requester.getY() + 2.0f,
                                                     (float) requester.getZ()
                                             ),
-                                            _ -> {
-                                                // todo
+                                            h -> {
+                                                ClientPlayerFriendshipSystem.acceptUnlock(requester);
+                                                FloatingControlLayer.INSTANCE.remove(h);
                                             }
                                     ).withVisualNode(FloatingButtonNode.texture(
                                             ThatSkyInteractions.location("textures/gui/be_friend.png")

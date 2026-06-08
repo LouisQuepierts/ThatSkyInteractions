@@ -106,13 +106,15 @@ public final class FloatingControlLayer implements GuiLayer {
 
     }
 
-    public void interact() {
+    public boolean interact() {
         if (this.selected != -1) {
             final var control = this.controls.get(this.selected);
             if (control != null) {
                 control.onInteract();
             }
+            return true;
         }
+        return false;
     }
 
     void render(
