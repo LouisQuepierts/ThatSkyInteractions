@@ -24,12 +24,17 @@ public class PlayerControlHook {
             return;
         }
 
-        final var mEvent        = new LocalPlayerMovedEvent(player, moveVector);
+        final var mEvent        = new LocalPlayerMovedEvent(player, input.keyPresses, moveVector);
         NeoForge.EVENT_BUS      .post(mEvent);
 
         if (mEvent.isCanceled()) {
             input.keyPresses    = Input.EMPTY;
             ((ClientInputAccessor) input).a4j$setMoveVector(Vec2.ZERO);
+        }
+
+        if (mEvent.isRedirected()) {
+            input.keyPresses    = mEvent.getRedirectInput();
+            ((ClientInputAccessor) input).a4j$setMoveVector(mEvent.getRedirectVector());
         }
 
     }
