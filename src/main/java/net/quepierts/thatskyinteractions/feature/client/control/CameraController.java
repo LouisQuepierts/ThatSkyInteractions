@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.core.transition.FloatTransition;
-import net.quepierts.thatskyinteractions.feature.client.input.TsiKeys;
 import net.quepierts.thatskyinteractions.feature.utils.Interpolators;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -25,14 +24,16 @@ public final class CameraController {
     final FloatTransition tXRot = new FloatTransition(
             Eases.QUAD_OUT,
             Interpolators.DEGREE,
-            0.5f
+            0.1f
     );
 
     final FloatTransition tYRot = new FloatTransition(
             Eases.QUAD_OUT,
             Interpolators.DEGREE,
-            0.5f
+            0.1f
     );
+
+    boolean unlocked;
 
     int dCounter;
     int rCounter;
@@ -41,14 +42,18 @@ public final class CameraController {
         tDistance.set(4.0f);
     }
 
-    public boolean isEnabled() {
+    public boolean isLocked() {
         final var minecraft = Minecraft.getInstance();
-        final var unlocked = TsiKeys.KEY_INTERACT.isDown() && !minecraft.options.getCameraType().isFirstPerson();
+        final var unlocked = this.unlocked && !minecraft.options.getCameraType().isFirstPerson();
         tUnlock.update(Tween.GLOBAL, unlocked);
         return !unlocked;
     }
 
     public void turn(final float xo, final float yo) {
+        if (xo == 0.0f && yo == 0.0f) {
+            return;
+        }
+
         float xDelta = yo * 0.15F;
         float yDelta = xo * 0.15F;
 
@@ -87,14 +92,18 @@ public final class CameraController {
         rCounter++;
         dCounter++;
 
-        if (rCounter == 300) {
-            this.reset(yaw, pitch);
-            rCounter = -300;
+        if (rCounter == 600) {
+            if (mirrored) {
+                this.reset(yaw + 180f, -pitch);
+            } else {
+                this.reset(yaw, pitch);
+            }
+            rCounter = 0;
         }
 
-        if (dCounter == 300) {
+        if (dCounter == 600) {
             tDistance.update(Tween.GLOBAL, 4.0f);
-            dCounter = -300;
+            dCounter = 0;
         }
 
         final var transition = tUnlock.getValue();
@@ -117,7 +126,7 @@ public final class CameraController {
     }
 
     private void reset(final float yaw, final float pitch) {
-        tXRot.update(Tween.GLOBAL, Mth.wrapDegrees(pitch));
+//        tXRot.update(Tween.GLOBAL, Mth.wrapDegrees(pitch));
         tYRot.update(Tween.GLOBAL, Mth.wrapDegrees(yaw));
     }
 
@@ -131,6 +140,22 @@ public final class CameraController {
         }
 
         setter.set(Mth.lerp(transition, currentDistance, tDistance.getValue()));
+    }
+
+    public float getXRot() {
+        return tXRot.getValue();
+    }
+
+    public float getYRot() {
+        return tYRot.getValue();
+    }
+
+    public void toggle() {
+        toggle(!this.unlocked);
+    }
+
+    public void toggle(boolean unlocked) {
+        this.unlocked = unlocked;
     }
 
     @FunctionalInterface

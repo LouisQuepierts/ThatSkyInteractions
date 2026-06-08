@@ -26,11 +26,19 @@ public class TsiKeys {
             CATEGORY
     );
 
+    public static final KeyMapping KEY_UNLOCK_CAMERA = new KeyMapping(
+            "key.thatskyinteractions.unlock_camera",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_EQUAL,
+            CATEGORY
+    );
+
     public static final KeyMapping KEY_OPEN_EXPRESSION = new KeyMapping(
             "key.thatskyinteractions.open_expression",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_KP_0,
+            GLFW.GLFW_KEY_RIGHT_BRACKET,
             CATEGORY
     );
 
@@ -39,6 +47,7 @@ public class TsiKeys {
     public static void onRegisterKeyMapping(final RegisterKeyMappingsEvent event) {
         event.registerCategory(CATEGORY);
         event.register(KEY_INTERACT);
+        event.register(KEY_UNLOCK_CAMERA);
         event.register(KEY_OPEN_EXPRESSION);
     }
 
