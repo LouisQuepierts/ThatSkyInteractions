@@ -84,17 +84,17 @@ public record InteractionRequestPacket(
         final var level         = player.level();
         final var target        = level.getPlayerByUUID(this.uuid());
 
-        if (!(target instanceof ServerPlayer receiver)) {
+        if (!(target instanceof ServerPlayer other)) {
             return;
         }
 
         switch (this.operation()) {
             case Operation.INVITE: {
-                PlayerInteractionSystem.invite(sender, receiver, this.identifier().get());
+                PlayerInteractionSystem.invite(sender, other, this.identifier().get());
                 break;
             }
             case Operation.ACCEPT: {
-                PlayerInteractionSystem.accept(sender, receiver, false);
+                PlayerInteractionSystem.accept(other, sender, false);
                 break;
             }
         }

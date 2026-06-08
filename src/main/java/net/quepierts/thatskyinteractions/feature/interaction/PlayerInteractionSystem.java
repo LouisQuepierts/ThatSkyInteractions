@@ -43,9 +43,10 @@ public class PlayerInteractionSystem {
 
     @SubscribeEvent
     public static void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
-        // test
         final var entity = event.getEntity();
-        log.info("Player {} logged out, id {}", entity.getName().getString(), entity.getId());
+        if (entity instanceof ServerPlayer player) {
+            PlayerInteractionSystem.cancel(player);
+        }
     }
 
     @SubscribeEvent
@@ -67,6 +68,10 @@ public class PlayerInteractionSystem {
         return PlayerInteractionAttachment.getAttachment(player);
     }
 
+    /*
+    * Order matters
+    * Requester
+    * */
     public static void invite(
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver,
@@ -219,9 +224,14 @@ public class PlayerInteractionSystem {
         final var reqData   = PlayerInteractionSystem.getInteractionData(requester);
         final var sent      = reqData.getSent();
 
+
         if (sent == null) {
             return;
         }
+
+        // change order
+        // if other is not online, requester still can cancel the invite
+        reqData.cancelSent();
 
         final var level     = requester.level();
         final var other     = level.getPlayerByUUID(sent.getOther());
@@ -235,10 +245,9 @@ public class PlayerInteractionSystem {
             return;
         }
 
-        final var type      = reqData.getSent().getType();
-
-        reqData.cancelSent();
         recData.cancelReceived(requester);
+
+        final var type      = reqData.getSent().getType();
 
         PacketDistributor.sendToPlayer(
                 requester,
