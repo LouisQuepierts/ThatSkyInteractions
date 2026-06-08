@@ -40,6 +40,8 @@ public class HoverNode implements VisualNode {
         final var alpha         = (int) (255 * t);
 
         if (alpha != 0) {
+            colors.push();
+            colors.mul(alpha, 0xff, 0xfe, 0xe0);
             this.renderOp.render(
                     graphics,
                     colors,
@@ -47,6 +49,7 @@ public class HoverNode implements VisualNode {
                     control.getWidth(),
                     control.getHeight()
             );
+            colors.pop();
         }
 
     }

@@ -61,8 +61,9 @@ public class TextBlock extends Control {
             final int                           mouseY,
             final float                         delta
     ) {
-        super.extractWidgetRenderState(
+        super.extractControlRenderState(
                 graphics,
+                colors,
                 mouseX,
                 mouseY,
                 delta

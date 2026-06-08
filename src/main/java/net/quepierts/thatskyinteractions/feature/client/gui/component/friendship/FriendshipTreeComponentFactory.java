@@ -210,7 +210,7 @@ public class FriendshipTreeComponentFactory {
                     32,
                     32,
                     32,
-                    mColor
+                    colors.argb(mColor)
             );
         });
 
@@ -279,7 +279,7 @@ public class FriendshipTreeComponentFactory {
                     .reset()
 
                     .round(0.5f)
-                    .color(this.color)
+                    .color(colors.argb(this.color))
 
                     .light(5.0f)
                     .segment(
@@ -334,7 +334,7 @@ public class FriendshipTreeComponentFactory {
                     this.price,
                     control.getX() + 32,
                     control.getY() + 32,
-                    0xFFFFFFFF
+                    colors.argb(0xffffffff)
             );
             graphics.blit(
                     RenderPipelines.GUI_TEXTURED,
@@ -349,7 +349,7 @@ public class FriendshipTreeComponentFactory {
                     16,
                     16,
                     16,
-                    0xFFFFFFFF
+                    colors.argb(0xffffffff)
             );
 
         }

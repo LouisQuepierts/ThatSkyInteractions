@@ -69,8 +69,9 @@ public abstract class Pane
             final float                         delta
     ) {
 
-        super.extractWidgetRenderState(
+        super.extractControlRenderState(
                 graphics,
+                colors,
                 mouseX,
                 mouseY,
                 delta
@@ -95,7 +96,7 @@ public abstract class Pane
         }
 
         for (final var child : children) {
-            child.extractRenderState(graphics, mouseX, mouseY, delta);
+            child.extractRenderState(graphics, colors, mouseX, mouseY, delta);
         }
 
         if (clip) {

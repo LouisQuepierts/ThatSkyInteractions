@@ -105,6 +105,7 @@ public class VScrollPane extends Pane {
         for (final var child : this.getChildren()) {
             child.extractRenderState(
                     graphics,
+                    colors,
                     mouseX,
                     (int) (mouseY + scroll),
                     delta

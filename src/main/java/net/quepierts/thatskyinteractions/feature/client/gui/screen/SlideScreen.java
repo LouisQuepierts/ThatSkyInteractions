@@ -60,7 +60,11 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
     ) {
         final var pose  = graphics.pose();
         final var width = this.sliderWide.get();
-        final var x     = this.width - this.transition.getValue() * width;
+        final var trans = this.transition.getValue();
+        final var x     = this.width - trans * width;
+
+        colors.push();
+        colors.mul(trans, 1.0f, 1.0f, 1.0f);
 
         pose.pushMatrix();
         pose.translate(x, 0);
@@ -70,11 +74,12 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
                 0,
                 width,
                 this.height,
-                0xc0101010
+                colors.argb(0xc0, 0x10, 0x10, 0x10)
         );
 
         super.extractAnimatableRenderState(graphics, colors, (int) (mouseX - x), mouseY, delta);
 
+        colors.pop();
         pose.popMatrix();
     }
 
