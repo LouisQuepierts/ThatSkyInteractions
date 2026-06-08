@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 
@@ -20,6 +21,11 @@ public class GameLayerHook {
     @SubscribeEvent
     public static void onRegisterGuiLayers(final RegisterGuiLayersEvent event) {
         event.registerAboveAll(FloatingControlLayer.IDENTIFIER, FloatingControlLayer.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public static void onLoggedOut(final ClientPlayerNetworkEvent.LoggingOut event) {
+        FloatingControlLayer.INSTANCE.reset();
     }
 
 

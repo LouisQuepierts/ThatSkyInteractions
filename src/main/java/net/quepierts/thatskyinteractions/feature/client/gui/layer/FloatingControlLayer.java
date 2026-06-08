@@ -5,17 +5,13 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingButton;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControl;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControlConstructor;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.floating.FloatingButtonNode;
 import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenTickHandler;
@@ -244,5 +240,13 @@ public final class FloatingControlLayer implements GuiLayer {
             control             .setFocused(true);
         }
 
+    }
+
+    public void reset() {
+        this.tween      .clear();
+        this.controls   .clear();
+        this.pending    .clear();
+        this.nextId     .set(0);
+        this.selected   = -1;
     }
 }
