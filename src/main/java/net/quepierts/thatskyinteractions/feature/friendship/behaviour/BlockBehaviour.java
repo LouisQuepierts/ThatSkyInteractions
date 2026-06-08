@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.friendship.behaviour;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
@@ -18,7 +19,8 @@ public final class BlockBehaviour implements FriendshipBehaviour {
     
     @Override
     public void execute(
-            final @NonNull  PlayerFriendshipAttachment  attachment,
+            final @NonNull  Player                      requester,
+            final @NonNull  Player                      receiver,
             final @NonNull  FriendshipTreeNode          node
     ) {
         

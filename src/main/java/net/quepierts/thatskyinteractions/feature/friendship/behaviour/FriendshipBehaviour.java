@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
@@ -32,7 +33,8 @@ public interface FriendshipBehaviour {
     int HIGHLIGHT_TEXT_COLOR            = 0xfff67e1e;
 
     void execute(
-            final @NonNull  PlayerFriendshipAttachment  attachment,
+            final @NonNull  Player                      requester,
+            final @NonNull  Player                      receiver,
             final @NonNull  FriendshipTreeNode          node
     );
 

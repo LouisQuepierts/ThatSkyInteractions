@@ -200,7 +200,8 @@ public class PlayerFriendshipSystem {
         }
 
         behaviour.execute(
-                PlayerFriendshipAttachment.getAttachment(requester),
+                requester,
+                receiver,
                 def
         );
 
