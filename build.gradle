@@ -27,9 +27,9 @@ sourceSets.main.resources {
 boolean isSnapshot = true;
 
 if (isSnapshot) {
-    version = "${mod_version}-SNAPSHOT";
+    version = "${libs.versions.minecraft.get()}-${mod_version}-SNAPSHOT";
 } else {
-    version = mod_version
+    version = "${libs.versions.minecraft.get()}-${mod_version}}"
 }
 
 group = mod_group_id

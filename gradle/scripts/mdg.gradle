@@ -29,7 +29,7 @@ neoForge {
 
         client_b {
             client()
-            programArguments.addAll "--username", "Dev2"
+            programArguments.addAll "--username", "Dev1"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
