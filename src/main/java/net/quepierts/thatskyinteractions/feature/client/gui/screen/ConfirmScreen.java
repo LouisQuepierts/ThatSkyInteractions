@@ -131,7 +131,7 @@ public class ConfirmScreen extends AnimatableScreen<ConfirmData, ConfirmScreenCo
         cancel.setClickDuration(0.25f);
         cancel.setActivationTrigger(Button.ActivationTrigger.RELEASED);
 
-        hBox.addChildren(confirm, cancel);
+        hBox.addChildren(cancel, confirm);
         hBox.fit();
 
         vBox.addChildren(icon, msg, hBox);

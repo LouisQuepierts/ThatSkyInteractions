@@ -4,12 +4,18 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.model.Currency;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
+import net.quepierts.thatskyinteractions.feature.gui.packet.PlayerInteractionUiPacket;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import org.jspecify.annotations.NonNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InteractionBehaviour implements FriendshipBehaviour {
@@ -17,12 +23,33 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
     public static final InteractionBehaviour    INSTANCE    = new InteractionBehaviour();
     public static final String                  TYPE        = "interaction";
 
+    private final Map<String, Identifier>       cache       = new HashMap<>();
+    private final Map<String, Identifier>       icons       = new HashMap<>();
+
     @Override
     public void execute(
-            final @NonNull  Player                      requester,
-            final @NonNull  Player                      receiver,
+            final @NonNull  ServerPlayer                requester,
+            final @NonNull  ServerPlayer                receiver,
             final @NonNull  FriendshipTreeNode          node
     ) {
+
+        final var metadata      = node.getMetadata();
+        final var interaction   = metadata.get("interaction");
+        final var identifier    = this.cache.computeIfAbsent(interaction, Identifier::parse);
+
+        PlayerInteractionSystem.invite(
+                requester,
+                receiver,
+                identifier.withSuffix("_" + metadata.getOrDefault("level", "1"))
+        );
+
+        PacketDistributor.sendToPlayer(
+                receiver,
+                PlayerInteractionUiPacket.invite(
+                        requester,
+                        this.icon(interaction)
+                )
+        );
 
     }
 
@@ -35,11 +62,7 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
         final var metadata      = node.getMetadata();
         final var interaction   = metadata.get("interaction");
 
-        final var raw           = Identifier.parse(interaction);
-        return Identifier.fromNamespaceAndPath(
-                raw.getNamespace(),
-                "textures/icon/interaction/" + raw.getPath() + ".png"
-        );
+        return this.icon(interaction);
     }
 
     @Override
@@ -49,9 +72,11 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
 
         // format: "id" or "namespace:id"
         // required: "id"
-        final var identifier    = node.getMetadata().get("interaction");
-        final var idx           = identifier.indexOf(':');
-        final var name          = idx == -1 ? identifier : identifier.substring(idx + 1);
+        final var metadata      = node.getMetadata();
+        final var interaction   = metadata.get("interaction");
+        final var identifier    = this.cache.computeIfAbsent(interaction, Identifier::parse);
+
+        final var name          = identifier.getPath();
 
         return Component.translatable(
                 "gui.thatskyinteractions.message.unlock.interaction.request",
@@ -62,5 +87,15 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
                         .withStyle(Styles.BOLD)
         ).withColor(FriendshipBehaviour.NORMAL_TEXT_COLOR);
 
+    }
+
+    private Identifier icon(String interaction) {
+        return this.icons.computeIfAbsent(interaction, str -> {
+            final var id        = this.cache.computeIfAbsent(str, Identifier::parse);
+            return Identifier.fromNamespaceAndPath(
+                    id.getNamespace(),
+                    "textures/icon/interaction/" + id.getPath() + ".png"
+            );
+        });
     }
 }

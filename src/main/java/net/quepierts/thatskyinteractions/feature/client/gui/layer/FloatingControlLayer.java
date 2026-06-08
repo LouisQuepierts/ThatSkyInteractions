@@ -1,14 +1,17 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.layer;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongArrayList;
-import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
@@ -23,6 +26,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.jspecify.annotations.NonNull;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,9 +35,10 @@ public final class FloatingControlLayer implements GuiLayer {
     public static final FloatingControlLayer        INSTANCE    = new FloatingControlLayer();
     public static final Identifier                  IDENTIFIER  = ThatSkyInteractions.location("floating");
 
-    private final Long2ObjectMap<FloatingControl>   controls    = new Long2ObjectOpenHashMap<>();
+    private final Object2IntMap<UUID>               links       = new Object2IntOpenHashMap<>();
+    private final Int2ObjectMap<FloatingControl>    controls    = new Int2ObjectOpenHashMap<>();
     private final ConcurrentLinkedDeque<Runnable>   pending     = new ConcurrentLinkedDeque<>();
-    private final LongList                          removing    = new LongArrayList();
+    private final IntList                           removing    = new IntArrayList();
     private final AtomicInteger                     nextId      = new AtomicInteger(0);
 
     private final Matrix4f                          projection  = new Matrix4f();
@@ -42,7 +47,7 @@ public final class FloatingControlLayer implements GuiLayer {
     private final TweenScope                        tween       = TweenScope.create();
     private final TweenTickHandler                  tickHandler = (TweenTickHandler) this.tween;
 
-    private long                                    selected    = -1;
+    private int                                    selected    = -1;
 
     private FloatingControlLayer() {
 
@@ -56,6 +61,30 @@ public final class FloatingControlLayer implements GuiLayer {
         )));
 */
 
+    }
+
+    public void link(
+            final @NonNull UUID                     uuid,
+            final @NonNull FloatingControlHandle    handle
+    ) {
+        this.pending.offer(() -> this.links.put(uuid, handle.id()));
+    }
+
+    public void remove(
+            final @NonNull UUID                     uuid
+    ) {
+        this.pending.offer(() -> {
+            if (!this.links.containsKey(uuid)) {
+                return;
+            }
+
+            final var handle    = this.links.removeInt(uuid);
+            final var removed   = this.controls.remove(handle);
+
+            if (removed != null) {
+                removed.markRemoved();
+            }
+        });
     }
 
     public FloatingControlHandle add(
@@ -76,7 +105,9 @@ public final class FloatingControlLayer implements GuiLayer {
     ) {
         this.pending.offer(() -> {
             final var removed = this.controls.get(handle.id());
-            removed.markRemoved();
+            if (removed != null) {
+                removed.markRemoved();
+            }
         });
     }
 
@@ -272,7 +303,7 @@ public final class FloatingControlLayer implements GuiLayer {
             control             .setFocused(true);
         }
 
-        for (final long id : this.removing) {
+        for (final int id : this.removing) {
             final var removed = this.controls.remove(id);
             if (removed != null) {
                 removed.onRemoved();

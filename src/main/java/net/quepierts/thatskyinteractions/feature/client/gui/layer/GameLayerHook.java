@@ -15,6 +15,7 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.input.TsiKeys;
+import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import org.lwjgl.glfw.GLFW;
 
 
@@ -53,26 +54,42 @@ public class GameLayerHook {
 
         FloatingControlLayer.INSTANCE.interact();
     }
-    
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void beforeClick(final InputEvent.MouseButton.Pre event) {
-        
-        /*if (!event.getMouseButtonInfo().isLeft()) {
-            return;
-        }
-        
-        if (Minecraft.getInstance().level == null) {
-            return;
-        }
-        
-        if (Minecraft.getInstance().screen != null) {
+    public static void onInput(final InputEvent.InteractionKeyMappingTriggered event) {
+        if (!event.isUseItem()) {
             return;
         }
 
         if (FloatingControlLayer.INSTANCE.interact()) {
             event.setCanceled(true);
-        }*/
-        
+        }
+    }
+
+    @SubscribeEvent
+    public static void onInteractionAccepted(final PlayerInteractionEvent.Accept.Post event) {
+        if (!event.isClient()) {
+            return;
+        }
+
+        if (!event.getReceiver().isLocalPlayer()) {
+            return;
+        }
+
+        FloatingControlLayer.INSTANCE.remove(event.getRequester().getUUID());
+    }
+
+    @SubscribeEvent
+    public static void onInteractionCanceled(final PlayerInteractionEvent.Cancel event) {
+        if (!event.isClient()) {
+            return;
+        }
+
+        if (!event.getReceiver().isLocalPlayer()) {
+            return;
+        }
+
+        FloatingControlLayer.INSTANCE.remove(event.getRequester().getUUID());
     }
 
 

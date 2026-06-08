@@ -68,8 +68,7 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
     @Override
     protected void init() {
         if (this.root == null) {
-            this.root       = this.createView();
-            this.layout     = (this.root instanceof Layout l) ? l : null;
+            this.rebuild();
         } else if (this.layout != null) {
             this.layout.layout();
         }
@@ -194,6 +193,11 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
         if (this.layout != null) {
             this.layout.layout();
         }
+    }
+
+    protected void rebuild() {
+        this.root       = this.createView();
+        this.layout     = (this.root instanceof Layout l) ? l : null;
     }
 
     protected float getTransitionValue() {

@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
@@ -22,8 +22,8 @@ public final class FriendBehaviour implements FriendshipBehaviour {
 
     @Override
     public void execute(
-            final @NonNull  Player                      requester,
-            final @NonNull  Player                      receiver,
+            final @NonNull  ServerPlayer                requester,
+            final @NonNull  ServerPlayer                receiver,
             final @NonNull  FriendshipTreeNode          node
     ) {
 

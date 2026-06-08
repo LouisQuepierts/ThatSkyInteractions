@@ -53,10 +53,10 @@ public class PlayerFriendshipSystem {
 
         PlayerFriendshipAttachment.getAttachment(receiver).removeInvite(requester);
 
-        PacketDistributor.sendToPlayer(
+        /*PacketDistributor.sendToPlayer(
                 receiver,
                 PlayerFriendshipUiPacket.cancel(requester)
-        );
+        );*/
 
     }
 

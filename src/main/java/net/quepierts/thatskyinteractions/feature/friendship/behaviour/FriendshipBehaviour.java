@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
@@ -32,9 +33,17 @@ public interface FriendshipBehaviour {
     int NORMAL_TEXT_COLOR               = 0xfff4f5e3;
     int HIGHLIGHT_TEXT_COLOR            = 0xfff67e1e;
 
+
+    /**
+     * @param requester the player who request this behaviour
+     * @param receiver the player who will accept this behaviour
+     * @param node the node which provide this behaviour and contains the metadata
+     *
+     * this method will call on server side
+     */
     void execute(
-            final @NonNull  Player                      requester,
-            final @NonNull  Player                      receiver,
+            final @NonNull  ServerPlayer                requester,
+            final @NonNull  ServerPlayer                receiver,
             final @NonNull  FriendshipTreeNode          node
     );
 

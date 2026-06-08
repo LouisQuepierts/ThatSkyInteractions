@@ -8,6 +8,8 @@ import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.EnumProperty;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.core.property.PropertyEnum;
+import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -15,6 +17,15 @@ import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Inter
 import org.jspecify.annotations.NonNull;
 
 public class Button extends Control {
+
+    public static final AttributeKey<BooleanTransition> ATTRIBUTE_PRESS = new AttributeKey<>("press_transition");
+    public static final AttributeKey<FloatProperty>     ATTRIBUTE_CLICK = new AttributeKey<>("click_progress");
+
+    @Getter
+    private final BooleanTransition                 pressTransition     = new BooleanTransition(
+                                                                                Eases.LINEAR,
+                                                                                0.25f
+                                                                        );
 
     @Getter
     private final FloatProperty                     clickProgress       = new FloatProperty();
@@ -38,13 +49,17 @@ public class Button extends Control {
             final Component     message
     ) {
         super(tween, x, y, width, height, message);
+
+        this.setAttribute(ATTRIBUTE_PRESS, this.pressTransition);
+        this.setAttribute(ATTRIBUTE_CLICK, this.clickProgress);
     }
 
     @Override
     public void onClick(
             final @NonNull MouseButtonEvent event,
-            final boolean doubleClick
+            final boolean                   doubleClick
     ) {
+        this.pressTransition.update(this.tween(), true);
 
         final var trigger = this.activationTrigger.get();
 
@@ -58,6 +73,7 @@ public class Button extends Control {
 
     @Override
     public void onRelease(final @NonNull MouseButtonEvent event) {
+        this.pressTransition.update(this.tween(), false);
 
         final var trigger = this.activationTrigger.get();
 
