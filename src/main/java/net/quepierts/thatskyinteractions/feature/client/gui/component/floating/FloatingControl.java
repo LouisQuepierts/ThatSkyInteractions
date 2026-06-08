@@ -179,8 +179,4 @@ public class FloatingControl extends Control {
         }
     }
 
-    public interface WorldPositionSupplier {
-        void get(@NonNull final Vector3f dest);
-    }
-
 }
