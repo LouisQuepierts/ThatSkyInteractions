@@ -1,0 +1,14 @@
+{
+  "levels": 2,
+  "icon": "auto",
+  "interactions": [
+    {
+      "requester": "auto",
+      "receiver": "auto"
+    },
+    {
+      "requester": "auto",
+      "receiver": "auto"
+    }
+  ]
+}

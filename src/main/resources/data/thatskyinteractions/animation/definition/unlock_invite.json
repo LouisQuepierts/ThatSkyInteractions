@@ -6,6 +6,10 @@
       "fadeIn": 0.25
     },
     "waiting": "thatskyinteractions:unlock_invite.main",
+    "cancel": {
+      "source": "thatskyinteractions:unlock_invite.exit",
+      "fadeOut": 0.25
+    },
     "main": "thatskyinteractions:unlock_invite.main",
     "exit": {
       "source": "thatskyinteractions:unlock_invite.exit",

@@ -6,8 +6,12 @@ import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Player;
+import net.quepierts.thatskyinteractions.core.scene.Scene;
 import net.quepierts.thatskyinteractions.feature.network.StreamCodecUtils;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
 @Getter
@@ -20,17 +24,33 @@ public final class PlayerAnimationAttachment {
             = StreamCodecUtils.unit(PlayerAnimationAttachment::new);
 
     private final PlayerAnimationController controller;
+    private final Scene                     scene;
 
-    public static PlayerAnimationAttachment getAttachment(@NonNull final Avatar avatar) {
+    public static PlayerAnimationAttachment getAttachment(
+            final @NonNull Avatar   avatar
+    ) {
         return avatar.getData(AttachmentTypes.PLAYER_ANIMATION);
     }
 
     public PlayerAnimationAttachment() {
         this.controller = new PlayerAnimationController();
+        this.scene      = new Scene();
     }
 
     public HumanoidAnimationState getAnimation() {
         return this.controller.getState();
+    }
+
+    public void setupScene(
+            final @NonNull Avatar   avatar
+    ) {
+        final var position = new Vector3f(
+                (float) avatar.getX(),
+                (float) avatar.getY(),
+                (float) avatar.getZ()
+        );
+        final var rotation = new Quaternionf().rotateY(avatar.yHeadRot);
+        this.scene.fromObjectTransform(position, rotation);
     }
 
 }

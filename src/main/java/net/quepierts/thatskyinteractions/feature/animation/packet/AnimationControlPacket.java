@@ -114,8 +114,8 @@ public record AnimationControlPacket(
             return;
         }
 
-        final var data          = PlayerAnimationSystem.getAnimationData(target);
-        final var controller    = data.getController();
+        final var attachment    = PlayerAnimationSystem.getAnimationData(target);
+        final var controller    = attachment.getController();
 
         switch (this.operation) {
             case PLAY: {
@@ -130,7 +130,8 @@ public record AnimationControlPacket(
                         Interpolators.DEGREE,
                         Eases.CUBIC_OUT
                 );
-                controller.play(this.identifier.get());
+                controller.play(this.identifier.orElseThrow());
+                attachment.setupScene(target);
                 break;
             }
             case PAUSE: {
@@ -153,7 +154,7 @@ public record AnimationControlPacket(
                 if (controller.isPlaying()) {
                     final var animation = controller.getAnimation();
                     final var fsm       = animation.getFsm();
-                    final var path      = this.identifier.get().getPath();
+                    final var path      = this.identifier.orElseThrow().getPath();
                     final var event     = path.equals("exit") ? -1 : fsm.getLookup().find(path);
 
                     animation.event(controller.getFsmState(), event);
