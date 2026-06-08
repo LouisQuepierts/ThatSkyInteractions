@@ -6,6 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.model.ui.Alignment;
 import net.quepierts.thatskyinteractions.core.model.ui.HPos;
+import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.TextBlock;
@@ -30,6 +31,23 @@ public class ConfirmScreen extends AnimatableScreen<ConfirmData, ConfirmScreenCo
             final ConfirmData   data
     ) {
         super(Component.translatable("screen.thatskyinteractions.confirm"), data);
+    }
+
+    @Override
+    public void extractAnimatableRenderState(
+            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ColorStack colors,
+            final int                           mouseX,
+            final int                           mouseY,
+            final float                         delta
+    ) {
+        final var trans     = this.getTransitionValue();
+        colors.push();
+        colors.mul(trans, 1.0f, 1.0f, 1.0f);
+
+        super.extractAnimatableRenderState(graphics, colors, mouseX, mouseY, delta);
+
+        colors.pop();
     }
 
     @Override
@@ -86,13 +104,15 @@ public class ConfirmScreen extends AnimatableScreen<ConfirmData, ConfirmScreenCo
                 Component.translatable("gui.thatskyinteractions.confirm.confirm")
         );
         confirm.setVisualNode(VisualNode.combine(
-                GeneralVisualNodes.base(0x80000000, 5.0f),
+                GeneralVisualNodes.base(0x80000000, 6.0f),
                 SqueezeButtonNode.of(
                         GeneralRenderOps.texture(ICON_CONFIRM, 32, 32)
                 ),
                 HoverNode.of(ButtonRenderOps.HOVER)
         ));
         confirm.setOnClick(controller::confirm);
+        confirm.setClickDuration(0.25f);
+        confirm.setActivationTrigger(Button.ActivationTrigger.RELEASED);
 
         final var cancel    = new Button(
                 this.tween(),
@@ -101,15 +121,17 @@ public class ConfirmScreen extends AnimatableScreen<ConfirmData, ConfirmScreenCo
                 Component.translatable("gui.thatskyinteractions.confirm.cancel")
         );
         cancel.setVisualNode(VisualNode.combine(
-                GeneralVisualNodes.base(0x80000000, 5.0f),
+                GeneralVisualNodes.base(0x80000000, 6.0f),
                 SqueezeButtonNode.of(
                         GeneralRenderOps.texture(ICON_CANCEL, 32, 32)
                 ),
                 HoverNode.of(ButtonRenderOps.HOVER)
         ));
         cancel.setOnClick(controller::cancel);
+        cancel.setClickDuration(0.25f);
+        cancel.setActivationTrigger(Button.ActivationTrigger.RELEASED);
 
-        hBox.addChildren(confirm, confirm);
+        hBox.addChildren(confirm, cancel);
         hBox.fit();
 
         vBox.addChildren(icon, msg, hBox);

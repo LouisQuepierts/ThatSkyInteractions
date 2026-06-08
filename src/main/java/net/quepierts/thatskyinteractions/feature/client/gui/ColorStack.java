@@ -1,11 +1,12 @@
 package net.quepierts.thatskyinteractions.feature.client.gui;
 
+import lombok.Getter;
 import net.minecraft.util.ARGB;
 
 import java.util.Arrays;
 
 public final class ColorStack {
-    private static final int INITIAL_CAPACITY = 16;
+    public static final int INITIAL_CAPACITY = 16;
 
     private int[] a;
     private int[] r;
@@ -13,20 +14,27 @@ public final class ColorStack {
     private int[] b;
     private int top = -1;
 
+    @Getter
+    private int deep = 0;
+
     public ColorStack() {
-        this.a = new int[INITIAL_CAPACITY];
-        this.r = new int[INITIAL_CAPACITY];
-        this.g = new int[INITIAL_CAPACITY];
-        this.b = new int[INITIAL_CAPACITY];
+        this(INITIAL_CAPACITY);
+    }
+
+    public ColorStack(int capacity) {
+        this.a = new int[capacity];
+        this.r = new int[capacity];
+        this.g = new int[capacity];
+        this.b = new int[capacity];
         this.push(255, 255, 255, 255);
     }
 
     public void push() {
         this.push(
+                this.a[this.top],
                 this.r[this.top],
                 this.g[this.top],
-                this.b[this.top],
-                this.a[this.top]
+                this.b[this.top]
         );
     }
 
@@ -37,6 +45,7 @@ public final class ColorStack {
             final int blue
     ) {
         this.top++;
+        this.deep = Math.max(this.deep, this.top);
 
         if (this.top >= this.r.length) {
             this.expand();

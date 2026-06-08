@@ -281,7 +281,7 @@ public class FriendshipTreeComponentFactory {
                     .round(0.5f)
                     .color(colors.argb(this.color))
 
-                    .light(5.0f)
+                    .fill()
                     .segment(
                             px0, py0,
                             px1, py1

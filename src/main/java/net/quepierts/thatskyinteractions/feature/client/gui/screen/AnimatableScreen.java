@@ -9,6 +9,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.model.ui.Alignment;
+import net.quepierts.thatskyinteractions.core.property.FloatProperty;
+import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.Layout;
@@ -16,6 +18,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.controller.ScreenCon
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenTickHandler;
+import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -29,6 +32,14 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
     @Getter(AccessLevel.PROTECTED)
     private Control                 root;
     private @Nullable Layout        layout;
+
+    @Getter
+    private final FloatProperty     transitionDuration  = new FloatProperty(0.5f);
+
+    private final BooleanTransition transition          = new BooleanTransition(
+            Eases.CUBIC_OUT,
+            this.transitionDuration
+    );
 
     @Getter
     private boolean closed;
@@ -137,10 +148,12 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
 
     public void hide() {
         this.hided = true;
+        this.transition.update(this.tween(), false);
     }
 
     public void show() {
         this.hided = false;
+        this.transition.update(this.tween(), true);
     }
 
     public TweenScope tween() {
@@ -152,7 +165,7 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
     }
 
     public boolean isAnimating() {
-        return this.handler != null && this.tween.isRunning();
+        return this.transition.isAnimating() || this.handler != null && this.tween.isRunning();
     }
 
     @Override
@@ -181,6 +194,10 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
         if (this.layout != null) {
             this.layout.layout();
         }
+    }
+
+    protected float getTransitionValue() {
+        return this.transition.getValue();
     }
 
     protected MouseButtonEvent remapButtonEvent(final MouseButtonEvent event) {

@@ -32,12 +32,12 @@ public class GeneralVisualNodes {
     public static VisualNode fill(
             final int   color
     ) {
-        return (control, graphics, _, _, _, _, _) -> graphics.fill(
+        return (control, graphics, colors, _, _, _, _) -> graphics.fill(
                 control.getX(),
                 control.getY(),
                 control.getX() + control.getWidth(),
                 control.getY() + control.getHeight(),
-                color
+                colors.argb(color)
         );
     }
 
@@ -45,7 +45,7 @@ public class GeneralVisualNodes {
             final int   color,
             final float round
     ) {
-        return (control, graphics, _, _, _, _, _) -> {
+        return (control, graphics, colors, _, _, _, _) -> {
 
             final var hw = control.getWidth() / 2;
             final var hh = control.getHeight() / 2;
@@ -55,7 +55,7 @@ public class GeneralVisualNodes {
             SdfGraphics.getInstance()
                     .reset()
                     .center(true)
-                    .color(color)
+                    .color(colors.argb(color))
                     .round(round)
                     .box(
                             x, y,
@@ -71,7 +71,7 @@ public class GeneralVisualNodes {
             final          int                      textureWidth,
             final          int                      textureHeight
     ) {
-        return (control, graphics, _, _, _, _, _) -> graphics.blit(
+        return (control, graphics, colors, _, _, _, _) -> graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 texture,
                 control.getX(),
@@ -80,19 +80,20 @@ public class GeneralVisualNodes {
                 textureWidth,
                 textureHeight,
                 textureWidth,
-                textureHeight
+                textureHeight,
+                colors.argb()
         );
     }
 
     public static VisualNode message(
             final @NonNull Component message
     ) {
-        return (control, graphics, _, _, _, _, _) -> graphics.centeredText(
+        return (control, graphics, colors, _, _, _, _) -> graphics.centeredText(
                 Minecraft.getInstance().font,
                 message,
                 control.getX() + control.getWidth() / 2,
                 control.getY() + control.getHeight() / 2,
-                0xFFFFFFFF
+                colors.argb()
         );
     }
 

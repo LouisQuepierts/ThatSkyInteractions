@@ -16,11 +16,19 @@ public final class BooleanTransition {
     private final FloatProperty     value = new FloatProperty(0f);
     private final Ease              ease;
 
-    private final float             duration;
+    private final FloatProperty     duration;
 
     private       TweenHandle       handle;
     @Getter
     private       boolean           target;
+
+    public BooleanTransition(
+            @NonNull final Ease ease,
+            final float duration
+    ) {
+        this.ease = ease;
+        this.duration = new FloatProperty(duration);
+    }
 
 
     public void update(
@@ -43,7 +51,7 @@ public final class BooleanTransition {
                 this.value,
                 from,
                 to,
-                this.duration * Mth.abs(to - from),
+                this.duration.get() * Mth.abs(to - from),
                 Interpolators.FLOAT,
                 this.ease
         );

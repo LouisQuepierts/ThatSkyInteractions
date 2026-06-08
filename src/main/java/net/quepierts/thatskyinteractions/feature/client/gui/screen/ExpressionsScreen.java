@@ -32,7 +32,7 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
                     .reset()
                     .center(true)
                     .round(6.0f)
-                    .color(0x80101010)
+                    .color(colors.argb(0x80, 0x10, 0x10, 0x10))
                     .box(
                             x, y,
                             control.getWidth(),
@@ -43,7 +43,7 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
             final var over = sdf.collide(mouseX, mouseY, 0.1f);
 
             if (over) {
-                sdf.color(0xfffffee0)
+                sdf     .color(colors.argb(0xff, 0xff, 0xfe, 0xe0))
                         .round(5.0f)
                         .box(
                                 x, y,

@@ -5,11 +5,9 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.IntProperty;
-import net.quepierts.thatskyinteractions.feature.client.gui.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.ScreenController;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
-import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import org.jspecify.annotations.NonNull;
 
 public abstract class SlideScreen<Model, Controller extends ScreenController<Model>>
@@ -17,11 +15,6 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
 
     @Getter
     private final IntProperty       sliderWide      = new IntProperty(160);
-
-    private final BooleanTransition transition     = new BooleanTransition(
-            Eases.CUBIC_OUT,
-            0.5f
-    );
 
     protected SlideScreen(
             final Component     title,
@@ -39,18 +32,6 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
     }
 
     @Override
-    public void show() {
-        super.show();
-        this.transition.update(this.tween(), true);
-    }
-
-    @Override
-    public void hide() {
-        super.hide();
-        this.transition.update(this.tween(), false);
-    }
-
-    @Override
     public void extractAnimatableRenderState(
             final @NonNull GuiGraphicsExtractor graphics,
             final @NonNull ColorStack           colors,
@@ -60,7 +41,7 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
     ) {
         final var pose  = graphics.pose();
         final var width = this.sliderWide.get();
-        final var trans = this.transition.getValue();
+        final var trans = this.getTransitionValue();
         final var x     = this.width - trans * width;
 
         colors.push();
@@ -79,13 +60,8 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
 
         super.extractAnimatableRenderState(graphics, colors, (int) (mouseX - x), mouseY, delta);
 
-        colors.pop();
+        colors.clear();
         pose.popMatrix();
-    }
-
-    @Override
-    public boolean isAnimating() {
-        return this.transition.isAnimating();
     }
 
     @Override
@@ -101,7 +77,7 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
     @Override
     protected MouseButtonEvent remapButtonEvent(final MouseButtonEvent event) {
         final var width = this.sliderWide.get();
-        final var x     = this.width - this.transition.getValue() * width;
+        final var x     = this.width - this.getTransitionValue() * width;
 
         return new MouseButtonEvent(
                 event.x() - x,

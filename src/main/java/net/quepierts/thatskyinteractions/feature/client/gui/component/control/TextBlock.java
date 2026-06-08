@@ -85,7 +85,7 @@ public class TextBlock extends Control {
                             line,
                             x,
                             y,
-                            0xFFFFFFFF
+                            colors.argb()
                     );
                 }
                 break;
@@ -102,7 +102,7 @@ public class TextBlock extends Control {
                             line,
                             x,
                             y,
-                            0xFFFFFFFF
+                            colors.argb()
                     );
                 }
                 break;
@@ -119,7 +119,7 @@ public class TextBlock extends Control {
                             line,
                             x,
                             y,
-                            0xFFFFFFFF
+                            colors.argb()
                     );
                 }
                 break;

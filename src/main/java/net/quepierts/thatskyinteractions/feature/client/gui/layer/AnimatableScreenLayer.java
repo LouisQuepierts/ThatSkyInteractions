@@ -15,6 +15,8 @@ public final class AnimatableScreenLayer {
 
     private final List<AnimatableScreen> screens = new ArrayList<>();
 
+    private int colorStackCapacity = ColorStack.INITIAL_CAPACITY;
+
     public void push(@NonNull final AnimatableScreen screen) {
         if (!this.screens.contains(screen)) {
             this.screens.add(screen);
@@ -34,7 +36,7 @@ public final class AnimatableScreenLayer {
         final var delta         = tracker.getRealtimeDeltaTicks();
         final var iterator      = screens.iterator();
 
-        final var colors        = new ColorStack();
+        final var colors        = new ColorStack(this.colorStackCapacity);
 
         while (iterator.hasNext()) {
             final var screen = iterator.next();
@@ -55,6 +57,8 @@ public final class AnimatableScreenLayer {
                     mouseY,
                     delta);
         }
+
+        this.colorStackCapacity = Math.max(this.colorStackCapacity, colors.getDeep());
     }
 
 }
