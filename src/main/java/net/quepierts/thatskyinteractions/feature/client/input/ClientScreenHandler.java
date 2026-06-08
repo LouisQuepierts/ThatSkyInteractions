@@ -18,7 +18,7 @@ public class ClientScreenHandler {
     public static void onKey(final InputEvent.Key event) {
         final var minecraft = Minecraft.getInstance();
 
-        if (TSIKeys.KEY_OPEN_EXPRESSION.consumeClick()) {
+        if (TsiKeys.KEY_OPEN_EXPRESSION.consumeClick()) {
 
             if (minecraft.screen == null) {
                 ScreenLoader.open(ExpressionsScreen.class);

@@ -13,7 +13,7 @@ import org.lwjgl.glfw.GLFW;
 
 @UtilityClass
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
-public class TSIKeys {
+public class TsiKeys {
 
     public static final KeyMapping.Category CATEGORY
             = new KeyMapping.Category(ThatSkyInteractions.location("interactions"));
