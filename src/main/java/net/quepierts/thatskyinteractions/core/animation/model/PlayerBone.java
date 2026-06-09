@@ -32,6 +32,10 @@ public enum PlayerBone {
         return MAPPING.get(name);
     }
 
+    public static PlayerBone ordinal(int ordinal) {
+        return VALUES[ordinal];
+    }
+
     public static int size() {
         return VALUES.length;
     }
