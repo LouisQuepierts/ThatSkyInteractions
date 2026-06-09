@@ -37,10 +37,6 @@ public final class PlayerAnimationAttachment {
         this.scene      = new Scene();
     }
 
-    public HumanoidAnimationState getAnimation() {
-        return this.controller.getState();
-    }
-
     public void setupScene(
             final @NonNull Avatar   avatar
     ) {

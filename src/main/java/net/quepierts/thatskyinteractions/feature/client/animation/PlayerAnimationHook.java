@@ -1,14 +1,12 @@
 package net.quepierts.thatskyinteractions.feature.client.animation;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.SubmitNodeStorage;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.extensions.IRenderStateExtension;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
@@ -30,19 +28,15 @@ public class PlayerAnimationHook {
             return;
         }
 
+//        final var current = controller.getCurrent();
         if (controller.isTicked() && !controller.isResolved()) {
-            controller.getAnimation().resolve(
-                    controller.getFsmState(),
-                    controller.getExecutionState(),
-                    controller.getState(),
-                    controller.getCache(),
-                    adaptor.link(DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID));
-            controller.markResolved();
+            controller.resolve(adaptor.link(DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID));
         }
 
         if (controller.isResolved()) {
-            adaptor.setAlpha(controller.getAlpha());
-            adaptor.accept(controller.getCache());
+            controller.apply(adaptor);
+//            adaptor.setAlpha(current.getAlpha());
+//            adaptor.accept(current.getCache());
         }
     }
 
@@ -65,8 +59,7 @@ public class PlayerAnimationHook {
             return;
         }
 
-        final var cache     = controller.getCache();
-        final var root      = cache.get(0);
+        final var root      = controller.getRootTransform();
 
         final var quat      = new Quaternionf(
                 root.getRx(),
@@ -114,9 +107,7 @@ public class PlayerAnimationHook {
 
             onSetupAnimation(controller, adaptor);
 
-            final var cache = controller.getCache();
-            final var root = cache.get(0);
-
+            final var root = controller.getRootTransform();
             final var head = adaptor.getSkeleton()
                     .get("head")
                     .part();
@@ -125,7 +116,8 @@ public class PlayerAnimationHook {
                 return false;
             }
 
-            var a           = controller.getAlpha() * 0.0625f;
+            final var alpha = controller.getRootAlpha();
+            var a           = alpha * 0.0625f;
             var position    = new Vector3f(
                     root.getTx(),
                     root.getTy(),
@@ -133,7 +125,6 @@ public class PlayerAnimationHook {
             );
 
             var xRot = player.getXRot();
-            final var alpha = controller.getAlpha();
             var rotation = new Vector3f(
                     head.xRot,
                     head.yRot,

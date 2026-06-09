@@ -9,5 +9,8 @@ public record PlayerAnimationDefinition(
         PlayerMask                      unlock,
         boolean                         abortable,
         boolean                         restrictMotion,
-        boolean                         rootMotion
-) { }
+        boolean                         rootMotion,
+        String                          layer
+) {
+    public static final String DEFAULT_LAYER = "thatskyinteractions:main";
+}

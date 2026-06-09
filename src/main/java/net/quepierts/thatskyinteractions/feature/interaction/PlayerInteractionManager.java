@@ -135,10 +135,11 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
                 PlayerInteractionSystem.ANIMATION_TYPE_REQUESTER,
                 "thatskyinteractions:modified",
                 sources,
-                PlayerMask.EMPTY,
+                PlayerMask.empty(),
                 false,
                 true,
-                false
+                false,
+                PlayerAnimationDefinition.DEFAULT_LAYER
         );
 
         final var id                = identifier.withSuffix(".requester");
@@ -174,10 +175,11 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
                 PlayerInteractionSystem.ANIMATION_TYPE_RECEIVER,
                 "thatskyinteractions:modified",
                 sources,
-                PlayerMask.EMPTY,
+                PlayerMask.empty(),
                 false,
                 true,
-                false
+                false,
+                PlayerAnimationDefinition.DEFAULT_LAYER
         );
 
         final var id                = identifier.withSuffix(".receiver");

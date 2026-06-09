@@ -10,9 +10,8 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor(staticName = "direct")
-public final class PlayerMask {
+public sealed class PlayerMask {
 
-    public static final PlayerMask EMPTY    = new PlayerMask(0);
     public static final PlayerMask ALL      = new PlayerMask(0xFFFFFFFF);
 
     private int mask;
@@ -22,7 +21,19 @@ public final class PlayerMask {
     }
 
     public static PlayerMask of(List<PlayerBone> bones) {
-        return null;
+        return new PlayerMask(toMask(bones.iterator()));
+    }
+
+    public static PlayerMask of(PlayerMask other) {
+        return new PlayerMask(other.mask);
+    }
+
+    public static PlayerMask empty() {
+        return new PlayerMask(0);
+    }
+
+    public static PlayerMask all() {
+        return new PlayerMask(0xFFFFFFFF);
     }
 
     public void add(final PlayerBone bone) {
@@ -31,6 +42,38 @@ public final class PlayerMask {
 
     public boolean contains(final PlayerBone bone) {
         return (this.mask & bone.getBit()) != 0;
+    }
+
+    public boolean contains(final PlayerMask mask) {
+        return (this.mask & mask.mask) == mask.mask;
+    }
+
+    public boolean collision(final PlayerMask mask) {
+        return (this.mask & mask.mask) != 0;
+    }
+
+    public void and(final PlayerMask mask) {
+        this.mask &= mask.mask;
+    }
+
+    public void or(final PlayerMask mask) {
+        this.mask |= mask.mask;
+    }
+
+    public void xor(final PlayerMask mask) {
+        this.mask ^= mask.mask;
+    }
+
+    public void not(final PlayerMask mask) {
+        this.mask = ~this.mask & mask.mask;
+    }
+
+    public void clear() {
+        this.mask = 0;
+    }
+
+    public Immutable toImmutable() {
+        return new Immutable(this.mask);
     }
 
     public List<PlayerBone> toList() {
@@ -54,4 +97,42 @@ public final class PlayerMask {
         }
         return list;
     }
+
+
+    public static final class Immutable extends PlayerMask {
+        private Immutable(final int mask) {
+            super(mask);
+        }
+
+        @Override
+        public void add(final PlayerBone bone) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void and(final PlayerMask mask) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void or(final PlayerMask mask) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void xor(final PlayerMask mask) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void not(final PlayerMask mask) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void clear() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
 }

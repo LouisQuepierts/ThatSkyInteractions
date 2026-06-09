@@ -151,12 +151,14 @@ public record AnimationControlPacket(
             }
             case EVENT: {
                 if (controller.isPlaying()) {
-                    final var animation = controller.getAnimation();
-                    final var fsm       = animation.getFsm();
                     final var path      = this.identifier.orElseThrow().getPath();
+                    controller.event(path);
+                    /*final var current   = controller.getCurrent();
+                    final var animation = current.getAnimation();
+                    final var fsm       = animation.getFsm();
                     final var event     = path.equals("exit") ? -1 : fsm.getLookup().find(path);
 
-                    animation.event(controller.getFsmState(), event);
+                    animation.event(current.getFsmState(), event);*/
                 }
             }
         }

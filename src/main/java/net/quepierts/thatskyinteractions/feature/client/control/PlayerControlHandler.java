@@ -51,15 +51,16 @@ public class PlayerControlHandler {
         final var controller        = animationData.getController();
 
         if (controller.isPlaying()) {
-            final var definition    = controller.getDefinition();
-            final var fsmState      = controller.getFsmState();
-            final var animation     = controller.getAnimation();
+            /*final var current       = controller.getCurrent();
+            final var definition    = current.getDefinition();
+            final var fsmState      = current.getFsmState();
+            final var animation     = current.getAnimation();*/
 
-            if (definition.abortable() || animation.isLooping(fsmState)) {
+            /*if (definition.abortable() || animation.isLooping(fsmState)) {
                 ClientPlayerAnimationSystem.exit();
-            }
+            }*/
 
-            if (definition.restrictMotion()) {
+            if (controller.shouldRestrictMotion()) {
                 event.setCanceled(true);
             }
         }
@@ -81,13 +82,12 @@ public class PlayerControlHandler {
             return;
         }
 
-        final var definition    = controller.getDefinition();
         final var minecraft     = Minecraft.getInstance();
 
+        final var unlock        = controller.isUnlocked(PlayerBone.HEAD);
         final var firstPerson   = minecraft.options.getCameraType().isFirstPerson();
-        final var lock          = !definition.unlock().contains(PlayerBone.HEAD);
 
-        if (!lock) {
+        if (unlock) {
             return;
         }
 

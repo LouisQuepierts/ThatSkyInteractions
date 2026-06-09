@@ -1,73 +1,116 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForge;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
+import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
+import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
 import net.quepierts.veynir.backend.execution.ExecutionState;
-import net.quepierts.veynir.core.fsm.FSMState;
+import net.quepierts.veynir.core.adapter.TransformF;
 import net.quepierts.veynir.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
-import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
-import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
+import org.jspecify.annotations.NonNull;
+
+import java.util.Arrays;
+import java.util.Map;
 
 @Slf4j
-@Getter
 public final class PlayerAnimationController {
 
-    private final HumanoidAnimationState state;
+    private final Map<AnimationLayerType, AnimationLayer>   layers;
+    private final AnimationLayer[]                          apply;
 
-    private final ExecutionState        executionState      = new ExecutionState(64);
-    private final FSMState              fsmState            = new FSMState();
-    private final PoseCache             cache               = new PoseCache(DefaultMinecraftSkeletonLayout.HUMANOID);
+    private final ExecutionState                            executionState      = new ExecutionState(64);
+    private final PlayerMask                                exclusionMask       = PlayerMask.empty();
 
-    private Identifier                  current;
-    private PlayerAnimation             animation;
-    private PlayerAnimationDefinition   definition;
+    private final TransformF                                root;
 
-    private float   alpha = 0.0f;
-    private int     last;
-    private boolean playing;
-    private boolean ticked      = false;
-    private boolean resolved    = false;
-
-    private boolean paused      = false;
+    @Getter private int                                     last;
+    @Getter private boolean                                 playing;
+    @Getter private boolean                                 ticked              = false;
+    @Getter private boolean                                 resolved            = false;
+    @Getter private boolean                                 paused              = false;
 
     public PlayerAnimationController() {
-        this.state  = HumanoidAnimationState._default();
+        this.layers = new Object2ObjectOpenHashMap<>();
+        this.apply  = new AnimationLayer[DefaultMinecraftSkeletonLayout.HUMANOID.size()];
+        this.root   = new TransformF();
+        this.root   .setScale(1, 1, 1);
     }
 
     public void play(Identifier identifier) {
+        this.play(
+                identifier,
+                AnimationLayerType.MAIN
+        );
+    }
+
+    public boolean play(
+            final @NonNull Identifier           animationId,
+            final @NonNull AnimationLayerType   type
+    ) {
+
+        // todo: multilayer not supported yet
+        if (!this.layers.isEmpty()) {
+            return false;
+        }
+
+        /*if (this.layers.containsKey(type)) {
+            return false;
+        }
+
+        if (type.exclusive()) {
+            if (this.exclusionMask.collision(type.defaultMask())) {
+                return false;
+            }
+            this.exclusionMask.or(type.defaultMask());
+        }*/
+
         final var manager       = PlayerAnimationManager.getInstance();
-        final var animation     = manager.get(identifier);
-        final var definition    = manager.getDefinition(identifier);
+        final var animation     = manager.get(animationId);
+        final var definition    = manager.getDefinition(animationId);
 
         final var pre           = NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Play.Pre(
                 this,
-                identifier
+                animationId
         ));
 
         if (pre.isCanceled()) {
-            return;
+            return false;
         }
 
         if (animation == null) {
-            log.warn("Animation source not found: {}", identifier);
-            return;
+            log.warn("Animation source not found: {}", animationId);
+            return false;
         }
 
-        this.current            = identifier;
-        this.animation          = animation;
-        this.definition         = definition;
+        final var layer = new AnimationLayer(
+                AnimationLayerType.MAIN,
+                animationId,
+                animation,
+                definition,
+                this.executionState, // not used
+                HumanoidAnimationState._default(),
+                this.requestCache()
+        );
+        layer            .play();
+
+        this.layers             .put(type, layer);
+        Arrays.fill(this.apply, layer); // todo: masked apply
 
         this.playing            = true;
-        this.state.progress     = 0.0f;
 
         NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Play.Post(
                 this,
-                identifier
+                animationId
         ));
+
+        return true;
     }
 
     public void abort() {
@@ -83,17 +126,26 @@ public final class PlayerAnimationController {
             return;
         }
 
-        this.animation.exit(this.fsmState);
+        for (final var layer : this.layers.values()) {
+            layer.exit();
+        }
     }
 
     public void tick(int current) {
         if (this.playing && !this.paused) {
-            final var delta         = (current - last) * 0.05f;
             this.ticked             = current != last;
 
-            final var lastElapsed   = this.fsmState.getElapsed();
-            this.animation          .update(this.fsmState, delta);
-            final var elapsed       = this.fsmState.getElapsed();
+            for (final var layer : this.layers.values()) {
+                layer.tick(current);
+
+                if (layer.isFinished()) {
+                    this.cleanup(layer);
+                }
+            }
+
+//            final var lastElapsed   = this.fsmState.getElapsed();
+//            this.current            .tick(current);
+            /*final var elapsed       = this.fsmState.getElapsed();
             this.state.progress     = elapsed;
 
             if (lastElapsed > elapsed) { // state may change
@@ -102,12 +154,12 @@ public final class PlayerAnimationController {
                         this.fsmState.getLastState(),
                         this.fsmState.getCurrentState()
                 ));
-            }
+            }*/
 
-            if (this.fsmState.isFinished()) {
+            /*if (this.current.isFinished()) {
                 this.cleanup();
                 NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Finished(this));
-            }
+            }*/
         }
 
         this.last       = current;
@@ -116,15 +168,76 @@ public final class PlayerAnimationController {
     public void update(float partialTicks) {
         if (this.playing && !this.paused) {
             this.resolved   = false;
-            final var delta = partialTicks * 0.05f;
+
+            for (final var layer : this.layers.values()) {
+                layer.update(partialTicks);
+            }
+
+//            this.current    .update(partialTicks);
+//            this.alpha      = this.current.getAlpha();
+            /*final var delta = partialTicks * 0.05f;
             this.state.progress         = this.fsmState.getElapsed() + delta;
             var progress                = Math.min(
                     (this.fsmState.getBlendElapsed() + delta)
                             / this.fsmState.getBlendDuration(),
                     1.0f
             );
-            this.alpha                  = getAlpha(this.fsmState, progress);
+            this.alpha                  = getAlpha(this.fsmState, progress);*/
         }
+    }
+
+    public void resolve(
+            final @NonNull MinecraftModelPoseProvider provider
+    ) {
+
+        this.markResolved();
+
+        for (final var layer : this.layers.values()) {
+            if (layer.isTicked() && !layer.isResolved()) {
+                layer.resolve(provider);
+            }
+        }
+
+        /*current.getAnimation().resolve(
+                current.getFsmState(),
+                current.getExecutionState(),
+                current.getState(),
+                current.getCache(),
+                adaptor.link(DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID));
+        controller.markResolved();*/
+    }
+
+    public void apply(
+            final @NonNull MinecraftModelAdaptor adaptor
+    ) {
+
+        if (this.layers.isEmpty()) {
+            return;
+        }
+
+        final var skeleton  = adaptor.getSkeleton();
+        for (final var entry : skeleton.getEntries()) {
+            final var loc   = entry.id();
+            final var layer = this.apply[loc];
+
+            if (layer == null) {
+                continue;
+            }
+
+            final var view  = layer.getCache().get(loc);
+            final var alpha = layer.getAlpha();
+
+            if (alpha == 1.0f) {
+                entry.setPosition(view.getTx(), view.getTy(), view.getTz());
+                entry.setQuaternion(view.getRx(), view.getRy(), view.getRz(), view.getRw());
+                entry.setScale(view.getSx(), view.getSy(), view.getSz());
+            } else {
+                entry.setPosition(view.getTx(), view.getTy(), view.getTz(), alpha);
+                entry.setQuaternion(view.getRx(), view.getRy(), view.getRz(), view.getRw(), alpha);
+                entry.setScale(view.getSx(), view.getSy(), view.getSz(), alpha);
+            }
+        }
+
     }
 
     public void pause() {
@@ -139,34 +252,74 @@ public final class PlayerAnimationController {
         }
     }
 
-    private void cleanup() {
-        this.animation.cleanup(this.fsmState);
-        this.playing    = false;
-        this.current    = null;
-        this.animation  = null;
-        this.paused     = false;;
-    }
 
-    private float getAlpha(final FSMState fsmState, float progress) {
-        var alpha = 1.0f;
+    public boolean isUnlocked(
+            final @NonNull PlayerBone bone
+    ) {
+        for (final var layer : this.layers.values()) {
+            if (!layer.containsBone(bone)) {
+                continue;
+            }
 
-        final var current = this.getAnimation();
-        final var fsm = current.getFsm();
-        final var lookup = fsm.getLookup();
-
-        if (fsmState.getCurrentState() == 0) {
-            alpha = 0.0f;
-        } else if ("system#exit".equals(lookup.name(fsmState.getCurrentState()))) {
-            alpha = 1.0f - progress;
-        } else if ("system#enter".equals(lookup.name(fsmState.getLastState()))) {
-            alpha = progress;
+            return layer.getDefinition().unlock().contains(bone);
         }
-
-        return alpha;
+        return false;
     }
 
-    public void markResolved() {
+    public boolean shouldRestrictMotion() {
+        for (final var layer : this.layers.values()) {
+            if (layer.getDefinition().restrictMotion()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public TransformF getRootTransform() {
+        final var layer = this.apply[0];
+        return layer != null ? layer.getCache().get(0) : this.root;
+    }
+
+    public float getRootAlpha() {
+        final var layer = this.apply[0];
+        return layer != null ? layer.getAlpha() : 0.0f;
+    }
+
+    public void event(final String event) {
+        for (final var layer : this.layers.values()) {
+            layer.event(event);
+        }
+    }
+
+    public void event(final int signal) {
+        for (final var layer : this.layers.values()) {
+            layer.event(signal);
+        }
+    }
+
+    private void cleanup() {
+        this.playing        = false;
+        this.paused         = false;
+
+        this.layers         .clear();
+        this.exclusionMask  .clear();
+    }
+
+    private void cleanup(
+            final @NonNull AnimationLayer layer
+    ) {
+        for (var i = 0; i < this.apply.length; i++) {
+            if (this.apply[i] == layer) {
+                this.apply[i] = null;
+            }
+        }
+    }
+
+    private void markResolved() {
         this.resolved = true;
     }
 
+    private @NonNull PoseCache requestCache() {
+        return new PoseCache(DefaultMinecraftSkeletonLayout.HUMANOID);
+    }
 }

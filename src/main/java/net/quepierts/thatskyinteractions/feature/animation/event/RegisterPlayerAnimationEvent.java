@@ -40,7 +40,8 @@ public final class RegisterPlayerAnimationEvent extends Event {
     public void modify(
             @NonNull Identifier                 id,
             @NonNull String                     name,
-            @NonNull SourceDefinition           source
+            @NonNull SourceDefinition           source,
+            @NonNull String                     layer
     ) {
         final var definition    = this.definitions.get(id);
         if (definition == null) {
@@ -60,7 +61,8 @@ public final class RegisterPlayerAnimationEvent extends Event {
                     definition.unlock(),
                     definition.abortable(),
                     definition.restrictMotion(),
-                    definition.rootMotion()
+                    definition.rootMotion(),
+                    layer
             );
 
             this.definitions    .put(id, duplicate);

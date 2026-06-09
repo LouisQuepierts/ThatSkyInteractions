@@ -42,6 +42,7 @@ public enum PlayerBone {
 
     static {
         MAPPING = Map.of(
+                "root", ROOT,
                 "body", BODY,
                 "head", HEAD,
                 "left_arm", LEFT_ARM,

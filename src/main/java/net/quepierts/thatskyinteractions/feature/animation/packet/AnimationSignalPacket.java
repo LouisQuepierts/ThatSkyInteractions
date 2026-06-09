@@ -57,9 +57,7 @@ public record AnimationSignalPacket(
             return;
         }
 
-        final var animation     = controller.getAnimation();
-        final var state         = controller.getFsmState();
-        animation               .event(state, this.signal());
+        controller.event(this.signal());
 
     }
 

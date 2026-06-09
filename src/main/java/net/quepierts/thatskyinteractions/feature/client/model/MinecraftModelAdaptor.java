@@ -19,6 +19,7 @@ public final class MinecraftModelAdaptor {
 
     @Setter
     @Getter
+    @Deprecated
     private float   alpha   = 1.0f;
 
     private MinecraftModelAdaptor(final MinecraftModelSkeleton    skeleton) {
@@ -34,6 +35,7 @@ public final class MinecraftModelAdaptor {
         return linked.computeIfAbsent(pipeline, p -> MinecraftModelPoseProvider.of(this.skeleton, p));
     }
 
+    @Deprecated
     public void accept(
             @NonNull final PoseCache cache
     ) {
