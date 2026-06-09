@@ -51,9 +51,8 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
             final @NonNull ResourceManager  manager,
             final @NonNull ProfilerFiller   filler
     ) {
-        this.apply(preparations);
-
         final Map<Identifier, T> payload = this.onHostLoaded(preparations);
+        this.apply(payload);
 
         this.cache.encode(
                 this.getStreamCodec(),
