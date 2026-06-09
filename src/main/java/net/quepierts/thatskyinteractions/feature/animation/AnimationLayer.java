@@ -16,16 +16,16 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
 
     private final AnimationLayerType        type;
 
-    private final Identifier                animationId;
-    private final PlayerAnimation           animation;
-    private final PlayerAnimationDefinition definition;
-
     private final ExecutionState            executionState;
     private final HumanoidAnimationState    state;
     private final FSMState                  fsmState;
     private final PoseCache                 cache;
 
     private final int                       priority;
+
+    private Identifier                      animationId;
+    private PlayerAnimation                 animation;
+    private PlayerAnimationDefinition       definition;
 
     private float                           alpha;
     private int                             last;
@@ -36,22 +36,28 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
 
     public AnimationLayer(
             AnimationLayerType              type,
-            Identifier                      animationId,
-            PlayerAnimation                 animation,
-            PlayerAnimationDefinition       definition,
             ExecutionState                  executionState,
             HumanoidAnimationState          state,
             PoseCache                       cache
     ) {
         this.type                           = type;
-        this.animationId                    = animationId;
-        this.priority                       = type.defaultPriority();
-        this.animation                      = animation;
-        this.definition                     = definition;
+        this.priority                       = type.getPriority();
         this.executionState                 = executionState;
         this.state                          = state;
         this.cache                          = cache;
         this.fsmState                       = new FSMState();
+    }
+
+    public void play(
+            Identifier                      animationId,
+            PlayerAnimation                 animation,
+            PlayerAnimationDefinition       definition
+    ) {
+        this.animationId                    = animationId;
+        this.animation                      = animation;
+        this.definition                     = definition;
+
+        this.play();
     }
 
     public void play() {
@@ -100,6 +106,11 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     public void resolve(
             final @NonNull MinecraftModelPoseProvider provider
     ) {
+
+        if (!this.playing) {
+            return;
+        }
+
         this.markResolved();
 
         this.getAnimation().resolve(
@@ -142,17 +153,21 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     }
 
     public boolean containsBone(PlayerBone bone) {
-        return this.type.defaultMask().contains(bone);
+        return this.type.getMask().contains(bone);
     }
 
     public boolean isFinished() {
-        return !this.playing;
+        return !this.playing || this.fsmState.isFinished();
     }
 
     private void cleanup() {
-        this.animation.cleanup(this.fsmState);
-        this.playing = false;
-        this.paused = false;
+        this.animation      .cleanup(this.fsmState);
+        this.playing        = false;
+        this.paused         = false;
+
+        this.animationId    = null;
+        this.animation      = null;
+        this.definition     = null;
     }
 
     private float computeAlpha(float progress) {
