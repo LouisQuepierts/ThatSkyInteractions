@@ -1,32 +1,35 @@
 package net.quepierts.thatskyinteractions.core.animation.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 
 import java.util.Map;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum PlayerBone {
 
-    ROOT(1, "root"),
-    BODY(2, "body"),
-    HEAD(4, "head"),
-    LEFT_ARM(8, "left_arm"),
-    RIGHT_ARM(16, "right_arm"),
-    LEFT_LEG(32, "left_leg"),
-    RIGHT_LEG(64, "right_leg"),
-    LEFT_HAND(128, "left_hand"),
-    RIGHT_HAND(256, "right_hand");
+    ROOT("root", 1),
+    BODY("body", 2),
+    HEAD("head", 4),
+    LEFT_ARM("left_arm", 8),
+    RIGHT_ARM("right_arm", 16),
+    LEFT_LEG("left_leg", 32),
+    RIGHT_LEG("right_leg", 64),
+    LEFT_HAND("left_hand", 128),
+    RIGHT_HAND("right_hand", 256);
 
     private static final Map<String, PlayerBone> MAPPING;
     private static final PlayerBone[]            VALUES;
 
-    @Getter
-    private final int bit;
+    @Getter private final String    name;
+    @Getter private final int       bit;
+    @Getter private final int       mapped;
 
-    @Getter
-    private final String name;
+    PlayerBone(String name, int bit) {
+        this.bit    = bit;
+        this.name   = name;
+
+        this.mapped = DefaultMinecraftSkeletonLayout.HUMANOID.id(name);
+    }
 
     public static PlayerBone of(String name) {
         return MAPPING.get(name);

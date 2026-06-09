@@ -117,6 +117,56 @@ public final class PlayerAnimationController {
         return true;
     }
 
+    public void pause() {
+        if (this.playing) {
+            this.paused = true;
+        }
+    }
+
+    public void pause(
+            final @Nullable AnimationLayerType   type
+    ) {
+
+        if (type == null) {
+            this.pause();
+            return;
+        }
+
+        if (!this.isPlaying()) {
+            return;
+        }
+
+        final var layer = this.layers.get(type);
+        if (layer != null && layer.isPlaying()) {
+            layer.pause();
+        }
+    }
+
+    public void resume() {
+        if (this.isPlaying()) {
+            this.paused = false;
+        }
+    }
+
+    public void resume(
+            final @Nullable AnimationLayerType   type
+    ) {
+
+        if (type == null) {
+            this.resume();
+            return;
+        }
+
+        if (!this.isPlaying()) {
+            return;
+        }
+
+        final var layer = this.layers.get(type);
+        if (layer != null && layer.isPlaying()) {
+            layer.resume();
+        }
+    }
+
     public void abort() {
         if (!this.isPlaying()) {
             return;
@@ -125,12 +175,50 @@ public final class PlayerAnimationController {
         this.cleanup();
     }
 
+    public void abort(
+            final @Nullable AnimationLayerType   type
+    ) {
+
+        if (type == null) {
+            this.abort();
+            return;
+        }
+
+        if (!this.isPlaying()) {
+            return;
+        }
+
+        final var layer = this.layers.get(type);
+        if (layer != null && layer.isPlaying()) {
+            layer.abort();
+        }
+    }
+
     public void exit() {
         if (!this.isPlaying()) {
             return;
         }
 
         for (final var layer : this.running) {
+            layer.exit();
+        }
+    }
+
+    public void exit(
+            final @Nullable AnimationLayerType   type
+    ) {
+
+        if (type == null) {
+            this.exit();
+            return;
+        }
+
+        if (!this.isPlaying()) {
+            return;
+        }
+
+        final var layer = this.layers.get(type);
+        if (layer != null && layer.isPlaying()) {
             layer.exit();
         }
     }
@@ -166,33 +254,6 @@ public final class PlayerAnimationController {
         }
 
         this.last       = current;
-    }
-
-    private void remove(
-            final @NonNull AnimationLayer layer
-    ) {
-        this.running.remove(layer);
-
-        final var type = layer.getType();
-        if (type.isExclusive()) {
-            // because layer.mask is subset from exclusion
-            // so we can use xor
-            this.exclusionMask.xor(type.getMask());
-        }
-    }
-
-    private void setupApplyArray() {
-        Arrays.fill(this.apply, null);
-
-        for (var i = 0; i < this.apply.length; i++) {
-            final var bone = PlayerBone.ordinal(i);
-            for (final var layer : this.running) {
-                if (layer.containsBone(bone)) {
-                    this.apply[i] = layer;
-                    break;
-                }
-            }
-        }
     }
 
     public void update(float partialTicks) {
@@ -251,18 +312,6 @@ public final class PlayerAnimationController {
 
     }
 
-    public void pause() {
-        if (this.playing) {
-            this.paused = true;
-        }
-    }
-
-    public void resume() {
-        if (this.playing) {
-            this.paused = false;
-        }
-    }
-
 
     public boolean isUnlocked(
             final @NonNull PlayerBone bone
@@ -309,6 +358,33 @@ public final class PlayerAnimationController {
     public void event(final int signal) {
         for (final var layer : this.running) {
             layer.event(signal);
+        }
+    }
+
+    private void remove(
+            final @NonNull AnimationLayer layer
+    ) {
+        this.running.remove(layer);
+
+        final var type = layer.getType();
+        if (type.isExclusive()) {
+            // because layer.mask is subset from exclusion
+            // so we can use xor
+            this.exclusionMask.xor(type.getMask());
+        }
+    }
+
+    private void setupApplyArray() {
+        Arrays.fill(this.apply, null);
+
+        for (var i = 0; i < this.apply.length; i++) {
+            final var bone = PlayerBone.ordinal(i);
+            for (final var layer : this.running) {
+                if (layer.containsBone(bone)) {
+                    this.apply[bone.getMapped()] = layer;
+                    break;
+                }
+            }
         }
     }
 

@@ -2,7 +2,9 @@ package net.quepierts.thatskyinteractions.feature.registry;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.commands.SetBlockCommand;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.AnimationLayerType;

@@ -14,6 +14,30 @@ import org.jspecify.annotations.NonNull;
 @Getter
 public final class AnimationLayer implements Comparable<AnimationLayer> {
 
+    public record Serialize(
+        Identifier          animation,
+        float               alpha,
+        int                 last,
+        boolean             playing,
+        boolean             ticked,
+        boolean             resolved,
+        boolean             paused,
+
+        // AnimationState
+        float               progress,
+
+        // FsmState
+        float           elapsed,
+        float           blendElapsed,
+        float           blendDuration,
+        float           normalizedElapsed,
+        float           normalizedBlendElapsed,
+        int             lastState,
+        int             currentState,
+        boolean         blending,
+        boolean         finished
+    ) { }
+
     private final AnimationLayerType        type;
 
     private final ExecutionState            executionState;
@@ -26,6 +50,7 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     private Identifier                      animationId;
     private PlayerAnimation                 animation;
     private PlayerAnimationDefinition       definition;
+    private float                           speed;
 
     private float                           alpha;
     private int                             last;

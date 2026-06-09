@@ -9,8 +9,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationControlPacket;
+import net.quepierts.thatskyinteractions.feature.animation.packet.ClientboundAnimationControlPacket;
 import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationSignalPacket;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
@@ -22,71 +23,179 @@ public class PlayerAnimationSystem {
     }
 
     public static void play(
-            @NonNull ServerPlayer   player,
+            @NonNull Avatar         avatar,
             @NonNull Identifier     animation
     ) {
 
-        PacketDistributor.sendToPlayersInDimension(
-                player.level(),
-                AnimationControlPacket.play(player, animation)
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.play(avatar, animation)
+        );
+
+    }
+
+    public static void play(
+            @NonNull Avatar         avatar,
+            @NonNull Identifier     animation,
+            @Nullable Identifier     layer
+    ) {
+
+        if (layer == null) {
+            play(avatar, animation);
+            return;
+        }
+
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.play(avatar, animation, layer)
         );
 
     }
 
     public static void abort(
-            @NonNull ServerPlayer   player
+            @NonNull Avatar         avatar
     ) {
 
-        PacketDistributor.sendToPlayersInDimension(
-                player.level(),
-                AnimationControlPacket.abort(player)
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.abort(avatar)
+        );
+
+    }
+
+    public static void abort(
+            @NonNull Avatar         avatar,
+            @Nullable Identifier     layer
+    ) {
+
+        if (layer == null) {
+            abort(avatar);
+            return;
+        }
+
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.abort(avatar, layer)
         );
 
     }
 
     public static void exit(
-            @NonNull ServerPlayer   player
+            @NonNull Avatar         avatar
     ) {
 
-        PacketDistributor.sendToPlayersInDimension(
-                player.level(),
-                AnimationControlPacket.exit(player)
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.exit(avatar)
+        );
+
+    }
+
+    public static void exit(
+            @NonNull Avatar         avatar,
+            @Nullable Identifier     layer
+    ) {
+
+        if (layer == null) {
+            exit(avatar);
+            return;
+        }
+
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.exit(avatar, layer)
         );
 
     }
 
     public static void pause(
-            @NonNull ServerPlayer   player
+            @NonNull Avatar         avatar
     ) {
 
-        PacketDistributor.sendToPlayersInDimension(
-                player.level(),
-                AnimationControlPacket.pause(player)
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.pause(avatar)
+        );
+
+    }
+
+    public static void pause(
+            @NonNull Avatar         avatar,
+            @Nullable Identifier     layer
+    ) {
+
+        if (layer == null) {
+            pause(avatar);
+            return;
+        }
+
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.pause(avatar, layer)
         );
 
     }
 
     public static void resume(
-            @NonNull ServerPlayer   player
+            @NonNull Avatar         avatar
     ) {
 
-        PacketDistributor.sendToPlayersInDimension(
-                player.level(),
-                AnimationControlPacket.resume(player)
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.resume(avatar)
+        );
+
+    }
+
+    public static void resume(
+            @NonNull Avatar         avatar,
+            @Nullable Identifier     layer
+    ) {
+
+        if (layer == null) {
+            resume(avatar);
+            return;
+        }
+
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.resume(avatar, layer)
         );
 
     }
 
     public static void event(
-            @NonNull ServerPlayer   player,
-            String                  event
+            @NonNull Avatar         avatar,
+            @NonNull String         event,
+            @Nullable Identifier     layer
     ) {
 
-        PacketDistributor.sendToPlayersInDimension(
-                player.level(),
-                AnimationControlPacket.event(
-                        player,
-                        Identifier.fromNamespaceAndPath("e", event)
+        if (layer == null) {
+            event(avatar, event);
+            return;
+        }
+
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.event(
+                        avatar,
+                        event,
+                        layer
+                )
+        );
+
+    }
+
+    public static void event(
+            @NonNull Avatar         avatar,
+            @NonNull String         event
+    ) {
+
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                avatar,
+                ClientboundAnimationControlPacket.event(
+                        avatar,
+                        event
                 )
         );
 
