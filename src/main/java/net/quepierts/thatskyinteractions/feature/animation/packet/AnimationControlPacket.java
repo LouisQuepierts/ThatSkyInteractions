@@ -13,9 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
-import net.quepierts.thatskyinteractions.feature.utils.Interpolators;
+import net.quepierts.thatskyinteractions.feature.utils.TsiInterpolators;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
-import net.quepierts.veynir.core.adapter.Consumer1f;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
@@ -127,7 +126,7 @@ public record AnimationControlPacket(
                         target.yBodyRot,
                         target.getYHeadRot(),
                         Mth.abs(difference) * 0.01f,
-                        Interpolators.DEGREE,
+                        TsiInterpolators.DEGREE,
                         Eases.CUBIC_OUT
                 );
                 controller.play(this.identifier.orElseThrow());
