@@ -1,12 +1,16 @@
 package net.quepierts.thatskyinteractions.feature.mixin.vanilla.client;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
 import net.quepierts.thatskyinteractions.feature.client.control.ClientCameraSystem;
+import net.quepierts.thatskyinteractions.feature.client.control.event.ComputeCameraPositionEvent;
 import org.joml.*;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -79,6 +83,27 @@ public abstract class CameraMixin {
             final CallbackInfoReturnable<Double> cir
     ) {
         ClientCameraSystem.updateMaxZoom(cir.getReturnValueF());
+    }
+
+    @WrapOperation(
+            method = "alignWithEntity",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"
+            )
+    )
+    private void a4j$setPosition(
+            final Camera            instance,
+            final double            x,
+            final double            y,
+            final double            z,
+            final Operation<Void>   original
+    ) {
+
+        final var event = new ComputeCameraPositionEvent(this.entity, x, y, z);
+        NeoForge.EVENT_BUS.post(event);
+        original.call(instance, event.getX(), event.getY(), event.getZ());
+
     }
 
 }

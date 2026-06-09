@@ -13,11 +13,12 @@ import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.client.control.event.ComputeCameraPositionEvent;
 import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerMovedEvent;
 import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerTurnEvent;
 import net.quepierts.thatskyinteractions.feature.client.input.TsiKeys;
+import net.quepierts.thatskyinteractions.feature.client.render.GameRendererUpdateEvent;
 import org.lwjgl.glfw.GLFW;
 
 @UtilityClass
@@ -28,6 +29,11 @@ public class ClientCameraSystem {
 
     public static void updateMaxZoom(final float distance) {
         CONTROLLER.updateMaxZoom(distance);
+    }
+
+    @SubscribeEvent
+    public static void onUpdate(final GameRendererUpdateEvent event) {
+        CONTROLLER.update();
     }
 
     @SubscribeEvent
@@ -45,9 +51,8 @@ public class ClientCameraSystem {
             return;
         }
 
-        CONTROLLER.turn((float) event.getXo(), (float) event.getYo());
-
         if (!Minecraft.getInstance().hasAltDown()) {
+            CONTROLLER.turn((float) event.getXo(), (float) event.getYo());
             event.setCanceled(true);
         }
     }
@@ -66,6 +71,20 @@ public class ClientCameraSystem {
     }
 
     @SubscribeEvent
+    public static void onComputeCameraPosition(final ComputeCameraPositionEvent event) {
+        CONTROLLER.onComputeCameraPosition(
+                event.getX(),
+                event.getY(),
+                event.getZ(),
+                (x, y, z) -> {
+                    event.setX(x);
+                    event.setY(y);
+                    event.setZ(z);
+                }
+        );
+    }
+
+    @SubscribeEvent
     public static void onCalculateCameraDistance(final CalculateDetachedCameraDistanceEvent event) {
         CONTROLLER.onCalculateCameraDistance(
                 event.getDistance(),
@@ -79,10 +98,6 @@ public class ClientCameraSystem {
             return;
         }
 
-        if (!Minecraft.getInstance().hasAltDown()) {
-            return;
-        }
-
         final var cameraYRot    = CONTROLLER.getYRot();
         final var inputVector   = event.getMoveVector();
         // turn player by move vector
@@ -93,17 +108,27 @@ public class ClientCameraSystem {
 
         player.turn(difference, 0.0f);
 
-        final var origin    = event.getInput();
-        final var forward   = new Input(
-                true, false, false, false,
-                origin.jump(),
-                origin.shift(),
-                origin.sprint()
-        );
-        event.redirect(
-                forward,
-                Vec2.UNIT_Y
-        );
+        if (Math.abs(difference) > 90.0f) {
+            event.setCanceled(true);
+        } else {
+            final var origin = event.getInput();
+            final var forward = new Input(
+                    true, false, false, false,
+                    origin.jump(),
+                    origin.shift(),
+                    origin.sprint()
+            );
+            event.redirect(
+                    forward,
+                    Vec2.UNIT_Y
+            );
+
+
+            CONTROLLER.onPlayerInput(
+                    origin.sprint(),
+                    targetYRot
+            );
+        }
     }
 
     @SubscribeEvent
@@ -120,5 +145,6 @@ public class ClientCameraSystem {
     @SubscribeEvent
     public static void onLoggedOut(final ClientPlayerNetworkEvent.LoggingOut event) {
         CONTROLLER.toggle(false);
+        CONTROLLER.cleanup();
     }
 }
