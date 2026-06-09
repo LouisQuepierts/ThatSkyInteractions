@@ -5,7 +5,7 @@ import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.infra.animation.tween.interpolate.Interpolator1f;
 
 @UtilityClass
-public class Interpolators {
+public class TsiInterpolators {
 
     public static final Interpolator1f DEGREE = (from, to, progress) -> {
         final var difference = Mth.degreesDifference(from, to);

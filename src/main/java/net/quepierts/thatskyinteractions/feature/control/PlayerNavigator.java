@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
-import net.quepierts.thatskyinteractions.feature.utils.Interpolators;
+import net.quepierts.thatskyinteractions.feature.utils.TsiInterpolators;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
@@ -231,7 +231,7 @@ public final class PlayerNavigator {
                 player.getYHeadRot(),
                 target,
                 Math.max(abs * 0.01f, 0.6f),
-                Interpolators.DEGREE,
+                TsiInterpolators.DEGREE,
                 Eases.QUAD_OUT
         );
 
