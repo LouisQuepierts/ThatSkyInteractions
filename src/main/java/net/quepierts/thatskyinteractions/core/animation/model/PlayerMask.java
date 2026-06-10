@@ -84,7 +84,7 @@ public sealed class PlayerMask {
             final @NonNull PlayerMask mask,
             final @NonNull PlayerMask dest
     ) {
-        dest.mask = ~this.mask & mask.mask;
+        dest.mask = this.mask & ~mask.mask;
     }
 
     public void and(
