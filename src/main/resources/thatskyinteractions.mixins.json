@@ -6,6 +6,7 @@
   "refmap": "thatskyinteractions.refmap.json",
   "client": [
     "vanilla.client.CameraMixin",
+    "vanilla.client.ClientHookMixin",
     "vanilla.client.GameRendererMixin",
     "vanilla.client.LocalPlayerMixin",
     "vanilla.client.ModelFeatureRendererMixin",
@@ -19,6 +20,6 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "vanilla.client.ClientHookMixin"
+    "vanilla.EntityMixin"
   ]
 }

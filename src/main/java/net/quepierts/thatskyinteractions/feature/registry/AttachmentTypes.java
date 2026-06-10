@@ -8,6 +8,7 @@ import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAt
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
 import net.quepierts.thatskyinteractions.feature.control.PlayerNavigator;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
+import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 
 @UtilityClass
@@ -46,6 +47,13 @@ public class AttachmentTypes {
             .serialize(PlayerFriendshipAttachment.SERIALIZER)
             .sync(PlayerFriendshipAttachment.STREAM_CODEC)
             .copyOnDeath()
+            .register();
+
+    public static final AttachmentEntry<PlayerHandholdingAttachment> PLAYER_HANDHOLDING
+            = ThatSkyInteractions.REGISTRUM.attachment(
+                    "player/handhold",
+                    PlayerHandholdingAttachment::new
+            )
             .register();
 
     public static final AttachmentEntry<PhysicalTweenAttachment> PHYSICAL_TWEEN
