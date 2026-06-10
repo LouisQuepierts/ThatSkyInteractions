@@ -2,13 +2,19 @@ package net.quepierts.thatskyinteractions.feature.animation;
 
 import lombok.Getter;
 import net.minecraft.resources.Identifier;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftChannelFormat;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
+import net.quepierts.veynir.backend.buffer.AttributeBuffer;
 import net.quepierts.veynir.backend.execution.ExecutionState;
+import net.quepierts.veynir.core.SkeletonState;
 import net.quepierts.veynir.core.fsm.FSMState;
 import net.quepierts.veynir.core.skeleton.PoseCache;
+import net.quepierts.veynir.core.util.ArrayIterator;
 import org.jspecify.annotations.NonNull;
 
 @Getter
@@ -45,6 +51,9 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     private final FSMState                  fsmState;
     private final PoseCache                 cache;
 
+    private final PlayerMask                mask;
+    private final boolean[]                 skeletonMask;
+
     private final int                       priority;
 
     private Identifier                      animationId;
@@ -70,18 +79,26 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
         this.executionState                 = executionState;
         this.state                          = state;
         this.cache                          = cache;
+
+        this.mask                           = PlayerMask.empty();
+        this.skeletonMask                   = new boolean[DefaultMinecraftSkeletonLayout.HUMANOID.size()];
         this.fsmState                       = new FSMState();
+
+        this.state                          .getSkeleton()
+                                            .setMask(this.skeletonMask);
     }
 
     public void play(
             Identifier                      animationId,
             PlayerAnimation                 animation,
-            PlayerAnimationDefinition       definition
+            PlayerAnimationDefinition       definition,
+            PlayerMask                      mask
     ) {
         this.animationId                    = animationId;
         this.animation                      = animation;
         this.definition                     = definition;
 
+        this.setupMask(mask);
         this.play();
     }
 
@@ -183,6 +200,37 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
 
     public boolean isFinished() {
         return !this.playing || this.fsmState.isFinished();
+    }
+
+    private void setupMask(
+            final @NonNull PlayerMask execution
+    ) {
+        this.type.getMask().copy(this.mask);
+        this.mask.and(execution);
+
+        final var attribute = this.state.getChannelAttribute();
+        final var size      = DefaultMinecraftChannelFormat.ATTRIBUTE_SIZE;
+        final var offset    = DefaultMinecraftChannelFormat.OFFSET_MASK;
+
+        final var iterator = PlayerBone.iterator();
+        while (iterator.hasNext()) {
+            final var bone              = iterator.next();
+            final var mapped            = bone.getMapped();
+
+            if (mapped == -1) {
+                continue;
+            }
+
+            final var enable            = this.mask.contains(bone);
+            this.skeletonMask[mapped]   = enable;
+
+            // set attribute for bone. position/rotation/scale
+            final var location          = mapped * 3;
+            attribute.write(size * location + offset, enable);
+            attribute.write(size * (location + 1) + offset, enable);
+            attribute.write(size * (location + 2) + offset, enable);
+        }
+
     }
 
     private void cleanup() {

@@ -34,7 +34,8 @@ public final class PlayerAnimationController {
     private final ExecutionState                            executionState      = new ExecutionState(64);
     private final TransformF                                root;
 
-    @Getter private final PlayerMask                        exclusionMask       = PlayerMask.empty();
+    @Getter private final PlayerMask                        executionMask       = PlayerMask.all();
+    private final PlayerMask                                exclusionMask       = PlayerMask.empty();
 
     @Getter private int                                     last;
     @Getter private boolean                                 playing;
@@ -100,7 +101,8 @@ public final class PlayerAnimationController {
         layer.play(
                 animationId,
                 animation,
-                definition
+                definition,
+                this.executionMask
         );
 
         this.running.add(layer);
@@ -292,7 +294,7 @@ public final class PlayerAnimationController {
             final var loc   = entry.id();
             final var layer = this.apply[loc];
 
-            if (layer == null) {
+            if (layer == null || !layer.isResolved()) {
                 continue;
             }
 

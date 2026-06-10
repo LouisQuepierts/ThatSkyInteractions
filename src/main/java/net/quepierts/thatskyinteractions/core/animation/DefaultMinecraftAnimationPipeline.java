@@ -11,7 +11,7 @@ public class DefaultMinecraftAnimationPipeline {
 
     public static final AnimationPipeline HUMANOID_TIMELINE = AnimationPipeline.compiler()
             .withChannelLayout(DefaultMinecraftChannelLayout.HUMANOID)
-            .withChannelFormat(DefaultChannelFormats.TIMELINE)
+            .withChannelFormat(DefaultMinecraftChannelFormat.HUMANOID)
             .withSampler(AnimationPipeline.ORIGINAL_SAMPLER)
             .withSampler("TimelineSampler")
             .withPass(
@@ -22,7 +22,7 @@ public class DefaultMinecraftAnimationPipeline {
 
     public static final AnimationPipeline HUMANOID_BLEND = AnimationPipeline.compiler()
             .withChannelLayout(DefaultMinecraftChannelLayout.HUMANOID)
-            .withChannelFormat(DefaultChannelFormats.TIMELINE)
+            .withChannelFormat(DefaultMinecraftChannelFormat.HUMANOID)
 
             .withBuffer("Buffer#0")
             .withBuffer("Buffer#1")

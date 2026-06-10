@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.core.animation.model;
 
 import lombok.Getter;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
+import net.quepierts.veynir.core.util.ArrayIterator;
 
 import java.util.Map;
 
@@ -37,6 +38,10 @@ public enum PlayerBone {
 
     public static PlayerBone ordinal(int ordinal) {
         return VALUES[ordinal];
+    }
+
+    public static ArrayIterator<PlayerBone> iterator() {
+        return new ArrayIterator<>(VALUES);
     }
 
     public static int size() {

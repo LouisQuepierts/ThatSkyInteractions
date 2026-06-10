@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.feature.animation;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftChannelFormat;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftChannelLayout;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.core.animation.parameter.ModelOverrideParameter;
@@ -28,7 +29,7 @@ public final class HumanoidAnimationState extends AnimationState {
     private final UniformInstance<ModelOverrideParameter> uboModelOverride;
 
     public static HumanoidAnimationState _default() {
-        return new HumanoidAnimationState(DefaultChannelFormats.TIMELINE);
+        return new HumanoidAnimationState(DefaultMinecraftChannelFormat.HUMANOID);
     }
 
     public HumanoidAnimationState(ChannelFormat channelFormat) {
