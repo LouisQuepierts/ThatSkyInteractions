@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.core.animation.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.quepierts.veynir.core.util.ArrayIterator;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,36 +35,90 @@ public sealed class PlayerMask {
         return new PlayerMask(0xFFFFFFFF);
     }
 
-    public void add(final PlayerBone bone) {
+    public void add(
+            final @NonNull PlayerBone bone
+    ) {
         this.mask |= bone.getBit();
     }
 
-    public boolean contains(final PlayerBone bone) {
+    public boolean contains(
+            final @NonNull PlayerBone bone
+    ) {
         return (this.mask & bone.getBit()) != 0;
     }
 
-    public boolean contains(final PlayerMask mask) {
+    public boolean contains(
+            final @NonNull PlayerMask mask
+    ) {
         return (this.mask & mask.mask) == mask.mask;
     }
 
-    public boolean collision(final PlayerMask mask) {
+    public boolean collision(
+            final @NonNull PlayerMask mask
+    ) {
         return (this.mask & mask.mask) != 0;
     }
 
-    public void and(final PlayerMask mask) {
-        this.mask &= mask.mask;
+    public void and(
+            final @NonNull PlayerMask mask,
+            final @NonNull PlayerMask dest
+    ) {
+        dest.mask = this.mask & mask.mask;
     }
 
-    public void or(final PlayerMask mask) {
-        this.mask |= mask.mask;
+    public void or(
+            final @NonNull PlayerMask mask,
+            final @NonNull PlayerMask dest
+    ) {
+        dest.mask = this.mask | mask.mask;
     }
 
-    public void xor(final PlayerMask mask) {
-        this.mask ^= mask.mask;
+    public void xor(
+            final @NonNull PlayerMask mask,
+            final @NonNull PlayerMask dest
+    ) {
+        dest.mask = this.mask ^ mask.mask;
     }
 
-    public void not(final PlayerMask mask) {
-        this.mask = ~this.mask & mask.mask;
+    public void not(
+            final @NonNull PlayerMask mask,
+            final @NonNull PlayerMask dest
+    ) {
+        dest.mask = ~this.mask & mask.mask;
+    }
+
+    public void and(
+            final @NonNull PlayerMask mask
+    ) {
+        this.and(mask, this);
+    }
+
+    public void or(
+            final @NonNull PlayerMask mask
+    ) {
+        this.or(mask, this);
+    }
+
+    public void xor(
+            final @NonNull PlayerMask mask
+    ) {
+        this.xor(mask, this);
+    }
+
+    public void not(
+            final @NonNull PlayerMask mask
+    ) {
+        this.not(mask, this);
+    }
+
+    public void copy(
+            final @NonNull PlayerMask dest
+    ) {
+        dest.mask = this.mask;
+    }
+
+    public PlayerMask copy() {
+        return new PlayerMask(this.mask);
     }
 
     public void clear() {
@@ -103,27 +158,27 @@ public sealed class PlayerMask {
         }
 
         @Override
-        public void add(final PlayerBone bone) {
+        public void add(final @NonNull PlayerBone bone) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void and(final PlayerMask mask) {
+        public void and(final @NonNull PlayerMask mask) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void or(final PlayerMask mask) {
+        public void or(final @NonNull PlayerMask mask) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void xor(final PlayerMask mask) {
+        public void xor(final @NonNull PlayerMask mask) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void not(final PlayerMask mask) {
+        public void not(final @NonNull PlayerMask mask) {
             throw new UnsupportedOperationException();
         }
 
