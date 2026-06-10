@@ -9,6 +9,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.feature.animation.packet.ClientboundAnimationControlPacket;
 import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationSignalPacket;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +19,10 @@ import org.jspecify.annotations.NonNull;
 @UtilityClass
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public class PlayerAnimationSystem {
+
+    public static final PlayerMask LOWER_BODY
+            = PlayerMask.of(PlayerBone.ROOT, PlayerBone.LEFT_LEG, PlayerBone.RIGHT_LEG)
+                        .toImmutable();
 
     public static PlayerAnimationAttachment getAnimationData(final @NonNull Avatar entity) {
         return PlayerAnimationAttachment.getAttachment(entity);
@@ -226,7 +232,17 @@ public class PlayerAnimationSystem {
 
         final var data          = PlayerAnimationSystem.getAnimationData(avatar);
 
-        data.getController()    .tick(entity.tickCount);
+        final var controller    = data.getController();
+        final var sitting       = avatar.getVehicle() != null;
+        final var executionMask = controller.getExecutionMask();
+
+        if (sitting) {
+            executionMask.not(LOWER_BODY);
+        } else {
+            executionMask.or(LOWER_BODY);
+        }
+
+        controller              .tick(entity.tickCount);
     }
 
 }

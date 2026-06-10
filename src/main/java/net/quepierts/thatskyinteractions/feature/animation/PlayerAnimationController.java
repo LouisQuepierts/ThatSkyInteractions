@@ -381,6 +381,11 @@ public final class PlayerAnimationController {
 
         for (var i = 0; i < this.apply.length; i++) {
             final var bone = PlayerBone.ordinal(i);
+
+            if (!this.executionMask.contains(bone)) {
+                continue;
+            }
+
             for (final var layer : this.running) {
                 if (layer.containsBone(bone)) {
                     this.apply[bone.getMapped()] = layer;
