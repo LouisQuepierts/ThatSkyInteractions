@@ -100,11 +100,6 @@ public final class PlayerInteractionAttachment {
         this.received.remove(other.getUUID());
 
     }
-
-    public void tick() {
-
-    }
-
     public boolean hasSentRequest() {
         return this.sent != null;
     }

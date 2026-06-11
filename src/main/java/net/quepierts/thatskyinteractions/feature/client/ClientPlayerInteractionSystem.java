@@ -5,8 +5,14 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerMovedEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionRequestPacket;
 
 @UtilityClass
@@ -45,4 +51,24 @@ public class ClientPlayerInteractionSystem {
         return PlayerInteractionAttachment.getAttachment(Minecraft.getInstance().player);
     }
 
+    @UtilityClass
+    @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
+    static final class Handler {
+        @SubscribeEvent
+        public static void onLocalPlayerMoved(final LocalPlayerMovedEvent event) {
+
+            final var player            = event.getPlayer();
+
+            final var interactionData   = PlayerInteractionSystem.getInteractionAttachment(player);
+            final var sent              = interactionData.getSent();
+            if (sent != null) {
+                if (sent.isWaiting()) {
+                    ClientPlayerInteractionSystem.cancel();
+                }
+
+                event.setCanceled(true);
+            }
+
+        }
+    }
 }

@@ -38,9 +38,9 @@ public final class InteractionRequest {
     public static InteractionRequest receive(
             UUID other,
             Identifier type,
-            long expireTime
+            long tick
     ) {
-        return new InteractionRequest(other, type, expireTime, State.WAITING);
+        return new InteractionRequest(other, type, tick + 20 * 60, State.WAITING);
     }
 
     public boolean isExpired(long tick) {

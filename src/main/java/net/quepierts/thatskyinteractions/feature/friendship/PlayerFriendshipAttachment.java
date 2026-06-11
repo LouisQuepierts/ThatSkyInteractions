@@ -81,7 +81,7 @@ public final class PlayerFriendshipAttachment {
         return attachment;
     }
 
-    private transient UUID                                  me;
+    private transient       UUID                            me;
     private transient final Map<UUID, FriendshipTreeData>   byUuid;
     private transient final IntSet                          linked  = new IntArraySet();
 

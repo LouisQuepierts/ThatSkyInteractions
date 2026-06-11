@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.feature.interaction;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -8,61 +7,24 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
-import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
-import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
-import net.quepierts.thatskyinteractions.core.animation.sampler.WrappedSampler;
 import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
-import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
-import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
-import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
 import net.quepierts.thatskyinteractions.feature.control.packet.NavigatePacket;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
-import net.quepierts.thatskyinteractions.feature.interaction.packet.InteractionControlPacket;
+import net.quepierts.thatskyinteractions.feature.interaction.packet.ClientboundInteractionControlPacket;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
-import net.quepierts.veynir.backend.sampler.AnimationSampler;
-import net.quepierts.veynir.backend.sampler.SamplingMode;
-import net.quepierts.veynir.core.fsm.FSMParameter;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 @Slf4j
 @UtilityClass
-@EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public class PlayerInteractionSystem {
 
     public static final String ANIMATION_TYPE_REQUESTER = "interaction.requester";
     public static final String ANIMATION_TYPE_RECEIVER  = "interaction.receiver";
 
-    @SubscribeEvent
-    public static void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
-        final var entity = event.getEntity();
-        if (entity instanceof ServerPlayer player) {
-            PlayerInteractionSystem.cancel(player);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onRegisterAnimationType(final RegisterPlayerAnimationTypeEvent event) {
-        event.register(
-                ANIMATION_TYPE_REQUESTER,
-                PlayerInteractionSystem::requester
-        );
-
-        event.register(
-                ANIMATION_TYPE_RECEIVER,
-                PlayerInteractionSystem::receiver
-        );
-    }
-
-    public static PlayerInteractionAttachment getInteractionData(
+    public static PlayerInteractionAttachment getInteractionAttachment(
             @NonNull final Player player
     ) {
         return PlayerInteractionAttachment.getAttachment(player);
@@ -103,8 +65,8 @@ public class PlayerInteractionSystem {
             return;
         }
 
-        final var reqData = PlayerInteractionSystem.getInteractionData(requester);
-        final var recData = PlayerInteractionSystem.getInteractionData(receiver);
+        final var reqData = PlayerInteractionSystem.getInteractionAttachment(requester);
+        final var recData = PlayerInteractionSystem.getInteractionAttachment(receiver);
 
         if (reqData.hasSentRequest()) {
             PlayerInteractionSystem.cancel(requester);
@@ -120,12 +82,12 @@ public class PlayerInteractionSystem {
 
         PacketDistributor.sendToPlayer(
                 requester,
-                InteractionControlPacket.invite(receiver, interaction, true)
+                ClientboundInteractionControlPacket.invite(receiver, interaction, true)
         );
 
         PacketDistributor.sendToPlayer(
                 receiver,
-                InteractionControlPacket.invite(requester, interaction, false)
+                ClientboundInteractionControlPacket.invite(requester, interaction, false)
         );
 
         NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Post(requester, receiver, interaction));
@@ -142,8 +104,8 @@ public class PlayerInteractionSystem {
             return;
         }
 
-        final var reqData = PlayerInteractionSystem.getInteractionData(requester);
-        final var recData = PlayerInteractionSystem.getInteractionData(receiver);
+        final var reqData = PlayerInteractionSystem.getInteractionAttachment(requester);
+        final var recData = PlayerInteractionSystem.getInteractionAttachment(receiver);
 
         final var sent = reqData.getSent();
         if (sent == null || !sent.getOther().equals(receiver.getUUID())) {
@@ -206,12 +168,12 @@ public class PlayerInteractionSystem {
 
         PacketDistributor.sendToPlayer(
                 requester,
-                InteractionControlPacket.accept(receiver, true)
+                ClientboundInteractionControlPacket.accept(receiver, true)
         );
 
         PacketDistributor.sendToPlayer(
                 receiver,
-                InteractionControlPacket.accept(requester, false)
+                ClientboundInteractionControlPacket.accept(requester, false)
         );
 
         NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(requester, receiver, type));
@@ -221,7 +183,7 @@ public class PlayerInteractionSystem {
     public static void cancel(
             final @NonNull ServerPlayer requester
     ) {
-        final var reqData   = PlayerInteractionSystem.getInteractionData(requester);
+        final var reqData   = PlayerInteractionSystem.getInteractionAttachment(requester);
         final var sent      = reqData.getSent();
 
 
@@ -229,121 +191,36 @@ public class PlayerInteractionSystem {
             return;
         }
 
+        final var level     = requester.level();
+        final var otherUUID = sent.getOther();
+        final var other     = level.getPlayerByUUID(otherUUID);
+
+        final var type      = reqData.getSent().getType();
+
         // change order
         // if other is not online, requester still can cancel the invite
         reqData.cancelSent();
 
-        final var level     = requester.level();
-        final var other     = level.getPlayerByUUID(sent.getOther());
-
-        if (!(other instanceof ServerPlayer receiver)) {
-            return;
-        }
-
-        final var recData   = PlayerInteractionSystem.getInteractionData(receiver);
-        if (!reqData.hasSentRequest()) {
-            return;
-        }
-
-        recData.cancelReceived(requester);
-
-        final var type      = reqData.getSent().getType();
-
         PacketDistributor.sendToPlayer(
                 requester,
-                InteractionControlPacket.cancel(receiver, true)
-        );
-
-        PacketDistributor.sendToPlayer(
-                receiver,
-                InteractionControlPacket.cancel(requester, false)
+                ClientboundInteractionControlPacket.cancel(otherUUID, true)
         );
 
         PlayerAnimationSystem.exit(requester);
 
-        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(requester, receiver, type));
-    }
+        if (other instanceof ServerPlayer receiver) {
 
-    private static @NonNull PlayerAnimation requester(
-            @NonNull final PlayerAnimationDefinition definition
-    ) {
+            final var recData   = PlayerInteractionSystem.getInteractionAttachment(receiver);
+            recData             .cancelReceived(requester);
 
-        final var context   = TemplateAnimation.ParsingContext.of(
-                DefaultInteractionFSM.REQUESTER,
-                DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
-                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
-                DefaultInteractionFSM.REQUESTER_STATES,
-                PlayerInteractionSystem::fallback
-        );
+            PacketDistributor.sendToPlayer(
+                    receiver,
+                    ClientboundInteractionControlPacket.cancel(requester.getUUID(), false)
+            );
 
-        final var template  = TemplateAnimation.template(
-                definition,
-                context
-        );
-
-        template.setFrozenEnd(DefaultInteractionFSM.REQUESTER_CANCEL, true);
-        template.setFrozenEnd(DefaultInteractionFSM.REQUESTER_EXIT, true);
-
-        template.setExitPoint(
-                DefaultInteractionFSM.REQUESTER_WAITING,
-                DefaultInteractionFSM.REQUESTER_CANCEL
-        );
-
-        return template;
-    }
-
-    private static @NonNull PlayerAnimation receiver(
-            @NonNull final PlayerAnimationDefinition definition
-    ) {
-
-        final var context   = TemplateAnimation.ParsingContext.of(
-                DefaultInteractionFSM.RECEIVER,
-                DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
-                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
-                DefaultInteractionFSM.RECEIVER_STATES,
-                PlayerInteractionSystem::fallback
-        );
-
-        final var template  = TemplateAnimation.template(
-                definition,
-                context
-        );
-
-        template.setFrozenEnd(DefaultInteractionFSM.RECEIVER_EXIT, true);
-
-        return template;
-    }
-
-    private static @Nullable AnimationSampler fallback(
-            @NonNull final  Int2ObjectFunction<AnimationSampler>    getter,
-            @NonNull final  FSMParameter                            fsmParameter,
-            final           String                                  name,
-            final           int                                     index
-    ) {
-
-        switch (name) {
-            case "cancel":
-            case "exit": {
-
-                final var last                  = getter.get(index - 2);
-                fsmParameter.duration()[index]  = 0.25f;
-                fsmParameter.fadeIn()[index]    = 0.0f;
-                fsmParameter.fadeOut()[index]   = 0.25f;
-                return                          WrappedSampler.wrap(last, SamplingMode.FREEZE_END);
-
-            }
-
-            case "accept": {
-
-                final var next                  = getter.get(index);
-                fsmParameter.duration()[index]  = 0.25f;
-                fsmParameter.fadeIn()[index]    = 0.25f;
-                fsmParameter.fadeOut()[index]   = 0.0f;
-                return                          WrappedSampler.wrap(next, SamplingMode.FREEZE_START);
-
-            }
+            NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(requester, other, type));
         }
 
-        return null;
     }
+
 }

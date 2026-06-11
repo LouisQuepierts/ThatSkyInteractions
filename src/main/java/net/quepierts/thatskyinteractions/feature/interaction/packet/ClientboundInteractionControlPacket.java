@@ -11,69 +11,67 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.interaction.InteractionRequest;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
-import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public record InteractionControlPacket(
+public record ClientboundInteractionControlPacket(
         Operation               operation,
         UUID                    uuid,
         Optional<Identifier>    identifier
 ) implements IClientboundPacket {
 
-    public static final Type<InteractionControlPacket> TYPE
+    public static final Type<ClientboundInteractionControlPacket> TYPE
             = IPacket.type(ThatSkyInteractions.location("interaction/control"));
 
-    public static final StreamCodec<ByteBuf, InteractionControlPacket> STREAM_CODEC
+    public static final StreamCodec<ByteBuf, ClientboundInteractionControlPacket> STREAM_CODEC
             = StreamCodec.composite(
                     ByteBufCodecs.BYTE.map(
                             Operation::decode,
                             Operation::encode
                     ),
-                    InteractionControlPacket::operation,
+                    ClientboundInteractionControlPacket::operation,
                     UUIDUtil.STREAM_CODEC,
-                    InteractionControlPacket::uuid,
+                    ClientboundInteractionControlPacket::uuid,
                     ByteBufCodecs.optional(Identifier.STREAM_CODEC),
-                    InteractionControlPacket::identifier,
-                    InteractionControlPacket::new
+                    ClientboundInteractionControlPacket::identifier,
+                    ClientboundInteractionControlPacket::new
             );
 
 
-    public static InteractionControlPacket invite(
+    public static ClientboundInteractionControlPacket invite(
             final @NonNull Player       requester,
             final @NonNull Identifier   type,
             final boolean               send
     ) {
-        return new InteractionControlPacket(
+        return new ClientboundInteractionControlPacket(
                 send ? Operation.INVITE_REQ : Operation.INVITE_REC,
                 requester.getUUID(),
                 Optional.of(type)
         );
     }
 
-    public static InteractionControlPacket accept(
+    public static ClientboundInteractionControlPacket accept(
             final @NonNull Player       requester,
             final boolean               send
     ) {
-        return new InteractionControlPacket(
+        return new ClientboundInteractionControlPacket(
                 send ? Operation.ACCEPT_REQ :Operation.ACCEPT_REC,
                 requester.getUUID(),
                 Optional.empty()
         );
     }
 
-    public static InteractionControlPacket cancel(
-            final @NonNull Player       requester,
+    public static ClientboundInteractionControlPacket cancel(
+            final @NonNull UUID         uuid,
             final boolean               send
     ) {
-        return new InteractionControlPacket(
+        return new ClientboundInteractionControlPacket(
                 send ? Operation.CANCEL_REQ :Operation.CANCEL_REC,
-                requester.getUUID(),
+                uuid,
                 Optional.empty()
         );
     }
@@ -84,11 +82,11 @@ public record InteractionControlPacket(
         final var level         = player.level();
         final var target        = level.getPlayerByUUID(this.uuid());
 
-        if (target == null) {
+        if (this.operation() != Operation.CANCEL_REQ && target == null) {
             return;
         }
 
-        final var data          = PlayerInteractionSystem.getInteractionData(player);
+        final var data          = PlayerInteractionSystem.getInteractionAttachment(player);
 
         switch (this.operation()) {
             case INVITE_REQ: {
@@ -111,7 +109,10 @@ public record InteractionControlPacket(
                 if (sent != null) {
                     final var interaction = sent.getType();
                     data.cancelSent();
-                    NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(player, target, interaction));
+
+                    if (target != null) {
+                        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(player, target, interaction));
+                    }
                 }
                 break;
             }
