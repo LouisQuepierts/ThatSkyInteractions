@@ -96,14 +96,15 @@ public class ClientHandholdingHandler {
     public static void afterAiStep(Player follower) {
 
         final var attachment    = ClientHandholdingSystem.getLocalAttachment();
-        if (!attachment.isFollowing()) {
+        final var relation      = attachment.getRelation();
+        if (!relation.isFollowing()) {
             return;
         }
 
         final var deadZone      = 3;
 
-        final var leader        = attachment.getLeader();
-        final var left          = attachment.getLeft() == leader;
+        final var leader        = relation.getLeader();
+        final var left          = relation.getLeft() == leader;
 
         /*final var current       = follower.position();
         final var position      = PlayerHandholdingSystem.computeHandholdPosition(leader, left);
@@ -161,12 +162,13 @@ public class ClientHandholdingHandler {
         }
 
         final var attachment    = ClientHandholdingSystem.getLocalAttachment();
-        if (!attachment.isFollowing()) {
+        final var relation      = attachment.getRelation();
+        if (!relation.isFollowing()) {
             return;
         }
 
         final var follower      = player;
-        final var leader        = attachment.getLeader();
+        final var leader        = relation.getLeader();
         final var yRot          = leader.yBodyRot;
 
         follower                .setYBodyRot(yRot);

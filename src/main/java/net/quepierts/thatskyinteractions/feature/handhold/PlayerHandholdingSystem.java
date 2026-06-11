@@ -34,7 +34,10 @@ public class PlayerHandholdingSystem {
         final var lAttachment       = PlayerHandholdingAttachment.getAttachment(leader);
         final var fAttachment       = PlayerHandholdingAttachment.getAttachment(follower);
 
-        if (lAttachment.canLead(follower) && fAttachment.canFollow(leader)) {
+        final var lRelation         = lAttachment.getRelation();
+        final var fRelation         = fAttachment.getRelation();
+
+        if (lRelation.canLead(follower) && fRelation.canFollow(leader)) {
 
             final var hand = lAttachment.lead(follower);
             fAttachment.follow(leader, hand);
@@ -91,8 +94,8 @@ public class PlayerHandholdingSystem {
     ) {
 
         final var attachment        = PlayerHandholdingAttachment.getAttachment(player);
-        final var left              = attachment.getLeft();
-        final var right             = attachment.getRight();
+        final var left              = attachment.getRelation().getLeft();
+        final var right             = attachment.getRelation().getRight();
 
         if (left != null) {
             PlayerHandholdingSystem.unhold(player, (ServerPlayer) left);

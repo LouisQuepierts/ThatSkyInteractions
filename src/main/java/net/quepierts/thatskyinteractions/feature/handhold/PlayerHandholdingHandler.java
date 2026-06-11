@@ -35,46 +35,29 @@ public class PlayerHandholdingHandler {
         final var player        = event.getEntity();
 
         final var attachment    = PlayerHandholdingAttachment.getAttachment(player);
+        final var relation      = attachment.getRelation();
 
-        if (attachment.isFollowing()) {
-            final var left          = attachment.getLeft();
-            final var right         = attachment.getRight();
+        if (relation.isFollowing()) {
+            final var left          = relation.getLeft();
+            final var right         = relation.getRight();
+            final var resolver      = attachment.getResolver();
 
             if (left != null) {
-                PlayerHandholdingHandler.follow(left, player, true);
+                resolver.follow(left, player, true);
             } else if (right != null) {
-                PlayerHandholdingHandler.follow(right, player, false);
+                resolver.follow(right, player, false);
             }
         }
     }
 
     private static void follow(
-            final @NonNull  Player      leader,
-            final @NonNull  Player      follower,
-            final           boolean     left
+            final @NonNull  FollowerPositionResolver    resolver,
+            final @NonNull  Player                      leader,
+            final @NonNull  Player                      follower,
+            final           boolean                     left
     ) {
         // calculate pos by leader's body rotation
-        final var current       = follower.position();
-        final var other         = leader.position();
 
-        final var diff          = current.subtract(other);
-        final var position      = PlayerHandholdingSystem.computeHandholdPosition(leader, left);
-
-        var dx                  = position.x - current.x;
-        var dy                  = position.y - current.y;
-        var dz                  = position.z - current.z;
-
-        follower.setDeltaMovement(0, 0, 0);
-
-        final var d2 = dx * dx + dz * dz;
-        if (d2 > 12) {
-            // set position
-            follower.setPos(position.x, position.y, position.z);
-            return;
-        }
-
-        final var delta = new Vec3(dx, dy, dz);
-        follower.move(MoverType.SELF, delta);
 
         /*follower                .setYBodyRot(yRot);
         final var delta         = Mth.wrapDegrees(follower.getYRot() - yRot);
