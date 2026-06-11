@@ -55,12 +55,10 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     private Identifier                      animationId;
     private PlayerAnimation                 animation;
     private PlayerAnimationDefinition       definition;
-    private float                           speed;
+    private float                           speed = 1.0f;
 
     private float                           alpha;
-    private int                             last;
     private boolean                         playing;
-    private boolean                         ticked;
     private boolean                         resolved;
     private boolean                         paused;
 
@@ -107,13 +105,12 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
         this.animation                      .play(this.fsmState);
     }
 
-    public void tick(int current) {
+    public void tick(float pDelta) {
         if (!this.playing || this.paused) {
             return;
         }
 
-        final var delta                     = (current - this.last) * 0.05f;
-        this.ticked                         = current != this.last;
+        final var delta = pDelta * this.speed;
 
         this.animation.update(this.fsmState, delta);
         this.state.progress = this.fsmState.getElapsed();
@@ -121,8 +118,6 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
         if (this.fsmState.isFinished()) {
             this.cleanup();
         }
-
-        this.last = current;
     }
 
     public void update(float partialTicks) {
@@ -191,7 +186,7 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     }
 
     public boolean containsBone(PlayerBone bone) {
-        return this.type.getMask().contains(bone);
+        return this.mask.contains(bone);
     }
 
     public boolean isFinished() {

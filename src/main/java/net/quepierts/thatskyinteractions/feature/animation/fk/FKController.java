@@ -114,4 +114,12 @@ public final class FKController {
     ) {
         return this.targets[type.ordinal()];
     }
+
+    public void clear() {
+        for (final var target : this.targets) {
+            target.setWeight(0.0f);
+            target.setActive(false);
+            target.setSupplier(null);
+        }
+    }
 }

@@ -43,6 +43,7 @@ public final class FKAnimation extends TemplateAnimation {
     ) {
         super(fsm, apl, spl, override, samplers);
         this.type = type;
+        this.getUniform().duration()[2] = 0.5f;
     }
 
     @Override

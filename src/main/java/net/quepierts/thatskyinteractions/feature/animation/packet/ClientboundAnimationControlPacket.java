@@ -209,7 +209,8 @@ public record ClientboundAnimationControlPacket(
         switch (this.operation) {
             case PLAY: {
 
-                final var difference = Mth.degreesDifference(avatar.yBodyRot, target.getYHeadRot());
+                // do this in expression
+                /*final var difference = Mth.degreesDifference(avatar.yBodyRot, target.getYHeadRot());
 
                 PhysicalTweenAttachment.getAttachment(player.level()).tween().to(
                         target::setYBodyRot,
@@ -218,7 +219,7 @@ public record ClientboundAnimationControlPacket(
                         Mth.abs(difference) * 0.01f,
                         TsiInterpolators.DEGREE,
                         Eases.CUBIC_OUT
-                );
+                );*/
                 final var animationId = this.identifier.orElseThrow();
                 if (layer == null) {
                     controller.play(animationId);

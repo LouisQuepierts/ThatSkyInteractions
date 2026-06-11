@@ -248,10 +248,12 @@ public final class PlayerAnimationController {
         if (this.playing && !this.paused) {
             this.ticked = current != last;
 
+            final var delta = (current - this.last) * 0.05f;
+
             if (this.ticked) {
 
                 for (final var layer : this.running) {
-                    layer.tick(current);
+                    layer.tick(delta);
 
                     if (layer.isFinished()) {
                         this.finished.add(layer);
@@ -297,7 +299,7 @@ public final class PlayerAnimationController {
         this.context.poseProvider   = provider;
 
         for (final var layer : this.running) {
-            if (layer.isTicked() && !layer.isResolved()) {
+            if (!layer.isResolved()) {
                 layer.resolve(context);
             }
         }
@@ -370,13 +372,11 @@ public final class PlayerAnimationController {
                 continue;
             }
 
-            if (!layer.containsBone(bone)) {
-                continue;
+            if (layer.containsBone(bone)) {
+                return false;
             }
-
-            return layer.getDefinition().unlock().contains(bone);
         }
-        return false;
+        return true;
     }
 
     public boolean shouldRestrictMotion() {
@@ -463,6 +463,9 @@ public final class PlayerAnimationController {
         this.paused         = false;
 
         this.running        .clear();
+        this.exclusionMask  .clear();
+
+        this.fkController   .clear();
     }
 
     private void markResolved() {
