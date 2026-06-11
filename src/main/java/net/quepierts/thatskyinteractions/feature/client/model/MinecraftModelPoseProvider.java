@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.client.model;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.quepierts.veynir.backend.skeleton.pipeline.*;
+import net.quepierts.veynir.core.SkeletonState;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.NonNull;
 
@@ -45,9 +46,15 @@ public final class MinecraftModelPoseProvider implements SkeletonPoseProvider {
         root.setRotation(quaternion.identity());
         root.setScale(1, 1, 1);
 
+        final var state = context.getState();
         for (final var entry : this.skeleton.getEntries()) {
-            final var part      = entry.part();
             final var loc       = entry.id();
+
+            if (!state.getMask(loc)) {
+                continue;
+            }
+
+            final var part      = entry.part();
             final var view      = target.get(loc);
 
             if (overrides[loc] != 0.0f) {
