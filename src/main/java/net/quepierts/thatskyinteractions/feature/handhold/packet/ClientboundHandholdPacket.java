@@ -10,20 +10,18 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationController;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
-import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetSupplier;
 import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetType;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHoldingHand;
-import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
 
 public record ClientboundHandholdPacket(
         Operation       operation,
-        UUID            uuid
+        UUID            leader,
+        UUID            follower
 ) implements IClientboundPacket {
 
     public static final Type<ClientboundHandholdPacket> TYPE
@@ -37,61 +35,62 @@ public record ClientboundHandholdPacket(
                     ),
                     ClientboundHandholdPacket::operation,
                     UUIDUtil.STREAM_CODEC,
-                    ClientboundHandholdPacket::uuid,
+                    ClientboundHandholdPacket::leader,
+                    UUIDUtil.STREAM_CODEC,
+                    ClientboundHandholdPacket::follower,
                     ClientboundHandholdPacket::new
             );
 
-    public static ClientboundHandholdPacket lead(
+    public static ClientboundHandholdPacket hold(
+            final @NonNull Player leader,
             final @NonNull Player follower
     ) {
-        return new ClientboundHandholdPacket(Operation.LEAD, follower.getUUID());
-    }
-
-    public static ClientboundHandholdPacket follow(
-            final @NonNull Player leader
-    ) {
-        return new ClientboundHandholdPacket(Operation.FOLLOW, leader.getUUID());
+        return new ClientboundHandholdPacket(Operation.HOLD, leader.getUUID(), follower.getUUID());
     }
 
     public static ClientboundHandholdPacket unhold(
-            final @NonNull Player other
+            final @NonNull Player leader,
+            final @NonNull Player follower
     ) {
-        return new ClientboundHandholdPacket(Operation.UNHOLD, other.getUUID());
+        return new ClientboundHandholdPacket(Operation.UNHOLD, leader.getUUID(), follower.getUUID());
     }
 
     @Override
     public void handleOnClient(final @NonNull Player player) {
 
         final var level         = player.level();
-        final var other         = level.getPlayerByUUID(this.uuid);
 
-        if (other == null) {
-            return;
-        }
-
-        final var lAttachment   = PlayerHandholdingSystem.getAttachment(player);
-        final var oAttachment   = PlayerHandholdingSystem.getAttachment(other);
+        final var leader        = level.getPlayerByUUID(this.leader);
+        final var follower      = level.getPlayerByUUID(this.follower);
 
         switch (this.operation()) {
-            case LEAD: {
-                final var hand = lAttachment.lead(other);
-                oAttachment.follow(player, hand);
+            case HOLD: {
 
-                setupFk(player, other, hand);
-                setupFk(other, player, hand.opposite());
-                break;
-            }
-            case FOLLOW: {
-                final var hand = oAttachment.lead(player);
-                lAttachment.follow(other, hand);
+                if (leader == null || follower == null) {
+                    return;
+                }
 
-                setupFk(other, player, hand);
-                setupFk(player, other, hand.opposite());
+                final var lAttachment   = PlayerHandholdingSystem.getAttachment(leader);
+                final var fAttachment   = PlayerHandholdingSystem.getAttachment(follower);
+
+                final var hand = lAttachment.lead(follower);
+                fAttachment.follow(leader, hand);
+
+                setupFk(leader, follower, hand);
+                setupFk(follower, leader, hand.opposite());
                 break;
             }
             case UNHOLD: {
-                clearFk(player, lAttachment.unhold(other));
-                clearFk(other, oAttachment.unhold(player));
+
+                if (leader != null) {
+                    final var lAttachment = PlayerHandholdingSystem.getAttachment(leader);
+                    clearFk(leader, lAttachment.unhold(this.follower()));
+                }
+
+                if (follower != null) {
+                    final var fAttachment = PlayerHandholdingSystem.getAttachment(follower);
+                    clearFk(follower, fAttachment.unhold(this.leader()));
+                }
                 break;
             }
         }
@@ -138,7 +137,10 @@ public record ClientboundHandholdPacket(
         }
 
         final var controller    = PlayerAnimationSystem.getAnimationData(player).getController();
-        controller.getFkController().clearTarget(map(hand));
+        final var fkController = controller.getFkController();
+        final var type = map(hand);
+        fkController.clearTarget(type);
+        fkController.setConfiguration(type, 0.0f, false);
     }
 
     private static FKTargetType map(final @NonNull PlayerHoldingHand hand) {
@@ -151,8 +153,7 @@ public record ClientboundHandholdPacket(
     }
 
     public enum Operation {
-        LEAD,
-        FOLLOW,
+        HOLD,
         UNHOLD;
 
         public byte encode() {
@@ -161,9 +162,8 @@ public record ClientboundHandholdPacket(
 
         public static Operation decode(final byte id) {
             return switch (id) {
-                case 0 -> LEAD;
-                case 1 -> FOLLOW;
-                case 2 -> UNHOLD;
+                case 0 -> HOLD;
+                case 1 -> UNHOLD;
                 default -> throw new IllegalArgumentException("Invalid operation id: " + id);
             };
         }

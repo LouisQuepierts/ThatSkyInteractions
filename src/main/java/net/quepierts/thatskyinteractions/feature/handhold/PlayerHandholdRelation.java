@@ -5,6 +5,8 @@ import net.minecraft.world.entity.player.Player;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.UUID;
+
 public class PlayerHandholdRelation {
 
     public static final int MAX_HOLDING_PLAYERS = 2;
@@ -67,16 +69,16 @@ public class PlayerHandholdRelation {
     }
 
     public PlayerHoldingHand unhold(
-            final @NonNull Player   other
+            final @NonNull UUID     other
     ) {
 
         var hand = PlayerHoldingHand.NONE;
 
-        if (this.left == other) {
+        if (this.left != null && this.left.getUUID().equals(other)) {
             this.left = null;
             this.occupied   --;
             hand = PlayerHoldingHand.LEFT;
-        } else if (this.right == other) {
+        } else if (this.right != null && this.right.getUUID().equals(other)) {
             this.right = null;
             this.occupied   --;
             hand = PlayerHoldingHand.RIGHT;

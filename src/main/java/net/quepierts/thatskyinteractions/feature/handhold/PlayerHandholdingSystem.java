@@ -42,14 +42,8 @@ public class PlayerHandholdingSystem {
             final var hand = lAttachment.lead(follower);
             fAttachment.follow(leader, hand);
 
-            PacketDistributor.sendToPlayer(
-                    leader,
-                    ClientboundHandholdPacket.lead(follower)
-            );
-
-            PacketDistributor.sendToPlayer(
-                    follower,
-                    ClientboundHandholdPacket.follow(leader)
+            PacketDistributor.sendToAllPlayers(
+                    ClientboundHandholdPacket.hold(leader, follower)
             );
 
             play(leader, hand);
@@ -71,17 +65,11 @@ public class PlayerHandholdingSystem {
         final var lAttachment       = PlayerHandholdingAttachment.getAttachment(a);
         final var fAttachment       = PlayerHandholdingAttachment.getAttachment(b);
 
-        final var aHand = lAttachment.unhold(b);
-        final var bHand = fAttachment.unhold(a);
+        final var aHand = lAttachment.unhold(b.getUUID());
+        final var bHand = fAttachment.unhold(a.getUUID());
 
-        PacketDistributor.sendToPlayer(
-                a,
-                ClientboundHandholdPacket.unhold(b)
-        );
-
-        PacketDistributor.sendToPlayer(
-                b,
-                ClientboundHandholdPacket.unhold(a)
+        PacketDistributor.sendToAllPlayers(
+                ClientboundHandholdPacket.unhold(a, b)
         );
 
         exit(a, aHand);

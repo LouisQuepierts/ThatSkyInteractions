@@ -5,6 +5,8 @@ import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import org.jspecify.annotations.NonNull;
 
+import java.util.UUID;
+
 public final class PlayerHandholdingAttachment {
 
     public static PlayerHandholdingAttachment getAttachment(
@@ -41,7 +43,7 @@ public final class PlayerHandholdingAttachment {
     }
 
     public PlayerHoldingHand unhold(
-            final @NonNull Player   other
+            final @NonNull UUID             other
     ) {
         var hand = this.relation.unhold(other);
         if (hand != PlayerHoldingHand.NONE) {
@@ -50,4 +52,7 @@ public final class PlayerHandholdingAttachment {
         return hand;
     }
 
+    public void unhold() {
+        this.relation.unhold();
+    }
 }
