@@ -32,4 +32,16 @@ public class DefaultMinecraftFSM {
             .withHook(HOOK)
             .compile();
 
+    public static final FiniteStateMachine  FORWARD_KINEMATICS = FiniteStateMachine.compiler()
+            .sequence()
+
+            .withState("system#enter")
+            .withState("main")
+            .withState("system#exit")
+
+            .withTransition("main", "main")
+
+            .withHook(HOOK)
+            .compile();
+
 }

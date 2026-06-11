@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 
+import net.quepierts.thatskyinteractions.feature.animation.AnimationResolveContext;
 import net.quepierts.veynir.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
@@ -29,11 +30,11 @@ public interface PlayerAnimation {
     );
 
     void resolve(
-            @NonNull FSMState               fsmState,
-            @NonNull ExecutionState         executionState,
-            @NonNull HumanoidAnimationState animationState,
-            @NonNull PoseCache              target,
-            @NonNull SkeletonPoseProvider   provider
+            @NonNull FSMState                   fsmState,
+            @NonNull ExecutionState             executionState,
+            @NonNull HumanoidAnimationState     animationState,
+            @NonNull PoseCache                  target,
+            @NonNull AnimationResolveContext    context
     );
 
     void cleanup(

@@ -1,13 +1,8 @@
 package net.quepierts.thatskyinteractions.feature.handhold;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.world.entity.player.Player;
-import net.quepierts.thatskyinteractions.core.transition.FloatTransition;
-import net.quepierts.thatskyinteractions.core.transition.Vector3fTransition;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
-import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
-import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -21,46 +16,54 @@ public final class PlayerHandholdingAttachment {
 
     public static final int MAX_HOLDING_PLAYERS = 2;
 
-    private final Hand      left        = new Hand();
-    private final Hand      right       = new Hand();
+    private Player      left;
+    private Player      right;
 
     @Getter private boolean holding;
 
     private int             occupied;
     private Role            role;
 
-    public boolean lead(
+    public PlayerHoldingHand lead(
             final @NonNull Player   follower
     ) {
 
         if (!this.canLead(follower)) {
-            return false;
+            return PlayerHoldingHand.NONE;
         }
 
-        if (this.left.isEmpty()) {
-            this.left.hold(follower);
-        } else if (this.right.isEmpty()) {
-            this.right.hold(follower);
+        var hand = PlayerHoldingHand.NONE;
+        if (this.left == null) {
+            this.left = follower;
+            hand = PlayerHoldingHand.LEFT;
+        } else if (this.right == null) {
+            this.right = follower;
+            hand = PlayerHoldingHand.RIGHT;
         }
 
         this.occupied   ++;
         this.role       = Role.LEADER;
         this.holding    = true;
-        return true;
+        return hand;
     }
 
     public boolean follow(
-            final @NonNull Player   leader
+            final @NonNull Player   leader,
+            final @NonNull PlayerHoldingHand leaderHand
     ) {
 
         if (!this.canFollow(leader)) {
             return false;
         }
 
-        if (this.left.isEmpty()) {
-            this.left.hold(leader);
-        } else if (this.right.isEmpty()) {
-            this.right.hold(leader);
+        final var hand = leaderHand.opposite();
+        switch (hand) {
+            case LEFT:
+                this.left = leader;
+                break;
+            case RIGHT:
+                this.right = leader;
+                break;
         }
 
         this.occupied   ++;
@@ -69,29 +72,35 @@ public final class PlayerHandholdingAttachment {
         return true;
     }
 
-    public void unhold(
+    public PlayerHoldingHand unhold(
             final @NonNull Player   other
     ) {
 
-        if (this.left.player == other) {
-            this.left.unhold();
+        var hand = PlayerHoldingHand.NONE;
+
+        if (this.left == other) {
+            this.left = null;
             this.occupied   --;
-        } else if (this.right.player == other) {
-            this.right.unhold();
+            hand = PlayerHoldingHand.LEFT;
+        } else if (this.right == other) {
+            this.right = null;
             this.occupied   --;
+            hand = PlayerHoldingHand.RIGHT;
         }
 
         if (this.occupied == 0) {
             this.holding = false;
         }
 
+        return hand;
+
     }
 
     public void unhold() {
         this.holding            = false;
         this.occupied           = 0;
-        this.left.player        = null;
-        this.right.player       = null;
+        this.left               = null;
+        this.right              = null;
 
         this.role               = Role.NONE;
     }
@@ -117,7 +126,7 @@ public final class PlayerHandholdingAttachment {
     public boolean isHolding(
             final @NonNull Player   player
     ) {
-        return this.left.player == player || this.right.player == player;
+        return this.left == player || this.right == player;
     }
 
     public boolean isFullyHolding() {
@@ -133,35 +142,15 @@ public final class PlayerHandholdingAttachment {
     }
 
     public @Nullable Player getLeader() {
-        return this.left.player != null ? this.left.player : this.right.player;
+        return this.left != null ? this.left : this.right;
     }
 
     public @Nullable Player getLeft() {
-        return this.left.player;
+        return this.left;
     }
 
     public @Nullable Player getRight() {
-        return this.right.player;
-    }
-
-    @Getter
-    @Setter
-    private static final class Hand {
-        private @Nullable Player  player;
-
-        public void hold(
-                final @NonNull Player   player
-        ) {
-            this.player = player;
-        }
-
-        public void unhold() {
-            this.player = null;
-        }
-
-        public boolean isEmpty() {
-            return this.player == null;
-        }
+        return this.right;
     }
 
     public enum Role {

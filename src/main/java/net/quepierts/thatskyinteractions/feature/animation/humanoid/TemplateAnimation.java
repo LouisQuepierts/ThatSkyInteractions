@@ -3,10 +3,10 @@ package net.quepierts.thatskyinteractions.feature.animation.humanoid;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.quepierts.thatskyinteractions.feature.animation.AnimationResolveContext;
 import net.quepierts.veynir.core.fsm.FSMParameter;
 import net.quepierts.veynir.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
@@ -24,14 +24,12 @@ import net.quepierts.veynir.backend.sampler.SamplingMode;
 import net.quepierts.veynir.backend.skeleton.pass.definition.ParentOverridePassDefinition;
 import net.quepierts.veynir.backend.skeleton.pass.definition.PivotPassDefinition;
 import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPipeline;
-import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPoseProvider;
 import net.quepierts.veynir.core.fsm.FSMState;
 import net.quepierts.veynir.core.fsm.FiniteStateMachine;
 import net.quepierts.veynir.core.model.ParentOverrideConfiguration;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -74,11 +72,11 @@ public class TemplateAnimation extends BaseAnimation {
 
     @Override
     public void resolve(
-            @NonNull final FSMState                 fsmState,
-            @NonNull final ExecutionState           executionState,
-            @NonNull final HumanoidAnimationState   animationState,
-            @NonNull final PoseCache                target,
-            @NonNull final SkeletonPoseProvider     provider
+            final @NonNull FSMState                 fsmState,
+            final @NonNull ExecutionState           executionState,
+            final @NonNull HumanoidAnimationState   animationState,
+            final @NonNull PoseCache                target,
+            final @NonNull AnimationResolveContext  context
     ) {
         final var animation = this.apl;
         final var skeleton  = this.spl;
@@ -99,7 +97,7 @@ public class TemplateAnimation extends BaseAnimation {
         skeleton.bindUbo(PivotPassDefinition.REQUIRED_UBO, animationState.getUboPivotModification().getBuffer());
         skeleton.bindUbo(ParentOverridePassDefinition.REQUIRED_UBO, parentOverride.getBuffer());
         skeleton.bindUbo(MinecraftModelPoseProvider.REQUIRED_UBO, animationState.getUboModelOverride().getBuffer());
-        skeleton.bindProvider(0, provider);
+        skeleton.bindProvider(0, context.getPoseProvider());
         skeleton.bindTarget("Output", target);
         skeleton.submit(animationState.getSkeleton());
     }
@@ -184,6 +182,7 @@ public class TemplateAnimation extends BaseAnimation {
                 apl,
                 spl,
                 names,
+                Constructor.DEFAULT,
                 LinkFallback.DEFAULT
         );
 
@@ -218,7 +217,7 @@ public class TemplateAnimation extends BaseAnimation {
                 spl.getLayout()
         );
 
-        final var animation = new TemplateAnimation(
+        final var animation = context.constructor.construct(
                 fsm,
                 apl, spl,
                 override,
@@ -304,6 +303,7 @@ public class TemplateAnimation extends BaseAnimation {
         final @NonNull SkeletonPipeline             spl;
         final @NonNull List<String>                 names;
 
+        final @NonNull Constructor                  constructor;
         final @NonNull LinkFallback                 fallback;
     }
 
@@ -313,10 +313,24 @@ public class TemplateAnimation extends BaseAnimation {
         LinkFallback DEFAULT = (_, _, _, _) -> null;
 
         @Nullable AnimationSampler apply(
-                @NonNull final  Int2ObjectFunction<AnimationSampler>    getter,
-                @NonNull final  FSMParameter                            fsmParameter,
+                final @NonNull  Int2ObjectFunction<AnimationSampler>    getter,
+                final @NonNull  FSMParameter                            fsmParameter,
                 final           String                                  name,
                 final           int                                     index
+        );
+    }
+
+    @FunctionalInterface
+    public interface Constructor {
+
+        Constructor DEFAULT = TemplateAnimation::new;
+
+        @NonNull TemplateAnimation construct(
+                final FiniteStateMachine                                fsm,
+                final AnimationPipeline                                 apl,
+                final SkeletonPipeline                                  spl,
+                final ParentOverrideConfiguration                       override,
+                final AnimationSampler[]                                samplers
         );
     }
 

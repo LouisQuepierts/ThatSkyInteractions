@@ -83,6 +83,7 @@ public class PlayerInteractionHandler {
                 DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
                 DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
                 DefaultInteractionFSM.REQUESTER_STATES,
+                TemplateAnimation.Constructor.DEFAULT,
                 PlayerInteractionHandler::fallback
         );
 
@@ -111,6 +112,7 @@ public class PlayerInteractionHandler {
                 DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
                 DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID,
                 DefaultInteractionFSM.RECEIVER_STATES,
+                TemplateAnimation.Constructor.DEFAULT,
                 PlayerInteractionHandler::fallback
         );
 

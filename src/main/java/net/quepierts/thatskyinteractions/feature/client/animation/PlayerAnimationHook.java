@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.extensions.IRenderStateExtension;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
+import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationController;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.render.EntityModelExtension;
@@ -100,6 +101,10 @@ public class PlayerAnimationHook {
 
         final var firstPerson = minecraft.options.getCameraType().isFirstPerson();
         if (firstPerson) {
+            if (controller.isUnlocked(PlayerBone.HEAD)) {
+                return false;
+            }
+
             controller.update(partialTicks);
 
             final var renderer = minecraft.getEntityRenderDispatcher().getPlayerRenderer(player);

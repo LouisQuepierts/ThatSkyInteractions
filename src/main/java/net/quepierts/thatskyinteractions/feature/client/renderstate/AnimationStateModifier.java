@@ -36,6 +36,7 @@ public class AnimationStateModifier extends AvatarRenderStateModifier {
         final var delta = tracker.getGameTimeDeltaPartialTick(!frozen);
 
         controller.update(delta);
+        controller.setupToLocal(renderState);
         renderState.setRenderData(
                 AnimationStateModifier.CONTEXT_KEY,
                 controller

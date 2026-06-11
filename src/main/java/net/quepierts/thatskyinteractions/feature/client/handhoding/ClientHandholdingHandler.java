@@ -10,9 +10,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetType;
 import net.quepierts.thatskyinteractions.feature.control.event.EntityTurnEvent;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingAttachment;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
+import org.joml.Vector3f;
 
 @UtilityClass
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
@@ -40,6 +43,52 @@ public class ClientHandholdingHandler {
             follower                .setYRot(follower.getYRot() + tDelta - delta);
             follower                .setYHeadRot(follower.getYRot());
 
+        }
+
+    }*/
+
+    /*@SubscribeEvent
+    public static void onPlayerTick(final PlayerTickEvent.Pre event) {
+
+        final var player        = event.getEntity();
+        final var attachment    = PlayerHandholdingSystem.getAttachment(player);
+        final var controller    = PlayerAnimationSystem.getAnimationData(player).getController();
+
+        final var playerPos     = player.position();
+        final var left          = attachment.getLeft();
+        if (left != null) {
+            // update fk
+
+            final var leftPos   = left.position();
+            final var center    = new Vector3f(
+                    (float) ((playerPos.x + leftPos.x) * 0.5),
+                    (float) ((playerPos.y + leftPos.y) * 0.5) + 0.4f,
+                    (float) ((playerPos.z + leftPos.z) * 0.5)
+            );
+
+            controller.getFkController().setTarget(
+                    FKTargetType.LEFT_ARM,
+                    center,
+                    1.0f
+            );
+        }
+
+        final var right         = attachment.getRight();
+        if (right != null) {
+            // update fk
+
+            final var rightPos  = right.position();
+            final var center    = new Vector3f(
+                    (float) ((playerPos.x + rightPos.x) * 0.5),
+                    (float) ((playerPos.y + rightPos.y) * 0.5) + 0.4f,
+                    (float) ((playerPos.z + rightPos.z) * 0.5)
+            );
+
+            controller.getFkController().setTarget(
+                    FKTargetType.RIGHT_ARM,
+                    center,
+                    1.0f
+            );
         }
 
     }*/

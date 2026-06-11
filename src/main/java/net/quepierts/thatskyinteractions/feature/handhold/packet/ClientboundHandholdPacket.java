@@ -7,9 +7,16 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationController;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetSupplier;
+import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetType;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
+import net.quepierts.thatskyinteractions.feature.handhold.PlayerHoldingHand;
+import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
@@ -67,22 +74,75 @@ public record ClientboundHandholdPacket(
 
         switch (this.operation()) {
             case LEAD: {
-                lAttachment.lead(other);
-                oAttachment.follow(player);
+                final var hand = lAttachment.lead(other);
+                oAttachment.follow(player, hand);
+
+                setupFk(player, other, hand);
+                setupFk(other, player, hand.opposite());
                 break;
             }
             case FOLLOW: {
-                lAttachment.follow(other);
-                oAttachment.lead(player);
+                final var hand = oAttachment.lead(player);
+                lAttachment.follow(other, hand);
+
+                setupFk(other, player, hand);
+                setupFk(player, other, hand.opposite());
                 break;
             }
             case UNHOLD: {
-                lAttachment.unhold(other);
-                oAttachment.unhold(player);
+                clearFk(player, lAttachment.unhold(other));
+                clearFk(other, oAttachment.unhold(player));
                 break;
             }
         }
 
+    }
+
+    private static void setupFk(
+            final @NonNull Player               player,
+            final @NonNull Player               other,
+            final @NonNull PlayerHoldingHand    hand
+    ) {
+        if (hand == PlayerHoldingHand.NONE) {
+            return;
+        }
+
+        final var controller    = PlayerAnimationSystem.getAnimationData(player).getController();
+        final var type          = map(hand);
+        controller.getFkController().setTarget(
+                type,
+                (out, partialTick) -> {
+                    final var px = Mth.lerp(partialTick, player.xOld, player.getX());
+                    final var py = Mth.lerp(partialTick, player.yOld, player.getY());
+                    final var pz = Mth.lerp(partialTick, player.zOld, player.getZ());
+                    final var ox = Mth.lerp(partialTick, other.xOld, other.getX());
+                    final var oy = Mth.lerp(partialTick, other.yOld, other.getY());
+                    final var oz = Mth.lerp(partialTick, other.zOld, other.getZ());
+
+                    // center
+                    out.set(
+                            (px + ox) * 0.5f,
+                            (py + oy) * 0.5f + 0.375f,
+                            (pz + oz) * 0.5f
+                    );
+                }
+        );
+    }
+
+    private static void clearFk(
+            final @NonNull Player               player,
+            final @NonNull PlayerHoldingHand    hand
+    ) {
+        if (hand == PlayerHoldingHand.NONE) {
+            return;
+        }
+
+        final var controller    = PlayerAnimationSystem.getAnimationData(player).getController();
+        controller.getFkController().clearTarget(map(hand));
+    }
+
+    private static FKTargetType map(final @NonNull PlayerHoldingHand hand) {
+        return hand == PlayerHoldingHand.LEFT ? FKTargetType.LEFT_ARM : FKTargetType.RIGHT_ARM;
     }
 
     @Override

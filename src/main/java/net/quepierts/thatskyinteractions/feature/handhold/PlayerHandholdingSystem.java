@@ -1,16 +1,30 @@
 package net.quepierts.thatskyinteractions.feature.handhold;
 
 import lombok.experimental.UtilityClass;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.animation.fk.FKAnimation;
 import net.quepierts.thatskyinteractions.feature.handhold.packet.ClientboundHandholdPacket;
+import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
 public class PlayerHandholdingSystem {
+
+    private static final Identifier[] ANIMATIONS = new Identifier[] {
+            FKAnimation.LEFT_ARM,
+            FKAnimation.RIGHT_ARM
+    };
+
+    private static final Identifier[] LAYERS    = new Identifier[] {
+            AnimationLayerTypes.LEFT_ARM.getId(),
+            AnimationLayerTypes.RIGHT_ARM.getId()
+    };
 
     public static boolean hold(
             final @NonNull ServerPlayer     leader,
@@ -22,8 +36,8 @@ public class PlayerHandholdingSystem {
 
         if (lAttachment.canLead(follower) && fAttachment.canFollow(leader)) {
 
-            lAttachment.lead(follower);
-            fAttachment.follow(leader);
+            final var hand = lAttachment.lead(follower);
+            fAttachment.follow(leader, hand);
 
             PacketDistributor.sendToPlayer(
                     leader,
@@ -34,6 +48,9 @@ public class PlayerHandholdingSystem {
                     follower,
                     ClientboundHandholdPacket.follow(leader)
             );
+
+            play(leader, hand);
+            play(follower, hand.opposite());
 
             return true;
 
@@ -51,8 +68,8 @@ public class PlayerHandholdingSystem {
         final var lAttachment       = PlayerHandholdingAttachment.getAttachment(a);
         final var fAttachment       = PlayerHandholdingAttachment.getAttachment(b);
 
-        lAttachment.unhold(b);
-        fAttachment.unhold(a);
+        final var aHand = lAttachment.unhold(b);
+        final var bHand = fAttachment.unhold(a);
 
         PacketDistributor.sendToPlayer(
                 a,
@@ -63,6 +80,9 @@ public class PlayerHandholdingSystem {
                 b,
                 ClientboundHandholdPacket.unhold(a)
         );
+
+        exit(a, aHand);
+        exit(b, bHand);
 
     }
 
@@ -95,6 +115,38 @@ public class PlayerHandholdingSystem {
             final @NonNull Player player
     ) {
         return PlayerHandholdingAttachment.getAttachment(player);
+    }
+
+    private static void play(
+            final @NonNull ServerPlayer                     player,
+            final PlayerHoldingHand hand
+    ) {
+
+        if (hand == PlayerHoldingHand.NONE) {
+            return;
+        }
+
+        final var ordinal = hand.ordinal();
+        PlayerAnimationSystem.play(
+                player,
+                ANIMATIONS[ordinal],
+                LAYERS[ordinal]
+        );
+
+    }
+
+    private static void exit(
+            final @NonNull ServerPlayer                     player,
+            final PlayerHoldingHand hand
+    ) {
+        if (hand == PlayerHoldingHand.NONE) {
+            return;
+        }
+
+        PlayerAnimationSystem.exit(
+                player,
+                LAYERS[hand.ordinal()]
+        );
     }
 
 }

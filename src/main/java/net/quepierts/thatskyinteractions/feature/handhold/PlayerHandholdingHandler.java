@@ -2,8 +2,6 @@ package net.quepierts.thatskyinteractions.feature.handhold;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -12,11 +10,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.transition.Vector3fTransition;
-import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
-import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass

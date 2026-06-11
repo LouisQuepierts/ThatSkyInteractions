@@ -1,0 +1,13 @@
+{
+  "type": "fk.right_arm",
+  "sources": {
+    "main": {
+      "source": "thatskyinteractions:fk.right_arm",
+      "fadeIn": 0.25,
+      "fadeOut": 0.25
+    }
+  },
+  "unlock": ["root", "body", "head", "left_arm", "left_leg", "right_leg"],
+  "restrictMotion": false,
+  "override": "thatskyinteractions:modified"
+}

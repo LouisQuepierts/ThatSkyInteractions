@@ -1,20 +1,29 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
+import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
+import net.quepierts.thatskyinteractions.feature.animation.fk.FKController;
+import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetType;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.veynir.backend.execution.ExecutionState;
+import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPoseProvider;
 import net.quepierts.veynir.core.adapter.TransformF;
 import net.quepierts.veynir.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -34,8 +43,14 @@ public final class PlayerAnimationController {
     private final ExecutionState                            executionState      = new ExecutionState(64);
     private final TransformF                                root;
 
+    @Getter private final FKController                      fkController;
+
     @Getter private final PlayerMask                        executionMask       = PlayerMask.all();
     private final PlayerMask                                exclusionMask       = PlayerMask.empty();
+
+    private final Context                                   context;
+
+    private final Matrix4f                                  toLocal             = new Matrix4f();
 
     @Getter private int                                     last;
     @Getter private boolean                                 playing;
@@ -44,15 +59,19 @@ public final class PlayerAnimationController {
     @Getter private boolean                                 paused              = false;
 
     public PlayerAnimationController() {
-        this.layers     = new Object2ObjectOpenHashMap<>();
-        this.running    = new ArrayList<>();
-        this.finished   = new ArrayList<>();
-        this.apply      = new AnimationLayer[DefaultMinecraftSkeletonLayout.HUMANOID.size()];
+        this.layers         = new Object2ObjectOpenHashMap<>();
+        this.running        = new ArrayList<>();
+        this.finished       = new ArrayList<>();
+        this.apply          = new AnimationLayer[DefaultMinecraftSkeletonLayout.HUMANOID.size()];
+
+        this.fkController   = new FKController();
 
         // setup fallback
         this.root       = new TransformF();
         this.root       .setScale(1, 1, 1);
         this.root       .setQuaternion(0, 0, 0, 1);
+
+        this.context    = new Context(this.fkController);
     }
 
     public void play(Identifier identifier) {
@@ -265,6 +284,8 @@ public final class PlayerAnimationController {
             for (final var layer : this.running) {
                 layer.update(partialTicks);
             }
+
+            this.fkController.update(partialTicks);
         }
     }
 
@@ -273,12 +294,15 @@ public final class PlayerAnimationController {
     ) {
 
         this.markResolved();
+        this.context.poseProvider   = provider;
 
         for (final var layer : this.running) {
             if (layer.isTicked() && !layer.isResolved()) {
-                layer.resolve(provider);
+                layer.resolve(context);
             }
         }
+
+        this.context.poseProvider   = null;
     }
 
     public void apply(
@@ -311,6 +335,29 @@ public final class PlayerAnimationController {
                 entry.setScale(view.getSx(), view.getSy(), view.getSz(), alpha);
             }
         }
+
+
+        final var root      = this.root;
+        final var toLocal   = new Matrix4f(this.toLocal);
+
+        /*final var quat      = new Quaternionf(
+                root.getRx(),
+                root.getRy(),
+                root.getRz(),
+                root.getRw()
+        );
+
+        final var factor =  (0.0625f);
+        final var xo = root.getTx() * factor;
+        final var yo = root.getTy() * factor + 1;
+        final var zo = root.getTz() * factor;
+
+        toLocal.translate(xo, yo, zo);
+        toLocal.rotate(quat);
+        toLocal.translate(0, -1, 0);
+*/
+        this.fkController.setup(toLocal);
+        this.fkController.apply(adaptor);
 
     }
 
@@ -424,5 +471,43 @@ public final class PlayerAnimationController {
 
     private @NonNull PoseCache requestCache() {
         return new PoseCache(DefaultMinecraftSkeletonLayout.HUMANOID);
+    }
+
+    public  void setupToLocal(
+            final AvatarRenderState     state
+    ) {
+        final var scale = 0.9375F;
+        this.toLocal.identity()
+                .translate( // offset ( -2, 0, +1 ), idk why!!!
+                        (float) state.x,
+                        (float) state.y,
+                        (float) state.z
+                )
+                .scale(state.scale)
+                .rotate(Axis.YP.rotationDegrees(180F - state.bodyRot))
+                .scale(-scale, -scale, scale)
+                .translate(0.0F, -1.501F, 0.0F)
+                .scale(0.0625f);
+    }
+
+    @RequiredArgsConstructor
+    private static final class Context implements AnimationResolveContext {
+
+        private final   FKController controller;
+
+        @Getter
+        private         SkeletonPoseProvider poseProvider;
+
+        @Override
+        public void setFkConfiguration(
+                final @NonNull FKTargetType type,
+                final          float        weight,
+                final          boolean      active
+        ) {
+            this.controller.setConfiguration(
+                    type, weight, active
+            );
+        }
+
     }
 }

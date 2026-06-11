@@ -8,13 +8,9 @@ import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDef
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
-import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
-import net.quepierts.veynir.backend.buffer.AttributeBuffer;
 import net.quepierts.veynir.backend.execution.ExecutionState;
-import net.quepierts.veynir.core.SkeletonState;
 import net.quepierts.veynir.core.fsm.FSMState;
 import net.quepierts.veynir.core.skeleton.PoseCache;
-import net.quepierts.veynir.core.util.ArrayIterator;
 import org.jspecify.annotations.NonNull;
 
 @Getter
@@ -146,7 +142,7 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     }
 
     public void resolve(
-            final @NonNull MinecraftModelPoseProvider provider
+            final @NonNull AnimationResolveContext context
     ) {
 
         if (!this.playing) {
@@ -160,7 +156,7 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
                 this.executionState,
                 this.state,
                 this.cache,
-                provider
+                context
         );
     }
 

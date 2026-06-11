@@ -6,6 +6,7 @@ public record PlayerAnimationDefinition(
         String                          type,
         String                          override,
         Map<String, SourceDefinition>   sources,
+        @Deprecated
         PlayerMask                      unlock,
         boolean                         abortable,
         boolean                         restrictMotion,
