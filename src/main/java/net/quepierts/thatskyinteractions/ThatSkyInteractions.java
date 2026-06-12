@@ -10,9 +10,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationFactory;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
-import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
+import net.quepierts.thatskyinteractions.feature.registry.FriendshipBehaviours;
 
 @Slf4j
 @Getter
@@ -23,6 +23,9 @@ public class ThatSkyInteractions {
 
     public ThatSkyInteractions(IEventBus modBus) {
         AnimationLayerTypes.register();
+
+        FriendshipBehaviours.register();
+
         AttachmentTypes.register();
         modBus.register(this);
     }
@@ -34,7 +37,6 @@ public class ThatSkyInteractions {
     @SubscribeEvent
     private void onFmlCommonSetup(final FMLCommonSetupEvent event) {
         PlayerAnimationFactory.register();
-        FriendshipBehaviourFactory.register();
         DataSyncSystem.register();
     }
 }

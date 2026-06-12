@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeDefinition;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.veynir.core.util.ArrayIterator;
@@ -82,7 +83,7 @@ public final class FriendshipTree implements Iterable<FriendshipTreeNode> {
             order[read]       = name;
             ordinal[read]     = new FriendshipTreeNode(
                                 name,
-                                node.type(),
+                                Identifier.parse(node.type()),
                                 left, right, middle,
                                 parents[read],
                                 levels[read],

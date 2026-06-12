@@ -2,16 +2,16 @@
   "root": "root",
   "nodes": {
     "root": {
-      "type": "friend",
+      "type": "thatskyinteractions:friend",
       "price": 3,
       "middle": "high_five_1",
       "right": "block"
     },
     "block": {
-      "type": "block"
+      "type": "thatskyinteractions:block"
     },
     "high_five_1": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 1,
       "left": "high_five_2",
       "middle": "hug_1",
@@ -20,7 +20,7 @@
       }
     },
     "high_five_2": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 4,
       "metadata": {
         "interaction": "thatskyinteractions:high_five",
@@ -28,7 +28,7 @@
       }
     },
     "hug_1": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 2,
       "left": "hug_2",
       "middle": "lock_1",
@@ -37,7 +37,7 @@
       }
     },
     "hug_2": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 4,
       "metadata": {
         "interaction": "thatskyinteractions:hug",
@@ -45,7 +45,7 @@
       }
     },
     "lock_1": {
-      "type": "lock",
+      "type": "thatskyinteractions:lock",
       "price": {
         "amount": 8,
         "currency": "ascended_candle"
@@ -53,7 +53,7 @@
       "middle": "double_high_five_1"
     },
     "double_high_five_1": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 3,
       "left": "double_high_five_2",
       "middle": "pat_head_1",
@@ -62,7 +62,7 @@
       }
     },
     "double_high_five_2": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 4,
       "metadata": {
         "interaction": "thatskyinteractions:double_high_five",
@@ -70,7 +70,7 @@
       }
     },
     "pat_head_1": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 6,
       "left": "pat_head_2",
       "middle": "bear_hug_1",
@@ -79,7 +79,7 @@
       }
     },
     "pat_head_2": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 8,
       "metadata": {
         "interaction": "thatskyinteractions:pat_head",
@@ -87,7 +87,7 @@
       }
     },
     "bear_hug_1": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 8,
       "middle": "bear_hug_2",
       "metadata": {
@@ -95,7 +95,7 @@
       }
     },
     "bear_hug_2": {
-      "type": "interaction",
+      "type": "thatskyinteractions:interaction",
       "price": 12,
       "metadata": {
         "interaction": "thatskyinteractions:bear_hug",

@@ -4,8 +4,7 @@ import dev.anvilcraft.lib.v2.registrum.AbstractRegistrum;
 import dev.anvilcraft.lib.v2.registrum.builders.AbstractBuilder;
 import dev.anvilcraft.lib.v2.registrum.builders.BuilderCallback;
 import dev.anvilcraft.lib.v2.registrum.util.entry.RegistryEntry;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviour;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import net.quepierts.thatskyinteractions.feature.registry.entry.FriendshipBehaviourEntry;
@@ -37,6 +36,13 @@ public final class FriendshipBehaviourBuilder<T extends FriendshipBehaviour>
     @Override
     public @NonNull FriendshipBehaviourEntry<T> register() {
         return (FriendshipBehaviourEntry<T>) super.register();
+    }
+
+    @Override
+    protected @NonNull RegistryEntry<FriendshipBehaviour, T> createEntryWrapper(
+            final @NonNull DeferredHolder<FriendshipBehaviour, T> delegate
+    ) {
+        return new FriendshipBehaviourEntry<>(this.getOwner(), delegate);
     }
 
     @Override
