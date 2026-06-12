@@ -34,7 +34,7 @@ public final class AnimationCommand {
 
         final var source = context.getSource();
         source.suggestRegistryElements(
-                TsiRegistries.ANIMATION_LAYER_TYPES,
+                TsiRegistries.Keys.ANIMATION_LAYER_TYPE,
                 SharedSuggestionProvider.ElementSuggestionType.ELEMENTS,
                 builder,
                 context

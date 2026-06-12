@@ -7,16 +7,11 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
-import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
-import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
-import net.quepierts.thatskyinteractions.feature.utils.TsiInterpolators;
-import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
@@ -197,9 +192,7 @@ public record ClientboundAnimationControlPacket(
             return;
         }
 
-        final var layer     = level.registryAccess()
-                            .lookup(TsiRegistries.ANIMATION_LAYER_TYPES)
-                            .orElseThrow()
+        final var layer     = TsiRegistries.ANIMATION_LAYER_TYPE
                             .getOptional(this.layer().orElse(null))
                             .orElse(null);
 

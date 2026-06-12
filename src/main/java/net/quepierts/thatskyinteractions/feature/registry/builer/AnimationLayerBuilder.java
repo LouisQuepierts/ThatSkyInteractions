@@ -12,7 +12,7 @@ import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import net.quepierts.thatskyinteractions.feature.registry.entry.AnimationLayerEntry;
 import org.jspecify.annotations.NonNull;
 
-public class AnimationLayerBuilder extends AbstractBuilder<
+public final class AnimationLayerBuilder extends AbstractBuilder<
         AnimationLayerType,
         AnimationLayerType,
         AbstractRegistrum<?>,
@@ -28,7 +28,7 @@ public class AnimationLayerBuilder extends AbstractBuilder<
             final String                name,
             final BuilderCallback       callback
     ) {
-        super(owner, parent, name, callback, TsiRegistries.ANIMATION_LAYER_TYPES);
+        super(owner, parent, name, callback, TsiRegistries.Keys.ANIMATION_LAYER_TYPE);
     }
 
     public @NonNull AnimationLayerBuilder mask(

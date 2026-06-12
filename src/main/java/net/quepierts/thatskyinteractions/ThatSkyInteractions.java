@@ -13,7 +13,6 @@ import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
-import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 
 @Slf4j
 @Getter
@@ -23,7 +22,6 @@ public class ThatSkyInteractions {
     public static final Registrum REGISTRUM = Registrum.create(MODID);
 
     public ThatSkyInteractions(IEventBus modBus) {
-        TsiRegistries.register();
         AnimationLayerTypes.register();
         AttachmentTypes.register();
         modBus.register(this);
