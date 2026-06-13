@@ -134,6 +134,10 @@ public class ClientCameraSystem {
     @SubscribeEvent
     public static void onKeyInput(final InputEvent.Key event) {
 
+        if (Minecraft.getInstance().screen != null) {
+            return;
+        }
+
         final var matches = TsiKeys.KEY_UNLOCK_CAMERA.matches(event.getKeyEvent());
 
         if (matches && event.getAction() == GLFW.GLFW_PRESS) {
