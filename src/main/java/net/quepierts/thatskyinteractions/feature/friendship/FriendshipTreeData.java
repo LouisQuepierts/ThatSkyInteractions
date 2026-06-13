@@ -108,6 +108,8 @@ public final class FriendshipTreeData {
                 this.flatMapping[idx] = value;
             }
         }
+
+        this.update(0);
     }
 
     public NodeState getState(final int index) {

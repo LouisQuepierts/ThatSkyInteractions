@@ -1,0 +1,20 @@
+{
+  "type": "interaction.requester",
+  "sources": {
+    "invite": {
+      "source": "thatskyinteractions:holding_hands.invite",
+      "fadeIn": 0.25
+    },
+    "waiting": "thatskyinteractions:holding_hands.waiting",
+    "cancel": {
+      "source": "thatskyinteractions:holding_hands.exit",
+      "fadeOut": 0.25
+    },
+    "main": "thatskyinteractions:holding_hands.waiting",
+    "exit": {
+      "source": "thatskyinteractions:holding_hands.exit",
+      "fadeOut": 0.25
+    }
+  },
+  "override": "thatskyinteractions:modified"
+}

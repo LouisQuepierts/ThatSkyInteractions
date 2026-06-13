@@ -36,11 +36,12 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
         final var metadata      = node.getMetadata();
         final var interaction   = metadata.get("interaction");
         final var identifier    = this.cache.computeIfAbsent(interaction, Identifier::parse);
+        final var level         = metadata.get("level");
 
         PlayerInteractionSystem.invite(
                 requester,
                 receiver,
-                identifier.withSuffix("_" + metadata.getOrDefault("level", "1"))
+                level == null ? identifier : identifier.withSuffix("_" + level)
         );
 
         PacketDistributor.sendToPlayer(

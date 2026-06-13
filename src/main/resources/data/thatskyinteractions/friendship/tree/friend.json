@@ -4,11 +4,18 @@
     "root": {
       "type": "thatskyinteractions:friend",
       "price": 3,
-      "middle": "high_five_1",
+      "middle": "holding_hands",
       "right": "block"
     },
     "block": {
       "type": "thatskyinteractions:block"
+    },
+    "holding_hands": {
+      "type": "thatskyinteractions:interaction",
+      "middle": "high_five_1",
+      "metadata": {
+        "interaction": "thatskyinteractions:holding_hands"
+      }
     },
     "high_five_1": {
       "type": "thatskyinteractions:interaction",
@@ -16,7 +23,8 @@
       "left": "high_five_2",
       "middle": "hug_1",
       "metadata": {
-        "interaction": "thatskyinteractions:high_five"
+        "interaction": "thatskyinteractions:high_five",
+        "level": "1"
       }
     },
     "high_five_2": {
@@ -33,7 +41,8 @@
       "left": "hug_2",
       "middle": "lock_1",
       "metadata": {
-        "interaction": "thatskyinteractions:hug"
+        "interaction": "thatskyinteractions:hug",
+        "level": "1"
       }
     },
     "hug_2": {
@@ -58,7 +67,8 @@
       "left": "double_high_five_2",
       "middle": "pat_head_1",
       "metadata": {
-        "interaction": "thatskyinteractions:double_high_five"
+        "interaction": "thatskyinteractions:double_high_five",
+        "level": "1"
       }
     },
     "double_high_five_2": {
@@ -75,7 +85,8 @@
       "left": "pat_head_2",
       "middle": "bear_hug_1",
       "metadata": {
-        "interaction": "thatskyinteractions:pat_head"
+        "interaction": "thatskyinteractions:pat_head",
+        "level": "1"
       }
     },
     "pat_head_2": {
@@ -91,7 +102,8 @@
       "price": 8,
       "middle": "bear_hug_2",
       "metadata": {
-        "interaction": "thatskyinteractions:bear_hug"
+        "interaction": "thatskyinteractions:bear_hug",
+        "level": "1"
       }
     },
     "bear_hug_2": {
