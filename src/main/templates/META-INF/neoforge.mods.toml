@@ -36,11 +36,11 @@ displayName="${mod_name}" #mandatory
 #credits="" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-authors="Louis_Quepierts"
+authors="Louis_Quepierts QuepiertsAndier"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Example mod description.
+A mod brings interactions from game "Sky: Children of the Light" to Minecraft
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
