@@ -7,7 +7,6 @@ import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.core.property.Vector2fProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
-import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Ease;
@@ -28,7 +27,7 @@ public class FloatingControl extends Control {
     private final FloatProperty         showDistance        = new FloatProperty(16);
 
     @Getter
-    private final FloatingControlHandle handle;
+    private final FloatingTarget        target;
 
     private final WorldPositionSupplier worldPosition;
 
@@ -49,13 +48,13 @@ public class FloatingControl extends Control {
     ) {
         return new FloatingControlConstructor() {
             @Override
-            protected @NonNull FloatingControl construct(@NonNull final FloatingControlHandle handle, @NonNull final TweenScope tween) {
+            protected @NonNull FloatingControl construct(@NonNull final FloatingTarget target, @NonNull final TweenScope tween) {
                 return new FloatingControl(
                         tween,
                         width,
                         height,
                         message,
-                        handle,
+                        target,
                         (dest) -> dest.set(position)
                 );
             }
@@ -70,13 +69,13 @@ public class FloatingControl extends Control {
     ) {
         return new FloatingControlConstructor() {
             @Override
-            protected @NonNull FloatingControl construct(@NonNull final FloatingControlHandle handle, @NonNull final TweenScope tween) {
+            protected @NonNull FloatingControl construct(@NonNull final FloatingTarget target, @NonNull final TweenScope tween) {
                 return new FloatingControl(
                         tween,
                         width,
                         height,
                         message,
-                        handle,
+                        target,
                         supplier
                 );
             }
@@ -88,11 +87,11 @@ public class FloatingControl extends Control {
             final int                   width,
             final int                   height,
             final Component             message,
-            final FloatingControlHandle handle,
+            final FloatingTarget target,
             final WorldPositionSupplier worldPosition
     ) {
         super(tween, 0, 0, width, height, message);
-        this.handle = handle;
+        this.target = target;
         this.worldPosition = worldPosition;
     }
 

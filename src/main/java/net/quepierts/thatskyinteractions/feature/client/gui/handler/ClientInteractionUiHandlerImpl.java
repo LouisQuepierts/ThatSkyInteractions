@@ -7,6 +7,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingButton;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingTarget;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.WorldPositionSupplier;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.floating.FloatingButtonNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.layer.FloatingControlLayer;
@@ -19,19 +20,19 @@ public final class ClientInteractionUiHandlerImpl extends ClientInteractionUiHan
     protected void _invite(final @NonNull Player requester, final @NonNull Identifier icon) {
 
         final var uuid          = requester.getUUID();
+        final var target        = new FloatingTarget.Entity(uuid);
         final var layer         = FloatingControlLayer.INSTANCE;
         layer                   .remove(uuid);
 
-        final var handle        = layer.add(
-                                    FloatingButton.dynamic(
-                                            Component.empty(),
-                                            WorldPositionSupplier.entity(requester, 2.0f),
-                                            (_, _)
-                                                    -> ClientPlayerInteractionSystem.accept(requester)
-                                    ).withVisualNode(FloatingButtonNode.texture(icon))
+        layer.add(
+                target,
+                FloatingButton.dynamic(
+                        Component.empty(),
+                        WorldPositionSupplier.entity(requester, 2.0f),
+                        (_, _)
+                                -> ClientPlayerInteractionSystem.accept(requester)
+                ).withVisualNode(FloatingButtonNode.texture(icon))
         );
-
-        layer                   .link(uuid, handle);
 
     }
 }

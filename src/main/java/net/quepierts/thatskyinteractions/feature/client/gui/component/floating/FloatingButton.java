@@ -5,7 +5,6 @@ import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
-import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import org.joml.Vector2f;
@@ -21,11 +20,11 @@ public class FloatingButton extends FloatingControl {
     ) {
         return new FloatingControlConstructor() {
             @Override
-            protected @NonNull FloatingControl construct(@NonNull final FloatingControlHandle handle, @NonNull final TweenScope tween) {
+            protected @NonNull FloatingControl construct(@NonNull final FloatingTarget target, @NonNull final TweenScope tween) {
                 return new FloatingButton(
                         tween,
                         message,
-                        handle,
+                        target,
                         (dest) -> dest.set(position),
                         callback
                 );
@@ -40,11 +39,11 @@ public class FloatingButton extends FloatingControl {
     ) {
         return new FloatingControlConstructor() {
             @Override
-            protected @NonNull FloatingControl construct(@NonNull final FloatingControlHandle handle, @NonNull final TweenScope tween) {
+            protected @NonNull FloatingControl construct(@NonNull final FloatingTarget target, @NonNull final TweenScope tween) {
                 return new FloatingButton(
                         tween,
                         message,
-                        handle,
+                        target,
                         supplier,
                         callback
                 );
@@ -66,7 +65,7 @@ public class FloatingButton extends FloatingControl {
     protected FloatingButton(
             final TweenScope            tween,
             final Component             message,
-            final FloatingControlHandle handle,
+            final FloatingTarget        target,
             final WorldPositionSupplier worldPosition,
             final InteractCallback      callback
     ) {
@@ -74,7 +73,7 @@ public class FloatingButton extends FloatingControl {
                 tween,
                 32, 32,
                 message,
-                handle,
+                target,
                 worldPosition
         );
 

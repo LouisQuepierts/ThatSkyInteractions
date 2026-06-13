@@ -1,114 +1,68 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.layer;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControl;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControlConstructor;
-import net.quepierts.thatskyinteractions.feature.gui.FloatingControlHandle;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingTarget;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.backend.TweenTickHandler;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.jspecify.annotations.NonNull;
 
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public final class FloatingControlLayer implements GuiLayer {
 
-    public static final FloatingControlLayer        INSTANCE    = new FloatingControlLayer();
-    public static final Identifier                  IDENTIFIER  = ThatSkyInteractions.location("floating");
+    public static final FloatingControlLayer                INSTANCE    = new FloatingControlLayer();
+    public static final Identifier                          IDENTIFIER  = ThatSkyInteractions.location("floating");
 
-    private final Object2IntMap<UUID>               links       = new Object2IntOpenHashMap<>();
-    private final Int2ObjectMap<FloatingControl>    controls    = new Int2ObjectOpenHashMap<>();
-    private final ConcurrentLinkedDeque<Runnable>   pending     = new ConcurrentLinkedDeque<>();
-    private final IntList                           removing    = new IntArrayList();
-    private final AtomicInteger                     nextId      = new AtomicInteger(0);
+    private final Map<FloatingTarget, FloatingControl>      controls    = new HashMap<>();
+    private final ConcurrentLinkedDeque<Runnable>           pending     = new ConcurrentLinkedDeque<>();
+    private final List<FloatingTarget>                      removing    = new ArrayList<>();
 
-    private final Matrix4f                          projection  = new Matrix4f();
-    private final Vector3f                          position    = new Vector3f();
+    private final Matrix4f                                  projection  = new Matrix4f();
+    private final Vector3f                                  position    = new Vector3f();
 
-    private final TweenScope                        tween       = TweenScope.create();
-    private final TweenTickHandler                  tickHandler = (TweenTickHandler) this.tween;
+    private final TweenScope                                tween       = TweenScope.create();
+    private final TweenTickHandler                          tickHandler = (TweenTickHandler) this.tween;
 
-    private int                                    selected    = -1;
+    private FloatingTarget                                  selected    = null;
 
-    private FloatingControlLayer() {
-
-        // test
-        /*this.add(FloatingButton.fixed(
-                Component.empty(),
-                new Vector3f(0.0f, 64.0f, 0.0f),
-                _ -> {}
-        ).withVisualNode(FloatingButtonNode.texture(
-                ThatSkyInteractions.location("textures/gui/ignite.png")
-        )));
-*/
-
-    }
-
-    public void link(
-            final @NonNull UUID                     uuid,
-            final @NonNull FloatingControlHandle    handle
-    ) {
-        this.pending.offer(() -> this.links.put(uuid, handle.id()));
-    }
+    private FloatingControlLayer() {}
 
     public void remove(
-            final @NonNull UUID                     uuid
+            final @NonNull FloatingTarget target
     ) {
         this.pending.offer(() -> {
-            if (!this.links.containsKey(uuid)) {
-                return;
-            }
-
-            final var handle    = this.links.removeInt(uuid);
-            final var removed   = this.controls.remove(handle);
-
+            final var removed = this.controls.remove(target);
             if (removed != null) {
                 removed.markRemoved();
             }
         });
     }
 
-    public FloatingControlHandle add(
+    public void remove(
+            final @NonNull UUID uuid
+    ) {
+        this.remove(new FloatingTarget.Entity(uuid));
+    }
+
+    public void add(
+            @NonNull FloatingTarget             target,
             @NonNull FloatingControlConstructor constructor
     ) {
-
-        final var id        = this.nextId.getAndIncrement();
-        final var handle    = new FloatingControlHandle(id);
-
-        final var control   = constructor.apply(handle, this.tween);
-        this.pending.offer(() -> this.controls.put(control.getHandle().id(), control));
-
-        return handle;
-    }
-
-    public void remove(
-            @NonNull FloatingControlHandle handle
-    ) {
-        this.pending.offer(() -> {
-            final var removed = this.controls.get(handle.id());
-            if (removed != null) {
-                removed.markRemoved();
-            }
-        });
+        final var control = constructor.apply(target, this.tween);
+        this.pending.offer(() -> this.controls.put(target, control));
     }
 
     @Override
@@ -139,7 +93,7 @@ public final class FloatingControlLayer implements GuiLayer {
     }
 
     public boolean interact() {
-        if (this.selected != -1) {
+        if (this.selected != null) {
             final var control = this.controls.get(this.selected);
             if (control != null) {
                 control.onInteract();
@@ -184,7 +138,7 @@ public final class FloatingControlLayer implements GuiLayer {
         }
 
 
-        this.selected           = -1;
+        this.selected           = null;
         if (this.controls.isEmpty()) {
             return;
         }
@@ -218,7 +172,7 @@ public final class FloatingControlLayer implements GuiLayer {
             control             .setFocused(false);
 
             if (control.isRemoved()) {
-                this.removing.add(control.getHandle().id());
+                this.removing.add(control.getTarget());
                 continue;
             }
 
@@ -255,7 +209,7 @@ public final class FloatingControlLayer implements GuiLayer {
                 continue;
             }
 
-            if (this.selected != -1) {
+            if (this.selected != null) {
                 continue;
             }
 
@@ -267,11 +221,11 @@ public final class FloatingControlLayer implements GuiLayer {
 
             if (d < nearest) {
                 nearest = d;
-                this.selected = control.getHandle().id();
+                this.selected = control.getTarget();
             }
 
             /*if (useMouse) {
-                if (this.selected != -1) {
+                if (this.selected != null) {
                     continue;
                 }
 
@@ -283,7 +237,7 @@ public final class FloatingControlLayer implements GuiLayer {
 
                 if (d < nearest) {
                     nearest = d;
-                    this.selected = control.getHandle().id();
+                    this.selected = control.getTarget();
                 }
             } else {
                 if (Mth.abs(screenX - centerX) > (screenWidth >> 3)) {
@@ -293,18 +247,18 @@ public final class FloatingControlLayer implements GuiLayer {
                 final var d = Vector2f.distance(screenX, screenY, centerX, centerY);
                 if (d < nearest) {
                     nearest = d;
-                    this.selected = control.getHandle().id();
+                    this.selected = control.getTarget();
                 }
             }*/
         }
 
-        if (this.selected != -1) {
+        if (this.selected != null) {
             final var control   = this.controls.get(this.selected);
             control             .setFocused(true);
         }
 
-        for (final int id : this.removing) {
-            final var removed = this.controls.remove(id);
+        for (final var target : this.removing) {
+            final var removed = this.controls.remove(target);
             if (removed != null) {
                 removed.onRemoved();
             }
@@ -318,7 +272,6 @@ public final class FloatingControlLayer implements GuiLayer {
         this.tween      .clear();
         this.controls   .clear();
         this.pending    .clear();
-        this.nextId     .set(0);
-        this.selected   = -1;
+        this.selected   = null;
     }
 }
