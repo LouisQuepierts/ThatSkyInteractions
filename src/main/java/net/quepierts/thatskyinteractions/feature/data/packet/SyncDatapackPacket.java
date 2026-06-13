@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.data.packet;
 import dev.anvilcraft.lib.v2.network.packet.IClientboundPacket;
 import dev.anvilcraft.lib.v2.network.packet.IPacket;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -20,7 +21,7 @@ public record SyncDatapackPacket(
     public static final Type<SyncDatapackPacket> TYPE
             = IPacket.type(ThatSkyInteractions.location("sync_datapack"));
 
-    public static final StreamCodec<ByteBuf, SyncDatapackPacket> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncDatapackPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             SyncDatapackPacket::id,
             PacketCache.STREAM_CODEC,

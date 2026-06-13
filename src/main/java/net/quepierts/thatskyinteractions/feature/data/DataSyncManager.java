@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.FileToIdConverter;
@@ -28,12 +29,12 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
     private final PacketCache cache;
 
     @Getter
-    private final StreamCodec<ByteBuf, Map<Identifier, T>> streamCodec;
+    private final StreamCodec<? super RegistryFriendlyByteBuf, Map<Identifier, T>> streamCodec;
 
     protected DataSyncManager(
-            final Codec<T>                  codec,
-            final StreamCodec<ByteBuf, T>   streamCodec,
-            final String                    folder
+            final Codec<T>                                          codec,
+            final StreamCodec<? super RegistryFriendlyByteBuf, T>   streamCodec,
+            final String                                            folder
     ) {
         super(
                 codec,
@@ -54,7 +55,7 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
         final Map<Identifier, T> payload = this.onHostLoaded(preparations);
         this.apply(payload);
 
-        this.cache.encode(
+        this.cache.cache(
                 this.getStreamCodec(),
                 payload
         );
@@ -74,8 +75,8 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
 
     protected void onSynced() { }
 
-    protected static <T> StreamCodec<ByteBuf, Map<Identifier, T>> createStreamCodec(
-            @NonNull final StreamCodec<ByteBuf, T> element
+    protected static <T> StreamCodec<? super RegistryFriendlyByteBuf, Map<Identifier, T>> createStreamCodec(
+            @NonNull final StreamCodec<? super RegistryFriendlyByteBuf, T> element
     ) {
         return ByteBufCodecs.map(
                 (IntFunction<Map<Identifier, T>>) Object2ObjectOpenHashMap::new,

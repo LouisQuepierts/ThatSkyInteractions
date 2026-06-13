@@ -1,53 +1,83 @@
 package net.quepierts.thatskyinteractions.feature.data.packet;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.NoArgsConstructor;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.quepierts.veynir.core.misc.Generic;
 import org.jspecify.annotations.NonNull;
 
 @NoArgsConstructor
 public final class PacketCache {
 
-    public static final StreamCodec<ByteBuf, PacketCache> STREAM_CODEC = new StreamCodec<>() {
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketCache> STREAM_CODEC = new StreamCodec<>() {
         @Override
-        public PacketCache decode(final ByteBuf byteBuf) {
+        public PacketCache decode(final RegistryFriendlyByteBuf byteBuf) {
             var cache = new PacketCache();
             cache.read(byteBuf);
             return cache;
         }
 
         @Override
-        public void encode(final ByteBuf byteBuf, final PacketCache packetCache) {
+        public void encode(final RegistryFriendlyByteBuf byteBuf, final PacketCache packetCache) {
             packetCache.write(byteBuf);
         }
     };
 
-    private volatile ByteBuf buffer;
+    private volatile RegistryFriendlyByteBuf buffer;
     private int readableBytes;
 
-    public <T> void encode(
-            @NonNull final StreamCodec<ByteBuf, T> codec,
+    private StreamCodec<? super RegistryFriendlyByteBuf, ?> cachedCodec;
+    private Object cachedObject;
+
+    public void cache(
+            @NonNull final StreamCodec<? super RegistryFriendlyByteBuf, ?> codec,
+            @NonNull final Object object
+    ) {
+        this.cachedCodec = codec;
+        this.cachedObject = object;
+
+        this.free();
+    }
+
+    /*public <T> void encode(
+            @NonNull final StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
             @NonNull final T object
     ) {
-        var fresh = Unpooled.buffer();
+        var fresh = new RegistryFriendlyByteBuf(Unpooled.buffer(), )
         codec.encode(fresh, object);
 
         this.free();
 
         this.buffer = fresh;
         this.readableBytes = fresh.readableBytes();
-    }
+    }*/
 
     public <T> T decode(
-            @NonNull final StreamCodec<ByteBuf, T> codec
+            @NonNull final StreamCodec<? super RegistryFriendlyByteBuf, T> codec
     ) {
         return codec.decode(this.buffer);
     }
 
     public void write(
-            @NonNull final ByteBuf target
+            @NonNull final RegistryFriendlyByteBuf target
     ) {
+        if (this.buffer == null) {
+
+            this.buffer = new RegistryFriendlyByteBuf(
+                    Unpooled.buffer(),
+                    target.registryAccess(),
+                    target.getConnectionType()
+            );
+
+            if (this.cachedCodec != null && this.cachedObject != null) {
+                this.cachedCodec.encode(this.buffer, Generic.cast(this.cachedObject));
+                this.cachedCodec = null;
+                this.cachedObject = null;
+                this.readableBytes = this.buffer.readableBytes();
+            }
+
+        }
         target.writeBytes(this.buffer, 0, this.readableBytes);
     }
 
@@ -62,10 +92,10 @@ public final class PacketCache {
         }
     }
 
-    public void read(final ByteBuf byteBuf) {
+    public void read(final RegistryFriendlyByteBuf byteBuf) {
         this.free();
         final var bytes = byteBuf.readableBytes();
-        this.buffer = Unpooled.buffer(bytes);
+        this.buffer = new RegistryFriendlyByteBuf(Unpooled.buffer(bytes), byteBuf.registryAccess(), byteBuf.getConnectionType());
         this.buffer.writeBytes(byteBuf);
         this.readableBytes = bytes;
     }
