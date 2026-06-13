@@ -96,7 +96,6 @@ public final class PlayerAnimationController {
             if (this.exclusionMask.collision(type.getMask())) {
                 return false;
             }
-            this.exclusionMask.or(type.getMask());
         }
 
         final var manager       = PlayerAnimationManager.getInstance();
@@ -115,6 +114,10 @@ public final class PlayerAnimationController {
         if (animation == null) {
             log.warn("Animation source not found: {}", animationId);
             return false;
+        }
+
+        if (type.isExclusive()) {
+            this.exclusionMask.or(type.getMask());
         }
 
         layer.play(

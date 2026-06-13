@@ -75,7 +75,7 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
             log.error("Animation not found: {}", id);
             return null;
         }
-        return holder.get();
+        return holder.get(id);
     }
 
     public PlayerAnimationDefinition getDefinition(Identifier id) {
@@ -99,17 +99,21 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
         private PlayerAnimation                 animation;
         private boolean                         initialized = false;
 
-        public PlayerAnimation get() {
+        public PlayerAnimation get(final Identifier id) {
             if (!this.initialized) {
-                this.initialize();
+                try {
+                    this.initialize();
+                } catch (Exception e) {
+                    log.error("Failed to initialize animation: {}", id);
+                }
             }
 
             return this.animation;
         }
 
         private void initialize() {
-            this.animation      = PlayerAnimationFactory.create(this.definition);
             this.initialized    = true;
+            this.animation      = PlayerAnimationFactory.create(this.definition);
         }
 
     }
