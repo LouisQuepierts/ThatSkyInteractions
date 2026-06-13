@@ -9,8 +9,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
@@ -19,6 +21,7 @@ import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSy
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.TsiButton;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.HoverNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonRenderOps;
@@ -87,7 +90,7 @@ public class FriendshipTreeComponentFactory {
         int i                       = 0;
         for (final var node : structure) {
 
-            final var button        = new Button(
+            final var button        = new TsiButton(
                                         tween,
                                         0, 0,
                                         NODE_SIZE, NODE_SIZE,
@@ -98,7 +101,18 @@ public class FriendshipTreeComponentFactory {
             final var state         = model.getState(index);
 
             button                  .setVisualNode(vButton(node, state));
-            button                  .setOnClick(() -> controller.onButtonClicked(index));
+            button                  .setOnClick(() -> {
+                controller.onButtonClicked(index);
+
+                final var manager   = Minecraft.getInstance().getSoundManager();
+                final var event     = switch (state) {
+                    case UNLOCKABLE -> SoundEvents.EXPERIENCE_ORB_PICKUP;
+                    default -> SoundEvents.UI_BUTTON_CLICK.value();
+                };
+
+                manager.play(SimpleSoundInstance.forUI(event, 1.0f, 0.1f));
+
+            });
             buttons                 .add(button);
 
             if (node.getParent() != -1) {

@@ -79,7 +79,15 @@ public class Control extends AbstractWidget implements IAttributeHolder {
             final float                         delta
     ) {
         if (this.visible) {
-            this.isHovered  = graphics.containsPointInScissor(mouseX, mouseY) && this.isMouseOver(mouseX, mouseY);
+            final var hovering = this.isMouseOver(mouseX, mouseY);
+
+            if (hovering && !this.isHovered) {
+                this.onMouseEntered();
+            } else if (!hovering && this.isHovered) {
+                this.onMouseExited();
+            }
+
+            this.isHovered = hovering;
             this.extractControlRenderState(
                     graphics,
                     colors,
@@ -115,6 +123,14 @@ public class Control extends AbstractWidget implements IAttributeHolder {
             );
             pose.popMatrix();
         }
+    }
+
+    protected void onMouseEntered() {
+
+    }
+
+    protected void onMouseExited() {
+
     }
 
     public float x() {

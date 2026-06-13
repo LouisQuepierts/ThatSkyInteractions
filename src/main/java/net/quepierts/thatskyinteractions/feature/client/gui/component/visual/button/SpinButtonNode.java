@@ -46,7 +46,7 @@ public class SpinButtonNode implements VisualNode {
 
         this.renderOp           .render(
                                     graphics,
-                colors, 0, 0,
+                                    colors, 0, 0,
                                     control.getWidth(),
                                     control.getHeight()
         );
