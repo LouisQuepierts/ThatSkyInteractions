@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.handhoding;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
@@ -12,6 +13,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetType;
+import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerMovedEvent;
 import net.quepierts.thatskyinteractions.feature.control.event.EntityTurnEvent;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingAttachment;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
@@ -20,6 +22,23 @@ import org.joml.Vector3f;
 @UtilityClass
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
 public class ClientHandholdingHandler {
+
+    @SubscribeEvent
+    public static void onLocalPlayerMove(final LocalPlayerMovedEvent event) {
+
+        if (!ClientHandholdingSystem.isFollowing()) {
+            return;
+        }
+
+        if (!event.getInput().sprint()) {
+            event.getPlayer().sendOverlayMessage(Component.translatable("message.thatskyinteractions.handhold.stop"));
+            event.setCanceled(true);
+            return;
+        }
+
+        ClientHandholdingSystem.unhold();
+
+    }
 
     /*@SubscribeEvent
     public static void beforeEntityTurn(final EntityTurnEvent.Pre event) {

@@ -234,6 +234,10 @@ public final class PlayerFriendshipAttachment {
         for (final var data : list) {
             final var relation = data.getRelation();
 
+            if (relation.equals(frl)) { // something goes wrong here
+                continue;
+            }
+
             if (this.me != null) {
                 map.put(relation.getOther(this.me), data);
                 continue;
