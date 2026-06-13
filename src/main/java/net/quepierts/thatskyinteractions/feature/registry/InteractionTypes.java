@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.interaction.AnimationInteraction;
 import net.quepierts.thatskyinteractions.feature.interaction.Interaction;
+import net.quepierts.thatskyinteractions.feature.interaction.UnlockInteraction;
 import net.quepierts.thatskyinteractions.feature.registry.builer.InteractionTypeBuilder;
 import net.quepierts.thatskyinteractions.feature.registry.entry.InteractionTypeEntry;
 
@@ -14,6 +15,12 @@ public class InteractionTypes {
             = InteractionTypes.<AnimationInteraction>type("animation")
             .codec(AnimationInteraction.MAP_CODEC)
             .streamCodec(AnimationInteraction.STREAM_CODEC)
+            .register();
+
+    public static final InteractionTypeEntry<UnlockInteraction> UNLOCK
+            = InteractionTypes.<UnlockInteraction>type("unlock")
+            .codec(UnlockInteraction.MAP_CODEC)
+            .streamCodec(UnlockInteraction.STREAM_CODEC)
             .register();
 
     public static void register() { }

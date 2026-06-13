@@ -11,6 +11,8 @@ import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 public interface Interaction {
 
     Codec<Interaction> CODEC
@@ -70,6 +72,18 @@ public interface Interaction {
 
     default boolean immediate() {
         return this.duration() == 0;
+    }
+
+    default boolean is(final @NonNull Interaction other) {
+        return this == other;
+    }
+
+    default boolean is(final @NonNull InteractionType<?> type) {
+        return this.getType() == type;
+    }
+
+    default <E extends Interaction> boolean is(final @NonNull Supplier<InteractionType<E>> supplier) {
+        return this.getType() == supplier.get();
     }
 
 }

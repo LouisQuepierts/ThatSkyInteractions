@@ -13,6 +13,7 @@ import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriends
 import net.quepierts.thatskyinteractions.feature.gui.packet.PlayerFriendshipUiPacket;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
+import net.quepierts.thatskyinteractions.feature.registry.InteractionTypes;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
@@ -215,7 +216,7 @@ public class PlayerFriendshipSystem {
             return;
         }
 
-        if (!event.getInteraction().equals(PlayerFriendshipSystem.INTERACTION)) {
+        if (!event.getInteraction().is(InteractionTypes.UNLOCK)) {
             return;
         }
 

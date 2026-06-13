@@ -5,6 +5,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import net.quepierts.thatskyinteractions.feature.interaction.Interaction;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionManager;
 import org.jspecify.annotations.NonNull;
 
 @Getter
@@ -13,7 +15,8 @@ public abstract sealed class PlayerInteractionEvent extends Event {
     private final Player        requester;
     private final Player        receiver;
     private final boolean       isClient;
-    private final Identifier    interaction;
+    private final Identifier    identifier;
+    private final Interaction   interaction;
 
     protected PlayerInteractionEvent(
             final @NonNull Player requester,
@@ -23,7 +26,8 @@ public abstract sealed class PlayerInteractionEvent extends Event {
         this.requester      = requester;
         this.receiver       = receiver;
         this.isClient       = requester.level().isClientSide();
-        this.interaction = interaction;
+        this.identifier     = interaction;
+        this.interaction    = PlayerInteractionManager.getInstance().get(interaction);
     }
 
     @Getter

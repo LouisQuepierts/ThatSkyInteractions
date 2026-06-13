@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.core.friendship.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.quepierts.thatskyinteractions.core.model.Currency;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 
@@ -10,21 +10,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class FriendshipTreeNode {
 
-    private final String    id;
-    private final String    type;
+    private final String                id;
+    private final Identifier            type;
 
-    private final int       left;
-    private final int       middle;
-    private final int       right;
+    private final int                   left;
+    private final int                   middle;
+    private final int                   right;
 
-    private final int       parent;
-    private final int       level;
+    private final int                   parent;
+    private final int                   level;
 
-    private final Map<String, String> metadata;
+    private final Map<String, String>    metadata;
 
-    private final Cost      cost;
+    private final Cost                  cost;
 
-    private final Branch    branch;
+    private final Branch                branch;
 
     public boolean hasLeft() {
         return this.branch == Branch.MIDDLE && left != -1;

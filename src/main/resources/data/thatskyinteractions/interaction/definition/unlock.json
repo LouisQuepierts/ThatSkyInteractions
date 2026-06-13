@@ -2,9 +2,7 @@
   "icon": "thatskyinteractions:empty",
   "interactions": [
     {
-      "type": "thatskyinteractions:animation",
-      "requester": "thatskyinteractions:unlock_invite",
-      "receiver": "thatskyinteractions:unlock_accept"
+      "type": "thatskyinteractions:unlock"
     }
   ]
 }
