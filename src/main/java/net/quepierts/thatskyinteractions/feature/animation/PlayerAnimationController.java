@@ -189,10 +189,6 @@ public final class PlayerAnimationController {
     }
 
     public void abort() {
-        if (!this.isPlaying()) {
-            return;
-        }
-
         this.cleanup();
     }
 
@@ -466,6 +462,10 @@ public final class PlayerAnimationController {
         this.exclusionMask  .clear();
 
         this.fkController   .clear();
+
+        for (final var layer : this.layers.values()) {
+            layer.abort();
+        }
     }
 
     private void markResolved() {
