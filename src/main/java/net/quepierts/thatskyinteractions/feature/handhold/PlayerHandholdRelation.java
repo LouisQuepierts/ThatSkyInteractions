@@ -105,18 +105,15 @@ public class PlayerHandholdRelation {
             final @NonNull Player   follower
     ) {
         return this.role == Role.NONE
-                || !this.isHolding(follower)
-                && !this.isFullyHolding()
-                && !this.isLeading();
+                || this.isLeading()
+                && !this.isHolding(follower)
+                && !this.isFullyHolding();
     }
 
     public boolean canFollow(
             final @NonNull Player   leader
     ) {
-        return this.role == Role.NONE
-                || !this.isHolding(leader)
-                && !this.isFullyHolding()
-                && !this.isFollowing();
+        return this.role == Role.NONE;
     }
 
     public boolean isHolding(
