@@ -1,9 +1,12 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.controller;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.ConfirmScreen;
+import net.quepierts.thatskyinteractions.feature.friendship.CurrencyHelper;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.feature.gui.ConfirmData;
@@ -17,6 +20,7 @@ public final class FriendshipScreenController extends ScreenController<Friendshi
     private int clicked = -1;
     private int clicks  = 0;
 
+    @SuppressWarnings("DataFlowIssue")
     public void onButtonClicked(final int index) {
         final var model         = this.getModel();
         final var structure     = model.getStructure();
@@ -27,13 +31,19 @@ public final class FriendshipScreenController extends ScreenController<Friendshi
         switch (state) {
             case UNLOCKABLE: {
 
+                final var cost = node.getCost();
+                final var balance = CurrencyHelper.getBalance(Minecraft.getInstance().player, cost.currency());
+                if (balance < cost.amount()) {
+                    return;
+                }
+
                 if (this.clicked        != index) {
                     this.clicked        = index;
                     this.clicks         = 1;
                 } else {
                     this.clicks         ++;
 
-                    if (this.clicks     >= Math.min(3, node.getCost().amount())) {
+                    if (this.clicks     >= Math.min(3, cost.amount())) {
                         this            .unlock(index);
                         this.clicked    = -1;
                         this.clicks     = 0;

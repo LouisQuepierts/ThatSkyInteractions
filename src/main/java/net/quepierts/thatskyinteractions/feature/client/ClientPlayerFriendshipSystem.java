@@ -154,7 +154,7 @@ public class ClientPlayerFriendshipSystem {
                 minecraft.popGuiLayer();
 
                 final var model = screen.getController().getModel();
-                final var tween = screen.tween();
+                final var tween = PhysicalTweenAttachment.tween(Minecraft.getInstance().level);
                 tween.wait(
                         () -> ScreenLoader.open(FriendshipScreen.class, model),
                         0.5f

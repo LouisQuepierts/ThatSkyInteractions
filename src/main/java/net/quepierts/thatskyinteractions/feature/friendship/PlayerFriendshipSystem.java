@@ -8,6 +8,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
+import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipControlPacket;
 import net.quepierts.thatskyinteractions.feature.gui.packet.PlayerFriendshipUiPacket;
@@ -33,6 +35,14 @@ public class PlayerFriendshipSystem {
         final var data      = PlayerFriendshipAttachment.union(requester, receiver);
 
         if (!data.isUnlockable(node)) {
+            return;
+        }
+
+        final var treeNode  = data.getStructure().get(node);
+        final var cost      = treeNode.getCost();
+        final var balance   = CurrencyHelper.getBalance(requester, cost.currency());
+
+        if (balance < cost.amount()) {
             return;
         }
 
@@ -91,11 +101,22 @@ public class PlayerFriendshipSystem {
             return false;
         }
 
+        final var treeNode  = data.getStructure().get(node);
+        final var cost      = treeNode.getCost();
+        final var balance   = CurrencyHelper.getBalance(requester, cost.currency());
+
+        if (balance < cost.amount()) {
+            return false;
+        }
+
+        CurrencyHelper.consume(requester, cost.currency(), cost.amount());
+
         PacketDistributor.sendToPlayer(
                 requester,
                 PlayerFriendshipControlPacket.unlock(
                         receiver.getUUID(),
-                        node
+                        node,
+                        true
                 )
         );
 
@@ -103,7 +124,8 @@ public class PlayerFriendshipSystem {
                 receiver,
                 PlayerFriendshipControlPacket.unlock(
                         requester.getUUID(),
-                        node
+                        node,
+                        false
                 )
         );
 

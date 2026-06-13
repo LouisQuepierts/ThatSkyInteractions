@@ -9,6 +9,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
+import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.feature.friendship.CurrencyHelper;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import org.jspecify.annotations.NonNull;
 
@@ -45,9 +48,10 @@ public record PlayerFriendshipControlPacket(
 
     public static PlayerFriendshipControlPacket unlock(
             final @NonNull UUID target,
-            final int index
+            final int index,
+            final boolean requester
     ) {
-        return new PlayerFriendshipControlPacket(Operation.UNLOCK, target, index);
+        return new PlayerFriendshipControlPacket(requester ? Operation.UNLOCK_REQ : Operation.UNLOCK_REC, target, index);
     }
 
     public static PlayerFriendshipControlPacket complete(
@@ -73,7 +77,14 @@ public record PlayerFriendshipControlPacket(
         final var data          = attachment.get(this.target(), PlayerFriendshipAttachment.FRIEND);
 
         switch (this.operation()) {
-            case UNLOCK: {
+            case UNLOCK_REQ: {
+                data.unlock(this.index());
+                final var node = data.getStructure().get(this.index());
+                final var cost = node.getCost();
+                CurrencyHelper.consume(player, cost.currency(), cost.amount());
+                break;
+            }
+            case UNLOCK_REC: {
                 data.unlock(this.index());
                 break;
             }
@@ -98,7 +109,8 @@ public record PlayerFriendshipControlPacket(
     }
 
     public enum Operation {
-        UNLOCK,
+        UNLOCK_REQ,
+        UNLOCK_REC,
         COMPLETE,
         RESET,
         DROP;
