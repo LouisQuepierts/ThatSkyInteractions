@@ -14,7 +14,6 @@ import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
-import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerMovedEvent;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.FriendshipScreen;
 import net.quepierts.thatskyinteractions.feature.client.input.TsiKeys;
@@ -22,6 +21,8 @@ import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipRequestPacket;
 import net.quepierts.thatskyinteractions.feature.gui.handler.ClientFriendshipUiHandler;
+import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
+import net.quepierts.thatskyinteractions.feature.registry.InteractionTypes;
 
 @UtilityClass
 @SuppressWarnings({"unused", "DataFlowIssue"})
@@ -134,6 +135,50 @@ public class ClientPlayerFriendshipSystem {
 
             ClientFriendshipUiHandler.cancel(other);
 
+        }
+
+        @SubscribeEvent
+        public static void onUnlockAccepted(final PlayerInteractionEvent.Accept.Post event) {
+
+            // just for in case
+            if (!event.isClient()) {
+                return;
+            }
+
+            if (!event.getInteraction().is(InteractionTypes.UNLOCK)) {
+                return;
+            }
+
+            final var minecraft = Minecraft.getInstance();
+            if (minecraft.screen instanceof FriendshipScreen screen) {
+                minecraft.popGuiLayer();
+
+                final var model = screen.getController().getModel();
+                final var tween = screen.tween();
+                tween.wait(
+                        () -> ScreenLoader.open(FriendshipScreen.class, model),
+                        0.5f
+                );
+            }
+
+        }
+
+        @SubscribeEvent
+        public static void onPlayerLeaved(final EntityLeaveLevelEvent event) {
+            if (!(event.getEntity() instanceof Player player)) {
+                return;
+            }
+
+            final var uuid = player.getUUID();
+            final var minecraft = Minecraft.getInstance();
+            if (minecraft.screen instanceof FriendshipScreen screen) {
+                final var local = minecraft.player;
+                final var other = screen.getController().getModel().getOther(uuid);
+
+                if (other.equals(local.getUUID())) {
+                    minecraft.popGuiLayer();
+                }
+            }
         }
 
     }
