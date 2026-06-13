@@ -96,7 +96,7 @@ public record ClientboundInteractionControlPacket(
                 break;
             }
             case ACCEPT_REQ: {
-                final var send = data.getSent();
+                final var send = data.getOngoing();
                 if (send != null) {
                     final var interaction = send.getType();
                     data.sendAccept(target);
@@ -105,7 +105,7 @@ public record ClientboundInteractionControlPacket(
                 break;
             }
             case CANCEL_REQ: {
-                final var sent = data.getSent();
+                final var sent = data.getOngoing();
                 if (sent != null) {
                     final var interaction = sent.getType();
                     data.cancelSent();

@@ -1,12 +1,13 @@
 {
-  "levels": 2,
-  "icon": "auto",
+  "icon": "thatskyinteractions:textures/icon/interaction/double_high_five.png",
   "interactions": [
     {
+      "type": "thatskyinteractions:animation",
       "requester": "auto",
       "receiver": "auto"
     },
     {
+      "type": "thatskyinteractions:animation",
       "requester": "auto",
       "receiver": "auto"
     }

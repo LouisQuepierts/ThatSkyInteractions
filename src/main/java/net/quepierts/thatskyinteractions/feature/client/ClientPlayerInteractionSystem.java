@@ -60,9 +60,9 @@ public class ClientPlayerInteractionSystem {
             final var player            = event.getPlayer();
 
             final var interactionData   = PlayerInteractionSystem.getInteractionAttachment(player);
-            final var sent              = interactionData.getSent();
-            if (sent != null) {
-                if (sent.isWaiting()) {
+            final var ongoing           = interactionData.getOngoing();
+            if (ongoing != null) {
+                if (ongoing.isWaiting()) {
                     ClientPlayerInteractionSystem.cancel();
                 }
 

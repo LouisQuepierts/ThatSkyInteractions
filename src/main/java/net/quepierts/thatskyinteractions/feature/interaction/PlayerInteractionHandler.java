@@ -58,7 +58,7 @@ public class PlayerInteractionHandler {
         }
 
         final var attachment    = PlayerInteractionSystem.getInteractionAttachment(player);
-        final var sent          = attachment.getSent();
+        final var sent          = attachment.getOngoing();
 
         if (sent == null) {
             return;

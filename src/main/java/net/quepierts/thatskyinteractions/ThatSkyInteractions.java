@@ -13,6 +13,7 @@ import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import net.quepierts.thatskyinteractions.feature.registry.FriendshipBehaviours;
+import net.quepierts.thatskyinteractions.feature.registry.InteractionTypes;
 
 @Slf4j
 @Getter
@@ -23,7 +24,7 @@ public class ThatSkyInteractions {
 
     public ThatSkyInteractions(IEventBus modBus) {
         AnimationLayerTypes.register();
-
+        InteractionTypes.register();
         FriendshipBehaviours.register();
 
         AttachmentTypes.register();

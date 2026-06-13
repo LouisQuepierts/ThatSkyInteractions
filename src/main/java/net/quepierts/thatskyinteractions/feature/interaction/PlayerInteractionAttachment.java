@@ -30,7 +30,7 @@ public final class PlayerInteractionAttachment {
             = StreamCodecUtils.unit(PlayerInteractionAttachment::new);
 
     private final Map<UUID, InteractionRequest> received;
-    private InteractionRequest                  sent;
+    private InteractionRequest                  ongoing;
 
     public static PlayerInteractionAttachment getAttachment(@NonNull final Player player) {
         return player.getData(AttachmentTypes.PLAYER_INTERACTION);
@@ -45,7 +45,7 @@ public final class PlayerInteractionAttachment {
             final @NonNull Identifier type
     ) {
 
-        this.sent = InteractionRequest.send(
+        this.ongoing = InteractionRequest.send(
                 other.getUUID(),
                 type,
                 other.level().getGameTime()
@@ -71,7 +71,7 @@ public final class PlayerInteractionAttachment {
 
     public void cancelSent() {
 
-        this.sent = null;
+        this.ongoing = null;
 
     }
 
@@ -87,8 +87,8 @@ public final class PlayerInteractionAttachment {
             final @NonNull Player       other
     ) {
 
-        if (this.hasSentRequest() && this.sent.getOther().equals(other.getUUID())) {
-            this.sent = null;
+        if (this.hasSentRequest() && this.ongoing.getOther().equals(other.getUUID())) {
+            this.ongoing = null;
         }
 
     }
@@ -101,7 +101,7 @@ public final class PlayerInteractionAttachment {
 
     }
     public boolean hasSentRequest() {
-        return this.sent != null;
+        return this.ongoing != null;
     }
 
     public Collection<InteractionRequest> getReceivedRequests() {

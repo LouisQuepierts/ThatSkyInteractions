@@ -9,8 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
-import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.control.packet.NavigatePacket;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.ClientboundInteractionControlPacket;
@@ -37,7 +35,7 @@ public class PlayerInteractionSystem {
     public static void invite(
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver,
-            final @NonNull Identifier   interaction
+            final @NonNull Identifier   interactionId
     ) {
 
         if (requester.is(receiver)) {
@@ -45,13 +43,13 @@ public class PlayerInteractionSystem {
         }
 
         final var manager       = PlayerInteractionManager.getInstance();
-        final var definition    = manager.get(interaction);
+        final var interaction    = manager.get(interactionId);
 
-        if (definition == null) {
+        if (interaction == null) {
             return;
         }
 
-        final ICancellableEvent event = NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Pre(requester, receiver, interaction));
+        final ICancellableEvent event = NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Pre(requester, receiver, interactionId));
         if (event.isCanceled()) {
             return;
         }
@@ -72,25 +70,22 @@ public class PlayerInteractionSystem {
             PlayerInteractionSystem.cancel(requester);
         }
 
-        reqData.sendInvite(receiver, interaction);
-        recData.receiveInvite(requester, interaction);
+        reqData.sendInvite(receiver, interactionId);
+        recData.receiveInvite(requester, interactionId);
 
-        PlayerAnimationSystem.play(
-                requester,
-                definition.requester()
-        );
+        interaction.onInvite(requester, receiver);
 
         PacketDistributor.sendToPlayer(
                 requester,
-                ClientboundInteractionControlPacket.invite(receiver, interaction, true)
+                ClientboundInteractionControlPacket.invite(receiver, interactionId, true)
         );
 
         PacketDistributor.sendToPlayer(
                 receiver,
-                ClientboundInteractionControlPacket.invite(requester, interaction, false)
+                ClientboundInteractionControlPacket.invite(requester, interactionId, false)
         );
 
-        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Post(requester, receiver, interaction));
+        NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Post(requester, receiver, interactionId));
 
     }
 
@@ -107,7 +102,7 @@ public class PlayerInteractionSystem {
         final var reqData = PlayerInteractionSystem.getInteractionAttachment(requester);
         final var recData = PlayerInteractionSystem.getInteractionAttachment(receiver);
 
-        final var sent = reqData.getSent();
+        final var sent = reqData.getOngoing();
         if (sent == null || !sent.getOther().equals(receiver.getUUID())) {
             return;
         }
@@ -135,20 +130,20 @@ public class PlayerInteractionSystem {
             return;
         }
 
-        final var position = PlayerUtils.getRelativePositionWorldSpace(requester, 1.0, 0.0);
-
-        if (interaction.positional() && !force && receiver.distanceToSqr(position) > 1e-3) {
-
-            final var lookTarget = EntityAnchorArgument.Anchor.EYES.apply(requester);
-
-            PacketDistributor.sendToPlayer(
-                    receiver,
-                    new NavigatePacket(position, lookTarget)
-            );
-            return;
-        }
-
         if (interaction.positional()) {
+            final var position = PlayerUtils.getRelativePositionWorldSpace(requester, 1.0, 0.0);
+
+            if (!force && receiver.distanceToSqr(position) > 1e-3) {
+
+                final var lookTarget = EntityAnchorArgument.Anchor.EYES.apply(requester);
+
+                PacketDistributor.sendToPlayer(
+                        receiver,
+                        new NavigatePacket(position, lookTarget)
+                );
+                return;
+            }
+
             receiver.teleportTo(position.x, position.y, position.z);
             receiver.lookAt(EntityAnchorArgument.Anchor.EYES, requester.getEyePosition());
         }
@@ -156,15 +151,7 @@ public class PlayerInteractionSystem {
         reqData.sendAccept(receiver);
         recData.receiveAccept(requester);
 
-        PlayerAnimationSystem.play(
-                receiver,
-                interaction.receiver()
-        );
-
-        PlayerAnimationSystem.signal(
-                requester,
-                DefaultInteractionFSM.REQUESTER_ACCEPT
-        );
+        interaction.onAccepted(requester, receiver);
 
         PacketDistributor.sendToPlayer(
                 requester,
@@ -184,7 +171,7 @@ public class PlayerInteractionSystem {
             final @NonNull ServerPlayer requester
     ) {
         final var reqData   = PlayerInteractionSystem.getInteractionAttachment(requester);
-        final var sent      = reqData.getSent();
+        final var sent      = reqData.getOngoing();
 
 
         if (sent == null) {
@@ -195,7 +182,7 @@ public class PlayerInteractionSystem {
         final var otherUUID = sent.getOther();
         final var other     = level.getPlayerByUUID(otherUUID);
 
-        final var type      = reqData.getSent().getType();
+        final var type      = reqData.getOngoing().getType();
 
         // change order
         // if other is not online, requester still can cancel the invite
@@ -206,7 +193,12 @@ public class PlayerInteractionSystem {
                 ClientboundInteractionControlPacket.cancel(otherUUID, true)
         );
 
-        PlayerAnimationSystem.exit(requester);
+        final var manager   = PlayerInteractionManager.getInstance();
+        final var interaction = manager.get(type);
+
+        if (interaction != null) {
+            interaction.onCancel(requester, (ServerPlayer) other);
+        }
 
         if (other instanceof ServerPlayer receiver) {
 

@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.feature.registry;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -9,9 +10,8 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.AnimationLayerType;
-import net.quepierts.thatskyinteractions.feature.expression.behaviour.ExpressionBehaviour;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviour;
-import net.quepierts.thatskyinteractions.feature.interaction.behaviour.InteractionBehaviour;
+import net.quepierts.thatskyinteractions.feature.interaction.InteractionType;
 
 @UtilityClass
 public class TsiRegistries {
@@ -20,8 +20,9 @@ public class TsiRegistries {
             = new RegistryBuilder<>(Keys.ANIMATION_LAYER_TYPE)
             .create();
 
-    public static final Registry<InteractionBehaviour> INTERACTION_BEHAVIOUR
-            = new RegistryBuilder<>(Keys.INTERACTION_BEHAVIOUR)
+    public static final Registry<InteractionType<?>> INTERACTION_TYPE
+            = new RegistryBuilder<>(Keys.INTERACTION_TYPE)
+            .sync(true)
             .create();
 
     public static final Registry<FriendshipBehaviour> FRIENDSHIP_BEHAVIOUR
@@ -33,13 +34,13 @@ public class TsiRegistries {
     @UtilityClass
     public static final class Keys {
         public static final ResourceKey<Registry<AnimationLayerType>> ANIMATION_LAYER_TYPE
-                = ResourceKey.createRegistryKey(ThatSkyInteractions.location("animation_layer_types"));
+                = ResourceKey.createRegistryKey(ThatSkyInteractions.location("animation_layer_type"));
 
-        public static final ResourceKey<Registry<InteractionBehaviour>> INTERACTION_BEHAVIOUR
-                = ResourceKey.createRegistryKey(ThatSkyInteractions.location("interaction_behaviours"));
+        public static final ResourceKey<Registry<InteractionType<?>>> INTERACTION_TYPE
+                = ResourceKey.createRegistryKey(ThatSkyInteractions.location("interaction_type"));
 
         public static final ResourceKey<Registry<FriendshipBehaviour>> FRIENDSHIP_BEHAVIOUR
-                = ResourceKey.createRegistryKey(ThatSkyInteractions.location("friendship_behaviours"));
+                = ResourceKey.createRegistryKey(ThatSkyInteractions.location("friendship_behaviour"));
 
     }
 
@@ -50,8 +51,7 @@ public class TsiRegistries {
         public static void onNewRegistry(final NewRegistryEvent event) {
 
             event.register(ANIMATION_LAYER_TYPE);
-
-            event.register(INTERACTION_BEHAVIOUR);
+            event.register(INTERACTION_TYPE);
             event.register(FRIENDSHIP_BEHAVIOUR);
 
         }

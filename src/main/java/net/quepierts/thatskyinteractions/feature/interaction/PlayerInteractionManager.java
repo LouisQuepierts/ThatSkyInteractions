@@ -7,10 +7,6 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
-import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
-import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
-import net.quepierts.thatskyinteractions.core.interaction.model.InteractionDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
@@ -18,11 +14,10 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
-public final class PlayerInteractionManager extends DataSyncManager<InteractionDefinition> {
+public final class PlayerInteractionManager extends DataSyncManager<InteractionSet> {
 
     public static final String AUTO = "auto";
 
@@ -33,13 +28,13 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
     private static final PlayerInteractionManager instance
             = new PlayerInteractionManager();
 
-    private Map<Identifier, InteractionDefinition> definitions = Map.of();
-    private Map<Identifier, PlayerInteraction> interactions = Map.of();
+    private Map<Identifier, InteractionSet> sets = Map.of();
+    private Map<Identifier, Interaction> interactions = Map.of();
 
     PlayerInteractionManager() {
         super(
-                PlayerInteractionParser.DEFINITION_CODEC,
-                PlayerInteractionParser.DEFINITION_STREAM_CODEC,
+                InteractionSet.CODEC,
+                InteractionSet.STREAM_CODEC,
                 FOLDER
         );
     }
@@ -51,7 +46,7 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
 
     @SubscribeEvent
     public static void onRegisterPlayerAnimation(final RegisterPlayerAnimationEvent event) {
-        final var definitions       = instance.definitions;
+        /*final var definitions       = instance.definitions;
 
         for (final var entry : definitions.entrySet()) {
             final var identifier    = entry.getKey();
@@ -73,161 +68,94 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionD
 
                 level ++;
             }
+        }*/
+
+        for (final var entry : instance.sets.entrySet()) {
+
+            final var key       = entry.getKey();
+            final var value     = entry.getValue();
+
+            final var leveled   = value.leveled();
+
+            var level           = leveled ? 1 : 0;
+            for (final var interaction : value.interactions()) {
+
+                interaction.onRegisterPlayerAnimation(
+                        event,
+                        key,
+                        level
+                );
+
+                level ++;
+
+            }
+
         }
     }
 
-    public @Nullable PlayerInteraction get(
+
+
+    public @Nullable Interaction get(
             @NonNull Identifier     identifier
     ) {
         return this.interactions.get(identifier);
     }
 
-    public @Nullable PlayerInteraction get(
+    public @Nullable Interaction get(
             @NonNull Identifier     identifier,
             int                     level
     ) {
-        final var definition    = this.definitions.get(identifier);
-
-        if (definition == null) {
-            return null;
-        }
-
-        final var hasLevel      = definition.levels() > 1;
-        final var id            = hasLevel ? identifier.withSuffix("_" + level) : identifier;
-        return this.interactions.get(id);
-    }
-
-    public @Nullable InteractionDefinition getDefinition(
-            @NonNull Identifier     identifier
-    ) {
-        return this.definitions.get(identifier);
-    }
-
-    private static void parseRequester(
-            RegisterPlayerAnimationEvent    event,
-            Identifier                      identifier,
-            String                          source
-    ) {
-
-        if (!AUTO.equals(source)) {
-
-            final var id            = Identifier.parse(source);
-            final var definition    = event.get(id);
-
-            if (definition == null) {
-                log.warn("Interaction source {} not found", id);
-            }
-
-            return;
-        }
-
-        final var namespace         = Optional.of("requester");
-        final var prefix            = identifier.toString();
-        final var sources           = Map.of(
-                "invite", new SourceDefinition(prefix + ".invite", 0.25f, 0.0f, namespace),
-                "waiting", new SourceDefinition(prefix + ".waiting", 0.0f, 0.0f, namespace),
-                "cancel", new SourceDefinition(prefix + ".cancel", 0.0f, 0.25f, namespace),
-                "main", new SourceDefinition(prefix + ".main", 0.0f, 0.0f, namespace),
-                "exit", new SourceDefinition(prefix + ".exit", 0.0f, 0.25f, namespace)
-        );
-
-        final var definition        = new PlayerAnimationDefinition(
-                PlayerInteractionSystem.ANIMATION_TYPE_REQUESTER,
-                "thatskyinteractions:modified",
-                sources,
-                PlayerMask.empty(),
-                false,
-                true,
-                false,
-                PlayerAnimationDefinition.DEFAULT_LAYER
-        );
-
-        final var id                = identifier.withSuffix(".requester");
-        event.register(id, definition);
-    }
-
-    private static void parseReceiver(
-            RegisterPlayerAnimationEvent    event,
-            Identifier                      identifier,
-            String                          source
-    ) {
-        if (!AUTO.equals(source)) {
-
-            final var id            = Identifier.parse(source);
-            final var definition    = event.get(id);
-
-            if (definition == null) {
-                log.warn("Interaction source {} not found", id);
-            }
-
-            return;
-        }
-
-        final var namespace         = Optional.of("receiver");
-        final var prefix            = identifier.toString();
-        final var sources           = Map.of(
-                "accept", new SourceDefinition(prefix + ".accept", 0.25f, 0.0f, namespace),
-                "main", new SourceDefinition(prefix + ".main", 0.0f, 0.0f, namespace),
-                "exit", new SourceDefinition(prefix + ".exit", 0.0f, 0.25f, namespace)
-        );
-
-        final var definition        = new PlayerAnimationDefinition(
-                PlayerInteractionSystem.ANIMATION_TYPE_RECEIVER,
-                "thatskyinteractions:modified",
-                sources,
-                PlayerMask.empty(),
-                false,
-                true,
-                false,
-                PlayerAnimationDefinition.DEFAULT_LAYER
-        );
-
-        final var id                = identifier.withSuffix(".receiver");
-        event.register(id, definition);
+        final var set               = this.sets.get(identifier);
+        return set != null ? set.interactions().get(level - 1) : null;
     }
 
     @Override
-    protected void apply(@NonNull final Map<Identifier, InteractionDefinition> preparations) {
-        final var builder   = ImmutableMap.<Identifier, InteractionDefinition>builderWithExpectedSize(preparations.size());
-        final var builder1  = ImmutableMap.<Identifier, PlayerInteraction>builderWithExpectedSize(preparations.size());
+    protected void apply(@NonNull final Map<Identifier, InteractionSet> preparations) {
+
+        final var builder0  = ImmutableMap.<Identifier, InteractionSet>builder();
+        final var builder1  = ImmutableMap.<Identifier, Interaction>builder();
+
         for (final var entry : preparations.entrySet()) {
             final var identifier    = entry.getKey();
-            final var definition    = entry.getValue();
-            final var hasLevel      = definition.levels() > 1;
+            final var set           = entry.getValue();
+            final var leveled       = set.leveled();
 
-            builder.put(identifier, definition);
+            builder0.put(identifier, set);
 
-            if (!hasLevel) {
+            if (!leveled) {
+                final var first = set.interactions().getFirst();
+                first.onGenerateData(
+                        identifier,
+                        0
+                );
                 builder1.put(
                         identifier,
-                        PlayerInteraction.parse(
-                                identifier,
-                                definition.interactions().getFirst(),
-                                1
-                        )
+                        first
                 );
             } else {
                 int level = 1;
-                for (final var interaction : definition.interactions()) {
+                for (final var interaction : set.interactions()) {
+                    interaction.onGenerateData(
+                            identifier,
+                            level
+                    );
+
                     final var id = identifier.withSuffix("_" + level);
                     builder1.put(
                             id,
-                            PlayerInteraction.parse(
-                                    id,
-                                    interaction,
-                                    level
-                            )
+                            interaction
                     );
 
                     level ++;
                 }
             }
         }
-        this.definitions    = builder.build();
+
+        this.sets           = builder0.build();
         this.interactions   = builder1.build();
 
-        log.info("Loaded {} interaction definitions", preparations.size());
-        log.info("Loaded {} interaction definitions with level", interactions.size());
+        log.info("Loaded {} interaction sets", this.sets.size());
+        log.info("Loaded {} interaction", this.interactions.size());
     }
 
     public Iterable<Identifier> identifiers() {

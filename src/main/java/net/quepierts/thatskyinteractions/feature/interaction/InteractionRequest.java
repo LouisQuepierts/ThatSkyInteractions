@@ -3,36 +3,28 @@ package net.quepierts.thatskyinteractions.feature.interaction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.Identifier;
 
 import java.util.UUID;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InteractionRequest {
 
-    private final UUID other;
-    private final Identifier type;
-    private final long expireTime;
+    private final   UUID other;
+    private final   Identifier type;
+    private final   long expireTime;
 
-    private State state = State.WAITING;
-
-    public InteractionRequest(
-            UUID other,
-            Identifier type,
-            long expireTime
-    ) {
-        this.other = other;
-        this.type = type;
-        this.expireTime = expireTime;
-    }
+    private State   state   = State.WAITING;
+    private int     timer   = 0;
 
     public static InteractionRequest send(
             UUID other,
             Identifier type,
             long tick
     ) {
-        return new InteractionRequest(other, type, tick + 20 * 60, State.WAITING);
+        return new InteractionRequest(other, type, tick + 20 * 60);
     }
 
     public static InteractionRequest receive(
@@ -40,7 +32,7 @@ public final class InteractionRequest {
             Identifier type,
             long tick
     ) {
-        return new InteractionRequest(other, type, tick + 20 * 60, State.WAITING);
+        return new InteractionRequest(other, type, tick + 20 * 60);
     }
 
     public boolean isExpired(long tick) {
