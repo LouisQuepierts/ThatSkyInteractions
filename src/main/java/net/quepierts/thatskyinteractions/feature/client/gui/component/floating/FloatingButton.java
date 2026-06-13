@@ -1,6 +1,8 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.floating;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
@@ -57,8 +59,12 @@ public class FloatingButton extends FloatingControl {
     public static final AttributeKey<BooleanTransition> ATTRIBUTE_FOCUS_TRANSITION
             = new AttributeKey<>("focus_transition");
 
+    public static final AttributeKey<BooleanTransition> ATTRIBUTE_CLICK_TRANSITION
+            = new AttributeKey<>("click_transition");
+
     private final BooleanTransition activeTransition;
     private final BooleanTransition focusTransition;
+    private final BooleanTransition clickTransition;
 
     private final InteractCallback  callback;
 
@@ -79,10 +85,12 @@ public class FloatingButton extends FloatingControl {
 
         this.activeTransition   = new BooleanTransition(Eases.CUBIC_OUT, 0.25f);
         this.focusTransition    = new BooleanTransition(Eases.CUBIC_OUT, 0.25f);
+        this.clickTransition    = new BooleanTransition(Eases.CUBIC_OUT, 1.0f);
         this.callback           = callback;
 
         this.setAttribute(ATTRIBUTE_ACTIVE_TRANSITION,  this.activeTransition);
         this.setAttribute(ATTRIBUTE_FOCUS_TRANSITION,   this.focusTransition);
+        this.setAttribute(ATTRIBUTE_CLICK_TRANSITION,   this.clickTransition);
     }
 
     @Override
@@ -113,6 +121,11 @@ public class FloatingButton extends FloatingControl {
 
     @Override
     public void onInteract() {
+        this.clickTransition.set(false);
+        this.clickTransition.update(tween(), true);
+
+        this.playDownSound(Minecraft.getInstance().getSoundManager());
+
         if (this.callback != null) {
             this.callback.run(this, this.tween());
         }

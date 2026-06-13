@@ -31,7 +31,7 @@ public final class FloatingButtonNode implements VisualNode {
                     graphics.blit(
                             RenderPipelines.GUI_TEXTURED,
                             identifier,
-                            -14, -28,
+                            -14, -14,
                             0, 0,
                             28, 28,
                             32, 32,
@@ -88,29 +88,44 @@ public final class FloatingButtonNode implements VisualNode {
             pose                    .scale(0.8f + active * 0.2f);
         }
 
+        colors                      .push();
+        colors                      .mul(active, 1.0f, 1.0f, 1.0f);
+
         final var focusTransition   = control.getAttribute(FloatingButton.ATTRIBUTE_FOCUS_TRANSITION);
         final var ft                = focusTransition.getValue();
         if (ft > 0.0f) {
-            final var alpha8        = (int) (ft * active * 255);
+            pose                    .pushMatrix();
+            pose                    .translate(0, -14);
+
+            final var click         = control.getAttribute(FloatingButton.ATTRIBUTE_CLICK_TRANSITION);
+            final var t             = Mth.abs(Mth.cos(2 * click.getValue() * Mth.PI));
+            pose                    .scale(t, 1.0f);
+
+            colors                  .push();
+            colors                  .mul(ft, 1.0f, 1.0f, 1.0f);
+
             SdfGraphics             .getInstance()
                                     .reset()
                                     .center(true)
 
-                                    .circle(0, -14, 16)
-                                    .color((alpha8 >> 1) << 24)
+                                    .circle(0, 0, 16)
+                                    .color(colors.argb(0x80, 0x00, 0x00, 0x00))
                                     .fill()
                                     .draw(graphics)
 
-                                    .circle(0, -14, 15)
+                                    .circle(0, 0, 15)
                                     .stroke(1.0f)
-                                    .color(0x00a0a0a0 | (alpha8 << 24))
+                                    .color(colors.argb(0xff, 0xa0, 0xa0, 0x80))
                                     .draw(graphics);
 
             this.renderOp           .render(
                                             graphics,
-                    colors, 0, 0,
+                                            colors, 0, 0,
                                             0, 0
-            );
+                                    );
+
+            colors                  .pop();
+            pose                    .popMatrix();
 
         }
 
@@ -124,10 +139,10 @@ public final class FloatingButtonNode implements VisualNode {
                                             8, 8,
                                             8, 8,
                                             8, 8,
-                                            transiting ?
-                                                    0x00FFFFFF | ((int) (active * 255) << 24) :
-                                                    0xFFFFFFFF
+                                            colors.argb()
                                     );
+
+        colors                      .pop();
     }
 
 }
