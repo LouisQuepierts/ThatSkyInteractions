@@ -11,13 +11,18 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
+import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.registry.ExpressionTypes;
+import net.quepierts.thatskyinteractions.feature.utils.TsiInterpolators;
+import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
@@ -54,6 +59,22 @@ public final class AnimationExpression implements Expression {
     @Override
     public void onPerform(@NonNull ServerPlayer player) {
         PlayerAnimationSystem.play(player, this.animationId);
+    }
+
+    @Override
+    public void onClientPerform(@NonNull final Player player) {
+
+        final var difference = Mth.degreesDifference(player.yBodyRot, player.getYHeadRot());
+
+        PhysicalTweenAttachment.getAttachment(player.level()).tween().to(
+                player::setYBodyRot,
+                player.yBodyRot,
+                player.getYHeadRot(),
+                Mth.abs(difference) * 0.01f,
+                TsiInterpolators.DEGREE,
+                Eases.CUBIC_OUT
+        );
+
     }
 
     @Override

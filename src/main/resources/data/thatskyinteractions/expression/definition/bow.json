@@ -1,0 +1,13 @@
+{
+  "icon": "thatskyinteractions:textures/icon/expression/bow.png",
+  "expressions": [
+    {
+      "type": "thatskyinteractions:animation",
+      "animation": "thatskyinteractions:bow_1"
+    },
+    {
+      "type": "thatskyinteractions:animation",
+      "animation": "thatskyinteractions:bow_2"
+    }
+  ]
+}

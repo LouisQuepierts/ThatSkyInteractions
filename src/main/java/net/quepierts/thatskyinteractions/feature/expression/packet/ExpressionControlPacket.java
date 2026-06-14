@@ -10,7 +10,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.expression.Expression;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionAttachment;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionManager;
 import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
@@ -59,9 +61,15 @@ public record ExpressionControlPacket(
         final var attachment = PlayerExpressionAttachment.getAttachment(target);
 
         switch (this.operation()) {
-            case PERFORM:
-                attachment.start(this.identifier(), target.level().getGameTime());
+            case PERFORM: {
+                final var identifier = this.identifier();
+                attachment.start(identifier, target.level().getGameTime());
+                final var expression = PlayerExpressionManager.getInstance().get(identifier);
+                if (expression != null) {
+                    expression.onClientPerform(player);
+                }
                 break;
+            }
             case CANCEL:
             case FINISHED:
                 attachment.clear();

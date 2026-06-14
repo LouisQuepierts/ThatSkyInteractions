@@ -1,0 +1,10 @@
+{
+  "sources": {
+    "main": {
+      "source": "thatskyinteractions:bow.lv2",
+      "fadeIn": 0.25,
+      "fadeOut": 0.25
+    }
+  },
+  "override": "thatskyinteractions:modified"
+}

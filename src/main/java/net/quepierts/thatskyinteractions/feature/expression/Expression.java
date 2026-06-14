@@ -6,6 +6,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jspecify.annotations.NonNull;
@@ -30,6 +31,8 @@ public interface Expression {
     default void onFinished(@NonNull ServerPlayer player) { }
 
     default void onInterrupted(@NonNull ServerPlayer player) { }
+
+    default void onClientPerform(@NonNull Player player) { }
 
     default void onRegisterPlayerAnimation(
             @NonNull RegisterPlayerAnimationEvent event,

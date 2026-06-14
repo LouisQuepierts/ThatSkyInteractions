@@ -17,11 +17,12 @@ public class PlayerExpressionSystem {
     }
 
     public static void perform(
-            @NonNull ServerPlayer player,
-            @NonNull Identifier expressionId
+            final @NonNull  ServerPlayer    player,
+            final @NonNull  Identifier      expressionId,
+            final           int             level
     ) {
-        final var manager = PlayerExpressionManager.getInstance();
-        final var expression = manager.get(expressionId);
+        final var manager       = PlayerExpressionManager.getInstance();
+        final var expression    = manager.get(expressionId, level);
 
         if (expression == null) {
             return;
@@ -33,7 +34,9 @@ public class PlayerExpressionSystem {
             cancel(player);
         }
 
-        attachment.start(expressionId, player.level().getGameTime());
+        if (!expression.immediate()) {
+            attachment.start(expressionId, player.level().getGameTime());
+        }
         expression.onPerform(player);
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(

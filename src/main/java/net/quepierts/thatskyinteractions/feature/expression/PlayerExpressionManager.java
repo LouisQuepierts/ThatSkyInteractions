@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.expression;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,8 +27,9 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
     @Getter
     private static final PlayerExpressionManager instance = new PlayerExpressionManager();
 
-    private Map<Identifier, ExpressionSet> sets = Map.of();
-    private Map<Identifier, Expression> expressions = Map.of();
+    private Map<Identifier, ExpressionSet>  sets        = Map.of();
+    private List<Identifier>                byOrdinal   = List.of();
+    private Map<Identifier, Expression>     expressions = Map.of();
 
     PlayerExpressionManager() {
         super(
@@ -65,10 +68,15 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
         return set != null ? set.expressions().get(level - 1) : null;
     }
 
+    public @Nullable ExpressionSet getSet(@NonNull Identifier identifier) {
+        return this.sets.get(identifier);
+    }
+
     @Override
     protected void apply(@NonNull Map<Identifier, ExpressionSet> preparations) {
         final var builder0 = ImmutableMap.<Identifier, ExpressionSet>builder();
         final var builder1 = ImmutableMap.<Identifier, Expression>builder();
+        final var builder2 = ImmutableList.<Identifier>builder();
 
         for (final var entry : preparations.entrySet()) {
             final var identifier = entry.getKey();
@@ -76,6 +84,7 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
             final var leveled = set.leveled();
 
             builder0.put(identifier, set);
+            builder2.add(identifier);
 
             if (!leveled) {
                 final var first = set.expressions().getFirst();
@@ -93,14 +102,15 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
         }
 
         this.sets = builder0.build();
+        this.byOrdinal = builder2.build();
         this.expressions = builder1.build();
 
         log.info("Loaded {} expression sets", this.sets.size());
         log.info("Loaded {} expressions", this.expressions.size());
     }
 
-    public Collection<ExpressionSet> sets() {
-        return this.sets.values();
+    public List<Identifier> ordinal() {
+        return this.byOrdinal;
     }
 
     public Collection<Expression> expressions() {

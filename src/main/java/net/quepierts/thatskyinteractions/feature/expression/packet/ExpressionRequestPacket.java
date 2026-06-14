@@ -18,7 +18,8 @@ import java.util.Optional;
 
 public record ExpressionRequestPacket(
         Operation               operation,
-        Optional<Identifier>    identifier
+        Optional<Identifier>    identifier,
+        int                     level
 ) implements IServerboundPacket {
 
     public static final Type<ExpressionRequestPacket> TYPE
@@ -30,15 +31,20 @@ public record ExpressionRequestPacket(
                     ExpressionRequestPacket::operation,
                     ByteBufCodecs.optional(Identifier.STREAM_CODEC),
                     ExpressionRequestPacket::identifier,
+                    ByteBufCodecs.VAR_INT,
+                    ExpressionRequestPacket::level,
                     ExpressionRequestPacket::new
             );
 
-    public static ExpressionRequestPacket perform(@NonNull Identifier id) {
-        return new ExpressionRequestPacket(Operation.PERFORM, Optional.of(id));
+    public static ExpressionRequestPacket perform(
+            final @NonNull  Identifier  id,
+            final           int         level
+    ) {
+        return new ExpressionRequestPacket(Operation.PERFORM, Optional.of(id), level);
     }
 
     public static ExpressionRequestPacket cancel() {
-        return new ExpressionRequestPacket(Operation.CANCEL, Optional.empty());
+        return new ExpressionRequestPacket(Operation.CANCEL, Optional.empty(), 0);
     }
 
     @Override
@@ -47,7 +53,7 @@ public record ExpressionRequestPacket(
 
         switch (this.operation()) {
             case PERFORM:
-                PlayerExpressionSystem.perform(sender, this.identifier().orElseThrow());
+                PlayerExpressionSystem.perform(sender, this.identifier().orElseThrow(), this.level());
                 break;
             case CANCEL:
                 PlayerExpressionSystem.cancel(sender);
