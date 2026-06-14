@@ -43,9 +43,6 @@ public final class FloatingControlLayer implements GuiLayer {
     public void remove(
             final @NonNull FloatingTarget target
     ) {
-        if (true) {
-            return;
-        }
         this.pending.offer(() -> {
             final var removed = this.controls.remove(target);
             if (removed != null) {
