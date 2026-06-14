@@ -89,6 +89,14 @@ public class Button extends Control {
     }
 
     @Override
+    protected void onMouseExited() {
+        super.onMouseExited();
+
+        this.pressTransition.update(this.tween(), false);
+        this.pressed = false;
+    }
+
+    @Override
     public void playDownSound(final @NonNull SoundManager soundManager) { }
 
     public void setClickDuration(final float duration) {
