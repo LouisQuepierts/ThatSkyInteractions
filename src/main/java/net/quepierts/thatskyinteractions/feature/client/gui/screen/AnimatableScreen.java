@@ -81,6 +81,12 @@ public abstract class AnimatableScreen<Model, Controller extends ScreenControlle
         if (this.handler != null) {
             this.handler.tick(delta * 0.05f);
         }
+
+        this.controller.onTick(delta);
+
+        if (this.root != null) {
+            this.root.onTick(delta);
+        }
     }
 
     @Override

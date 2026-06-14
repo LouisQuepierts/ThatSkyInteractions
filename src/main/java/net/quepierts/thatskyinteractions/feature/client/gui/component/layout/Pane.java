@@ -9,12 +9,10 @@ import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
-import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -170,6 +168,13 @@ public abstract class Pane
             }
         }
         return false;
+    }
+
+    @Override
+    public void onTick(final float delta) {
+        for (final var child : this.children) {
+            child.onTick(delta);
+        }
     }
 
     protected MouseButtonEvent remapMouseButtonEvent(final MouseButtonEvent event) {

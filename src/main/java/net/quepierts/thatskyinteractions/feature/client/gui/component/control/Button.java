@@ -40,6 +40,9 @@ public class Button extends Control {
     @Setter
     private Runnable onClick;
 
+    @Getter
+    private boolean pressed;
+
     public Button(
             final TweenScope    tween,
             final int           x,
@@ -60,6 +63,7 @@ public class Button extends Control {
             final boolean                   doubleClick
     ) {
         this.pressTransition.update(this.tween(), true);
+        this.pressed = true;
 
         final var trigger = this.activationTrigger.get();
 
@@ -74,6 +78,7 @@ public class Button extends Control {
     @Override
     public void onRelease(final @NonNull MouseButtonEvent event) {
         this.pressTransition.update(this.tween(), false);
+        this.pressed = false;
 
         final var trigger = this.activationTrigger.get();
 

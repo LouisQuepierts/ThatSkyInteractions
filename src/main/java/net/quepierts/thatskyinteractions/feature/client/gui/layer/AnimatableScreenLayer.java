@@ -50,6 +50,7 @@ public final class AnimatableScreenLayer {
                 continue;
             }
 
+            screen.tick();
             screen.extractAnimatableRenderState(
                     graphics,
                     colors,

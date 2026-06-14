@@ -1,16 +1,13 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.screen;
 
 import net.minecraft.network.chat.Component;
-import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.friendship.FriendshipTreeComponentFactory;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.friendship.FriendshipTreeLayout;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.friendship.FriendshipTreeComponentFactory;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.friendship.FriendshipTreeLayout;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.ScrollDirection;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VScrollPane;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
-import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeManager;
-import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
 
 public final class FriendshipScreen extends SlideScreen<FriendshipTreeData, FriendshipScreenController> {

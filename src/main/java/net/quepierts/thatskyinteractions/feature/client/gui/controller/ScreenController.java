@@ -9,4 +9,6 @@ public abstract class ScreenController<Model> {
 
     protected final Model model;
 
+    public void onTick(float delta) { }
+
 }
