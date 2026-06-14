@@ -99,6 +99,10 @@ public class Control extends AbstractWidget implements IAttributeHolder {
         }
     }
 
+    public void onTick(final float delta) {
+
+    }
+
     protected void extractControlRenderState(
             final @NonNull GuiGraphicsExtractor graphics,
             final @NonNull ColorStack           colors,

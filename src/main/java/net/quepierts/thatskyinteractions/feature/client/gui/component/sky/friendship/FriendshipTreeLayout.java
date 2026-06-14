@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.client.gui.component.friendship;
+package net.quepierts.thatskyinteractions.feature.client.gui.component.sky.friendship;
 
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;

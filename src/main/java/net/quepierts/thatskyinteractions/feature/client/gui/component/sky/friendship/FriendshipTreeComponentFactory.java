@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.client.gui.component.friendship;
+package net.quepierts.thatskyinteractions.feature.client.gui.component.sky.friendship;
 
 import com.google.common.collect.ImmutableList;
 import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;

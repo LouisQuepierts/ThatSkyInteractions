@@ -30,11 +30,12 @@ public class TsiButton extends Button {
             final Component message
     ) {
         super(tween, x, y, width, height, message);
+        this.setAttribute(ATTRIBUTE_HOVER, hoverTransition);
     }
 
     @Override
     protected void onMouseEntered() {
         final var manager = Minecraft.getInstance().getSoundManager();
-        manager.play(SimpleSoundInstance.forUI(SoundEvents.ITEM_PICKUP, 0.5f, 0.01f));
+        manager.play(SimpleSoundInstance.forUI(SoundEvents.ITEM_PICKUP, 0.5f, 0.05f));
     }
 }
