@@ -9,6 +9,7 @@ import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttach
 import net.quepierts.thatskyinteractions.feature.control.PlayerNavigator;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingAttachment;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 
 @UtilityClass
@@ -47,6 +48,13 @@ public class AttachmentTypes {
             .serialize(PlayerFriendshipAttachment.SERIALIZER)
             .sync(PlayerFriendshipAttachment.STREAM_CODEC)
             .copyOnDeath()
+            .register();
+
+    public static final AttachmentEntry<PlayerExpressionAttachment> PLAYER_EXPRESSION
+            = ThatSkyInteractions.REGISTRUM.attachment(
+                    "player/expression",
+                    PlayerExpressionAttachment::new
+            )
             .register();
 
     public static final AttachmentEntry<PlayerHandholdingAttachment> PLAYER_HANDHOLDING

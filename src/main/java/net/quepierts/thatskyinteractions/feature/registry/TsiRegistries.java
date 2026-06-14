@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.AnimationLayerType;
+import net.quepierts.thatskyinteractions.feature.expression.ExpressionType;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviour;
 import net.quepierts.thatskyinteractions.feature.interaction.InteractionType;
 
@@ -22,6 +23,11 @@ public class TsiRegistries {
 
     public static final Registry<InteractionType<?>> INTERACTION_TYPE
             = new RegistryBuilder<>(Keys.INTERACTION_TYPE)
+            .sync(true)
+            .create();
+
+    public static final Registry<ExpressionType<?>> EXPRESSION_TYPE
+            = new RegistryBuilder<>(Keys.EXPRESSION_TYPE)
             .sync(true)
             .create();
 
@@ -39,6 +45,9 @@ public class TsiRegistries {
         public static final ResourceKey<Registry<InteractionType<?>>> INTERACTION_TYPE
                 = ResourceKey.createRegistryKey(ThatSkyInteractions.location("interaction_type"));
 
+        public static final ResourceKey<Registry<ExpressionType<?>>> EXPRESSION_TYPE
+                = ResourceKey.createRegistryKey(ThatSkyInteractions.location("expression_type"));
+
         public static final ResourceKey<Registry<FriendshipBehaviour>> FRIENDSHIP_BEHAVIOUR
                 = ResourceKey.createRegistryKey(ThatSkyInteractions.location("friendship_behaviour"));
 
@@ -52,6 +61,7 @@ public class TsiRegistries {
 
             event.register(ANIMATION_LAYER_TYPE);
             event.register(INTERACTION_TYPE);
+            event.register(EXPRESSION_TYPE);
             event.register(FRIENDSHIP_BEHAVIOUR);
 
         }

@@ -1,0 +1,9 @@
+{
+  "icon": "thatskyinteractions:textures/icon/expression/waving.png",
+  "expressions": [
+    {
+      "type": "thatskyinteractions:animation",
+      "animation": "thatskyinteractions:wave"
+    }
+  ]
+}
