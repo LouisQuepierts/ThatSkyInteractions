@@ -12,6 +12,7 @@ import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 
 @FunctionalInterface
 public interface VisualNode {
@@ -20,6 +21,14 @@ public interface VisualNode {
 
     static VisualNode combine(@NonNull VisualNode... nodes) {
 
+        return combine(Combine::of, nodes);
+
+    }
+
+    static VisualNode combine(
+            final @NonNull Function<VisualNode[], VisualNode>   factory,
+            final @NonNull VisualNode...                        nodes
+    ) {
         final var length = nodes.length;
         if (length == 0) {
             return EMPTY;
@@ -40,9 +49,8 @@ public interface VisualNode {
         } else if (size == 1) {
             return nonempty.getFirst();
         } else {
-            return Combine.of(nonempty.toArray(VisualNode[]::new));
+            return factory.apply(nonempty.toArray(VisualNode[]::new));
         }
-
     }
 
     static VisualNode flatten(@NonNull VisualNode node) {
