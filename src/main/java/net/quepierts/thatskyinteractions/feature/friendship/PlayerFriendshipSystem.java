@@ -8,8 +8,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
-import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipControlPacket;
 import net.quepierts.thatskyinteractions.feature.gui.packet.PlayerFriendshipUiPacket;
@@ -34,7 +32,7 @@ public class PlayerFriendshipSystem {
     ) {
         final var data      = PlayerFriendshipAttachment.union(requester, receiver);
 
-        if (!data.isUnlockable(node)) {
+        if (PlayerFriendshipSystem.isFriendshipConditional() && !data.isUnlockable(node)) {
             return;
         }
 
@@ -97,7 +95,7 @@ public class PlayerFriendshipSystem {
 
         final var   data = PlayerFriendshipAttachment.union(requester, receiver);
 
-        if (!data.unlock(node)) {
+        if (PlayerFriendshipSystem.isFriendshipConditional() && !data.unlock(node)) {
             return false;
         }
 
@@ -210,7 +208,8 @@ public class PlayerFriendshipSystem {
     ) {
 
         final var data      = PlayerFriendshipAttachment.union(requester, receiver);
-        if (!data.isUnlocked(node)) {
+        final var level     = requester.level();
+        if (PlayerFriendshipSystem.isFriendshipConditional() && !data.isUnlocked(node)) {
             return false;
         }
 
@@ -266,4 +265,8 @@ public class PlayerFriendshipSystem {
         );
 
     }*/
+
+    public static boolean isFriendshipConditional() {
+        return ThatSkyInteractions.SERVER_CONFIG.enableConditionalFriendship;
+    }
 }

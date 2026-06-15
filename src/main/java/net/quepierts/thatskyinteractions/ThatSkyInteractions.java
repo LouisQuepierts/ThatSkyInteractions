@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions;
 
+import dev.anvilcraft.lib.v2.config.ConfigManager;
 import dev.anvilcraft.lib.v2.registrum.Registrum;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationFactory;
+import net.quepierts.thatskyinteractions.feature.config.TsiServerConfig;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
 import net.quepierts.thatskyinteractions.feature.registry.*;
 
@@ -16,8 +18,11 @@ import net.quepierts.thatskyinteractions.feature.registry.*;
 @Getter
 @Mod(ThatSkyInteractions.MODID)
 public class ThatSkyInteractions {
-    public static final String MODID = "thatskyinteractions";
-    public static final Registrum REGISTRUM = Registrum.create(MODID);
+    public static final String          MODID           = "thatskyinteractions";
+    public static final Registrum       REGISTRUM       = Registrum.create(MODID);
+
+    public static final TsiServerConfig SERVER_CONFIG
+            = ConfigManager.register(ThatSkyInteractions.MODID, TsiServerConfig::new);
 
     public ThatSkyInteractions(IEventBus modBus) {
         AnimationLayerTypes.register();
@@ -26,8 +31,6 @@ public class ThatSkyInteractions {
         FriendshipBehaviours.register();
 
         AttachmentTypes.register();
-
-        TsiGameRules.REGISTER.register(modBus);
         modBus.register(this);
     }
 
