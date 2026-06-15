@@ -1,6 +1,5 @@
 package net.quepierts.thatskyinteractions.core.transition;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
@@ -19,7 +18,6 @@ public final class BooleanTransition {
     private final FloatProperty     duration;
 
     private       TweenHandle       handle;
-    @Getter
     private       boolean           target;
 
     public BooleanTransition(
@@ -68,6 +66,10 @@ public final class BooleanTransition {
 
     public float getValue() {
         return value.get();
+    }
+
+    public boolean getTarget() {
+        return target;
     }
 
     public boolean isAnimating() {
