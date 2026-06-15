@@ -17,7 +17,7 @@ import org.jspecify.annotations.NonNull;
 
 public interface FriendshipBehaviour {
 
-    @NonNull Identifier DEFAULT_ICON    = ThatSkyInteractions.location("textures/icons/none.png");
+    @NonNull Identifier DEFAULT_ICON    = ThatSkyInteractions.location("none");
 
     @NonNull AtlasSprite SPRITE_CANDLE  = new AtlasSprite(
                                             AtlasIds.ITEMS,

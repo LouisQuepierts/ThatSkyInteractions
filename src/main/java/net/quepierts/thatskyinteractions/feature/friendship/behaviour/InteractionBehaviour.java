@@ -6,11 +6,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.model.Currency;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import net.quepierts.thatskyinteractions.feature.gui.packet.PlayerInteractionUiPacket;
+import net.quepierts.thatskyinteractions.feature.interaction.Interaction;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionManager;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import org.jspecify.annotations.NonNull;
 
@@ -22,6 +25,7 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
 
     public static final InteractionBehaviour    INSTANCE    = new InteractionBehaviour();
     public static final String                  TYPE        = "interaction";
+    public static final Identifier              DEFAULT     = ThatSkyInteractions.location("none");
 
     private final Map<String, Identifier>       cache       = new HashMap<>();
     private final Map<String, Identifier>       icons       = new HashMap<>();
@@ -62,8 +66,11 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
     ) {
         final var metadata      = node.getMetadata();
         final var interaction   = metadata.get("interaction");
+        final var identifier    = this.cache.computeIfAbsent(interaction, Identifier::parse);
 
-        return this.icon(interaction);
+        final var set           = PlayerInteractionManager.getInstance().getSet(identifier);
+
+        return set == null ? DEFAULT : set.icon();
     }
 
     @Override
@@ -95,7 +102,7 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
             final var id        = this.cache.computeIfAbsent(str, Identifier::parse);
             return Identifier.fromNamespaceAndPath(
                     id.getNamespace(),
-                    "textures/icon/interaction/" + id.getPath() + ".png"
+                    "interaction/" + id.getPath() + ".png"
             );
         });
     }

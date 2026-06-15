@@ -13,7 +13,7 @@ public final class LockBehaviour implements FriendshipBehaviour {
 
     public static final LockBehaviour   INSTANCE    = new LockBehaviour();
     public static final String          TYPE        = "lock";
-    public static final Identifier      ICON        = ThatSkyInteractions.location("textures/gui/lock.png");
+    public static final Identifier      ICON        = ThatSkyInteractions.location("lock");
 
     @Override
     public void execute(

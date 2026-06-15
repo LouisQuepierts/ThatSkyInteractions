@@ -1,5 +1,5 @@
 {
-  "icon": "thatskyinteractions:textures/icon/interaction/pat_head.png",
+  "icon": "thatskyinteractions:interaction/pat_head",
   "interactions": [
     {
       "type": "thatskyinteractions:animation",

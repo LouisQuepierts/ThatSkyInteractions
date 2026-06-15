@@ -1,5 +1,5 @@
 {
-  "icon": "thatskyinteractions:textures/icon/interaction/bear_hug.png",
+  "icon": "thatskyinteractions:interaction/bear_hug",
   "interactions": [
     {
       "type": "thatskyinteractions:animation",

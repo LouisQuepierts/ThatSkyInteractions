@@ -15,7 +15,7 @@ public final class BlockBehaviour implements FriendshipBehaviour {
 
     public static final BlockBehaviour  INSTANCE    = new BlockBehaviour();
     public static final String          TYPE        = "block";
-    public static final Identifier      ICON        = ThatSkyInteractions.location("textures/gui/block.png");
+    public static final Identifier      ICON        = ThatSkyInteractions.location("block");
     
     @Override
     public void execute(

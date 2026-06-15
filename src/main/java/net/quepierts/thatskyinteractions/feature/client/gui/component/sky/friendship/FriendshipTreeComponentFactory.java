@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -23,10 +22,9 @@ import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.TsiButton;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.HoverNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonRenderOps;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.SpinButtonNode;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonVisualNodes;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviour;
@@ -45,7 +43,7 @@ import java.util.Collection;
 @UtilityClass
 public class FriendshipTreeComponentFactory {
 
-    public static final Identifier ICON_LOCKED      = ThatSkyInteractions.location("textures/gui/locked.png");
+    public static final Identifier ICON_LOCKED      = ThatSkyInteractions.location("locked");
 
     public static final int COLOR_LOCKED            = 0xff52677a;
     public static final int COLOR_UNLOCKABLE        = 0xffc8f9fd;
@@ -211,30 +209,26 @@ public class FriendshipTreeComponentFactory {
         final var icon          = extractIcon(node, state);
         final var mColor        = STATED_COLORS[state.ordinal()];
 
-        final var content       = SpinButtonNode.of((graphics, colors, _, _, width, height) -> {
-            graphics.original().blit(
-                    RenderPipelines.GUI_TEXTURED,
+        final var content       = ButtonVisualNodes.spin((graphics, colors, _, _, width, height) -> {
+            graphics.blitIcon(
                     icon,
                     -14,
                     -14,
-                    0,
-                    0,
                     (int) width - 4,
                     (int) height - 4,
-                    32,
-                    32,
-                    32,
-                    32,
                     colors.argb(mColor)
             );
         });
 
-        final var hover     = HoverNode.of(ButtonRenderOps.HOVER);
+        final var hover     = ButtonVisualNodes.hover(ButtonRenderOps.HOVER);
         final var price     = state == NodeState.UNLOCKABLE ?
                             Price.of(node.getCost()) :
                             VisualNode.EMPTY;
 
-        return VisualNode.combine(content, hover, price);
+        return VisualNode.combine(
+                ButtonVisualNodes::base,
+                content, hover, price
+        );
     }
 
     public static VisualNode vLine(

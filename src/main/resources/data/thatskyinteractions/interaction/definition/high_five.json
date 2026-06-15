@@ -1,5 +1,5 @@
 {
-  "icon": "thatskyinteractions:textures/icon/interaction/high_five.png",
+  "icon": "thatskyinteractions:interaction/high_five",
   "interactions": [
     {
       "type": "thatskyinteractions:animation",

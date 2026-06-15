@@ -17,8 +17,8 @@ public final class FriendBehaviour implements FriendshipBehaviour {
     public static final FriendBehaviour INSTANCE    = new FriendBehaviour();
     public static final String          TYPE        = "friend";
 
-    public static final Identifier      BE_FRIEND   = ThatSkyInteractions.location("textures/gui/be_friend.png");
-    public static final Identifier      NICKNAME    = ThatSkyInteractions.location("textures/gui/nickname.png");
+    public static final Identifier      BE_FRIEND   = ThatSkyInteractions.location("be_friend");
+    public static final Identifier      NICKNAME    = ThatSkyInteractions.location("nickname");
 
     @Override
     public void execute(

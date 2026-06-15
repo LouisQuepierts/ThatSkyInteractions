@@ -93,17 +93,21 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionS
         }
     }
 
-
+    public @Nullable InteractionSet getSet(
+            final @NonNull Identifier   identifier
+    ) {
+        return this.sets.get(identifier);
+    }
 
     public @Nullable Interaction get(
-            @NonNull Identifier     identifier
+            final @NonNull Identifier   identifier
     ) {
         return this.interactions.get(identifier);
     }
 
     public @Nullable Interaction get(
-            @NonNull Identifier     identifier,
-            int                     level
+            final @NonNull Identifier   identifier,
+            final          int          level
     ) {
         final var set               = this.sets.get(identifier);
         return set != null ? set.interactions().get(level - 1) : null;

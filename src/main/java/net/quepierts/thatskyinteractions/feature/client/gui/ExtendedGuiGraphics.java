@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.client.gui;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.feature.client.reference.TsiAtlases;
@@ -28,19 +29,38 @@ public final class ExtendedGuiGraphics {
             final int width,
             final int height
     ) {
+
         final var sprite = this.iconAtlas.getSprite(identifier);
 
-        this.graphics.blit(
-                this.iconAtlas.getTextureView(),
-                this.iconAtlas.getSampler(),
+        this.graphics.blitSprite(
+                RenderPipelines.GUI_TEXTURED,
+                sprite,
                 x,
                 y,
-                x + width,
-                y + height,
-                sprite.getU0(),
-                sprite.getV0(),
-                sprite.getU1(),
-                sprite.getV1()
+                width,
+                height
+        );
+    }
+
+    public void blitIcon(
+            final Identifier identifier,
+            final int x,
+            final int y,
+            final int width,
+            final int height,
+            final int color
+    ) {
+
+        final var sprite = this.iconAtlas.getSprite(identifier);
+
+        this.graphics.blitSprite(
+                RenderPipelines.GUI_TEXTURED,
+                sprite,
+                x,
+                y,
+                width,
+                height,
+                color
         );
     }
 
