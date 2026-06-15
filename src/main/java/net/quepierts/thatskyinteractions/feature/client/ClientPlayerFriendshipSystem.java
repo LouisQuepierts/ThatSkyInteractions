@@ -16,7 +16,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.FriendshipScreen;
-import net.quepierts.thatskyinteractions.feature.client.input.TsiKeys;
+import net.quepierts.thatskyinteractions.feature.client.reference.TsiKeys;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipRequestPacket;

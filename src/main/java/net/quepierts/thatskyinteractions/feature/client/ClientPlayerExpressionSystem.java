@@ -11,7 +11,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.ExpressionsScreen;
-import net.quepierts.thatskyinteractions.feature.client.input.TsiKeys;
+import net.quepierts.thatskyinteractions.feature.client.reference.TsiKeys;
 import net.quepierts.thatskyinteractions.feature.expression.packet.ExpressionRequestPacket;
 import org.jspecify.annotations.NonNull;
 

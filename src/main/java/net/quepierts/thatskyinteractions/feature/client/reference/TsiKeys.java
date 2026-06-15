@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.client.input;
+package net.quepierts.thatskyinteractions.feature.client.reference;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import lombok.experimental.UtilityClass;

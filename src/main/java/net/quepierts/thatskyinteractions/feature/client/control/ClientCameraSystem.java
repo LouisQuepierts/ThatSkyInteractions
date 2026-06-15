@@ -17,7 +17,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.control.event.ComputeCameraPositionEvent;
 import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerMovedEvent;
 import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerTurnEvent;
-import net.quepierts.thatskyinteractions.feature.client.input.TsiKeys;
+import net.quepierts.thatskyinteractions.feature.client.reference.TsiKeys;
 import net.quepierts.thatskyinteractions.feature.client.render.GameRendererUpdateEvent;
 import org.lwjgl.glfw.GLFW;
 
