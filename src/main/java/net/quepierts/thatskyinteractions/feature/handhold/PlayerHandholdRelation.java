@@ -15,10 +15,10 @@ public class PlayerHandholdRelation {
     private Player          right;
 
     @Getter
-    private boolean         holding;
+    private boolean         holding     = false;
 
-    private int             occupied;
-    private Role            role;
+    private int             occupied    = 0;
+    private Role            role        = Role.NONE;
 
     public PlayerHoldingHand lead(
             final @NonNull Player   follower
