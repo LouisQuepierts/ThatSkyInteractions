@@ -29,8 +29,8 @@ public final class ClientFriendshipUiHandlerImpl extends ClientFriendshipUiHandl
                         WorldPositionSupplier.entity(requester, 2.0f),
                         (_, _)
                                 -> ClientPlayerFriendshipSystem.acceptUnlock(requester)
-                ).withVisualNode(FloatingButtonNode.texture(
-                        ThatSkyInteractions.location("textures/gui/be_friend.png")
+                ).withVisualNode(FloatingButtonNode.icon(
+                        ThatSkyInteractions.location("be_friend")
                 ))
         );
 

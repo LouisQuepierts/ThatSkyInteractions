@@ -43,6 +43,21 @@ public final class FloatingButtonNode implements VisualNode {
         );
     }
 
+    public static FloatingButtonNode icon(
+            final @NonNull Identifier identifier
+    ) {
+        return new FloatingButtonNode(
+                (graphics, colors, _, _, _, _) -> {
+                    graphics.blitIcon(
+                            identifier,
+                            -14, -14,
+                            28, 28,
+                            colors.argb()
+                    );
+                }
+        );
+    }
+
     public static FloatingButtonNode sprite(
             final @NonNull Identifier identifier
     ) {

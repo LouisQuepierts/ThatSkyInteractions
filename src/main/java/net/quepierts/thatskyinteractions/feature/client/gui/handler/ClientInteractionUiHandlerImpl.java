@@ -31,7 +31,7 @@ public final class ClientInteractionUiHandlerImpl extends ClientInteractionUiHan
                         WorldPositionSupplier.entity(requester, 2.0f),
                         (_, _)
                                 -> ClientPlayerInteractionSystem.accept(requester)
-                ).withVisualNode(FloatingButtonNode.texture(icon))
+                ).withVisualNode(FloatingButtonNode.icon(icon))
         );
 
     }

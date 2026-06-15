@@ -52,7 +52,7 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
                 receiver,
                 PlayerInteractionUiPacket.invite(
                         requester,
-                        this.icon(interaction)
+                        this.icon(identifier)
                 )
         );
 
@@ -68,9 +68,7 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
         final var interaction   = metadata.get("interaction");
         final var identifier    = this.cache.computeIfAbsent(interaction, Identifier::parse);
 
-        final var set           = PlayerInteractionManager.getInstance().getSet(identifier);
-
-        return set == null ? DEFAULT : set.icon();
+        return this.icon(identifier);
     }
 
     @Override
@@ -95,6 +93,11 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
                         .withStyle(Styles.BOLD)
         ).withColor(FriendshipBehaviour.NORMAL_TEXT_COLOR);
 
+    }
+
+    private Identifier icon(final @NonNull Identifier identifier) {
+        final var set           = PlayerInteractionManager.getInstance().getSet(identifier);
+        return set == null ? DEFAULT : set.icon();
     }
 
     private Identifier icon(String interaction) {
