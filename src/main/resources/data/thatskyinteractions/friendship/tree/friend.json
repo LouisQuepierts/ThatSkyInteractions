@@ -11,11 +11,8 @@
       "type": "thatskyinteractions:block"
     },
     "holding_hands": {
-      "type": "thatskyinteractions:interaction",
-      "middle": "high_five_1",
-      "metadata": {
-        "interaction": "thatskyinteractions:holding_hands"
-      }
+      "type": "thatskyinteractions:holding_hands",
+      "middle": "high_five_1"
     },
     "high_five_1": {
       "type": "thatskyinteractions:interaction",

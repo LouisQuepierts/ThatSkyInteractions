@@ -4,10 +4,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
-import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import org.jspecify.annotations.NonNull;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,8 +27,8 @@ public final class BlockBehaviour implements FriendshipBehaviour {
     }
     
     @Override
-    public @NonNull Identifier getIcon(
-            final @NonNull  PlayerFriendshipAttachment  attachment,
+    public@NonNull Identifier getIcon(
+            final @NonNull  Player                      player,
             final @NonNull  FriendshipTreeNode          node,
             final @NonNull  NodeState                   state
     ) {

@@ -183,6 +183,7 @@ public class FriendshipTreeComponentFactory {
         return maxY - minY;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     private static Identifier extractIcon(
             final FriendshipTreeNode       node,
             final NodeState                 state
@@ -192,13 +193,12 @@ public class FriendshipTreeComponentFactory {
             return ICON_LOCKED;
         }
 
-        final var attachment    = ClientPlayerFriendshipSystem.getLocalFriendshipData();
         final var behaviour     = FriendshipBehaviourFactory.get(node);
         
         return behaviour == null ?
                 FriendshipBehaviour.DEFAULT_ICON :
                 behaviour.getIcon(
-                    attachment,
+                    Minecraft.getInstance().player,
                     node,
                     state
                 );

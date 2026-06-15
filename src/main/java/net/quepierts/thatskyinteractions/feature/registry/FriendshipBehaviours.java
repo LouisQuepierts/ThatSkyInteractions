@@ -22,8 +22,8 @@ public class FriendshipBehaviours {
     public static final FriendshipBehaviourEntry<LockBehaviour> LOCK
             = create(LockBehaviour.TYPE, LockBehaviour.INSTANCE);
 
-    public static final FriendshipBehaviourEntry<HandholdBehaviour> HANDHOLD
-            = create(HandholdBehaviour.TYPE, HandholdBehaviour.INSTANCE);
+    public static final FriendshipBehaviourEntry<HoldingHandsBehaviour> HOLDING_HANDS
+            = create(HoldingHandsBehaviour.TYPE, HoldingHandsBehaviour.INSTANCE);
 
     public static void register() { }
 

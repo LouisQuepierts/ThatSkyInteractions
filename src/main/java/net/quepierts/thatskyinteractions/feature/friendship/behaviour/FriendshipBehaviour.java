@@ -12,7 +12,6 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.model.Currency;
-import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import org.jspecify.annotations.NonNull;
 
 public interface FriendshipBehaviour {
@@ -48,7 +47,7 @@ public interface FriendshipBehaviour {
     );
 
     default @NonNull Identifier getIcon(
-            final @NonNull  PlayerFriendshipAttachment  attachment,
+            final @NonNull  Player                      player,
             final @NonNull  FriendshipTreeNode          node,
             final @NonNull  NodeState                   state
     ) {

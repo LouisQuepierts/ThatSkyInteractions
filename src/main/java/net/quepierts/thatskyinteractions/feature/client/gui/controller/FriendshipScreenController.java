@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.feature.client.gui.controller;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.ConfirmScreen;
@@ -68,15 +67,19 @@ public final class FriendshipScreenController extends ScreenController<Friendshi
         }
     }
 
+    @SuppressWarnings("DataFlowIssue")
     private void unlock(final int index) {
         final var model         = this.getModel();
         final var node          = model.getStructure().get(index);
 
         final var behaviour     = FriendshipBehaviourFactory.get(node);
-        final var attachment    = ClientPlayerFriendshipSystem.getLocalFriendshipData();
+
+        if (behaviour == null) {
+            return; // normally, this should never happen
+        }
 
         final var state         = model.getState(index);
-        final var icon          = behaviour.getIcon(attachment, node, state);
+        final var icon          = behaviour.getIcon(Minecraft.getInstance().player, node, state);
 
         final var confirm = new ConfirmData(
                 icon,
