@@ -8,4 +8,5 @@ veynir      = "1.2.0"
 anvillib-registrum  = { group = 'dev.anvilcraft.lib', name = 'anvillib-registrum-neoforge-26.1', version.ref = "anvillib" }
 anvillib-network    = { group = 'dev.anvilcraft.lib', name = 'anvillib-network-neoforge-26.1', version.ref = "anvillib" }
 anvillib-rendering  = { group = 'dev.anvilcraft.lib', name = 'anvillib-rendering-neoforge-26.1', version.ref = "anvillib" }
+anvillib-config     = { group = 'dev.anvilcraft.lib', name = 'anvillib-config-neoforge-26.1', version.ref = "anvillib" }
 veynir-core         = { group = 'net.quepierts.veynir', name = 'veynir-core', version.ref = "veynir" }

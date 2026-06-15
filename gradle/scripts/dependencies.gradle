@@ -7,10 +7,12 @@ dependencies {
     implementation(libs.anvillib.registrum)
     implementation(libs.anvillib.network)
     implementation(libs.anvillib.rendering)
+    implementation(libs.anvillib.config)
 
     jarJar(libs.anvillib.registrum)
     jarJar(libs.anvillib.network)
     jarJar(libs.anvillib.rendering)
+    jarJar(libs.anvillib.config)
 
     implementation(libs.veynir.core)
     jarJar(libs.veynir.core)
