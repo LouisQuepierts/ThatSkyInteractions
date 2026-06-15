@@ -1,5 +1,5 @@
 {
-  "icon": "thatskyinteractions:textures/icon/expression/bow.png",
+  "icon": "thatskyinteractions:expression/bow",
   "expressions": [
     {
       "type": "thatskyinteractions:animation",
