@@ -8,6 +8,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.ConfirmScreen;
 import net.quepierts.thatskyinteractions.feature.friendship.CurrencyHelper;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
+import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.feature.gui.ConfirmData;
 
@@ -22,42 +23,48 @@ public final class FriendshipScreenController extends ScreenController<Friendshi
 
     @SuppressWarnings("DataFlowIssue")
     public void onButtonClicked(final int index) {
-        final var model         = this.getModel();
-        final var structure     = model.getStructure();
 
-        final var state         = model.getState(index);
-        final var node          = structure.get(index);
+        if (PlayerFriendshipSystem.isFriendshipConditional()) {
 
-        switch (state) {
-            case UNLOCKABLE: {
+            final var model = this.getModel();
+            final var structure = model.getStructure();
 
-                final var cost = node.getCost();
-                final var balance = CurrencyHelper.getBalance(Minecraft.getInstance().player, cost.currency());
-                if (balance < cost.amount()) {
-                    return;
-                }
+            final var state = model.getState(index);
+            final var node = structure.get(index);
 
-                if (this.clicked        != index) {
-                    this.clicked        = index;
-                    this.clicks         = 1;
-                } else {
-                    this.clicks         ++;
+            switch (state) {
+                case UNLOCKABLE: {
 
-                    if (this.clicks     >= Math.min(3, cost.amount())) {
-                        this            .unlock(index);
-                        this.clicked    = -1;
-                        this.clicks     = 0;
+                    final var cost = node.getCost();
+                    final var balance = CurrencyHelper.getBalance(Minecraft.getInstance().player, cost.currency());
+                    if (balance < cost.amount()) {
+                        return;
                     }
+
+                    if (this.clicked != index) {
+                        this.clicked = index;
+                        this.clicks = 1;
+                    } else {
+                        this.clicks++;
+
+                        if (this.clicks >= Math.min(3, cost.amount())) {
+                            this.unlock(index);
+                            this.clicked = -1;
+                            this.clicks = 0;
+                        }
+                    }
+
+                    break;
                 }
+                case UNLOCKED: {
 
-                break;
+                    this.interact(index);
+
+                    break;
+                }
             }
-            case UNLOCKED: {
-
-                this.interact(index);
-
-                break;
-            }
+        } else {
+            this.interact(index);
         }
     }
 

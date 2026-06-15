@@ -3,6 +3,8 @@ package net.quepierts.thatskyinteractions.feature.client;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Player;
@@ -12,6 +14,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
@@ -19,6 +22,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.screen.FriendshipScr
 import net.quepierts.thatskyinteractions.feature.client.reference.TsiKeys;
 import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
+import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.friendship.packet.PlayerFriendshipRequestPacket;
 import net.quepierts.thatskyinteractions.feature.gui.handler.ClientFriendshipUiHandler;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
@@ -37,7 +41,7 @@ public class ClientPlayerFriendshipSystem {
             final int node
     ) {
 
-        if (!data.isUnlockable(node)) {
+        if (PlayerFriendshipSystem.isFriendshipConditional() && !data.isUnlockable(node)) {
             return;
         }
 
@@ -68,11 +72,13 @@ public class ClientPlayerFriendshipSystem {
             final @NonNull FriendshipTreeData data,
             final int node
     ) {
-        if (!data.isUnlocked(node)) {
+        final var minecraft = Minecraft.getInstance();
+
+        if (PlayerFriendshipSystem.isFriendshipConditional() && !data.isUnlocked(node)) {
             return;
         }
 
-        final var local = Minecraft.getInstance().player;
+        final var local = minecraft.player;
         final var other = data.getOther(local.getUUID());
 
         ClientPacketDistributor.sendToServer(

@@ -27,6 +27,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.but
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonVisualNodes;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviour;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
@@ -97,21 +98,23 @@ public class FriendshipTreeComponentFactory {
                                     );
 
             final var index         = i;
-            final var state         = model.getState(index);
+            final var state         = PlayerFriendshipSystem.isFriendshipConditional()
+                                    ? model.getState(index)
+                                    : NodeState.UNLOCKED;
 
             button                  .setVisualNode(vButton(node, state));
             button                  .setOnClick(() -> {
-                controller.onButtonClicked(index);
+                                        controller.onButtonClicked(index);
 
-                final var manager   = Minecraft.getInstance().getSoundManager();
-                final var event     = switch (state) {
-                    case UNLOCKABLE -> SoundEvents.EXPERIENCE_ORB_PICKUP;
-                    default -> SoundEvents.UI_BUTTON_CLICK.value();
-                };
+                                        final var manager   = Minecraft.getInstance().getSoundManager();
+                                        final var event     = switch (state) {
+                                            case UNLOCKABLE -> SoundEvents.EXPERIENCE_ORB_PICKUP;
+                                            default -> SoundEvents.UI_BUTTON_CLICK.value();
+                                        };
 
-                manager.play(SimpleSoundInstance.forUI(event, 1.0f, 0.1f));
+                                        manager.play(SimpleSoundInstance.forUI(event, 1.0f, 0.1f));
 
-            });
+                                    });
             buttons                 .add(button);
 
             if (node.getParent() != -1) {
