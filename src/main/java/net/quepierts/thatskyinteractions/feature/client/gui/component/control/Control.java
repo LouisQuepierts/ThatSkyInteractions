@@ -8,6 +8,8 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.quepierts.thatskyinteractions.core.property.FloatProperty;
+import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeHolder;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.IAttributeHolder;
@@ -16,6 +18,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.Vis
 import net.quepierts.thatskyinteractions.core.model.ui.Insets;
 import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.AbstractWidgetAccessor;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
+import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import org.joml.Vector2fc;
 import org.jspecify.annotations.NonNull;
 
@@ -23,10 +26,21 @@ import java.util.function.Consumer;
 
 public class Control extends AbstractWidget implements IAttributeHolder {
 
+    public static final AttributeKey<BooleanTransition> ATTRIBUTE_HOVER_TRANSITION
+            = new AttributeKey<>("hover_transition");
+    public static final AttributeKey<FloatProperty> ATTRIBUTE_HOVER_PROGRESS
+            = new AttributeKey<>("hover_progress");
+
     private static boolean              debug       = false;
 
     private final AttributeHolder       attributes  = new AttributeHolder();
     private final TweenScope            tween;
+
+    @Getter
+    private final FloatProperty         hoverDuration   = new FloatProperty(0.25f);
+
+    @Getter
+    private final BooleanTransition     hoverTransition = new BooleanTransition(Eases.CUBIC_OUT, this.hoverDuration);
 
     @Getter
     private final Consumer<Vector2fc>   position;
@@ -61,6 +75,9 @@ public class Control extends AbstractWidget implements IAttributeHolder {
 
         this.padding    = new Insets(0);
         this.margin     = new Insets(0);
+
+        this.setAttribute(ATTRIBUTE_HOVER_PROGRESS, this.hoverDuration);
+        this.setAttribute(ATTRIBUTE_HOVER_TRANSITION, this.hoverTransition);
     }
 
     @Override
@@ -83,8 +100,10 @@ public class Control extends AbstractWidget implements IAttributeHolder {
 
             if (hovering && !this.isHovered) {
                 this.onMouseEntered();
+                this.hoverTransition.update(this.tween(), true);
             } else if (!hovering && this.isHovered) {
                 this.onMouseExited();
+                this.hoverTransition.update(this.tween(), false);
             }
 
             this.isHovered = hovering;

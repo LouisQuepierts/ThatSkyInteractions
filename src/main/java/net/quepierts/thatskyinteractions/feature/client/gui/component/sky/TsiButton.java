@@ -15,14 +15,6 @@ import org.jspecify.annotations.NonNull;
 
 public class TsiButton extends Button {
 
-    public static final AttributeKey<BooleanTransition> ATTRIBUTE_HOVER
-            = new AttributeKey<>("hover_transition");
-
-    private final BooleanTransition hoverTransition = new BooleanTransition(
-            Eases.LINEAR,
-            0.25f
-    );
-
     public TsiButton(
             final TweenScope tween,
             final int x, final int y,
@@ -30,7 +22,6 @@ public class TsiButton extends Button {
             final Component message
     ) {
         super(tween, x, y, width, height, message);
-        this.setAttribute(ATTRIBUTE_HOVER, hoverTransition);
     }
 
     @Override

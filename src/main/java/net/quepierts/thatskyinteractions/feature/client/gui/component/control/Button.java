@@ -18,21 +18,32 @@ import org.jspecify.annotations.NonNull;
 
 public class Button extends Control {
 
-    public static final AttributeKey<BooleanTransition> ATTRIBUTE_PRESS = new AttributeKey<>("press_transition");
-    public static final AttributeKey<FloatProperty>     ATTRIBUTE_CLICK = new AttributeKey<>("click_progress");
+    public static final AttributeKey<BooleanTransition> ATTRIBUTE_PRESS_TRANSITION
+            = new AttributeKey<>("press_transition");
+    public static final AttributeKey<FloatProperty>     ATTRIBUTE_PRESS_DURATION
+            = new AttributeKey<>("press_duration");
+    public static final AttributeKey<BooleanTransition> ATTRIBUTE_CLICK_TRANSITION
+            = new AttributeKey<>("click_transition");
+    public static final AttributeKey<FloatProperty>     ATTRIBUTE_CLICK_DURATION
+            = new AttributeKey<>("click_duration");
+
+    @Getter
+    private final FloatProperty                     pressDuration       = new FloatProperty(0.1f);
 
     @Getter
     private final BooleanTransition                 pressTransition     = new BooleanTransition(
                                                                                 Eases.LINEAR,
-                                                                                0.25f
+                                                                                this.pressDuration
                                                                         );
 
     @Getter
-    private final FloatProperty                     clickProgress       = new FloatProperty();
-    private TweenHandle                             clickHandle;
+    private final FloatProperty                     clickDuration       = new FloatProperty(0.5f);
 
     @Getter
-    private final FloatProperty                     clickDuration       = new FloatProperty(0.5f);
+    private final BooleanTransition                 clickTransition     = new BooleanTransition(
+                                                                                Eases.LINEAR,
+                                                                                this.clickDuration
+                                                                        );
 
     @Getter
     private final EnumProperty<ActivationTrigger>   activationTrigger   = new EnumProperty<>(ActivationTrigger.CLICKED);
@@ -53,8 +64,11 @@ public class Button extends Control {
     ) {
         super(tween, x, y, width, height, message);
 
-        this.setAttribute(ATTRIBUTE_PRESS, this.pressTransition);
-        this.setAttribute(ATTRIBUTE_CLICK, this.clickProgress);
+        this.setAttribute(ATTRIBUTE_PRESS_TRANSITION, this.pressTransition);
+        this.setAttribute(ATTRIBUTE_PRESS_DURATION, this.pressDuration);
+        this.setAttribute(ATTRIBUTE_CLICK_TRANSITION, this.clickTransition);
+        this.setAttribute(ATTRIBUTE_CLICK_DURATION, this.clickDuration);
+
     }
 
     @Override
@@ -108,18 +122,8 @@ public class Button extends Control {
     }
 
     protected void click() {
-        if (this.clickHandle != null) {
-            this.clickHandle.cancel();
-        }
-
-        this.clickHandle = this.tween().to(
-                this.clickProgress,
-                0.0f,
-                1.0f,
-                this.clickDuration.get(),
-                Interpolators.FLOAT,
-                Eases.LINEAR
-        );
+        this.clickTransition.set(false);
+        this.clickTransition.update(this.tween(), true);
 
         if (this.onClick != null) {
             this.onClick.run();
