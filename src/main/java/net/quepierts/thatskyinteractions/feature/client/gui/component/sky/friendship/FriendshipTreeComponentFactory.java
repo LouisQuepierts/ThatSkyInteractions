@@ -19,6 +19,7 @@ import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.TsiButton;
@@ -164,7 +165,7 @@ public class FriendshipTreeComponentFactory {
     }
 
     private static int calculateHeight(
-            @NonNull final Collection<Button> buttons
+            final @NonNull Collection<Button> buttons
     ) {
         if (buttons.isEmpty()) {
             return 0;
@@ -211,7 +212,7 @@ public class FriendshipTreeComponentFactory {
         final var mColor        = STATED_COLORS[state.ordinal()];
 
         final var content       = SpinButtonNode.of((graphics, colors, _, _, width, height) -> {
-            graphics.blit(
+            graphics.original().blit(
                     RenderPipelines.GUI_TEXTURED,
                     icon,
                     -14,
@@ -254,7 +255,7 @@ public class FriendshipTreeComponentFactory {
         @Override
         public void extractRenderState(
                 final @NonNull Control              control,
-                final @NonNull GuiGraphicsExtractor graphics,
+                final @NonNull ExtendedGuiGraphics  graphics,
                 final @NonNull ColorStack           colors,
                 final @NonNull TweenScope           tween,
 
@@ -300,7 +301,7 @@ public class FriendshipTreeComponentFactory {
                             px0, py0,
                             px1, py1
                     )
-                    .draw(graphics);
+                    .draw(graphics.original());
 
         }
     }
@@ -311,7 +312,7 @@ public class FriendshipTreeComponentFactory {
         private static final Identifier WHITE       = Identifier.withDefaultNamespace("textures/item/candle.png");
         private static final Identifier ASCENDED    = Identifier.withDefaultNamespace("textures/item/red_candle.png");
 
-        public static VisualNode of(@NonNull final Cost cost) {
+        public static VisualNode of(final @NonNull Cost cost) {
             if (cost.isFree()) {
                 return VisualNode.EMPTY;
             }
@@ -334,7 +335,7 @@ public class FriendshipTreeComponentFactory {
         @Override
         public void extractRenderState(
                 final @NonNull Control              control,
-                final @NonNull GuiGraphicsExtractor graphics,
+                final @NonNull ExtendedGuiGraphics  graphics,
                 final @NonNull ColorStack           colors,
                 final @NonNull TweenScope           tween,
 
@@ -343,14 +344,15 @@ public class FriendshipTreeComponentFactory {
                 final float                         delta
         ) {
 
-            graphics.text(
+            final var original = graphics.original();
+            original.text(
                     this.font,
                     this.price,
                     control.getX() + 32,
                     control.getY() + 32,
                     colors.argb(0xffffffff)
             );
-            graphics.blit(
+            original.blit(
                     RenderPipelines.GUI_TEXTURED,
                     this.icon,
                     control.getX() + 20,

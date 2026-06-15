@@ -31,8 +31,8 @@ public final class MinecraftModelPoseProvider implements SkeletonPoseProvider {
 
     @Override
     public void fetch(
-            @NonNull final SkeletonContext      context,
-            @NonNull final SkeletonPoseBuffer   target
+            final @NonNull SkeletonContext      context,
+            final @NonNull SkeletonPoseBuffer   target
     ) {
         final var buffer        = context.getUniformBuffer(this.ubo);
         final var reader        = buffer.getRawReader();

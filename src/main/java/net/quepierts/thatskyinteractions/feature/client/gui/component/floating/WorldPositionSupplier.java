@@ -61,5 +61,5 @@ public interface WorldPositionSupplier {
         };
     }
 
-    void get(@NonNull final Vector3f dest);
+    void get(final @NonNull Vector3f dest);
 }

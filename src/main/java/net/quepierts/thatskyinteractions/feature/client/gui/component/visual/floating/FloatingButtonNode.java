@@ -9,6 +9,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingButton;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.RenderOp;
@@ -24,11 +25,11 @@ public final class FloatingButtonNode implements VisualNode {
     private final RenderOp renderOp;
 
     public static FloatingButtonNode texture(
-            @NonNull final Identifier identifier
+            final @NonNull Identifier identifier
     ) {
         return new FloatingButtonNode(
                 (graphics, colors, _, _, _, _) -> {
-                    graphics.blit(
+                    graphics.original().blit(
                             RenderPipelines.GUI_TEXTURED,
                             identifier,
                             -14, -14,
@@ -43,11 +44,11 @@ public final class FloatingButtonNode implements VisualNode {
     }
 
     public static FloatingButtonNode sprite(
-            @NonNull final Identifier identifier
+            final @NonNull Identifier identifier
     ) {
         return new FloatingButtonNode(
                 (graphics, colors, _, _, _, _) -> {
-                    graphics.blitSprite(
+                    graphics.original().blitSprite(
                             RenderPipelines.GUI_TEXTURED,
                             identifier,
                             32, 32,
@@ -62,10 +63,10 @@ public final class FloatingButtonNode implements VisualNode {
 
     @Override
     public void extractRenderState(
-            @NonNull final Control              control,
-            @NonNull final GuiGraphicsExtractor graphics,
-            @NonNull final ColorStack           colors,
-            @NonNull final TweenScope           tween,
+            final @NonNull Control              control,
+            final @NonNull ExtendedGuiGraphics  graphics,
+            final @NonNull ColorStack           colors,
+            final @NonNull TweenScope           tween,
 
             final int                           mouseX,
             final int                           mouseY,
@@ -93,6 +94,7 @@ public final class FloatingButtonNode implements VisualNode {
 
         final var focusTransition   = control.getAttribute(FloatingButton.ATTRIBUTE_FOCUS_TRANSITION);
         final var ft                = focusTransition.getValue();
+        final var original          = graphics.original();
         if (ft > 0.0f) {
             pose                    .pushMatrix();
             pose                    .translate(0, -14);
@@ -111,12 +113,12 @@ public final class FloatingButtonNode implements VisualNode {
                                     .circle(0, 0, 16)
                                     .color(colors.argb(0x80, 0x00, 0x00, 0x00))
                                     .fill()
-                                    .draw(graphics)
+                                    .draw(original)
 
                                     .circle(0, 0, 15)
                                     .stroke(1.0f)
                                     .color(colors.argb(0xff, 0xa0, 0xa0, 0x80))
-                                    .draw(graphics);
+                                    .draw(original);
 
             this.renderOp           .render(
                                             graphics,
@@ -131,7 +133,7 @@ public final class FloatingButtonNode implements VisualNode {
 
         pose                        .rotate(Mth.HALF_PI * 0.5f);
 
-        graphics                    .blit(
+        original                    .blit(
                                             RenderPipelines.GUI_TEXTURED,
                                             ICON,
                                             -4, -4,

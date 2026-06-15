@@ -2,11 +2,11 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.layout;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.BooleanProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
@@ -59,7 +59,7 @@ public abstract class Pane
 
     @Override
     protected void extractControlRenderState(
-            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ExtendedGuiGraphics  graphics,
             final @NonNull ColorStack           colors,
 
             final int                           mouseX,
@@ -85,7 +85,7 @@ public abstract class Pane
         if (clip) {
             final var left      = this.getY();
             final var top       = this.getX();
-            graphics.enableScissor(
+            graphics.original().enableScissor(
                     left,
                     top,
                     left + this.getWidth(),
@@ -98,7 +98,7 @@ public abstract class Pane
         }
 
         if (clip) {
-            graphics.disableScissor();
+            graphics.original().disableScissor();
         }
     }
 

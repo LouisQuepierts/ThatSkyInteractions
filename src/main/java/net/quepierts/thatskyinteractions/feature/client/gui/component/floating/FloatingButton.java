@@ -1,11 +1,10 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.floating;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -22,7 +21,7 @@ public class FloatingButton extends FloatingControl {
     ) {
         return new FloatingControlConstructor() {
             @Override
-            protected @NonNull FloatingControl construct(@NonNull final FloatingTarget target, @NonNull final TweenScope tween) {
+            protected @NonNull FloatingControl construct(final @NonNull FloatingTarget target, final @NonNull TweenScope tween) {
                 return new FloatingButton(
                         tween,
                         message,
@@ -41,7 +40,7 @@ public class FloatingButton extends FloatingControl {
     ) {
         return new FloatingControlConstructor() {
             @Override
-            protected @NonNull FloatingControl construct(@NonNull final FloatingTarget target, @NonNull final TweenScope tween) {
+            protected @NonNull FloatingControl construct(final @NonNull FloatingTarget target, final @NonNull TweenScope tween) {
                 return new FloatingButton(
                         tween,
                         message,
@@ -95,7 +94,7 @@ public class FloatingButton extends FloatingControl {
 
     @Override
     protected void extractControlRenderState(
-            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ExtendedGuiGraphics  graphics,
             final @NonNull ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
@@ -133,8 +132,8 @@ public class FloatingButton extends FloatingControl {
 
     public interface InteractCallback {
         void run(
-                @NonNull final FloatingButton       button,
-                @NonNull final TweenScope           scope
+                final @NonNull FloatingButton       button,
+                final @NonNull TweenScope           scope
         );
     }
 }

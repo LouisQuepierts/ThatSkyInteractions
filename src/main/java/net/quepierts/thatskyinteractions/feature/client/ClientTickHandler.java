@@ -19,7 +19,7 @@ public class ClientTickHandler {
 
     private static final List<Task> ticks = new ArrayList<>();
 
-    public static void register(@NonNull final Task task) {
+    public static void register(final @NonNull Task task) {
         ClientTickHandler.ticks.add(task);
     }
 

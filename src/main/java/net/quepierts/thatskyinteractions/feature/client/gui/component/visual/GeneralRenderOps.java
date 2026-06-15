@@ -10,7 +10,7 @@ import org.jspecify.annotations.NonNull;
 public class GeneralRenderOps {
 
     public static final RenderOp BASE = (graphics, colors, x, y, width, height) -> {
-        graphics.fill(
+        graphics.original().fill(
                 (int) x,
                 (int) y,
                 (int) (x + width),
@@ -29,7 +29,7 @@ public class GeneralRenderOps {
                         width,
                         height
                 )
-                .draw(graphics);
+                .draw(graphics.original());
     };
 
     public static RenderOp texture(
@@ -37,7 +37,7 @@ public class GeneralRenderOps {
             final          int                      textureWidth,
             final          int                      textureHeight
     ) {
-        return (graphics, colors, x, y, width, height) -> graphics.blit(
+        return (graphics, colors, x, y, width, height) -> graphics.original().blit(
                 RenderPipelines.GUI_TEXTURED,
                 texture,
                 (int) (x - width / 2),

@@ -11,7 +11,7 @@ import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeData;
 import org.jspecify.annotations.NonNull;
 
 public final class FriendshipScreen extends SlideScreen<FriendshipTreeData, FriendshipScreenController> {
-    public FriendshipScreen(@NonNull final FriendshipTreeData data) {
+    public FriendshipScreen(final @NonNull FriendshipTreeData data) {
         super(Component.translatable("gui.thatskyinteractions.friendship"), data);
     }
 

@@ -8,6 +8,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControl;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingControlConstructor;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.floating.FloatingTarget;
@@ -67,8 +68,8 @@ public final class FloatingControlLayer implements GuiLayer {
 
     @Override
     public void render(
-            @NonNull final GuiGraphicsExtractor graphics,
-            @NonNull final DeltaTracker         tracker
+            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull DeltaTracker         tracker
     ) {
 
         final var minecraft = Minecraft.getInstance();
@@ -104,8 +105,8 @@ public final class FloatingControlLayer implements GuiLayer {
     }
 
     void render(
-            @NonNull final GuiGraphicsExtractor graphics,
-            @NonNull final DeltaTracker         tracker,
+            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull DeltaTracker         tracker,
             final int                           mouseX,
             final int                           mouseY
     ) {
@@ -120,9 +121,10 @@ public final class FloatingControlLayer implements GuiLayer {
         }
 
         final var colors    = new ColorStack();
+        final var extended  = new ExtendedGuiGraphics(graphics);
 
         for (final var control : this.controls.values()) {
-            control.extractRenderState(graphics, colors, mouseX, mouseY, delta);
+            control.extractRenderState(extended, colors, mouseX, mouseY, delta);
         }
 
     }

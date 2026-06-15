@@ -3,10 +3,10 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.control;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.model.ui.HPos;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
 
@@ -55,7 +55,7 @@ public class TextBlock extends Control {
 
     @Override
     protected void extractControlRenderState(
-            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ExtendedGuiGraphics  graphics,
             final @NonNull ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
@@ -80,7 +80,7 @@ public class TextBlock extends Control {
                     final var x = this.getX();
                     final var y = this.getY() + i * lineHeight;
 
-                    graphics.text(
+                    graphics.original().text(
                             font,
                             line,
                             x,
@@ -97,7 +97,7 @@ public class TextBlock extends Control {
                     final var x = baseX - this.widths[i] / 2;
                     final var y = this.getY() + i * lineHeight;
 
-                    graphics.text(
+                    graphics.original().text(
                             font,
                             line,
                             x,
@@ -114,7 +114,7 @@ public class TextBlock extends Control {
                     final var x = baseX - this.widths[i];
                     final var y = this.getY() + i * lineHeight;
 
-                    graphics.text(
+                    graphics.original().text(
                             font,
                             line,
                             x,

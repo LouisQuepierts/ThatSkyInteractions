@@ -14,7 +14,6 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.client.input.TsiKeys;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import org.lwjgl.glfw.GLFW;
 
@@ -94,8 +93,8 @@ public class GameLayerHook {
 
 
     public static void onRenderLayer(
-            @NonNull final GuiGraphicsExtractor graphics,
-            @NonNull final DeltaTracker         tracker
+            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull DeltaTracker         tracker
     ) {
 
         final var minecraft = Minecraft.getInstance();

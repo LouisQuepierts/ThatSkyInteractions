@@ -6,6 +6,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.IntProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.ScreenController;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
@@ -33,7 +34,7 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
 
     @Override
     public void extractAnimatableRenderState(
-            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ExtendedGuiGraphics  graphics,
             final @NonNull ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
@@ -50,7 +51,7 @@ public abstract class SlideScreen<Model, Controller extends ScreenController<Mod
         pose.pushMatrix();
         pose.translate(x, 0);
         // at the right side
-        graphics.fill(
+        graphics.original().fill(
                 0,
                 0,
                 width,

@@ -48,7 +48,7 @@ public class FloatingControl extends Control {
     ) {
         return new FloatingControlConstructor() {
             @Override
-            protected @NonNull FloatingControl construct(@NonNull final FloatingTarget target, @NonNull final TweenScope tween) {
+            protected @NonNull FloatingControl construct(final @NonNull FloatingTarget target, final @NonNull TweenScope tween) {
                 return new FloatingControl(
                         tween,
                         width,
@@ -69,7 +69,7 @@ public class FloatingControl extends Control {
     ) {
         return new FloatingControlConstructor() {
             @Override
-            protected @NonNull FloatingControl construct(@NonNull final FloatingTarget target, @NonNull final TweenScope tween) {
+            protected @NonNull FloatingControl construct(final @NonNull FloatingTarget target, final @NonNull TweenScope tween) {
                 return new FloatingControl(
                         tween,
                         width,
@@ -96,7 +96,7 @@ public class FloatingControl extends Control {
     }
 
     public Vector3f getWorldPosition(
-            @NonNull final Vector3f dest
+            final @NonNull Vector3f dest
     ) {
         this.worldPosition.get(dest);
         return dest;

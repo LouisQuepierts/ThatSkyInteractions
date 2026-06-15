@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeHolder;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.IAttributeHolder;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
@@ -89,7 +90,7 @@ public class Control extends AbstractWidget implements IAttributeHolder {
     ) { }
 
     public final void extractRenderState(
-            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ExtendedGuiGraphics  graphics,
             final @NonNull ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
@@ -114,7 +115,7 @@ public class Control extends AbstractWidget implements IAttributeHolder {
                     mouseY,
                     delta
             );
-            ((AbstractWidgetAccessor) this).getTooltip().refreshTooltipForNextRenderPass(graphics, mouseX, mouseY, this.isHovered(), this.isFocused(), this.getRectangle());
+            ((AbstractWidgetAccessor) this).getTooltip().refreshTooltipForNextRenderPass(graphics.original(), mouseX, mouseY, this.isHovered(), this.isFocused(), this.getRectangle());
         }
     }
 
@@ -123,7 +124,7 @@ public class Control extends AbstractWidget implements IAttributeHolder {
     }
 
     protected void extractControlRenderState(
-            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ExtendedGuiGraphics  graphics,
             final @NonNull ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
@@ -178,7 +179,7 @@ public class Control extends AbstractWidget implements IAttributeHolder {
     @Override
     public <T> void setAttribute(
             final @NonNull AttributeKey<T>  key,
-            @NonNull final T                value
+            final @NonNull T                value
     ) {
         this.attributes.setAttribute(key, value);
     }
@@ -198,15 +199,16 @@ public class Control extends AbstractWidget implements IAttributeHolder {
     }
 
     protected void renderDebug(
-            final @NonNull GuiGraphicsExtractor graphics
+            final @NonNull ExtendedGuiGraphics graphics
     ) {
         if (Control.debug) {
             // if hover, render margin and padding
             if (true) {
 
-                final var margin = this.getMargin();
+                final var margin    = this.getMargin();
+                final var original  = graphics.original();
                 if (!margin.equals(Insets.NONE)) {
-                    graphics.fill(
+                    original.fill(
                             (int) margin.left,
                             (int) margin.top,
                             (int) (this.getRight() - margin.right),
@@ -217,7 +219,7 @@ public class Control extends AbstractWidget implements IAttributeHolder {
 
                 final var padding = this.getPadding();
                 if (!padding.equals(Insets.NONE)) {
-                    graphics.fill(
+                    original.fill(
                             (int) (this.getX() + padding.left),
                             (int) (this.getY() + padding.top),
                             (int) (this.getRight() - padding.right),

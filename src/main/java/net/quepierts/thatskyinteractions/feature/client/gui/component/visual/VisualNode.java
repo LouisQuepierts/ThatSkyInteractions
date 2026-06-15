@@ -1,13 +1,11 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.visual;
 
-import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
-import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
 
@@ -79,11 +77,39 @@ public interface VisualNode {
         return Combine.of(children.toArray(VisualNode[]::new));
     }
 
+    static void array(
+            final @NonNull VisualNode @NonNull[]    nodes,
+            final @NonNull Control                  control,
+            final @NonNull ExtendedGuiGraphics      graphics,
+            final @NonNull ColorStack               colors,
+            final @NonNull TweenScope               tween,
+
+            final int                               mouseX,
+            final int                               mouseY,
+            final float                             delta
+    ) {
+        final var pose = graphics.pose();
+        for (final var node : nodes) {
+            pose.pushMatrix();
+            node.extractRenderState(
+                    control,
+                    graphics,
+                    colors,
+                    tween,
+
+                    mouseX,
+                    mouseY,
+                    delta
+            );
+            pose.popMatrix();
+        }
+    }
+
     void extractRenderState(
-            @NonNull final Control              control,
-            @NonNull final GuiGraphicsExtractor graphics,
-            @NonNull final ColorStack           colors,
-            @NonNull final TweenScope           tween,
+            final @NonNull Control              control,
+            final @NonNull ExtendedGuiGraphics  graphics,
+            final @NonNull ColorStack           colors,
+            final @NonNull TweenScope           tween,
 
             final int                           mouseX,
             final int                           mouseY,
@@ -97,31 +123,28 @@ public interface VisualNode {
 
         @Override
         public void extractRenderState(
-                @NonNull final Control              control,
-                @NonNull final GuiGraphicsExtractor graphics,
-                @NonNull final ColorStack           colors,
-                @NonNull final TweenScope           tween,
+                final @NonNull Control              control,
+                final @NonNull ExtendedGuiGraphics  graphics,
+                final @NonNull ColorStack           colors,
+                final @NonNull TweenScope           tween,
 
                 final int                           mouseX,
                 final int                           mouseY,
                 final float                         delta
         ) {
 
-            final var pose = graphics.pose();
-            for (final var node : nodes) {
-                pose.pushMatrix();
-                node.extractRenderState(
-                        control,
-                        graphics,
-                        colors,
-                        tween,
+            array(
+                    this.nodes,
+                    control,
+                    graphics,
+                    colors,
+                    tween,
 
-                        mouseX,
-                        mouseY,
-                        delta
-                );
-                pose.popMatrix();
-            }
+                    mouseX,
+                    mouseY,
+                    delta
+            );
+
         }
 
     }

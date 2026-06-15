@@ -1,9 +1,9 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.visual;
 
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -18,10 +18,10 @@ public class HoverNode implements VisualNode {
 
     @Override
     public void extractRenderState(
-            @NonNull final Control              control,
-            @NonNull final GuiGraphicsExtractor graphics,
-            @NonNull final ColorStack           colors,
-            @NonNull final TweenScope           tween,
+            final @NonNull Control              control,
+            final @NonNull ExtendedGuiGraphics  graphics,
+            final @NonNull ColorStack           colors,
+            final @NonNull TweenScope           tween,
 
             final int                           mouseX,
             final int                           mouseY,

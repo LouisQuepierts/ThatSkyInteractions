@@ -7,6 +7,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.model.ui.Alignment;
 import net.quepierts.thatskyinteractions.core.model.ui.HPos;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.TextBlock;
@@ -35,7 +36,7 @@ public class ConfirmScreen extends AnimatableScreen<ConfirmData, ConfirmScreenCo
 
     @Override
     public void extractAnimatableRenderState(
-            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ExtendedGuiGraphics  graphics,
             final @NonNull ColorStack colors,
             final int                           mouseX,
             final int                           mouseY,

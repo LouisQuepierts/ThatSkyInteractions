@@ -1,32 +1,27 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.screen;
 
-import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.quepierts.thatskyinteractions.core.model.ui.Alignment;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.GridPane;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VBox;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.TsiButton;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.expression.ExpressionButton;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.GeneralVisualNodes;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.HoverNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonRenderOps;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.SpinButtonNode;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonVisualNodes;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.ExpressionScreenController;
 import net.quepierts.thatskyinteractions.feature.expression.ExpressionSet;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionManager;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 import org.jspecify.annotations.NonNull;
-
-import java.util.function.IntSupplier;
 
 public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenController> {
 
@@ -125,9 +120,9 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
             final @NonNull ExpressionSet    set
     ) {
         final var icon          = set.icon();
-        final var background    = GeneralVisualNodes.base(0x80000000, 6.0f);
-        final var content       = SpinButtonNode.of((graphics, colors, _, _, width, height) -> {
-            graphics.blit(
+        final var background    = GeneralVisualNodes.lBase(0x80000000, 6.0f);
+        final var content       = ButtonVisualNodes.spin((graphics, colors, _, _, width, height) -> {
+            graphics.original().blit(
                     RenderPipelines.GUI_TEXTURED,
                     icon,
                     -14,
@@ -147,7 +142,7 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
             @Override
             public void extractRenderState(
                     final @NonNull Control control,
-                    final @NonNull GuiGraphicsExtractor graphics,
+                    final @NonNull ExtendedGuiGraphics  graphics,
                     final @NonNull ColorStack colors,
                     final @NonNull TweenScope tween,
                     final int mouseX, final int mouseY, final float delta
@@ -156,27 +151,38 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
 
                 final var levels    = control.getAttribute(ExpressionButton.ATTRIBUTE_LEVELS).getAsInt();
                 final var selected  = control.getAttribute(ExpressionButton.ATTRIBUTE_SELECTED).getAsInt() - 1;
-                final var hovered   = control.getAttribute(Button.ATTRIBUTE_PRESS).isTarget();
+                final var press     = control.getAttribute(Button.ATTRIBUTE_PRESS_TRANSITION);
+                final var pressed   = press.getTarget();
 
+                final var top       = -12 - press.getValue() * 4f;
                 final var width     = levels * 4 - 2;
-                final var left      = (control.getWidth() - width) / 2f;
-                graphics.pose().translate(control.getX() + left, control.getY() + 4);
+                final var left      = (width) / -2f;
+
+                if (pressed) {
+                    final var scale = 1.0f + press.getValue() * 0.25f;
+                    graphics.pose().scale(scale, scale);
+                }
+
+                graphics.pose().translate(left, top);
 
                 for (var i = 0; i < levels; i++) {
-                    graphics.fill(
+                    graphics.original().fill(
                              i * 4,
                             0,
                             i * 4 + 2,
                             2,
-                            hovered && i == selected
+                            pressed && i == selected
                                     ? colors.argb(0xff, 0xff, 0xfe, 0xe0)
                                     : colors.argb(0xff, 0x80, 0x80, 0x80)
                     );
                 }
             }
         } : VisualNode.EMPTY;
-        final var hover     = HoverNode.of(ButtonRenderOps.HOVER);
-        return VisualNode.combine(background, content, select, hover);
+        final var hover     = ButtonVisualNodes.hover(ButtonRenderOps.HOVER);
+        return VisualNode.combine(
+                ButtonVisualNodes::base,
+                background, content, select, hover
+        );
     }
 
     @Override

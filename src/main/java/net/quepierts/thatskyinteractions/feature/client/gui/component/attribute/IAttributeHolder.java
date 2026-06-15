@@ -5,16 +5,16 @@ import org.jspecify.annotations.NonNull;
 public interface IAttributeHolder {
 
     <T> void setAttribute(
-            @NonNull final AttributeKey<T>  key,
-            @NonNull final T                value
+            final @NonNull AttributeKey<T>  key,
+            final @NonNull T                value
     );
 
     <T> T getAttribute(
-            @NonNull final AttributeKey<T>  key
+            final @NonNull AttributeKey<T>  key
     );
 
     <T> boolean hasAttribute(
-            @NonNull final AttributeKey<T>  key
+            final @NonNull AttributeKey<T>  key
     );
 
 }

@@ -1,9 +1,9 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button;
 
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.RenderOp;
@@ -18,19 +18,17 @@ public class SpinButtonNode implements VisualNode {
 
     @Override
     public void extractRenderState(
-            @NonNull final Control              control,
-            @NonNull final GuiGraphicsExtractor graphics,
-            @NonNull final ColorStack           colors,
-            @NonNull final TweenScope           tween,
+            final @NonNull Control              control,
+            final @NonNull ExtendedGuiGraphics  graphics,
+            final @NonNull ColorStack           colors,
+            final @NonNull TweenScope           tween,
 
             final int                           mouseX,
             final int                           mouseY,
             final float                         delta
     ) {
 
-        // suppose the control is a button, unchecked
-        final var button        = (Button) control;
-        final var click         = button.getClickProgress().get();
+        final var click         = control.getAttribute(Button.ATTRIBUTE_CLICK_TRANSITION).getValue();
 
         final var hw            = control.getWidth() / 2;
         final var hh            = control.getHeight() / 2;

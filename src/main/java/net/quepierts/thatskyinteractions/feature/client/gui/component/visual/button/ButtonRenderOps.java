@@ -18,9 +18,9 @@ public class ButtonRenderOps {
                         width - 2,
                         height - 2
                 )
-                .stroke(1.0f)
+                .stroke(0.5f)
                 .light(2.5f)
-                .draw(graphics);
+                .draw(graphics.original());
     };
 
 }

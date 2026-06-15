@@ -37,7 +37,7 @@ public final class MinecraftModelAdaptor {
 
     @Deprecated
     public void accept(
-            @NonNull final PoseCache cache
+            final @NonNull PoseCache cache
     ) {
         for (final var entry : this.skeleton.getEntries()) {
             final var loc       = entry.id();

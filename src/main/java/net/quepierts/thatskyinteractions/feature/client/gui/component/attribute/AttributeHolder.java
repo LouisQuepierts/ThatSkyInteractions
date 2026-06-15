@@ -12,7 +12,7 @@ public final class AttributeHolder implements IAttributeHolder {
     @Override
     public <T> void setAttribute(
             final @NonNull AttributeKey<T>  key,
-            @NonNull final T                value
+            final @NonNull T                value
     ) {
         this.attributes.put(key, value);
     }

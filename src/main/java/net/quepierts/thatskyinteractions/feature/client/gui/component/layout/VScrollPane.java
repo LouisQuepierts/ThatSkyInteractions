@@ -1,12 +1,12 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.layout;
 
 import lombok.Getter;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.core.property.EnumProperty;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
+import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
 import net.quepierts.thatskyinteractions.infra.animation.tween.Tween;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenHandle;
@@ -62,7 +62,7 @@ public class VScrollPane extends Pane {
 
     @Override
     protected void extractControlRenderState(
-            final @NonNull GuiGraphicsExtractor graphics,
+            final @NonNull ExtendedGuiGraphics  graphics,
             final @NonNull ColorStack           colors,
             final int                           mouseX,
             final int                           mouseY,
@@ -93,7 +93,7 @@ public class VScrollPane extends Pane {
         final var left      = this.getX();
         final var top       = this.getY();
 
-        graphics.enableScissor(
+        graphics.original().enableScissor(
                 left,
                 top,
                 left + this.getWidth(),
@@ -114,7 +114,7 @@ public class VScrollPane extends Pane {
 
         pose.translate(0, scroll);
 
-        graphics.disableScissor();
+        graphics.original().disableScissor();
     }
 
     @Override
