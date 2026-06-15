@@ -47,7 +47,7 @@ public final class PlayerNavigator {
     private TweenHandle         lookHandle;
     private float               rotTarget;
 
-    public static PlayerNavigator get(@NonNull final Player player) {
+    public static PlayerNavigator get(final @NonNull Player player) {
         return player.getData(AttachmentTypes.PLAYER_NAVIGATOR);
     }
 
@@ -56,7 +56,7 @@ public final class PlayerNavigator {
     }
 
     public void to(
-            @NonNull final Player target,
+            final @NonNull Player target,
             final float forward,
             final float left
     ) {

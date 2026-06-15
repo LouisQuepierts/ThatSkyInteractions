@@ -11,7 +11,7 @@ public record SourceDefinition(
         Optional<String>    namespace
 ) {
 
-    public static SourceDefinition of(@NonNull final String source) {
+    public static SourceDefinition of(final @NonNull String source) {
         return new SourceDefinition(source, 0.0f, 0.0f, Optional.empty());
     }
 

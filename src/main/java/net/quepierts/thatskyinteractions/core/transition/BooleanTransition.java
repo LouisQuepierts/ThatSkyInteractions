@@ -21,7 +21,7 @@ public final class BooleanTransition {
     private       boolean           target;
 
     public BooleanTransition(
-            @NonNull final Ease ease,
+            final @NonNull Ease ease,
             final float duration
     ) {
         this.ease = ease;
@@ -30,7 +30,7 @@ public final class BooleanTransition {
 
 
     public void update(
-            @NonNull final TweenScope   tween,
+            final @NonNull TweenScope   tween,
                      final boolean      target
     ) {
         if (target == this.target) {

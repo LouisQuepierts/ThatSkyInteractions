@@ -62,7 +62,7 @@ public final class AnimationExpression implements Expression {
     }
 
     @Override
-    public void onClientPerform(@NonNull final Player player) {
+    public void onClientPerform(final @NonNull Player player) {
 
         final var difference = Mth.degreesDifference(player.yBodyRot, player.getYHeadRot());
 

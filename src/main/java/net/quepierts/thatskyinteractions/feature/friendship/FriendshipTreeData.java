@@ -65,8 +65,8 @@ public final class FriendshipTreeData {
     private final Object2ObjectMap<String, NodeState>   states;
 
     public FriendshipTreeData(
-            @NonNull final Identifier           type,
-            @NonNull final PlayerPair           relation
+            final @NonNull Identifier           type,
+            final @NonNull PlayerPair           relation
     ) {
         this.type           = type;
         this.relation       = relation;
@@ -83,9 +83,9 @@ public final class FriendshipTreeData {
     }
 
     private FriendshipTreeData(
-            @NonNull final Identifier               type,
-            @NonNull final PlayerPair               relation,
-            @NonNull final Map<String, NodeState>   states
+            final @NonNull Identifier               type,
+            final @NonNull PlayerPair               relation,
+            final @NonNull Map<String, NodeState>   states
     ) {
         this.type           = type;
         this.relation       = relation;

@@ -34,8 +34,8 @@ public final class ParentOverrideParser {
     );
 
     public static ParentOverrideConfiguration parse(
-            @NonNull final ParentOverrideDefinition definition,
-            @NonNull final SkeletonLayout           layout
+            final @NonNull ParentOverrideDefinition definition,
+            final @NonNull SkeletonLayout           layout
     ) {
         final var builder = ParentOverrideConfiguration.builder(layout);
         for (final var entry : definition.overrides().entrySet()) {

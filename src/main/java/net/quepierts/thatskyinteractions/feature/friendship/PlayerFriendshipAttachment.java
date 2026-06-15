@@ -75,7 +75,7 @@ public final class PlayerFriendshipAttachment {
     public static final Identifier FRIEND
             = ThatSkyInteractions.location("friend");
 
-    public static PlayerFriendshipAttachment getAttachment(@NonNull final Player player) {
+    public static PlayerFriendshipAttachment getAttachment(final @NonNull Player player) {
         final var attachment = player.getData(AttachmentTypes.PLAYER_FRIENDSHIP);
         attachment.setup(player.getUUID());
         return attachment;
@@ -105,8 +105,8 @@ public final class PlayerFriendshipAttachment {
     }
 
     public static FriendshipTreeData union(
-            @NonNull final Player a,
-            @NonNull final Player b
+            final @NonNull Player a,
+            final @NonNull Player b
     ) {
         final var aAttachment   = getAttachment(a);
         final var bAttachment   = getAttachment(b);

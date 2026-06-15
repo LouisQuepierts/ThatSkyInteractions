@@ -10,7 +10,7 @@ import java.util.ServiceLoader;
 @UtilityClass
 public class Services {
 
-    public static <T> T load(@NonNull final Class<T> clazz) {
+    public static <T> T load(final @NonNull Class<T> clazz) {
         final var loaded    = ServiceLoader.load(clazz, Services.class.getClassLoader())
                             .findFirst()
                             .orElseThrow();

@@ -110,7 +110,7 @@ public final class FKController {
     }
 
     private @NonNull FKTarget get(
-            @NonNull final FKTargetType  type
+            final @NonNull FKTargetType  type
     ) {
         return this.targets[type.ordinal()];
     }

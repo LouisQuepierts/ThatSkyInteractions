@@ -35,7 +35,7 @@ public record PlayerFriendshipUiPacket(
             );
 
     public static PlayerFriendshipUiPacket invite(
-            @NonNull final Player       requester
+            final @NonNull Player       requester
     ) {
         return new PlayerFriendshipUiPacket(
                 Operation.INVITE,
@@ -44,7 +44,7 @@ public record PlayerFriendshipUiPacket(
     }
 
     public static PlayerFriendshipUiPacket cancel(
-            @NonNull final Player       requester
+            final @NonNull Player       requester
     ) {
         return new PlayerFriendshipUiPacket(
                 Operation.CANCEL,

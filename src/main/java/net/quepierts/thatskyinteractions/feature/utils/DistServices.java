@@ -19,8 +19,8 @@ public class DistServices {
 
     @SuppressWarnings("unchecked")
     public static <T> T load(
-            @NonNull final Dist     dist,
-            @NonNull final Class<T> clazz
+            final @NonNull Dist     dist,
+            final @NonNull Class<T> clazz
     ) {
         // if dist is not the same as current dist
         if (FMLLoader.getCurrent().getDist() != dist) {

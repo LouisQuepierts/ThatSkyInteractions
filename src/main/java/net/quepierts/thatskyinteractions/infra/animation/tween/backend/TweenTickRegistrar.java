@@ -4,6 +4,6 @@ import org.jspecify.annotations.NonNull;
 
 public interface TweenTickRegistrar {
 
-    void register(@NonNull final TweenTickHandler handler);
+    void register(final @NonNull TweenTickHandler handler);
 
 }

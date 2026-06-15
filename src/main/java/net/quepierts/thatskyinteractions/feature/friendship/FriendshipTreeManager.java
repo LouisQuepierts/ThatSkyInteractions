@@ -42,7 +42,7 @@ public final class FriendshipTreeManager extends DataSyncManager<FriendshipTreeD
     }
 
     @Override
-    protected void apply(@NonNull final Map<Identifier, FriendshipTreeDefinition> preparations) {
+    protected void apply(final @NonNull Map<Identifier, FriendshipTreeDefinition> preparations) {
         final var builder = ImmutableMap.<Identifier, FriendshipTree>builder();
         for (final var entry : preparations.entrySet()) {
             final var tree = FriendshipTree.of(entry.getValue());
@@ -53,7 +53,7 @@ public final class FriendshipTreeManager extends DataSyncManager<FriendshipTreeD
         log.info("Loaded {} friendship trees", this.trees.size());
     }
 
-    public FriendshipTree get(@NonNull final Identifier identifier) {
+    public FriendshipTree get(final @NonNull Identifier identifier) {
         return this.trees.get(identifier);
     }
 

@@ -46,7 +46,7 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
     }
 
     @Override
-    protected void apply(@NonNull final Map<Identifier, PlayerAnimationDefinition> preparations) {
+    protected void apply(final @NonNull Map<Identifier, PlayerAnimationDefinition> preparations) {
         var builder = ImmutableMap.<Identifier, Holder>builder();
         for (var entry : preparations.entrySet()) {
             var id = entry.getKey();
@@ -59,7 +59,7 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
     }
 
     @Override
-    protected @NonNull Map<Identifier, PlayerAnimationDefinition> onHostLoaded(@NonNull final Map<Identifier, PlayerAnimationDefinition> preparations) {
+    protected @NonNull Map<Identifier, PlayerAnimationDefinition> onHostLoaded(final @NonNull Map<Identifier, PlayerAnimationDefinition> preparations) {
 
         final var modified  = new Object2ObjectOpenHashMap<>(preparations);
         final var event     = new RegisterPlayerAnimationEvent(modified);

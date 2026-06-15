@@ -9,7 +9,7 @@ public final class TweenScheduler {
 
     private final List<Task> tasks = new ArrayList<>();
 
-    public void submit(@NonNull final Task task) {
+    public void submit(final @NonNull Task task) {
         this.tasks.add(task);
     }
 

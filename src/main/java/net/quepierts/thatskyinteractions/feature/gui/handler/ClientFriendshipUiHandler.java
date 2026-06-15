@@ -15,23 +15,23 @@ public abstract class ClientFriendshipUiHandler {
             = new ClientFriendshipUiHandler() {};
 
     public static void invite(
-            @NonNull final Player requester
+            final @NonNull Player requester
     ) {
         INSTANCE._invite(requester);
     }
 
     public static void cancel(
-            @NonNull final Player requester
+            final @NonNull Player requester
     ) {
         INSTANCE._cancel(requester);
     }
 
     protected void _invite(
-            @NonNull final Player requester
+            final @NonNull Player requester
     ) { }
 
     protected void _cancel(
-            @NonNull final Player requester
+            final @NonNull Player requester
     ) { }
 
 }

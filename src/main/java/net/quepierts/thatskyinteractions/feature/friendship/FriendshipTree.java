@@ -17,7 +17,7 @@ import java.util.Iterator;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FriendshipTree implements Iterable<FriendshipTreeNode> {
 
-    public static FriendshipTree of(@NonNull final FriendshipTreeDefinition definition) {
+    public static FriendshipTree of(final @NonNull FriendshipTreeDefinition definition) {
 
         final var nodes             = definition.nodes();
         final var size              = nodes.size();

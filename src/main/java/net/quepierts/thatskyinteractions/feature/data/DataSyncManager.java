@@ -76,7 +76,7 @@ public abstract class DataSyncManager<T> extends SimpleJsonResourceReloadListene
     protected void onSynced() { }
 
     protected static <T> StreamCodec<? super RegistryFriendlyByteBuf, Map<Identifier, T>> createStreamCodec(
-            @NonNull final StreamCodec<? super RegistryFriendlyByteBuf, T> element
+            final @NonNull StreamCodec<? super RegistryFriendlyByteBuf, T> element
     ) {
         return ByteBufCodecs.map(
                 (IntFunction<Map<Identifier, T>>) Object2ObjectOpenHashMap::new,

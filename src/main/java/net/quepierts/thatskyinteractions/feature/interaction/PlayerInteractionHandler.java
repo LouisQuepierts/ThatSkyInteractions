@@ -75,7 +75,7 @@ public class PlayerInteractionHandler {
     }
 
     private static @NonNull PlayerAnimation requester(
-            @NonNull final PlayerAnimationDefinition definition
+            final @NonNull PlayerAnimationDefinition definition
     ) {
 
         final var context   = TemplateAnimation.ParsingContext.of(
@@ -104,7 +104,7 @@ public class PlayerInteractionHandler {
     }
 
     private static @NonNull PlayerAnimation receiver(
-            @NonNull final PlayerAnimationDefinition definition
+            final @NonNull PlayerAnimationDefinition definition
     ) {
 
         final var context   = TemplateAnimation.ParsingContext.of(
@@ -127,8 +127,8 @@ public class PlayerInteractionHandler {
     }
 
     private static @Nullable AnimationSampler fallback(
-            @NonNull final Int2ObjectFunction<AnimationSampler> getter,
-            @NonNull final FSMParameter fsmParameter,
+            final @NonNull Int2ObjectFunction<AnimationSampler> getter,
+            final @NonNull FSMParameter fsmParameter,
             final           String                                  name,
             final           int                                     index
     ) {

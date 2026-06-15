@@ -263,7 +263,7 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     }
 
     @Override
-    public int compareTo(@NonNull final AnimationLayer other) {
+    public int compareTo(final @NonNull AnimationLayer other) {
         return Integer.compare(this.priority, other.priority);
     }
 

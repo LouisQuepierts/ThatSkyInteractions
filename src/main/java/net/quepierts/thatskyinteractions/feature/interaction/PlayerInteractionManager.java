@@ -110,7 +110,7 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionS
     }
 
     @Override
-    protected void apply(@NonNull final Map<Identifier, InteractionSet> preparations) {
+    protected void apply(final @NonNull Map<Identifier, InteractionSet> preparations) {
 
         final var builder0  = ImmutableMap.<Identifier, InteractionSet>builder();
         final var builder1  = ImmutableMap.<Identifier, Interaction>builder();

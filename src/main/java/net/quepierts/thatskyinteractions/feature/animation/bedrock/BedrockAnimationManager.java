@@ -43,7 +43,7 @@ public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimat
     }
 
     @Override
-    protected void apply(@NonNull final Map<Identifier, BedrockAnimationDefinition> preparations) {
+    protected void apply(final @NonNull Map<Identifier, BedrockAnimationDefinition> preparations) {
         var builder         = ImmutableMap.<Identifier, BedrockAnimationDefinition>builder();
         var builder2        = ImmutableMap.<Identifier, BedrockAnimation>builder();
 

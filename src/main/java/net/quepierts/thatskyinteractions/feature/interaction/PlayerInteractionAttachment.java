@@ -32,7 +32,7 @@ public final class PlayerInteractionAttachment {
     private final Map<UUID, InteractionRequest> received;
     private InteractionRequest                  ongoing;
 
-    public static PlayerInteractionAttachment getAttachment(@NonNull final Player player) {
+    public static PlayerInteractionAttachment getAttachment(final @NonNull Player player) {
         return player.getData(AttachmentTypes.PLAYER_INTERACTION);
     }
 

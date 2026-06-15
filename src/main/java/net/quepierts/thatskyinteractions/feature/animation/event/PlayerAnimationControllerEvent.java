@@ -60,7 +60,7 @@ public abstract sealed class PlayerAnimationControllerEvent extends Event {
     public static final class Finished extends PlayerAnimationControllerEvent {
 
         public Finished(
-                @NonNull final PlayerAnimationController controller
+                final @NonNull PlayerAnimationController controller
         ) {
             super(controller);
         }
@@ -76,7 +76,7 @@ public abstract sealed class PlayerAnimationControllerEvent extends Event {
         private final boolean   looping;
 
         public StateChanged(
-                @NonNull final PlayerAnimationController controller,
+                final @NonNull PlayerAnimationController controller,
                 final int lastState,
                 final int currentState
         ) {

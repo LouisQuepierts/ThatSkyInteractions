@@ -22,7 +22,7 @@ public final class TweenScopeImpl
     public TweenScopeImpl() {}
 
     @Override
-    public TweenHandle to(@NonNull final Consumer1f target, final float from, final float to, final float duration, @NonNull final Interpolator1f interpolator, @NonNull final Ease ease) {
+    public TweenHandle to(final @NonNull Consumer1f target, final float from, final float to, final float duration, final @NonNull Interpolator1f interpolator, final @NonNull Ease ease) {
         final var task  = new TweenTask1f(
                         duration,
                         from,
@@ -38,7 +38,7 @@ public final class TweenScopeImpl
     }
 
     @Override
-    public <T> TweenHandle to(@NonNull final Consumer<T> target, final T from, final T to, final float duration, @NonNull final Interpolator<T> interpolator, @NonNull final Ease ease) {
+    public <T> TweenHandle to(final @NonNull Consumer<T> target, final T from, final T to, final float duration, final @NonNull Interpolator<T> interpolator, final @NonNull Ease ease) {
         final var task  = new TweenTask<>(
                         duration,
                         from,
@@ -54,7 +54,7 @@ public final class TweenScopeImpl
     }
 
     @Override
-    public TweenHandle translate(@NonNull final TransformAccessor transform, @NonNull final Vector3fc from, @NonNull final Vector3fc to, final float duration, @NonNull final Interpolator<Vector3fc> interpolator, @NonNull final Ease ease) {
+    public TweenHandle translate(final @NonNull TransformAccessor transform, final @NonNull Vector3fc from, final @NonNull Vector3fc to, final float duration, final @NonNull Interpolator<Vector3fc> interpolator, final @NonNull Ease ease) {
         final var task  = new TweenTask<>(
                         duration,
                         from,
@@ -70,7 +70,7 @@ public final class TweenScopeImpl
     }
 
     @Override
-    public TweenHandle rotate(@NonNull final TransformAccessor transform, @NonNull final Vector3fc from, @NonNull final Vector3fc to, final float duration, @NonNull final Interpolator<Vector3fc> interpolator, @NonNull final Ease ease) {
+    public TweenHandle rotate(final @NonNull TransformAccessor transform, final @NonNull Vector3fc from, final @NonNull Vector3fc to, final float duration, final @NonNull Interpolator<Vector3fc> interpolator, final @NonNull Ease ease) {
         final var task  = new TweenTask<>(
                         duration,
                         from,
@@ -86,7 +86,7 @@ public final class TweenScopeImpl
     }
 
     @Override
-    public TweenHandle rotate(@NonNull final TransformAccessor transform, @NonNull final Quaternionfc from, @NonNull final Quaternionfc to, final float duration, @NonNull final Interpolator<Quaternionfc> interpolator, @NonNull final Ease ease) {
+    public TweenHandle rotate(final @NonNull TransformAccessor transform, final @NonNull Quaternionfc from, final @NonNull Quaternionfc to, final float duration, final @NonNull Interpolator<Quaternionfc> interpolator, final @NonNull Ease ease) {
         final var task  = new TweenTask<>(
                         duration,
                         from,
@@ -102,7 +102,7 @@ public final class TweenScopeImpl
     }
 
     @Override
-    public TweenHandle scale(@NonNull final TransformAccessor transform, @NonNull final Vector3fc from, @NonNull final Vector3fc to, final float duration, @NonNull final Interpolator<Vector3fc> interpolator, @NonNull final Ease ease) {
+    public TweenHandle scale(final @NonNull TransformAccessor transform, final @NonNull Vector3fc from, final @NonNull Vector3fc to, final float duration, final @NonNull Interpolator<Vector3fc> interpolator, final @NonNull Ease ease) {
         final var task  = new TweenTask<>(
                         duration,
                         from,
@@ -118,7 +118,7 @@ public final class TweenScopeImpl
     }
 
     @Override
-    public TweenHandle wait(@NonNull final Runnable runnable, final float duration) {
+    public TweenHandle wait(final @NonNull Runnable runnable, final float duration) {
         final var task  = new WaitTask(
                         duration,
                         runnable

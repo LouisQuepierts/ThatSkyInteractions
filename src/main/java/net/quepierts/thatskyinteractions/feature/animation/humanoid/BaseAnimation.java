@@ -28,7 +28,7 @@ public abstract class BaseAnimation implements PlayerAnimation {
 
     @Override
     public void play(
-            @NonNull final FSMState state
+            final @NonNull FSMState state
     ) {
         state.setUniform(this.uniform);
         this.fsm.start(state);
@@ -36,7 +36,7 @@ public abstract class BaseAnimation implements PlayerAnimation {
 
     @Override
     public void update(
-            @NonNull final FSMState state,
+            final @NonNull FSMState state,
             final float delta
     ) {
         state.setUniform(this.uniform);
@@ -44,25 +44,25 @@ public abstract class BaseAnimation implements PlayerAnimation {
     }
 
     @Override
-    public void cleanup(@NonNull final FSMState state) {
+    public void cleanup(final @NonNull FSMState state) {
         this.fsm.reset(state);
     }
 
     @Override
     public void event(
-            @NonNull final FSMState fsmState,
+            final @NonNull FSMState fsmState,
             final int               event
     ) {
         this.fsm.event(fsmState, event);
     }
 
     @Override
-    public void abort(@NonNull final FSMState fsmState) {
+    public void abort(final @NonNull FSMState fsmState) {
         this.fsm.abort(fsmState);
     }
 
     @Override
-    public void exit(@NonNull final FSMState fsmState) {
+    public void exit(final @NonNull FSMState fsmState) {
         if (this.fsm.getTerminal() == fsmState.getCurrentState()) {
             return;
         }
@@ -71,7 +71,7 @@ public abstract class BaseAnimation implements PlayerAnimation {
     }
 
     @Override
-    public boolean isLooping(@NonNull final FSMState fsmState) {
+    public boolean isLooping(final @NonNull FSMState fsmState) {
         return this.fsm.isLooping(fsmState);
     }
 

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 @UtilityClass
 public class StreamCodecUtils {
 
-    public static <T> StreamCodec<ByteBuf, T> unit(@NonNull final Supplier<T> supplier) {
+    public static <T> StreamCodec<ByteBuf, T> unit(final @NonNull Supplier<T> supplier) {
         return new StreamCodec<>() {
             @Override
             public T decode(final ByteBuf byteBuf) {

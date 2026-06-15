@@ -27,18 +27,18 @@ public interface ChannelProcessor {
         return new Default();
     }
 
-    boolean discard(@NonNull final String name);
+    boolean discard(final @NonNull String name);
 
-    @NonNull String process(@NonNull final String name);
+    @NonNull String process(final @NonNull String name);
 
     class Default implements ChannelProcessor {
         @Override
-        public boolean discard(@NonNull final String name) {
+        public boolean discard(final @NonNull String name) {
             return false;
         }
 
         @Override
-        public @NonNull String process(@NonNull final String name) {
+        public @NonNull String process(final @NonNull String name) {
             return name;
         }
     }

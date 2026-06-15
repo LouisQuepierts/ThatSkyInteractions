@@ -23,7 +23,7 @@ public class PlayerInteractionSystem {
     public static final String ANIMATION_TYPE_RECEIVER  = "interaction.receiver";
 
     public static PlayerInteractionAttachment getInteractionAttachment(
-            @NonNull final Player player
+            final @NonNull Player player
     ) {
         return PlayerInteractionAttachment.getAttachment(player);
     }

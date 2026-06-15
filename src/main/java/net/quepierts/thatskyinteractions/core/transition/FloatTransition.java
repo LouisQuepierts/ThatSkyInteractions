@@ -53,7 +53,7 @@ public final class FloatTransition {
     }
 
     public void update(
-            @NonNull final TweenScope   tween,
+            final @NonNull TweenScope   tween,
                      final float        target
     ) {
         if (target == this.target) {

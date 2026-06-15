@@ -49,7 +49,7 @@ public final class ParentOverrideManager extends DataSyncManager<ParentOverrideD
     }
 
     @Override
-    protected void apply(@NonNull final Map<Identifier, ParentOverrideDefinition> preparations) {
+    protected void apply(final @NonNull Map<Identifier, ParentOverrideDefinition> preparations) {
         var builder = ImmutableMap.<Identifier, Holder>builder();
         for (var entry : preparations.entrySet()) {
             var id = entry.getKey();
@@ -63,8 +63,8 @@ public final class ParentOverrideManager extends DataSyncManager<ParentOverrideD
     }
     
     public ParentOverrideConfiguration get(
-            @NonNull final Identifier       identifier,
-            @NonNull final SkeletonLayout   layout
+            final @NonNull Identifier       identifier,
+            final @NonNull SkeletonLayout   layout
     ) {
 
         if (identifier.equals(DISABLED)) {

@@ -10,7 +10,7 @@ import org.jspecify.annotations.Nullable;
 public class FriendshipBehaviourFactory {
 
     public static @Nullable FriendshipBehaviour get(
-            @NonNull final FriendshipTreeNode node
+            final @NonNull FriendshipTreeNode node
     ) {
         final var type  = node.getType();
         return TsiRegistries.FRIENDSHIP_BEHAVIOUR.getValue(type);

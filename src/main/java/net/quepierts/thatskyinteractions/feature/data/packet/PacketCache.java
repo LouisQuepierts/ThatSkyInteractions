@@ -31,8 +31,8 @@ public final class PacketCache {
     private Object cachedObject;
 
     public void cache(
-            @NonNull final StreamCodec<? super RegistryFriendlyByteBuf, ?> codec,
-            @NonNull final Object object
+            final @NonNull StreamCodec<? super RegistryFriendlyByteBuf, ?> codec,
+            final @NonNull Object object
     ) {
         this.cachedCodec = codec;
         this.cachedObject = object;
@@ -41,8 +41,8 @@ public final class PacketCache {
     }
 
     /*public <T> void encode(
-            @NonNull final StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
-            @NonNull final T object
+            final @NonNull StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+            final @NonNull T object
     ) {
         var fresh = new RegistryFriendlyByteBuf(Unpooled.buffer(), )
         codec.encode(fresh, object);
@@ -54,13 +54,13 @@ public final class PacketCache {
     }*/
 
     public <T> T decode(
-            @NonNull final StreamCodec<? super RegistryFriendlyByteBuf, T> codec
+            final @NonNull StreamCodec<? super RegistryFriendlyByteBuf, T> codec
     ) {
         return codec.decode(this.buffer);
     }
 
     public void write(
-            @NonNull final RegistryFriendlyByteBuf target
+            final @NonNull RegistryFriendlyByteBuf target
     ) {
         if (this.buffer == null) {
 
