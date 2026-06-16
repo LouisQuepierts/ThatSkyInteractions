@@ -59,6 +59,12 @@ public class Control extends AbstractWidget implements IAttributeHolder {
     @Getter(AccessLevel.PROTECTED)
     private VisualNode                  visualNode;
 
+    @Setter
+    private Runnable                    onMouseEntered;
+
+    @Setter
+    private Runnable                    onMouseExited;
+
     public Control(
             final TweenScope    tween,
             final int           x,
@@ -150,11 +156,15 @@ public class Control extends AbstractWidget implements IAttributeHolder {
     }
 
     protected void onMouseEntered() {
-
+        if (this.onMouseEntered != null) {
+            this.onMouseEntered.run();
+        }
     }
 
     protected void onMouseExited() {
-
+        if (this.onMouseExited != null) {
+            this.onMouseExited.run();
+        }
     }
 
     public float x() {

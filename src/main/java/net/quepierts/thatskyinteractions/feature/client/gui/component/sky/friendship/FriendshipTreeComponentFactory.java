@@ -16,7 +16,6 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.property.FloatProperty;
-import net.quepierts.thatskyinteractions.feature.client.ClientPlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
@@ -90,11 +89,10 @@ public class FriendshipTreeComponentFactory {
         int i                       = 0;
         for (final var node : structure) {
 
-            final var button        = new TsiButton(
+            final var button        = TsiButton.create(
                                         tween,
-                                        0, 0,
-                                        NODE_SIZE, NODE_SIZE,
-                                        Component.empty()
+                                        Component.empty(),
+                                        0, 0
                                     );
 
             final var index         = i;

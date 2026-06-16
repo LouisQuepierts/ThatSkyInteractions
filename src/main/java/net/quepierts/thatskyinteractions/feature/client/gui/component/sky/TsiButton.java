@@ -1,32 +1,42 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.sky;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
-import net.quepierts.thatskyinteractions.core.transition.BooleanTransition;
-import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
-import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
 import org.jspecify.annotations.NonNull;
 
-public class TsiButton extends Button {
+@UtilityClass
+public class TsiButton {
 
-    public TsiButton(
-            final TweenScope tween,
-            final int x, final int y,
-            final int width, final int height,
-            final Component message
+    public static final int         BUTTON_SCALE    = 32;
+    public static final Runnable    ENTER_SOUND
+            = () -> Minecraft.getInstance()
+                .getSoundManager()
+                .play(SimpleSoundInstance.forUI(SoundEvents.ITEM_PICKUP, 0.5f, 0.05f));
+
+    public static @NonNull Button create(
+            final @NonNull TweenScope                   tween,
+            final @NonNull Component                    message,
+            final          int                          x,
+            final          int                          y
     ) {
-        super(tween, x, y, width, height, message);
+
+        final var button = new Button(
+                tween,
+                x, y,
+                BUTTON_SCALE,
+                BUTTON_SCALE,
+                message
+        );
+
+        button.setOnMouseEntered(ENTER_SOUND);
+
+        return button;
+
     }
 
-    @Override
-    protected void onMouseEntered() {
-        final var manager = Minecraft.getInstance().getSoundManager();
-        manager.play(SimpleSoundInstance.forUI(SoundEvents.ITEM_PICKUP, 0.5f, 0.05f));
-    }
 }

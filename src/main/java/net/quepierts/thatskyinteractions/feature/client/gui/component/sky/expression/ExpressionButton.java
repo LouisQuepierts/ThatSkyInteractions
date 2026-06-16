@@ -2,12 +2,13 @@ package net.quepierts.thatskyinteractions.feature.client.gui.component.sky.expre
 
 import net.minecraft.network.chat.Component;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.attribute.AttributeKey;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.TsiButton;
 import net.quepierts.thatskyinteractions.infra.animation.tween.TweenScope;
 
 import java.util.function.IntSupplier;
 
-public class ExpressionButton extends TsiButton {
+public class ExpressionButton extends Button {
 
     public static final AttributeKey<IntSupplier> ATTRIBUTE_LEVELS      = new AttributeKey<>("levels");
     public static final AttributeKey<IntSupplier> ATTRIBUTE_SELECTED    = new AttributeKey<>("selected");
