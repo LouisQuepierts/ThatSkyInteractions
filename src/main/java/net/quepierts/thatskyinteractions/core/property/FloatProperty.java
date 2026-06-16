@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.core.property;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.quepierts.veynir.core.adapter.Consumer1f;
+import org.jetbrains.annotations.Contract;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +18,7 @@ public class FloatProperty implements Consumer1f {
         return new FloatProperty(1);
     }
 
+    @Contract(pure = true)
     public float get() {
         return value;
     }

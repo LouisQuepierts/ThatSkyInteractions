@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.core.property;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.quepierts.thatskyinteractions.infra.animation.tween.consumer.Consumer1i;
+import org.jetbrains.annotations.Contract;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +19,7 @@ public class IntProperty implements Consumer1i {
         return new IntProperty(1);
     }
 
+    @Contract(pure = true)
     public int get() {
         return this.value;
     }
