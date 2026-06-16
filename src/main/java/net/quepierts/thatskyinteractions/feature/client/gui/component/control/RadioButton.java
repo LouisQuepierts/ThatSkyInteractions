@@ -18,9 +18,9 @@ import java.util.List;
 
 public class RadioButton extends Button {
 
-    public static final AttributeKey<FloatProperty> SELECTED_DURATION
+    public static final AttributeKey<FloatProperty> ATTRIBUTE_SELECTED_DURATION
             = new AttributeKey<>("selected_duration");
-    public static final AttributeKey<BooleanTransition> SELECTED_TRANSITION
+    public static final AttributeKey<BooleanTransition> ATTRIBUTE_SELECTED_TRANSITION
             = new AttributeKey<>("selected_transition");
 
     @Getter
@@ -42,8 +42,8 @@ public class RadioButton extends Button {
     ) {
         super(tween, x, y, width, height, message);
 
-        this.setAttribute(SELECTED_DURATION, this.selectedDuration);
-        this.setAttribute(SELECTED_TRANSITION, this.selectedTransition);
+        this.setAttribute(ATTRIBUTE_SELECTED_DURATION, this.selectedDuration);
+        this.setAttribute(ATTRIBUTE_SELECTED_TRANSITION, this.selectedTransition);
     }
 
     @Override

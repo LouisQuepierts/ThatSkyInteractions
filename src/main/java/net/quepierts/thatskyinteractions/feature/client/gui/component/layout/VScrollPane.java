@@ -45,7 +45,16 @@ public class VScrollPane extends Pane {
 
     @Override
     public void fit() {
+        // fit width
+        var width = 0;
+        for (final var child : this.getChildren()) {
+            final var right = child.getX() + child.getWidth();
 
+            if (right > width) {
+                width = right;
+            }
+        }
+        this.width = width;
     }
 
     @Override

@@ -39,4 +39,43 @@ public class TsiButton {
 
     }
 
+    public static @NonNull <T extends Button> T create(
+            final @NonNull Constructor<T>               constructor,
+            final @NonNull TweenScope                   tween,
+            final @NonNull Component                    message,
+            final          int                          x,
+            final          int                          y
+    ) {
+        final var button = constructor.create(
+                tween,
+                x, y,
+                BUTTON_SCALE,
+                BUTTON_SCALE,
+                message
+        );
+
+        button.setOnMouseEntered(ENTER_SOUND);
+
+        return button;
+    }
+
+    public static <T extends Button> @NonNull T setup(
+            final @NonNull T button
+    ) {
+        button.setOnMouseEntered(ENTER_SOUND);
+        return button;
+    }
+
+    @FunctionalInterface
+    public interface Constructor<T extends Button> {
+        @NonNull T create(
+                final @NonNull TweenScope                   tween,
+                final          int                          x,
+                final          int                          y,
+                final          int                          width,
+                final          int                          height,
+                final @NonNull Component                    message
+        );
+    }
+
 }
