@@ -2,18 +2,18 @@ package net.quepierts.thatskyinteractions.feature.client;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ShaderManager;
-import net.minecraft.world.InteractionHand;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.call.packet.CallRequestPacket;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerPreferenceAttachment;
+import net.quepierts.thatskyinteractions.feature.expression.call.PlayerVoiceType;
+import net.quepierts.thatskyinteractions.feature.expression.call.packet.CallRequestPacket;
 import net.quepierts.thatskyinteractions.feature.client.reference.TsiKeys;
 
 @UtilityClass
@@ -27,12 +27,22 @@ public class ClientPlayerCallSystem {
 
     }
 
+    @SuppressWarnings("DataFlowIssue")
+    public static boolean hasVoice() {
+        final var attachment = PlayerPreferenceAttachment.getAttachment(Minecraft.getInstance().player);
+        return !attachment.getVoice().equals(PlayerVoiceType.DEFAULT_ID);
+    }
+
     @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
     private static final class Handler {
+
+        private static boolean  press0      = false;
+        private static boolean  press       = false;
 
         @SubscribeEvent
         public static void onPlayerClick(final InputEvent.InteractionKeyMappingTriggered event) {
 
+            press = false;
             if (event.getKeyMapping() != Minecraft.getInstance().options.keyAttack) {
                 return;
             }
@@ -41,11 +51,32 @@ public class ClientPlayerCallSystem {
                 return;
             }
 
+            if (!ClientPlayerCallSystem.hasVoice()) {
+                return;
+            }
+
             event.setCanceled(true);
             event.setSwingHand(false);
-            ClientPlayerCallSystem.call();
+            press = true;
 
         }
+
+        @SubscribeEvent
+        public static void onPlayerTick(final ClientTickEvent.Pre event) {
+
+            if (Minecraft.getInstance().level == null) {
+                return;
+            }
+
+            if (press0 && !press) {
+                ClientPlayerCallSystem.call();
+            }
+
+            press0 = press;
+            press = false;
+
+        }
+
 
         @SubscribeEvent
         public static void onPlayerChat(final ClientChatEvent event) {

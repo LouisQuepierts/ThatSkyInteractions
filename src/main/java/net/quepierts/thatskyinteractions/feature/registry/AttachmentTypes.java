@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerPreferenceAttachment;
 import net.quepierts.thatskyinteractions.feature.control.PlayerNavigator;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingAttachment;
@@ -62,6 +63,16 @@ public class AttachmentTypes {
                     "player/handhold",
                     PlayerHandholdingAttachment::new
             )
+            .register();
+
+    public static final AttachmentEntry<PlayerPreferenceAttachment> PLAYER_PREFERENCE
+            = ThatSkyInteractions.REGISTRUM.attachment(
+                    "player/preference",
+                    PlayerPreferenceAttachment::new
+            )
+            .serialize(PlayerPreferenceAttachment.MAP_CODEC, PlayerPreferenceAttachment::shouldSerialize)
+            .sync(PlayerPreferenceAttachment.STREAM_CODEC)
+            .copyOnDeath()
             .register();
 
     public static final AttachmentEntry<PhysicalTweenAttachment> PHYSICAL_TWEEN

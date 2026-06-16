@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.call.packet;
+package net.quepierts.thatskyinteractions.feature.expression.call.packet;
 
 import dev.anvilcraft.lib.v2.network.packet.IPacket;
 import dev.anvilcraft.lib.v2.network.packet.IServerboundPacket;
@@ -8,7 +8,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.call.PlayerCallSystem;
+import net.quepierts.thatskyinteractions.feature.expression.call.PlayerCallSystem;
 import org.jspecify.annotations.NonNull;
 
 public record CallRequestPacket(
@@ -29,7 +29,7 @@ public record CallRequestPacket(
 
     @Override
     public void handleOnServer(final @NonNull Player player) {
-        PlayerCallSystem.call((ServerPlayer) player, 1.0f);
+        PlayerCallSystem.call((ServerPlayer) player);
     }
 
     @Override

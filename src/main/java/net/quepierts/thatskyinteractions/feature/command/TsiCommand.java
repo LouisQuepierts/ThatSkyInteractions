@@ -19,6 +19,7 @@ public class TsiCommand {
                 Commands.literal(ThatSkyInteractions.MODID).requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(FriendshipCommand.command())
                         .then(HandholdingCommand.command())
+                        .then(PreferenceCommand.command())
         );
 
         dispatcher.register(

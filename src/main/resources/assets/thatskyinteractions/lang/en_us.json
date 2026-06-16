@@ -72,5 +72,9 @@
   "gui.thatskyinteractions.prompt.w2s.mouse.request": "Accept your friend's invite?",
   "gui.thatskyinteractions.prompt.w2s.world.request": "Press [%s] + [%s] to accept invite",
   "gui.thatskyinteractions.prompt.w2s.mouse.unlock": "Accepting a gift from a friend?",
-  "gui.thatskyinteractions.prompt.w2s.world.unlock": "Press [%s] + [%s] to accept gift"
+  "gui.thatskyinteractions.prompt.w2s.world.unlock": "Press [%s] + [%s] to accept gift",
+
+  "command.thatskyinteractions.preference.voice.get": "The preference voice of %s is %s.",
+  "command.thatskyinteractions.preference.voice.set": "Set the preference voice of %s to %s.",
+  "command.thatskyinteractions.preference.voice.invalid": "Invalid voice %s."
 }
