@@ -27,8 +27,8 @@ public final class AnimationCommand {
     static final SuggestionProvider<CommandSourceStack> ANIMATIONS
             = (_, builder)
             -> SharedSuggestionProvider.suggestResource(
-            PlayerAnimationManager.getInstance().identifiers(), builder
-    );
+                    PlayerAnimationManager.getInstance().identifiers(), builder
+            );
 
     static final SuggestionProvider<CommandSourceStack> LAYERS = (context, builder) -> {
 
