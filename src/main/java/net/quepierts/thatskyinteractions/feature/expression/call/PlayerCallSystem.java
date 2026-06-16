@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.feature.expression.call;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.NoteBlock;
