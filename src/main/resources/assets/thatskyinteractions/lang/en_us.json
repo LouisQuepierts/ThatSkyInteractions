@@ -1,9 +1,9 @@
 {
 
-  "key.categories.thatskyinteractions": "That Sky Interactions",
-  "key.thatskyinteractions.enable_interact": "Enable TSI Interactions",
-  "key.thatskyinteractions.interact_button": "Interact With Button",
-  "key.thatskyinteractions.friend_astrolabe": "Open Astrolabe",
+  "key.categories.thatskyinteractions.interactions": "That Sky Interactions",
+  "key.thatskyinteractions.interact": "Enable Interactions",
+  "key.thatskyinteractions.open_expression": "Open Expression Screen",
+  "key.thatskyinteractions.unlock_camera": "Unlock Camera",
 
   "gui.thatskyinteractions.message.unlock.default.request": "Offer %s to unlock %s?",
   "gui.thatskyinteractions.message.unlock.accept.left": "Receive",
@@ -76,5 +76,7 @@
 
   "command.thatskyinteractions.preference.voice.get": "The preference voice of %s is %s.",
   "command.thatskyinteractions.preference.voice.set": "Set the preference voice of %s to %s.",
-  "command.thatskyinteractions.preference.voice.invalid": "Invalid voice %s."
+  "command.thatskyinteractions.preference.voice.invalid": "Invalid voice %s.",
+
+  "message.thatskyinteractions.handhold.stop": "Sprint to stop holding hand."
 }
