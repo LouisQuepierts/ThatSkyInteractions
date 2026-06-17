@@ -1,4 +1,5 @@
 {
   "icon": "thatskyinteractions:voice/player",
-  "sound": "minecraft:block.note_block.pling"
+  "sound": "minecraft:block.note_block.pling",
+  "priority": -10
 }

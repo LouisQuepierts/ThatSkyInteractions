@@ -1,0 +1,22 @@
+{
+  "voice.cat": {
+    "sounds": [
+      "mob/cat/meow2"
+    ]
+  },
+  "voice.dog": {
+    "sounds": [
+      "mob/wolf/classic/bark2"
+    ]
+  },
+  "voice.fox": {
+    "sounds": [
+      "mob/fox/idle1"
+    ]
+  },
+  "voice.bird": {
+    "sounds": [
+      "mob/parrot/idle3"
+    ]
+  }
+}
