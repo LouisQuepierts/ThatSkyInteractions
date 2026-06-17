@@ -12,14 +12,14 @@ public class ButtonRenderOps {
                 .reset()
                 .color(colors.argb())
                 .center(true)
-                .round(5.0f)
+                .round(4.5f)
                 .box(
-                        x, y,
-                        width - 2,
-                        height - 2
+                        0, 0,
+                        width - 3,
+                        height - 3
                 )
                 .stroke(0.5f)
-                .light(2.5f)
+                .light(3.2f)
                 .draw(graphics.original());
     };
 

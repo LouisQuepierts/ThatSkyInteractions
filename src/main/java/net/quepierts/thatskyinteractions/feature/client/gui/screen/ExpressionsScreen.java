@@ -10,9 +10,9 @@ import net.quepierts.thatskyinteractions.feature.client.gui.ColorStack;
 import net.quepierts.thatskyinteractions.feature.client.gui.ExtendedGuiGraphics;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Button;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.control.Control;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.GridPane;
-import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.VBox;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.layout.*;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.expression.ExpressionButton;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.sky.expression.ExpressionComponentFactory;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.GeneralVisualNodes;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.VisualNode;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonRenderOps;
@@ -37,145 +37,46 @@ public final class ExpressionsScreen extends SlideScreen<Void, ExpressionScreenC
     @Override
     protected Control createView() {
 
-        var controller  = this.getController();
-        var tween       = this.tween();
-        var vBox        = new VBox(
-                tween,
-                0, 0,
-                this.getSliderWide().get(),
-                this.height,
-                Component.empty()
-        );
+        var controller          = this.getController();
+        var tween               = this.tween();
+        var scroll              = new VScrollPane(
+                                    tween,
+                                    0, 0,
+                                    this.getSliderWide().get(),
+                                    this.height,
+                                    Component.empty()
+                                );
+        final var padding       = scroll.getPadding();
+        padding.top             = 16;
 
-        vBox.setAlignment(Alignment.TOP_CENTER);
-        final var padding = vBox.getPadding();
-        padding.top = 16;
+        var vbox                = new VBox(
+                                    tween,
+                                    0, 0,
 
-        var grid = new GridPane(
-                tween,
-                0, 0,
-                0, 0,
-                Component.empty()
-        );
-        grid.setAlignment(Alignment.TOP_CENTER);
-        grid.setHgap(4);
-        grid.setVgap(4);
+                                    this.getSliderWide().get(),
+                                    this.height,
+                                    Component.empty()
+                                );
 
-        final var manager       = PlayerExpressionManager.getInstance();
-        final var expressions   = manager.ordinal();
-        final var maxColumn     = 4;
-        var row                 = 0;
-        var column              = 0;
-        var i                   = 0;
+        vbox                    .setAlignment(Alignment.TOP_CENTER);
 
-        for (final var identifier : expressions) {
+        scroll                  .getScrollSpeed().set(16.0f);
 
-            final var id    = i;
-            final var set   = manager.getSet(identifier);
+        final var voices        = ExpressionComponentFactory.createVoices(tween, controller);
+        final var expressions   = ExpressionComponentFactory.createExpressions(tween, controller);
 
-            if (set == null) { // normally, this should never happen
-                continue;
-            }
+        scroll                  .addChild(voices);
+        scroll                  .addChild(expressions);
+        scroll                  .fit();
 
-            final var button = new ExpressionButton(
-                    tween,
-                    Component.empty(),
-                    set.levels()
-            );
+        vbox                    .addChild(scroll);
+        vbox                    .layout();
 
-            button.getActivationTrigger().set(Button.ActivationTrigger.RELEASED);
-            button.setVisualNode(vButton(set));
-            button.setOnClick(() -> {
-                Minecraft.getInstance()
-                        .getSoundManager()
-                        .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f));
-                controller.onButtonClicked(id, button.getSelected());
-            });
-
-            // calculate row and column
-            if (column == maxColumn) {
-                row++;
-                column = 0;
-            }
-
-            grid.add(
-                    button,
-                    column,
-                    row
-            );
-
-            column++;
-            i++;
-        }
-
-        grid.fit();
-
-        vBox.addChild(grid);
-        vBox.layout();
-
-        return vBox;
+        return vbox;
     }
 
-    private static VisualNode vButton(
-            final @NonNull ExpressionSet    set
-    ) {
-        final var icon          = set.icon();
-        final var background    = GeneralVisualNodes.lBase(0x80000000, 6.0f);
-        final var content       = ButtonVisualNodes.spin((graphics, colors, _, _, width, height) -> {
-            graphics.blitIcon(
-                    icon,
-                    -14,
-                    -14,
-                    (int) width - 4,
-                    (int) height - 4
-            );
-        });
-        final var select    = set.leveled() ? new VisualNode() {
-            @Override
-            public void extractRenderState(
-                    final @NonNull Control control,
-                    final @NonNull ExtendedGuiGraphics  graphics,
-                    final @NonNull ColorStack colors,
-                    final @NonNull TweenScope tween,
-                    final int mouseX, final int mouseY, final float delta
-            ) {
 
 
-                final var levels    = control.getAttribute(ExpressionButton.ATTRIBUTE_LEVELS).getAsInt();
-                final var selected  = control.getAttribute(ExpressionButton.ATTRIBUTE_SELECTED).getAsInt() - 1;
-                final var press     = control.getAttribute(Button.ATTRIBUTE_PRESS_TRANSITION);
-                final var pressed   = press.getTarget();
-
-                final var top       = -12 - press.getValue() * 4f;
-                final var width     = levels * 4 - 2;
-                final var left      = (width) / -2f;
-
-                if (pressed) {
-                    final var scale = 1.0f + press.getValue() * 0.25f;
-                    graphics.pose().scale(scale, scale);
-                }
-
-                graphics.pose().translate(left, top);
-
-                for (var i = 0; i < levels; i++) {
-                    graphics.original().fill(
-                             i * 4,
-                            0,
-                            i * 4 + 2,
-                            2,
-                            pressed && i == selected
-                                    ? colors.argb(0xff, 0xff, 0xfe, 0xe0)
-                                    : colors.argb(0xff, 0x80, 0x80, 0x80)
-                    );
-                }
-            }
-        } : VisualNode.EMPTY;
-        final var hover     = ButtonVisualNodes.hover(ButtonRenderOps.HOVER);
-        return VisualNode.combine(
-                ButtonVisualNodes::base,
-                background, content, select, hover
-        );
-    }
 
     @Override
     public boolean isPauseScreen() {

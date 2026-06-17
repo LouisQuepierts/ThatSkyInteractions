@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.client;
 
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -17,6 +18,7 @@ import net.quepierts.thatskyinteractions.feature.expression.call.packet.CallRequ
 import net.quepierts.thatskyinteractions.feature.client.reference.TsiKeys;
 
 @UtilityClass
+@SuppressWarnings("DataFlowIssue")
 public class ClientPlayerCallSystem {
 
     public static void call() {
@@ -27,10 +29,18 @@ public class ClientPlayerCallSystem {
 
     }
 
-    @SuppressWarnings("DataFlowIssue")
     public static boolean hasVoice() {
         final var attachment = PlayerPreferenceAttachment.getAttachment(Minecraft.getInstance().player);
         return !attachment.getVoice().equals(PlayerVoiceType.DEFAULT_ID);
+    }
+
+    public static @NonNull PlayerVoiceType getPreferredVoice() {
+        final var attachment = PlayerPreferenceAttachment.getAttachment(Minecraft.getInstance().player);
+        return attachment.getVoiceType();
+    }
+
+    public PlayerPreferenceAttachment getPreference() {
+        return PlayerPreferenceAttachment.getAttachment(Minecraft.getInstance().player);
     }
 
     @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)

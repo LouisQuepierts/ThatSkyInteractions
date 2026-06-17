@@ -17,7 +17,7 @@ import net.minecraft.util.RandomSource;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import org.jspecify.annotations.NonNull;
 
-public final class PlayerVoiceType {
+public final class PlayerVoiceType implements Comparable<PlayerVoiceType> {
 
     //                                                                   C  D   E  G   A
     public static final IntList         DEFAULT_NOTES   = IntList.of(6, 8, 10, 13, 15);
@@ -26,7 +26,8 @@ public final class PlayerVoiceType {
     public static final PlayerVoiceType DEFAULT         = new PlayerVoiceType(
                                                                 DEFAULT_NOTES,
                                                                 DEFAULT_ICON,
-                                                                SoundEvents.NOTE_BLOCK_PLING
+                                                                SoundEvents.NOTE_BLOCK_PLING,
+                                                                -100
                                                         );
 
     public static final Codec<PlayerVoiceType> CODEC
@@ -36,7 +37,8 @@ public final class PlayerVoiceType {
                             i -> i
                     ).optionalFieldOf("notes", DEFAULT_NOTES).forGetter(PlayerVoiceType::getNoteList),
                     Identifier.CODEC.fieldOf("icon").forGetter(PlayerVoiceType::getIcon),
-                    SoundEvent.CODEC.fieldOf("sound").forGetter(PlayerVoiceType::getSound)
+                    SoundEvent.CODEC.fieldOf("sound").forGetter(PlayerVoiceType::getSound),
+                    Codec.INT.optionalFieldOf("priority", 0).forGetter(PlayerVoiceType::getPriority)
             ).apply(instance, PlayerVoiceType::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PlayerVoiceType> STREAM_CODEC
@@ -47,6 +49,8 @@ public final class PlayerVoiceType {
                     PlayerVoiceType::getIcon,
                     SoundEvent.STREAM_CODEC,
                     PlayerVoiceType::getSound,
+                    ByteBufCodecs.VAR_INT,
+                    PlayerVoiceType::getPriority,
                     PlayerVoiceType::new
             );
 
@@ -58,6 +62,9 @@ public final class PlayerVoiceType {
     @Getter
     private final Holder<SoundEvent>    sound;
 
+    @Getter
+    private final int                   priority;
+
     public int getNote(
             final @NonNull RandomSource random
     ) {
@@ -67,11 +74,13 @@ public final class PlayerVoiceType {
     private PlayerVoiceType(
             final @NonNull IntList              notes,
             final @NonNull Identifier           icon,
-            final @NonNull Holder<SoundEvent>   sound
+            final @NonNull Holder<SoundEvent>   sound,
+            final          int                  priority
     ) {
-        this.notes              = notes;
-        this.icon               = icon;
-        this.sound              = sound;
+        this.notes                              = notes;
+        this.icon                               = icon;
+        this.sound                              = sound;
+        this.priority                           = priority;
     }
 
     private IntList getNoteList() {
@@ -82,4 +91,8 @@ public final class PlayerVoiceType {
         return this != DEFAULT && this.sound.isBound();
     }
 
+    @Override
+    public int compareTo(final @NonNull PlayerVoiceType o) {
+        return Integer.compare(this.priority, o.priority);
+    }
 }

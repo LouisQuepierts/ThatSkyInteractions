@@ -29,6 +29,7 @@ public class ThatSkyInteractions {
         InteractionTypes.register();
         ExpressionTypes.register();
         FriendshipBehaviours.register();
+        TsiSoundEvents.register();
 
         TsiParticleTypes.REGISTER.register(modBus);
 

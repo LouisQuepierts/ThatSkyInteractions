@@ -21,11 +21,13 @@ public class ExpressionButton extends Button {
             final Component message,
             final int levels
     ) {
-        super(tween, 0, 0, 32, 32, message);
+        super(tween, 0, 0, TsiButton.BUTTON_SCALE, TsiButton.BUTTON_SCALE, message);
         this.levels = levels;
 
         this.setAttribute(ATTRIBUTE_LEVELS, () -> this.levels);
         this.setAttribute(ATTRIBUTE_SELECTED, this::getSelected);
+
+        this.setOnMouseEntered(TsiButton.ENTER_SOUND);
     }
 
     @Override
