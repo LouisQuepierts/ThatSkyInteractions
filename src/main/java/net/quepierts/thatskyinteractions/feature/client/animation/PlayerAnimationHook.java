@@ -1,12 +1,14 @@
 package net.quepierts.thatskyinteractions.feature.client.animation;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.extensions.IRenderStateExtension;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
@@ -41,12 +43,11 @@ public class PlayerAnimationHook {
         }
     }
 
-    public static <S> void onSetupRootAnimation(
-            final SubmitNodeStorage.ModelSubmit<S>  submit,
+    public static  void onSetupRootAnimation(
+            final Object                            state,
             final PoseStack                         poseStack
     ) {
 
-        final var state     = submit.state();
         if (!(state instanceof IRenderStateExtension extension)) {
             return;
         }
@@ -100,6 +101,8 @@ public class PlayerAnimationHook {
         final var minecraft = Minecraft.getInstance();
 
         final var firstPerson = minecraft.options.getCameraType().isFirstPerson();
+
+        // todo: WIP, still have errors
         if (firstPerson) {
             if (controller.isUnlocked(PlayerBone.HEAD)) {
                 return false;
@@ -129,8 +132,15 @@ public class PlayerAnimationHook {
                     root.getTz()
             );
 
+            var rootRotation = new Quaternionf(
+                    root.getRx(),
+                    root.getRy(),
+                    root.getRz(),
+                    root.getRw()
+            ).getEulerAnglesZYX(new Vector3f());
+
             var xRot = player.getXRot();
-            var rotation = new Vector3f(
+            var rotation = rootRotation.add(
                     head.xRot,
                     head.yRot,
                     -head.zRot

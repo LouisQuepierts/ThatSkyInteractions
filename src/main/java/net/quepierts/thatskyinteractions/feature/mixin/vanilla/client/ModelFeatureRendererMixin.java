@@ -42,7 +42,7 @@ public class ModelFeatureRendererMixin {
             final CallbackInfo                      ci
     ) {
         PlayerAnimationHook.onSetupRootAnimation(
-                submit,
+                submit.state(),
                 this.poseStack
         );
     }
