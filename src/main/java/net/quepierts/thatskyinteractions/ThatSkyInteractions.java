@@ -43,7 +43,9 @@ public class ThatSkyInteractions {
 
     @SubscribeEvent
     private void onFmlCommonSetup(final FMLCommonSetupEvent event) {
-        PlayerAnimationFactory.register();
-        DataSyncSystem.register();
+        event.enqueueWork(() -> {
+            PlayerAnimationFactory.register();
+            DataSyncSystem.register();
+        });
     }
 }
