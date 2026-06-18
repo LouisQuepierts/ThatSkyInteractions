@@ -7,20 +7,20 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.Ren
 @UtilityClass
 public class ButtonRenderOps {
 
+    public static final RenderOp BASE = (graphics, colors, x, y, width, height) -> {
+        SdfGraphics.getInstance()
+                .reset()
+                .color(colors.argb())
+                .center(true)
+                .draw(graphics.original(), ButtonSdfParameters.PARAM_BASE32, 0, 0);
+    };
+
     public static final RenderOp HOVER = (graphics, colors, x, y, width, height) -> {
         SdfGraphics.getInstance()
                 .reset()
                 .color(colors.argb())
                 .center(true)
-                .round(4.5f)
-                .box(
-                        0, 0,
-                        width - 3,
-                        height - 3
-                )
-                .stroke(0.5f)
-                .light(3.2f)
-                .draw(graphics.original());
+                .draw(graphics.original(), ButtonSdfParameters.PARAM_HOVER32, 0, 0);
     };
 
 }

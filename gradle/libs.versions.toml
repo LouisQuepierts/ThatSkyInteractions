@@ -1,7 +1,7 @@
 [versions]
 minecraft   = "26.1.2"
 neoforge    = "26.1.2.0-beta"
-anvillib    = "2.0.0+snapshot.441"
+anvillib    = "2.0.0+snapshot.454"
 veynir      = "1.2.0"
 
 [libraries]

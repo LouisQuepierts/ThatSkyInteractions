@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.visual.floating;
 
 import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;
+import dev.anvilcraft.lib.v2.rendering.sdf.SdfParameters;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -21,6 +22,17 @@ import org.jspecify.annotations.NonNull;
 public final class FloatingButtonNode implements VisualNode {
 
     public static final Identifier ICON                 = ThatSkyInteractions.location("textures/gui/floating.png");
+    public static final SdfParameters PARAMS_BASE
+            = SdfGraphics.getInstance()
+            .circle(0, 0, 16)
+            .fill()
+            .share();
+
+    public static final SdfParameters PARAMS_FRAME
+            = SdfGraphics.getInstance()
+            .circle(0, 0, 15)
+            .stroke(1.0f)
+            .share();
 
     private final RenderOp renderOp;
 
@@ -125,15 +137,11 @@ public final class FloatingButtonNode implements VisualNode {
                                     .reset()
                                     .center(true)
 
-                                    .circle(0, 0, 16)
                                     .color(colors.argb(0x80, 0x00, 0x00, 0x00))
-                                    .fill()
-                                    .draw(original)
+                                    .draw(original, PARAMS_BASE, 0, 0)
 
-                                    .circle(0, 0, 15)
-                                    .stroke(1.0f)
                                     .color(colors.argb(0xff, 0xa0, 0xa0, 0x80))
-                                    .draw(original);
+                                    .draw(original, PARAMS_FRAME, 0, 0);
 
             this.renderOp           .render(
                                             graphics,

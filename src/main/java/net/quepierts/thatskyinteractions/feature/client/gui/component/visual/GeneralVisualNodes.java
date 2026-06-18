@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonSdfParameters;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
@@ -67,22 +68,15 @@ public class GeneralVisualNodes {
     }
 
     public static VisualNode lBase(
-            final int   color,
-            final float round
+            final int   color
     ) {
-        return (control, graphics, colors, _, _, _, _) -> {
+        return (_, graphics, colors, _, _, _, _) -> {
 
             SdfGraphics.getInstance()
                     .reset()
                     .center(true)
                     .color(colors.argb(color))
-                    .round(round)
-                    .box(
-                            0, 0,
-                            control.getWidth(),
-                            control.getHeight()
-                    )
-                    .draw(graphics.original());
+                    .draw(graphics.original(), ButtonSdfParameters.PARAM_BASE32, 0, 0);
         };
     }
 

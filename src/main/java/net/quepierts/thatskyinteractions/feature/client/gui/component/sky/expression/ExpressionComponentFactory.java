@@ -279,7 +279,7 @@ public class ExpressionComponentFactory {
             final @NonNull VisualNode   special
     ) {
 
-        final var background    = GeneralVisualNodes.lBase(0x80000000, 6.0f);
+        final var background    = GeneralVisualNodes.lBase(0x80000000);
         final var content       = ButtonVisualNodes.spin((graphics, colors, _, _, width, height) -> {
             graphics.blitIcon(
                     icon,
