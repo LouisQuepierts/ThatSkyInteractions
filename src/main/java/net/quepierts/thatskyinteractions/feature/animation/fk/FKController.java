@@ -1,10 +1,9 @@
 package net.quepierts.thatskyinteractions.feature.animation.fk;
 
-import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
+import net.quepierts.thatskyinteractions.feature.animation.model.ModelAdaptor;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
 
 public final class FKController {
@@ -70,7 +69,7 @@ public final class FKController {
     }
 
     public void apply(
-            final @NonNull MinecraftModelAdaptor adaptor
+            final @NonNull ModelAdaptor     adaptor
     ) {
 
         final var skeleton = adaptor.getSkeleton();
@@ -95,9 +94,9 @@ public final class FKController {
 
 
             final var point     = new Vector3f(
-                                        part.x,
-                                        part.y + 8,
-                                        part.z
+                                        part.x(),
+                                        part.y() + 8,
+                                        part.z()
                                 );
 
             final var direction = local.sub(point);

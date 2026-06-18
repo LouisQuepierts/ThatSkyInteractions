@@ -6,15 +6,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.feature.animation.fk.FKController;
 import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetType;
-import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelAdaptor;
-import net.quepierts.thatskyinteractions.feature.client.model.MinecraftModelPoseProvider;
+import net.quepierts.thatskyinteractions.feature.animation.model.ModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.veynir.backend.execution.ExecutionState;
 import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPoseProvider;
@@ -23,7 +21,6 @@ import net.quepierts.veynir.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -291,7 +288,7 @@ public final class PlayerAnimationController {
     }
 
     public void resolve(
-            final @NonNull MinecraftModelPoseProvider provider
+            final @NonNull SkeletonPoseProvider     provider
     ) {
 
         this.markResolved();
@@ -307,7 +304,7 @@ public final class PlayerAnimationController {
     }
 
     public void apply(
-            final @NonNull MinecraftModelAdaptor adaptor
+            final @NonNull ModelAdaptor             adaptor
     ) {
 
         if (this.running.isEmpty()) {

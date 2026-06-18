@@ -6,11 +6,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.quepierts.thatskyinteractions.feature.animation.model.ModelSkeleton;
 import net.quepierts.thatskyinteractions.feature.mixin.vanilla.client.accessor.ModelPartAccessor;
 import net.quepierts.veynir.backend.skeleton.SkeletonLayout;
-import net.quepierts.veynir.core.adapter.TransformAccessor;
-import org.joml.Math;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
@@ -18,48 +19,31 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class MinecraftModelSkeleton {
 
-    @Getter
-    private final SkeletonLayout        layout;
-    private final Map<String, Bone>     byName;
-    private final List<Bone>            byId;
-
-    public Bone get(@NonNull String name) {
-        return this.byName.get(name);
-    }
-
-    public Bone get(int id) {
-        return this.byId.get(id);
-    }
-
-    public List<Bone> getEntries() {
-        return this.byId;
-    }
-
-    public static MinecraftModelSkeleton auto(
+    public static ModelSkeleton auto(
             @NonNull ModelPart              root,
             @NonNull SkeletonLayout         layout
     ) {
-        final var map       = ImmutableMap.<String, Bone>builder();
-        final var list      = new ArrayList<Bone>(layout.size());
+        final var map       = ImmutableMap.<String, ModelSkeleton.Bone>builder();
+        final var list      = new ArrayList<ModelSkeleton.Bone>(layout.size());
 
-        final var queue     = new ObjectArrayFIFOQueue<Bone>();
-        queue.enqueue(new Bone("root", root, layout.id("root")));
+        final var queue     = new ObjectArrayFIFOQueue<ModelSkeleton.Bone>();
+        queue.enqueue(new ModelSkeleton.Bone("root", Part.of(root), layout.id("root")));
 
         while (!queue.isEmpty()) {
             var entry        = queue.dequeue();
-            var children     = getChildren(entry.part);
+            var children     = getChildren(((Part) entry.part()).part);
 
             for (var child : children.entrySet()) {
                 final var name = child.getKey();
                 final var id = layout.id(name);
 
-                var childEntry = new Bone(name, child.getValue(), id);
+                var childEntry = new ModelSkeleton.Bone(name, Part.of(child.getValue()), id);
 
                 if (id != -1) {
-                    map.put(childEntry.name, childEntry);
+                    map.put(childEntry.name(), childEntry);
                     list.add(childEntry);
                 }
 
@@ -67,154 +51,193 @@ public final class MinecraftModelSkeleton {
             }
         }
 
-        list.sort(Comparator.comparingInt(Bone::id));
+        list.sort(Comparator.comparingInt(ModelSkeleton.Bone::id));
 
-        return new MinecraftModelSkeleton(
+        return new ModelSkeleton(
                 layout,
                 map.build(),
                 ImmutableList.copyOf(list)
         );
     }
 
-    public static MinecraftModelSkeleton manual(
+    public static ModelSkeleton manual(
             @NonNull ModelPart              root,
             @NonNull SkeletonLayout         layout,
             @NonNull String @NonNull []     names
     ) {
-        final var map       = ImmutableMap.<String, Bone>builder();
-        final var list      = new ArrayList<Bone>(layout.size());
+        final var map       = ImmutableMap.<String, ModelSkeleton.Bone>builder();
+        final var list      = new ArrayList<ModelSkeleton.Bone>(layout.size());
 
         final var lookup    = root.createPartLookup();
 
         for (var name : names) {
-            final var part = "root".equals(name) ? root : lookup.apply(name);
-            final var entry = new Bone(name, part, layout.id(name));
-            map.put(entry.name, entry);
+            final var part      = "root".equals(name) ? root : lookup.apply(name);
+            final var delegate  = Part.of(part);
+            final var entry     = new ModelSkeleton.Bone(name, delegate, layout.id(name));
+            map.put(entry.name(), entry);
             list.add(entry);
         }
 
-        list.sort(Comparator.comparingInt(Bone::id));
+        list.sort(Comparator.comparingInt(ModelSkeleton.Bone::id));
 
-        return new MinecraftModelSkeleton(
+        return new ModelSkeleton(
                 layout,
                 map.build(),
                 list
         );
     }
 
+    private static final class Part implements ModelSkeleton.Delegate {
 
-    public record Bone(
-            String      name,
-            ModelPart   part,
-            int         id
-    ) implements TransformAccessor {
+        private final ModelPart part;
+        @Getter
+        private final ModelSkeleton.Delegate initialPose;
 
-        @Override
-        public void setPosition(
-                final float x,
-                final float y,
-                final float z
-        ) {
-            this.part.setPos(x, y, z);
+        private static Part of(ModelPart part) {
+            return new Part(part);
+        }
+
+        private Part(ModelPart part) {
+            this.part = part;
+
+            final var pose = part.getInitialPose();
+            this.initialPose = new Initial(pose);
         }
 
         @Override
-        public void setEulerAngle(
-                final float x,
-                final float y,
-                final float z
-        ) {
-            this.part.setRotation(x, y, z);
+        public void setPosition(final float x, final float y, final float z) {
+            part.setPos(x, y, z);
         }
 
         @Override
-        public void setQuaternion(
-                final float x,
-                final float y,
-                final float z,
-                final float w
-        ) {
-            float eulerX = org.joml.Math.atan2(y * z + w * x, 0.5f - x * x - y * y);
-            float eulerY = org.joml.Math.safeAsin(-2.0f * (x * z - w * y));
-            float eulerZ = Math.atan2(x * y + w * z, 0.5f - y * y - z * z);
-
-            this.part.setRotation(
-                    eulerX,
-                    eulerY,
-                    eulerZ
-            );
+        public void setRotation(final float x, final float y, final float z) {
+            part.setRotation(x, y, z);
         }
 
         @Override
-        public void setScale(
-                final float x,
-                final float y,
-                final float z
-        ) {
-            this.part.xScale = x;
-            this.part.yScale = y;
-            this.part.zScale = z;
+        public void setScale(final float x, final float y, final float z) {
+            part.xScale = x;
+            part.yScale = y;
+            part.zScale = z;
         }
 
-        public void setPosition(
-                final float x,
-                final float y,
-                final float z,
-                final float alpha
-        ) {
-            final var part = this.part;
-            if (alpha == 1.0f) {
-                part.setPos(x, y, z);
-            } else if (alpha > 0.0f) {
-                part.setPos(
-                        part.x * (1.0f - alpha) + x * alpha,
-                        part.y * (1.0f - alpha) + y * alpha,
-                        part.z * (1.0f - alpha) + z * alpha
-                );
+        @Override
+        public float x() {
+            return this.part.x;
+        }
+
+        @Override
+        public float y() {
+            return this.part.y;
+        }
+
+        @Override
+        public float z() {
+            return this.part.z;
+        }
+
+        @Override
+        public float xRot() {
+            return this.part.xRot;
+        }
+
+        @Override
+        public float yRot() {
+            return this.part.yRot;
+        }
+
+        @Override
+        public float zRot() {
+            return this.part.zRot;
+        }
+
+        @Override
+        public float xScale() {
+            return this.part.xScale;
+        }
+
+        @Override
+        public float yScale() {
+            return this.part.yScale;
+        }
+
+        @Override
+        public float zScale() {
+            return this.part.zScale;
+        }
+
+        private static final class Initial implements ModelSkeleton.Delegate {
+            private final PartPose pose;
+
+            public Initial(final PartPose pose) {
+                this.pose = pose;
+            }
+
+            @Override
+            public void setPosition(final float x, final float y, final float z) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setRotation(final float x, final float y, final float z) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setScale(final float x, final float y, final float z) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public float x() {
+                return pose.x();
+            }
+
+            @Override
+            public float y() {
+                return pose.y();
+            }
+
+            @Override
+            public float z() {
+                return pose.z();
+            }
+
+            @Override
+            public float xRot() {
+                return pose.xRot();
+            }
+
+            @Override
+            public float yRot() {
+                return pose.yRot();
+            }
+
+            @Override
+            public float zRot() {
+                return pose.zRot();
+            }
+
+            @Override
+            public float xScale() {
+                return pose.xScale();
+            }
+
+            @Override
+            public float yScale() {
+                return pose.yScale();
+            }
+
+            @Override
+            public float zScale() {
+                return pose.zScale();
+            }
+
+            @Override
+            public ModelSkeleton.Delegate getInitialPose() {
+                throw new UnsupportedOperationException();
             }
         }
-
-        public void setQuaternion(
-                final float x,
-                final float y,
-                final float z,
-                final float w,
-                final float alpha
-        ) {
-            if (alpha == 1.0f) {
-                this.setQuaternion(x, y, z, w);
-            } else if (alpha > 0.0f) {
-                float eulerX = org.joml.Math.atan2(y * z + w * x, 0.5f - x * x - y * y);
-                float eulerY = org.joml.Math.safeAsin(-2.0f * (x * z - w * y));
-                float eulerZ = Math.atan2(x * y + w * z, 0.5f - y * y - z * z);
-
-                final var part = this.part;
-                part.setRotation(
-                        part.xRot * (1.0f - alpha) + eulerX * alpha,
-                        part.yRot * (1.0f - alpha) + eulerY * alpha,
-                        part.zRot * (1.0f - alpha) + eulerZ * alpha
-                );
-            }
-        }
-
-        public void setScale(
-                final float x,
-                final float y,
-                final float z,
-                final float alpha
-        ) {
-            final var part = this.part;
-            if (alpha == 1.0f) {
-                part.xScale = x;
-                part.yScale = y;
-                part.zScale = z;
-            } else if (alpha > 0.0f) {
-                part.xScale = part.xScale * (1.0f - alpha) + x * alpha;
-                part.yScale = part.yScale * (1.0f - alpha) + y * alpha;
-                part.zScale = part.zScale * (1.0f - alpha) + z * alpha;
-            }
-        }
-
     }
 
     private static Map<String, ModelPart> getChildren(ModelPart thiz) {

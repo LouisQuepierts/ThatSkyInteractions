@@ -2,8 +2,11 @@ package net.quepierts.thatskyinteractions.feature.client.model;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.quepierts.veynir.backend.skeleton.pipeline.*;
-import net.quepierts.veynir.core.SkeletonState;
+import net.quepierts.thatskyinteractions.feature.animation.model.ModelSkeleton;
+import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonContext;
+import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPipeline;
+import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPoseBuffer;
+import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPoseProvider;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.NonNull;
 
@@ -12,13 +15,13 @@ public final class MinecraftModelPoseProvider implements SkeletonPoseProvider {
 
     public static final String REQUIRED_UBO = "OverrideMask";
 
-    private final MinecraftModelSkeleton skeleton;
-    private final Quaternionf quaternion;
-    private final float[] override;
-    private final int ubo;
+    private final ModelSkeleton     skeleton;
+    private final Quaternionf       quaternion;
+    private final float[]           override;
+    private final int               ubo;
 
     public static MinecraftModelPoseProvider of(
-            @NonNull MinecraftModelSkeleton skeleton,
+            @NonNull ModelSkeleton          skeleton,
             @NonNull SkeletonPipeline       pipeline
     ) {
         return new MinecraftModelPoseProvider(
@@ -58,11 +61,11 @@ public final class MinecraftModelPoseProvider implements SkeletonPoseProvider {
             final var view      = target.get(loc);
 
             if (overrides[loc] != 0.0f) {
-                view.setPosition(part.x, part.y, part.z);
+                view.setPosition(part.x(), part.y(), part.z());
                 view.setRotation(quaternion.identity()
-                        .rotateZYX(part.zRot, part.yRot, part.xRot)
+                        .rotateZYX(part.zRot(), part.yRot(), part.xRot())
                 );
-                view.setScale(part.xScale, part.yScale, part.zScale);
+                view.setScale(part.xScale(), part.yScale(), part.zScale());
             } else {
                 final var pose  = part.getInitialPose();
                 view.setPosition(pose.x(), pose.y(), pose.z());
