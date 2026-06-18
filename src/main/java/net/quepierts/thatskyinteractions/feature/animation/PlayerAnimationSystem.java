@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Avatar;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
@@ -13,6 +14,8 @@ import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.feature.animation.packet.ClientboundAnimationControlPacket;
 import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationSignalPacket;
+import net.quepierts.thatskyinteractions.feature.animation.packet.ClientboundSyncAnimationControllerPacket;
+import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
@@ -29,8 +32,8 @@ public class PlayerAnimationSystem {
     }
 
     public static void play(
-            @NonNull Avatar         avatar,
-            @NonNull Identifier     animation
+            final @NonNull  Avatar          avatar,
+            final @NonNull  Identifier      animation
     ) {
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
@@ -38,16 +41,26 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.play(avatar, animation)
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().play(animation);
     }
 
     public static void play(
-            @NonNull Avatar         avatar,
-            @NonNull Identifier     animation,
-            @Nullable Identifier     layer
+            final @NonNull  Avatar          avatar,
+            final @NonNull  Identifier      animation,
+            final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
             play(avatar, animation);
+            return;
+        }
+
+        final var layerType    = TsiRegistries.ANIMATION_LAYER_TYPE
+                                .getOptional(layer)
+                                .orElse(null);
+
+        if (layerType == null) {
             return;
         }
 
@@ -56,10 +69,13 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.play(avatar, animation, layer)
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().play(animation, layerType);
+
     }
 
     public static void abort(
-            @NonNull Avatar         avatar
+            final @NonNull  Avatar          avatar
     ) {
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
@@ -67,15 +83,26 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.abort(avatar)
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().abort();
+
     }
 
     public static void abort(
-            @NonNull Avatar         avatar,
-            @Nullable Identifier     layer
+            final @NonNull  Avatar          avatar,
+            final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
             abort(avatar);
+            return;
+        }
+
+        final var layerType    = TsiRegistries.ANIMATION_LAYER_TYPE
+                .getOptional(layer)
+                .orElse(null);
+
+        if (layerType == null) {
             return;
         }
 
@@ -84,10 +111,13 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.abort(avatar, layer)
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().abort(layerType);
+
     }
 
     public static void exit(
-            @NonNull Avatar         avatar
+            final @NonNull Avatar           avatar
     ) {
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
@@ -95,15 +125,26 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.exit(avatar)
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().exit();
+
     }
 
     public static void exit(
-            @NonNull Avatar         avatar,
-            @Nullable Identifier     layer
+            final @NonNull  Avatar          avatar,
+            final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
             exit(avatar);
+            return;
+        }
+
+        final var layerType     = TsiRegistries.ANIMATION_LAYER_TYPE
+                                .getOptional(layer)
+                                .orElse(null);
+
+        if (layerType == null) {
             return;
         }
 
@@ -112,10 +153,13 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.exit(avatar, layer)
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().exit(layerType);
+
     }
 
     public static void pause(
-            @NonNull Avatar         avatar
+            final @NonNull  Avatar          avatar
     ) {
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
@@ -123,11 +167,14 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.pause(avatar)
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().pause();
+
     }
 
     public static void pause(
-            @NonNull Avatar         avatar,
-            @Nullable Identifier     layer
+            final @NonNull  Avatar          avatar,
+            final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
@@ -135,10 +182,21 @@ public class PlayerAnimationSystem {
             return;
         }
 
+        final var layerType     = TsiRegistries.ANIMATION_LAYER_TYPE
+                                .getOptional(layer)
+                                .orElse(null);
+
+        if (layerType == null) {
+            return;
+        }
+
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 avatar,
                 ClientboundAnimationControlPacket.pause(avatar, layer)
         );
+
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().pause(layerType);
 
     }
 
@@ -154,12 +212,20 @@ public class PlayerAnimationSystem {
     }
 
     public static void resume(
-            @NonNull Avatar         avatar,
-            @Nullable Identifier     layer
+            final @NonNull  Avatar          avatar,
+            final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
             resume(avatar);
+            return;
+        }
+
+        final var layerType     = TsiRegistries.ANIMATION_LAYER_TYPE
+                                .getOptional(layer)
+                                .orElse(null);
+
+        if (layerType == null) {
             return;
         }
 
@@ -168,12 +234,15 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.resume(avatar, layer)
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().resume(layerType);
+
     }
 
     public static void event(
-            @NonNull Avatar         avatar,
-            @NonNull String         event,
-            @Nullable Identifier     layer
+            final @NonNull  Avatar          avatar,
+            final @NonNull  String          event,
+            final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
@@ -190,6 +259,9 @@ public class PlayerAnimationSystem {
                 )
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().event(event);
+
     }
 
     public static void event(
@@ -205,6 +277,9 @@ public class PlayerAnimationSystem {
                 )
         );
 
+        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+        attachment.getController().event(event);
+
     }
 
     public static void signal(
@@ -219,6 +294,10 @@ public class PlayerAnimationSystem {
                         signal
                 )
         );
+
+
+        final var attachment = PlayerAnimationSystem.getAnimationData(player);
+        attachment.getController().event(signal);
 
     }
 
@@ -245,4 +324,20 @@ public class PlayerAnimationSystem {
         controller              .tick(entity.tickCount);
     }
 
+    @SubscribeEvent
+    public static void onPlayerStartTrack(final PlayerEvent.StartTracking event) {
+
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        if (event.getTarget() instanceof Avatar avatar) {
+
+            PacketDistributor.sendToPlayer(
+                    player,
+                    ClientboundSyncAnimationControllerPacket.of(avatar)
+            );
+
+        }
+    }
 }

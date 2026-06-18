@@ -1,6 +1,9 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftChannelFormat;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonLayout;
@@ -15,30 +18,6 @@ import org.jspecify.annotations.NonNull;
 
 @Getter
 public final class AnimationLayer implements Comparable<AnimationLayer> {
-
-    public record Serialize(
-        Identifier          animation,
-        float               alpha,
-        int                 last,
-        boolean             playing,
-        boolean             ticked,
-        boolean             resolved,
-        boolean             paused,
-
-        // AnimationState
-        float               progress,
-
-        // FsmState
-        float           elapsed,
-        float           blendElapsed,
-        float           blendDuration,
-        float           normalizedElapsed,
-        float           normalizedBlendElapsed,
-        int             lastState,
-        int             currentState,
-        boolean         blending,
-        boolean         finished
-    ) { }
 
     private final AnimationLayerType        type;
 
@@ -276,4 +255,108 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     public void event(final int event) {
         this.animation.event(this.fsmState, event);
     }
+
+    public Serialize serialize() {
+        return new Serialize(
+                this.type.getIdentifier(),
+                this.animationId,
+                this.alpha,
+                this.speed,
+
+                this.playing,
+                this.paused,
+
+                this.mask.copy(),
+                this.fsmState.duplicate()
+        );
+    }
+
+    public void deserialize(final @NonNull Serialize serialize) {
+
+        if (!serialize.playing) {
+            this.cleanup();
+            return;
+        }
+
+        if (!serialize.animation.equals(this.animationId)) {
+            final var manager       = PlayerAnimationManager.getInstance();
+            final var animation     = manager.get(serialize.animation);
+            final var definition    = manager.getDefinition(serialize.animation);
+
+            this.play(
+                    serialize.animation,
+                    animation,
+                    definition,
+                    serialize.mask
+            );
+        }
+
+        this.alpha                  = serialize.alpha;
+        this.speed                  = serialize.speed;
+        this.paused                 = serialize.paused;
+
+        this.fsmState               .copyData(serialize.fsmState);
+
+    }
+
+    public record Serialize(
+            Identifier          type,
+            Identifier          animation,
+            float               alpha,
+            float               speed,
+
+            boolean             playing,
+            boolean             paused,
+
+
+            PlayerMask          mask,
+            FSMState            fsmState
+    ) { }
+
+    public static final StreamCodec<ByteBuf, PlayerMask> MASK_STREAM_CODEC
+            = ByteBufCodecs.INT.map(PlayerMask::direct, PlayerMask::getMask);
+
+    public static final StreamCodec<ByteBuf, FSMState> FSM_STREAM_CODEC
+            = StreamCodec.composite(
+                    ByteBufCodecs.FLOAT,
+                    FSMState::getElapsed,
+                    ByteBufCodecs.FLOAT,
+                    FSMState::getBlendElapsed,
+                    ByteBufCodecs.FLOAT,
+                    FSMState::getBlendDuration,
+                    ByteBufCodecs.FLOAT,
+                    FSMState::getNormalizedElapsed,
+                    ByteBufCodecs.FLOAT,
+                    FSMState::getNormalizedBlendElapsed,
+                    ByteBufCodecs.INT,
+                    FSMState::getLastState,
+                    ByteBufCodecs.INT,
+                    FSMState::getCurrentState,
+                    ByteBufCodecs.BOOL,
+                    FSMState::isFinished,
+                    ByteBufCodecs.BOOL,
+                    FSMState::isBlending,
+                    FSMState::direct
+            );
+
+    public static final StreamCodec<ByteBuf, Serialize> STREAM_CODEC
+            = StreamCodec.composite(
+                    Identifier.STREAM_CODEC,
+                    Serialize::type,
+                    Identifier.STREAM_CODEC,
+                    Serialize::animation,
+                    ByteBufCodecs.FLOAT,
+                    Serialize::alpha,
+                    ByteBufCodecs.FLOAT,
+                    Serialize::speed,
+                    ByteBufCodecs.BOOL,
+                    Serialize::playing,
+                    ByteBufCodecs.BOOL,
+                    Serialize::paused,
+                    MASK_STREAM_CODEC,
+                    Serialize::mask,
+                    FSM_STREAM_CODEC,
+                    Serialize::fsmState,
+                    Serialize::new
+            );
 }

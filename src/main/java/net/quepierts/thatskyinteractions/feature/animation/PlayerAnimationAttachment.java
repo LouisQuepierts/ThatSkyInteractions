@@ -4,15 +4,18 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Avatar;
-import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.quepierts.thatskyinteractions.core.scene.Scene;
 import net.quepierts.thatskyinteractions.feature.network.StreamCodecUtils;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 public final class PlayerAnimationAttachment {

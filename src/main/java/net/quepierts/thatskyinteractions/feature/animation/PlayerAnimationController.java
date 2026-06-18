@@ -1,11 +1,14 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
 import com.mojang.math.Axis;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
@@ -14,6 +17,7 @@ import net.quepierts.thatskyinteractions.feature.animation.fk.FKController;
 import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetType;
 import net.quepierts.thatskyinteractions.feature.animation.model.ModelAdaptor;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
+import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import net.quepierts.veynir.backend.execution.ExecutionState;
 import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPoseProvider;
 import net.quepierts.veynir.core.adapter.TransformF;
@@ -476,7 +480,7 @@ public final class PlayerAnimationController {
         return new PoseCache(DefaultMinecraftSkeletonLayout.HUMANOID);
     }
 
-    public  void setupToLocal(
+    public void setupToLocal(
             final AvatarRenderState     state
     ) {
         final var scale = 0.9375F;
@@ -491,6 +495,47 @@ public final class PlayerAnimationController {
                 .scale(-scale, -scale, scale)
                 .translate(0.0F, -1.501F, 0.0F)
                 .scale(0.0625f);
+    }
+
+    public @NonNull Serialize serialize() {
+        return new Serialize(
+                this.running.stream()
+                        .map(AnimationLayer::serialize)
+                        .toList(),
+                this.last,
+                this.playing,
+                this.paused
+        );
+    }
+
+    public void deserialize(
+            final @NonNull Serialize serialize
+    ) {
+
+        this.cleanup();
+
+        if (!serialize.playing) {
+            return;
+        }
+
+        for (final var layer : serialize.layers) {
+            final var layerType         = TsiRegistries.ANIMATION_LAYER_TYPE.getValue(layer.type());
+
+            if (layerType == null) {
+                continue;
+            }
+            final var animationLayer    = this.getLayer(layerType);
+            animationLayer              .deserialize(layer);
+            this.running                .add(animationLayer);
+        }
+
+        this.running                    .sort(AnimationLayer::compareTo);
+        this                            .setupApplyArray();
+
+        this.playing    = true;
+        this.last       = serialize.last;
+        this.paused     = serialize.paused;
+
     }
 
     @RequiredArgsConstructor
@@ -513,4 +558,24 @@ public final class PlayerAnimationController {
         }
 
     }
+
+    public record Serialize(
+            List<AnimationLayer.Serialize>                  layers,
+            int                                             last,
+            boolean                                         playing,
+            boolean                                         paused
+    ) {}
+
+    public static final StreamCodec<ByteBuf, Serialize> STREAM_CODEC
+            = StreamCodec.composite(
+                    ByteBufCodecs.collection(ArrayList::new, AnimationLayer.STREAM_CODEC),
+                    Serialize::layers,
+                    ByteBufCodecs.VAR_INT,
+                    Serialize::last,
+                    ByteBufCodecs.BOOL,
+                    Serialize::playing,
+                    ByteBufCodecs.BOOL,
+                    Serialize::paused,
+                    Serialize::new
+            );
 }

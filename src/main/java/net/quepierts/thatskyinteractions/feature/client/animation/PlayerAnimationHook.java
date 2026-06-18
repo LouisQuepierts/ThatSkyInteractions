@@ -141,15 +141,15 @@ public class PlayerAnimationHook {
 
             var xRot = player.getXRot();
             var rotation = rootRotation.add(
-                    head.xRot,
-                    head.yRot,
-                    -head.zRot
+                    head.xRot(),
+                    head.yRot(),
+                    -head.zRot()
             ).mul(Mth.RAD_TO_DEG).sub(xRot, 0, 0).mul(alpha);
             ioRotation.add(rotation);
             position.add(
-                    head.x,
-                    head.y,
-                    head.z
+                    head.x(),
+                    head.y(),
+                    head.z()
             );
 
             position.mul(a, -a, a);
