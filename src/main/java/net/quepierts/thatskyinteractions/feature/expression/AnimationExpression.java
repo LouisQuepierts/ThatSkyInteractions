@@ -20,6 +20,7 @@ import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
+import net.quepierts.thatskyinteractions.feature.control.PlayerControlSystem;
 import net.quepierts.thatskyinteractions.feature.registry.ExpressionTypes;
 import net.quepierts.thatskyinteractions.feature.utils.TsiInterpolators;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -59,22 +60,7 @@ public final class AnimationExpression implements Expression {
     @Override
     public void onPerform(@NonNull ServerPlayer player) {
         PlayerAnimationSystem.play(player, this.animationId);
-    }
-
-    @Override
-    public void onClientPerform(final @NonNull Player player) {
-
-        final var difference = Mth.degreesDifference(player.yBodyRot, player.getYHeadRot());
-
-        PhysicalTweenAttachment.getAttachment(player.level()).tween().to(
-                player::setYBodyRot,
-                player.yBodyRot,
-                player.getYHeadRot(),
-                Mth.abs(difference) * 0.01f,
-                TsiInterpolators.DEGREE,
-                Eases.CUBIC_OUT
-        );
-
+        PlayerControlSystem.align(player);
     }
 
     @Override

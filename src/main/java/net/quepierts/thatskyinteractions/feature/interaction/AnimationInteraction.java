@@ -18,6 +18,7 @@ import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
 import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
+import net.quepierts.thatskyinteractions.feature.control.PlayerControlSystem;
 import net.quepierts.thatskyinteractions.feature.registry.InteractionTypes;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -67,6 +68,7 @@ public final class AnimationInteraction implements Interaction {
                 requester,
                 this.requesterAnimation
         );
+        PlayerControlSystem.align(requester);
     }
 
     @Override
@@ -75,6 +77,7 @@ public final class AnimationInteraction implements Interaction {
             final @NonNull ServerPlayer                 receiver
     ) {
 
+        PlayerControlSystem.align(receiver);
         PlayerAnimationSystem.play(
                 receiver,
                 this.receiverAnimation
