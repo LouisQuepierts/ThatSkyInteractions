@@ -75,17 +75,18 @@ public class PlayerHandholdRelation {
         var hand = PlayerHoldingHand.NONE;
 
         if (this.left != null && this.left.getUUID().equals(other)) {
-            this.left = null;
+            this.left       = null;
             this.occupied   --;
             hand = PlayerHoldingHand.LEFT;
         } else if (this.right != null && this.right.getUUID().equals(other)) {
-            this.right = null;
+            this.right      = null;
             this.occupied   --;
             hand = PlayerHoldingHand.RIGHT;
         }
 
         if (this.occupied == 0) {
-            this.holding = false;
+            this.holding    = false;
+            this.role       = Role.NONE;
         }
 
         return hand;
