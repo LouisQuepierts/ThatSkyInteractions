@@ -74,6 +74,7 @@ public final class AnimationLayerBuilder extends AbstractBuilder<
     @Override
     protected AnimationLayerType createEntry() {
         return new AnimationLayerType(
+                this.getResourceKey().identifier(),
                 this.mask == null ? PlayerMask.empty() : this.mask,
                 this.priority,
                 this.exclusive
