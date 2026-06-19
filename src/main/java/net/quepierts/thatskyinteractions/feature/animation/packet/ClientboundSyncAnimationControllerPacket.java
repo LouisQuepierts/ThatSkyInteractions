@@ -49,6 +49,9 @@ public record ClientboundSyncAnimationControllerPacket(
             final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
             attachment.getController().deserialize(this.serialized());
 
+            // just for in case
+            avatar.yBodyRot = avatar.getYRot();
+
         }
 
     }
