@@ -13,6 +13,7 @@ import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Collection;
 import java.util.Map;
 
 @Slf4j
@@ -73,4 +74,7 @@ public final class BedrockAnimationManager extends DataSyncManager<BedrockAnimat
         return this.animations.get(identifier);
     }
 
+    public Collection<Identifier> identifiers() {
+        return this.animations.keySet();
+    }
 }
