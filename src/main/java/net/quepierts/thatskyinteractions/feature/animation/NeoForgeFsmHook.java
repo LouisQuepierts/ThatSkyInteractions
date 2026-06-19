@@ -1,5 +1,7 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
+import net.neoforged.neoforge.common.NeoForge;
+import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.veynir.core.fsm.FSMState;
 import net.quepierts.thatskyinteractions.core.animation.TsiFsmHook;
 
@@ -13,7 +15,15 @@ public final class NeoForgeFsmHook implements TsiFsmHook {
             final int       triggerType,
             final int       triggerId
     ) {
-        
+        // generally, the attachment here will be the AnimationLayer
+        final var layer      = (AnimationLayer) fsmState.getAttachment();
+
+        NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.State.TransitionStart(
+                layer.getParent(),
+                layer.getType(),
+                fromState,
+                toState
+        ));
     }
 
     @Override
@@ -22,7 +32,14 @@ public final class NeoForgeFsmHook implements TsiFsmHook {
             final int       fromState,
             final int       toState
     ) {
+        final var layer      = (AnimationLayer) fsmState.getAttachment();
 
+        NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.State.TransitionEnd(
+                layer.getParent(),
+                layer.getType(),
+                fromState,
+                toState
+        ));
     }
 
     @Override
@@ -30,7 +47,13 @@ public final class NeoForgeFsmHook implements TsiFsmHook {
             final FSMState  fsmState,
             final int       state
     ) {
+        final var layer      = (AnimationLayer) fsmState.getAttachment();
 
+        NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.State.Loop(
+                layer.getParent(),
+                layer.getType(),
+                state
+        ));
     }
 
     @Override

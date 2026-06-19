@@ -19,6 +19,7 @@ import org.jspecify.annotations.NonNull;
 @Getter
 public final class AnimationLayer implements Comparable<AnimationLayer> {
 
+    private final PlayerAnimationController parent;
     private final AnimationLayerType        type;
 
     private final ExecutionState            executionState;
@@ -42,11 +43,13 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     private boolean                         paused;
 
     public AnimationLayer(
-            AnimationLayerType              type,
-            ExecutionState                  executionState,
-            HumanoidAnimationState          state,
-            PoseCache                       cache
+            final @NonNull  PlayerAnimationController       controller,
+            final @NonNull  AnimationLayerType              type,
+            final @NonNull  ExecutionState                  executionState,
+            final @NonNull  HumanoidAnimationState          state,
+            final @NonNull  PoseCache                       cache
     ) {
+        this.parent                         = controller;
         this.type                           = type;
         this.priority                       = type.getPriority();
         this.executionState                 = executionState;
@@ -56,6 +59,7 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
         this.mask                           = PlayerMask.empty();
         this.skeletonMask                   = new boolean[DefaultMinecraftSkeletonLayout.HUMANOID.size()];
         this.fsmState                       = new FSMState();
+        this.fsmState                       .setAttachment(this);
 
         this.state                          .getSkeleton()
                                             .setMask(this.skeletonMask);

@@ -104,9 +104,10 @@ public final class PlayerAnimationController {
         final var definition    = manager.getDefinition(animationId);
 
         final var pre           = NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Play.Pre(
-                this,
-                animationId
-        ));
+                                    this,
+                                    type,
+                                    animationId
+                                ));
 
         if (pre.isCanceled()) {
             return false;
@@ -136,6 +137,7 @@ public final class PlayerAnimationController {
 
         NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Play.Post(
                 this,
+                type,
                 animationId
         ));
 
@@ -276,6 +278,10 @@ public final class PlayerAnimationController {
                 if (!this.finished.isEmpty()) {
                     for (final var layer : this.finished) {
                         this.remove(layer);
+                        NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Finished(
+                                this,
+                                layer.getType()
+                        ));
                     }
 
                     this.finished.clear();
@@ -462,6 +468,7 @@ public final class PlayerAnimationController {
         return this.layers.computeIfAbsent(
                 type,
                 t -> new AnimationLayer(
+                        this,
                         t,
                         this.executionState, // not used
                         HumanoidAnimationState._default(),
