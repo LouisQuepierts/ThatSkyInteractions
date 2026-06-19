@@ -15,7 +15,7 @@ import org.jspecify.annotations.NonNull;
 
 public record ClientboundSyncAnimationControllerPacket(
         int                                 id,
-        PlayerAnimationController.Serialize serialize
+        PlayerAnimationController.Serialized serialized
 ) implements IClientboundPacket {
 
     public static final Type<ClientboundSyncAnimationControllerPacket> TYPE
@@ -26,7 +26,7 @@ public record ClientboundSyncAnimationControllerPacket(
                     ByteBufCodecs.VAR_INT,
                     ClientboundSyncAnimationControllerPacket::id,
                     PlayerAnimationController.STREAM_CODEC,
-                    ClientboundSyncAnimationControllerPacket::serialize,
+                    ClientboundSyncAnimationControllerPacket::serialized,
                     ClientboundSyncAnimationControllerPacket::new
             );
 
@@ -47,7 +47,7 @@ public record ClientboundSyncAnimationControllerPacket(
         if (entity instanceof Avatar avatar) {
 
             final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
-            attachment.getController().deserialize(this.serialize());
+            attachment.getController().deserialize(this.serialized());
 
         }
 

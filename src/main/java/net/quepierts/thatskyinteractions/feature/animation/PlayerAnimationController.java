@@ -497,8 +497,8 @@ public final class PlayerAnimationController {
                 .scale(0.0625f);
     }
 
-    public @NonNull Serialize serialize() {
-        return new Serialize(
+    public PlayerAnimationController.@NonNull Serialized serialize() {
+        return new Serialized(
                 this.running.stream()
                         .map(AnimationLayer::serialize)
                         .toList(),
@@ -509,16 +509,16 @@ public final class PlayerAnimationController {
     }
 
     public void deserialize(
-            final @NonNull Serialize serialize
+            final PlayerAnimationController.@NonNull Serialized serialized
     ) {
 
         this.cleanup();
 
-        if (!serialize.playing) {
+        if (!serialized.playing) {
             return;
         }
 
-        for (final var layer : serialize.layers) {
+        for (final var layer : serialized.layers) {
             final var layerType         = TsiRegistries.ANIMATION_LAYER_TYPE.getValue(layer.type());
 
             if (layerType == null) {
@@ -533,8 +533,8 @@ public final class PlayerAnimationController {
         this                            .setupApplyArray();
 
         this.playing    = true;
-        this.last       = serialize.last;
-        this.paused     = serialize.paused;
+        this.last       = serialized.last;
+        this.paused     = serialized.paused;
 
     }
 
@@ -559,23 +559,23 @@ public final class PlayerAnimationController {
 
     }
 
-    public record Serialize(
-            List<AnimationLayer.Serialize>                  layers,
+    public record Serialized(
+            List<AnimationLayer.Serialized>                  layers,
             int                                             last,
             boolean                                         playing,
             boolean                                         paused
     ) {}
 
-    public static final StreamCodec<ByteBuf, Serialize> STREAM_CODEC
+    public static final StreamCodec<ByteBuf, Serialized> STREAM_CODEC
             = StreamCodec.composite(
                     ByteBufCodecs.collection(ArrayList::new, AnimationLayer.STREAM_CODEC),
-                    Serialize::layers,
+                    PlayerAnimationController.Serialized::layers,
                     ByteBufCodecs.VAR_INT,
-                    Serialize::last,
+                    PlayerAnimationController.Serialized::last,
                     ByteBufCodecs.BOOL,
-                    Serialize::playing,
+                    PlayerAnimationController.Serialized::playing,
                     ByteBufCodecs.BOOL,
-                    Serialize::paused,
-                    Serialize::new
+                    PlayerAnimationController.Serialized::paused,
+                    PlayerAnimationController.Serialized::new
             );
 }

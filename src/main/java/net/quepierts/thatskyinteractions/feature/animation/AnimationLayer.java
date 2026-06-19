@@ -256,8 +256,8 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
         this.animation.event(this.fsmState, event);
     }
 
-    public Serialize serialize() {
-        return new Serialize(
+    public Serialized serialize() {
+        return new Serialized(
                 this.type.getIdentifier(),
                 this.animationId,
                 this.alpha,
@@ -271,35 +271,35 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
         );
     }
 
-    public void deserialize(final @NonNull Serialize serialize) {
+    public void deserialize(final AnimationLayer.@NonNull Serialized serialized) {
 
-        if (!serialize.playing) {
+        if (!serialized.playing) {
             this.cleanup();
             return;
         }
 
-        if (!serialize.animation.equals(this.animationId)) {
+        if (!serialized.animation.equals(this.animationId)) {
             final var manager       = PlayerAnimationManager.getInstance();
-            final var animation     = manager.get(serialize.animation);
-            final var definition    = manager.getDefinition(serialize.animation);
+            final var animation     = manager.get(serialized.animation);
+            final var definition    = manager.getDefinition(serialized.animation);
 
             this.play(
-                    serialize.animation,
+                    serialized.animation,
                     animation,
                     definition,
-                    serialize.mask
+                    serialized.mask
             );
         }
 
-        this.alpha                  = serialize.alpha;
-        this.speed                  = serialize.speed;
-        this.paused                 = serialize.paused;
+        this.alpha                  = serialized.alpha;
+        this.speed                  = serialized.speed;
+        this.paused                 = serialized.paused;
 
-        this.fsmState               .copyData(serialize.fsmState);
+        this.fsmState               .copyData(serialized.fsmState);
 
     }
 
-    public record Serialize(
+    public record Serialized(
             Identifier          type,
             Identifier          animation,
             float               alpha,
@@ -339,24 +339,24 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
                     FSMState::direct
             );
 
-    public static final StreamCodec<ByteBuf, Serialize> STREAM_CODEC
+    public static final StreamCodec<ByteBuf, Serialized> STREAM_CODEC
             = StreamCodec.composite(
                     Identifier.STREAM_CODEC,
-                    Serialize::type,
+                    Serialized::type,
                     Identifier.STREAM_CODEC,
-                    Serialize::animation,
+                    Serialized::animation,
                     ByteBufCodecs.FLOAT,
-                    Serialize::alpha,
+                    Serialized::alpha,
                     ByteBufCodecs.FLOAT,
-                    Serialize::speed,
+                    Serialized::speed,
                     ByteBufCodecs.BOOL,
-                    Serialize::playing,
+                    Serialized::playing,
                     ByteBufCodecs.BOOL,
-                    Serialize::paused,
+                    Serialized::paused,
                     MASK_STREAM_CODEC,
-                    Serialize::mask,
+                    Serialized::mask,
                     FSM_STREAM_CODEC,
-                    Serialize::fsmState,
-                    Serialize::new
+                    Serialized::fsmState,
+                    Serialized::new
             );
 }
