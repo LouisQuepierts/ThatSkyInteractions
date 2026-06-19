@@ -244,6 +244,19 @@ public final class PlayerAnimationController {
         }
     }
 
+    public boolean isPlaying(
+            final @NonNull AnimationLayerType   type
+    ) {
+
+        if (!this.isPlaying()) {
+            return false;
+        }
+
+        final var layer = this.layers.get(type);
+        return layer != null && layer.isPlaying();
+
+    }
+
     public void tick(int current) {
         if (this.playing && !this.paused) {
             this.ticked = current != last;
