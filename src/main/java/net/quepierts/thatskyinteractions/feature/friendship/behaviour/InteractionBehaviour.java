@@ -41,20 +41,21 @@ public final class InteractionBehaviour implements FriendshipBehaviour {
         final var identifier    = this.cache.computeIfAbsent(interaction, Identifier::parse);
         final var level         = metadata.get("level");
 
-        PlayerInteractionSystem.invite(
+        if (PlayerInteractionSystem.invite(
                 requester,
                 receiver,
                 level == null ? identifier : identifier.withSuffix("_" + level)
-        );
+        )) {
 
-        PacketDistributor.sendToPlayer(
-                receiver,
-                PlayerInteractionUiPacket.invite(
-                        requester,
-                        this.icon(identifier)
-                )
-        );
+            PacketDistributor.sendToPlayer(
+                    receiver,
+                    PlayerInteractionUiPacket.invite(
+                            requester,
+                            this.icon(identifier)
+                    )
+            );
 
+        }
     }
 
     @Override

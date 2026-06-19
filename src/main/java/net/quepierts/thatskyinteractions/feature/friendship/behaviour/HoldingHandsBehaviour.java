@@ -27,19 +27,21 @@ public final class HoldingHandsBehaviour implements FriendshipBehaviour {
             final @NonNull FriendshipTreeNode   node
     ) {
 
-        PlayerInteractionSystem.invite(
+        if (PlayerInteractionSystem.invite(
                 requester,
                 receiver,
                 INTERACTION
-        );
+        )) {
 
-        PacketDistributor.sendToPlayer(
-                receiver,
-                PlayerInteractionUiPacket.invite(
-                        requester,
-                        ICON_HOLD
-                )
-        );
+            PacketDistributor.sendToPlayer(
+                    receiver,
+                    PlayerInteractionUiPacket.invite(
+                            requester,
+                            ICON_HOLD
+                    )
+            );
+
+        }
     }
 
     @Override

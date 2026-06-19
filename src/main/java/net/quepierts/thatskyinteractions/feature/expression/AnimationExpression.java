@@ -17,10 +17,12 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.control.PlayerControlSystem;
+import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.ExpressionTypes;
 import net.quepierts.thatskyinteractions.feature.utils.TsiInterpolators;
 import net.quepierts.thatskyinteractions.infra.animation.tween.ease.Eases;
@@ -64,7 +66,7 @@ public final class AnimationExpression implements Expression {
     }
 
     @Override
-    public void onCancel(@NonNull ServerPlayer player) {
+    public void onInterrupt(@NonNull ServerPlayer player) {
         PlayerAnimationSystem.exit(player);
     }
 
@@ -112,6 +114,25 @@ public final class AnimationExpression implements Expression {
             this.animationId    = Identifier.tryParse(this.animation);
         }
 
+    }
+
+    @Override
+    public boolean isFinished(final @NonNull ServerPlayer player) {
+        final var attachment    = PlayerAnimationSystem.getAnimationData(player);
+
+        return                  !attachment
+                                .getController()
+                                .isPlaying(AnimationLayerTypes.DEFAULT.get());
+    }
+
+    @Override
+    public boolean hidden() {
+        return false;
+    }
+
+    @Override
+    public boolean immediate() {
+        return false;
     }
 
     private String animation() {

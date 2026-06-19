@@ -10,6 +10,8 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
+import net.quepierts.thatskyinteractions.feature.expression.InteractionRequesterExpression;
+import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -18,8 +20,6 @@ import java.util.Map;
 @Slf4j
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public final class PlayerInteractionManager extends DataSyncManager<InteractionSet> {
-
-    public static final String AUTO = "auto";
 
     private static final String FOLDER
             = "interaction/definition";
@@ -41,34 +41,11 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionS
 
     @SubscribeEvent
     public static void onRegisterSyncManager(final RegisterSyncManagerEvent event) {
-        event.registerBefore(instance, ThatSkyInteractions.location("animation/definition"));
+        event.registerBefore(instance, ThatSkyInteractions.location("expression/definition"));
     }
 
     @SubscribeEvent
     public static void onRegisterPlayerAnimation(final RegisterPlayerAnimationEvent event) {
-        /*final var definitions       = instance.definitions;
-
-        for (final var entry : definitions.entrySet()) {
-            final var identifier    = entry.getKey();
-            final var definition    = entry.getValue();
-
-            final var hasLevel      = definition.levels() > 1;
-            var level               = 1;
-
-            for (final var interaction : definition.interactions()) {
-                final var requester = interaction.requester();
-                final var receiver  = interaction.receiver();
-
-                final var id        = hasLevel ?
-                                    identifier.withSuffix("_" + level) :
-                                    identifier;
-
-                parseRequester(event, id, requester);
-                parseReceiver(event, id, receiver);
-
-                level ++;
-            }
-        }*/
 
         for (final var entry : instance.sets.entrySet()) {
 
@@ -89,8 +66,16 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionS
                 level ++;
 
             }
-
         }
+
+    }
+
+    @SubscribeEvent
+    public static void onRegisterExpression(final RegisterExpressionEvent event) {
+
+        event.register(PlayerInteractionSystem.EXPRESSION_REQUESTER,    InteractionRequesterExpression.INSTANCE);
+        event.register(PlayerInteractionSystem.EXPRESSION_RECEIVER,     InteractionRequesterExpression.INSTANCE);
+
     }
 
     public @Nullable InteractionSet getSet(

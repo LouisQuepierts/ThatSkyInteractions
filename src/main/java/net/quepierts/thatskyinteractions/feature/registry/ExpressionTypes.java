@@ -4,6 +4,8 @@ import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.expression.AnimationExpression;
 import net.quepierts.thatskyinteractions.feature.expression.Expression;
+import net.quepierts.thatskyinteractions.feature.expression.InteractionReceiverExpression;
+import net.quepierts.thatskyinteractions.feature.expression.InteractionRequesterExpression;
 import net.quepierts.thatskyinteractions.feature.registry.builer.ExpressionTypeBuilder;
 import net.quepierts.thatskyinteractions.feature.registry.entry.ExpressionTypeEntry;
 
@@ -14,6 +16,18 @@ public class ExpressionTypes {
             = ExpressionTypes.<AnimationExpression>type("animation")
             .codec(AnimationExpression.MAP_CODEC)
             .streamCodec(AnimationExpression.STREAM_CODEC)
+            .register();
+
+    public static final ExpressionTypeEntry<InteractionRequesterExpression> INTERACTION_REQUESTER
+            = ExpressionTypes.<InteractionRequesterExpression>type("interaction_requester")
+            .codec(InteractionRequesterExpression.MAP_CODEC)
+            .streamCodec(InteractionRequesterExpression.STREAM_CODEC)
+            .register();
+
+    public static final ExpressionTypeEntry<InteractionReceiverExpression> INTERACTION_RECEIVER
+            = ExpressionTypes.<InteractionReceiverExpression>type("interaction_receiver")
+            .codec(InteractionReceiverExpression.MAP_CODEC)
+            .streamCodec(InteractionReceiverExpression.STREAM_CODEC)
             .register();
 
     public static void register() { }

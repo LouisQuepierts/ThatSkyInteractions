@@ -45,12 +45,14 @@ public class PlayerFriendshipSystem {
         }
 
         PlayerFriendshipAttachment.getAttachment(receiver).sendInvite(requester, node);
-        PlayerInteractionSystem.invite(requester, receiver, INTERACTION);
+        if (PlayerInteractionSystem.invite(requester, receiver, INTERACTION)) {
 
-        PacketDistributor.sendToPlayer(
-                receiver,
-                PlayerFriendshipUiPacket.invite(requester)
-        );
+            PacketDistributor.sendToPlayer(
+                    receiver,
+                    PlayerFriendshipUiPacket.invite(requester)
+            );
+
+        }
 
     }
 

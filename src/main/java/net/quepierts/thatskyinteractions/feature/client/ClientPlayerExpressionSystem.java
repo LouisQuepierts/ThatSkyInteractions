@@ -9,11 +9,17 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerMovedEvent;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.ExpressionsScreen;
 import net.quepierts.thatskyinteractions.feature.client.reference.TsiKeys;
+import net.quepierts.thatskyinteractions.feature.expression.Expression;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
 import net.quepierts.thatskyinteractions.feature.expression.packet.ExpressionRequestPacket;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import org.jspecify.annotations.NonNull;
+
+import java.lang.ref.WeakReference;
 
 @UtilityClass
 public class ClientPlayerExpressionSystem {
@@ -51,6 +57,29 @@ public class ClientPlayerExpressionSystem {
                     ScreenLoader.open(ExpressionsScreen.class);
                 }
             }
+        }
+
+        @SubscribeEvent
+        public static void onLocalPlayerMoved(final LocalPlayerMovedEvent event) {
+
+            final var player            = event.getPlayer();
+            final var attachment        = PlayerExpressionSystem.getAttachment(player);
+
+            if (!attachment.isExpressing()) {
+                return;
+            }
+
+            final var reference         = attachment.getReference();
+            final var expression        = reference.get();
+
+            if (expression == null) {
+                return;
+            }
+
+            if (expression.isInterruptible(player)) {
+                ClientPlayerExpressionSystem.cancel();
+            }
+
         }
 
     }

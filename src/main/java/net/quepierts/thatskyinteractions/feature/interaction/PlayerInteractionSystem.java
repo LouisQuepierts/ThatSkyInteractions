@@ -9,7 +9,9 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.control.packet.NavigatePacket;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.ClientboundInteractionControlPacket;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
@@ -22,6 +24,12 @@ public class PlayerInteractionSystem {
     public static final String ANIMATION_TYPE_REQUESTER = "interaction.requester";
     public static final String ANIMATION_TYPE_RECEIVER  = "interaction.receiver";
 
+    public static final Identifier EXPRESSION_REQUESTER
+            = ThatSkyInteractions.location("interaction.requester");
+
+    public static final Identifier EXPRESSION_RECEIVER
+            = ThatSkyInteractions.location("interaction.receiver");
+
     public static PlayerInteractionAttachment getInteractionAttachment(
             final @NonNull Player player
     ) {
@@ -32,35 +40,35 @@ public class PlayerInteractionSystem {
     * Order matters
     * Requester
     * */
-    public static void invite(
+    public static boolean invite(
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver,
             final @NonNull Identifier   interactionId
     ) {
 
         if (requester.is(receiver)) {
-            return;
+            return false;
         }
 
         final var manager       = PlayerInteractionManager.getInstance();
         final var interaction    = manager.get(interactionId);
 
         if (interaction == null) {
-            return;
+            return false;
         }
 
         final ICancellableEvent event = NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Pre(requester, receiver, interactionId));
         if (event.isCanceled()) {
-            return;
+            return false;
         }
 
         final var level = requester.level();
         if (level != receiver.level()) {
-            return;
+            return false;
         }
 
         if (requester.distanceToSqr(receiver) > 256) {
-            return;
+            return false;
         }
 
         final var reqData = PlayerInteractionSystem.getInteractionAttachment(requester);
@@ -70,10 +78,15 @@ public class PlayerInteractionSystem {
             PlayerInteractionSystem.cancel(requester);
         }
 
-        reqData.sendInvite(receiver, interactionId);
-        recData.receiveInvite(requester, interactionId);
+        // delegate
+        if (!PlayerExpressionSystem.perform(requester, EXPRESSION_REQUESTER)) {
+            return false;
+        }
 
         interaction.onInvite(requester, receiver);
+
+        reqData.sendInvite(receiver, interactionId);
+        recData.receiveInvite(requester, interactionId);
 
         PacketDistributor.sendToPlayer(
                 requester,
@@ -87,16 +100,17 @@ public class PlayerInteractionSystem {
 
         NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Invite.Post(requester, receiver, interactionId));
 
+        return true;
     }
 
-    public static void accept(
+    public static boolean accept(
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver,
             final boolean               force
     ) {
 
         if (requester.is(receiver)) {
-            return;
+            return false;
         }
 
         final var reqData = PlayerInteractionSystem.getInteractionAttachment(requester);
@@ -104,16 +118,16 @@ public class PlayerInteractionSystem {
 
         final var sent = reqData.getOngoing();
         if (sent == null || !sent.getOther().equals(receiver.getUUID())) {
-            return;
+            return false;
         }
 
         if (!recData.hasReceivedRequest(requester.getUUID())) {
-            return;
+            return false;
         }
 
         final var level = requester.level();
         if (level != receiver.level()) {
-            return;
+            return false;
         }
 
         final var type      = sent.getType();
@@ -122,12 +136,12 @@ public class PlayerInteractionSystem {
         final var interaction = manager.get(type);
 
         if (interaction == null) {
-            return;
+            return false;
         }
 
         final var event     = NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Pre(requester, receiver, type));
         if (event.isCanceled()) {
-            return;
+            return false;
         }
 
         if (interaction.positional()) {
@@ -141,17 +155,21 @@ public class PlayerInteractionSystem {
                         receiver,
                         new NavigatePacket(position, lookTarget)
                 );
-                return;
+                return false;
             }
 
             receiver.teleportTo(position.x, position.y, position.z);
             receiver.lookAt(EntityAnchorArgument.Anchor.EYES, requester.getEyePosition());
         }
 
-        reqData.sendAccept(receiver);
-        recData.receiveAccept(requester);
+        if (!PlayerExpressionSystem.perform(receiver, EXPRESSION_RECEIVER)) {
+            return false;
+        }
 
         interaction.onAccepted(requester, receiver);
+
+        reqData.sendAccept(receiver);
+        recData.receiveAccept(requester);
 
         PacketDistributor.sendToPlayer(
                 requester,
@@ -164,6 +182,8 @@ public class PlayerInteractionSystem {
         );
 
         NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Accept.Post(requester, receiver, type));
+
+        return false;
 
     }
 

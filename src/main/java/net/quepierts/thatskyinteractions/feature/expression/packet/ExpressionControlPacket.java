@@ -63,9 +63,9 @@ public record ExpressionControlPacket(
         switch (this.operation()) {
             case PERFORM: {
                 final var identifier = this.identifier();
-                attachment.start(identifier, target.level().getGameTime());
                 final var expression = PlayerExpressionManager.getInstance().get(identifier);
-                if (expression != null) {
+                if (expression != null) { // normally, expression should not be null
+                    attachment.start(expression, identifier);
                     expression.onClientPerform(player);
                 }
                 break;

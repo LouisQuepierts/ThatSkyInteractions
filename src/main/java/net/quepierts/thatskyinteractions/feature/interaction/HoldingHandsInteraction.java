@@ -7,6 +7,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.expression.InteractionRequesterExpression;
+import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
 import net.quepierts.thatskyinteractions.feature.registry.InteractionTypes;
 import org.jspecify.annotations.NonNull;

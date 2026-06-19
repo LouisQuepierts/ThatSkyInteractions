@@ -36,10 +36,13 @@ public record AlignBodyPacket(
 
     @Override
     public void handleOnClient(final @NonNull Player player) {
-        final var difference = Mth.degreesDifference(player.yBodyRot, player.getYHeadRot());
+        final var difference = Mth.degreesDifference(player.yBodyRot, player.getYRot());
 
         PhysicalTweenAttachment.getAttachment(player.level()).tween().to(
-                player::setYBodyRot,
+                v -> {
+                    player.yBodyRot = v;
+                    player.yBodyRotO = v;
+                },
                 player.yBodyRot,
                 player.getYHeadRot(),
                 Mth.abs(difference) * 0.01f,

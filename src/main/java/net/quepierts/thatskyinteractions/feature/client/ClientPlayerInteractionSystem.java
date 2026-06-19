@@ -50,25 +50,4 @@ public class ClientPlayerInteractionSystem {
     public static PlayerInteractionAttachment getLocalInteractionData() {
         return PlayerInteractionAttachment.getAttachment(Minecraft.getInstance().player);
     }
-
-    @UtilityClass
-    @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
-    static final class Handler {
-        @SubscribeEvent
-        public static void onLocalPlayerMoved(final LocalPlayerMovedEvent event) {
-
-            final var player            = event.getPlayer();
-
-            final var interactionData   = PlayerInteractionSystem.getInteractionAttachment(player);
-            final var ongoing           = interactionData.getOngoing();
-            if (ongoing != null) {
-                if (ongoing.isWaiting()) {
-                    ClientPlayerInteractionSystem.cancel();
-                }
-
-                event.setCanceled(true);
-            }
-
-        }
-    }
 }

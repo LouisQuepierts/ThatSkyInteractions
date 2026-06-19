@@ -7,10 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
+import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -100,6 +102,8 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
                 }
             }
         }
+
+        NeoForge.EVENT_BUS.post(new RegisterExpressionEvent(builder1::put));
 
         this.sets = builder0.build();
         this.byOrdinal = builder2.build();

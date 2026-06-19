@@ -4,19 +4,21 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.feature.expression.packet.ExpressionControlPacket;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
 @UtilityClass
 public class PlayerExpressionSystem {
 
-    public static PlayerExpressionAttachment getAttachment(@NonNull ServerPlayer player) {
+    public static PlayerExpressionAttachment getAttachment(@NonNull Player player) {
         return PlayerExpressionAttachment.getAttachment(player);
     }
 
-    public static void perform(
+    public static boolean perform(
             final @NonNull  ServerPlayer    player,
             final @NonNull  Identifier      expressionId,
             final           int             level
@@ -25,17 +27,18 @@ public class PlayerExpressionSystem {
         final var expression    = manager.get(expressionId, level);
 
         if (expression == null) {
-            return;
+            return false;
         }
 
         final var attachment = getAttachment(player);
 
         if (attachment.isExpressing()) {
             cancel(player);
+            return false;
         }
 
         if (!expression.immediate()) {
-            attachment.start(expressionId, player.level().getGameTime());
+            attachment.start(expression, expressionId);
         }
         expression.onPerform(player);
 
@@ -43,29 +46,60 @@ public class PlayerExpressionSystem {
                 player,
                 ExpressionControlPacket.perform(player.getUUID(), expressionId)
         );
+
+        return true;
+    }
+
+    public static boolean perform(
+            final @NonNull  ServerPlayer    player,
+            final @NonNull  Identifier      expressionId
+    ) {
+        final var manager       = PlayerExpressionManager.getInstance();
+        final var expression    = manager.get(expressionId);
+
+        if (expression == null) {
+            return false;
+        }
+
+        final var attachment = getAttachment(player);
+
+        if (attachment.isExpressing()) {
+            cancel(player);
+            return false;
+        }
+
+        if (!expression.immediate()) {
+            attachment.start(expression, expressionId);
+        }
+        expression.onPerform(player);
+
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                player,
+                ExpressionControlPacket.perform(player.getUUID(), expressionId)
+        );
+
+        return true;
     }
 
     public static void cancel(@NonNull ServerPlayer player) {
         final var attachment = getAttachment(player);
         final var currentId = attachment.getCurrent();
 
-        if (currentId == null) {
-            return;
+        if (currentId != null) {
+            final var manager = PlayerExpressionManager.getInstance();
+            final var expression = manager.get(currentId);
+
+            attachment.clear();
+
+            if (expression != null && expression.isInterruptible(player)) {
+                expression.onInterrupt(player);
+            }
+
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                    player,
+                    ExpressionControlPacket.cancel(player.getUUID(), currentId)
+            );
         }
-
-        final var manager = PlayerExpressionManager.getInstance();
-        final var expression = manager.get(currentId);
-
-        attachment.clear();
-
-        if (expression != null) {
-            expression.onCancel(player);
-        }
-
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
-                player,
-                ExpressionControlPacket.cancel(player.getUUID(), currentId)
-        );
     }
 
     public static void finish(@NonNull ServerPlayer player) {
@@ -88,29 +122,6 @@ public class PlayerExpressionSystem {
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 player,
                 ExpressionControlPacket.finished(player.getUUID(), currentId)
-        );
-    }
-
-    public static void interrupt(@NonNull ServerPlayer player) {
-        final var attachment = getAttachment(player);
-        final var currentId = attachment.getCurrent();
-
-        if (currentId == null) {
-            return;
-        }
-
-        final var manager = PlayerExpressionManager.getInstance();
-        final var expression = manager.get(currentId);
-
-        attachment.clear();
-
-        if (expression != null) {
-            expression.onInterrupted(player);
-        }
-
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
-                player,
-                ExpressionControlPacket.cancel(player.getUUID(), currentId)
         );
     }
 }

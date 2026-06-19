@@ -101,7 +101,7 @@ public final class PlayerInteractionAttachment {
 
     }
     public boolean hasSentRequest() {
-        return this.ongoing != null;
+        return this.ongoing != null && this.ongoing.isWaiting();
     }
 
     public Collection<InteractionRequest> getReceivedRequests() {

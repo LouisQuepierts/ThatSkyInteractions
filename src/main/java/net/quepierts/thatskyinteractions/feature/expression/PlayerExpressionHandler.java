@@ -27,24 +27,23 @@ public class PlayerExpressionHandler {
             return;
         }
 
-        final var attachment = PlayerExpressionSystem.getAttachment(player);
-        final var currentId = attachment.getCurrent();
+        final var attachment    = PlayerExpressionSystem.getAttachment(player);
+        final var currentId     = attachment.getCurrent();
 
-        if (currentId == null) {
+        if (currentId           == null) {
             return;
         }
 
-        final var manager = PlayerExpressionManager.getInstance();
-        final var expression = manager.get(currentId);
+        final var manager       = PlayerExpressionManager.getInstance();
+        final var expression    = manager.get(currentId);
 
-        if (expression == null || expression.immediate()) {
+        if (expression == null
+                || expression.immediate()) {
             return;
         }
 
-        final var gameTime = player.level().getGameTime();
-        final var elapsed = gameTime - attachment.getStartTime();
-
-        if (elapsed >= expression.duration()) {
+        final var finished      = expression.isFinished(player);
+        if (finished) {
             PlayerExpressionSystem.finish(player);
         }
     }

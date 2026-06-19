@@ -8,6 +8,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
+import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jspecify.annotations.NonNull;
 
@@ -24,32 +26,50 @@ public interface Expression {
 
     @NonNull ExpressionType<? extends Expression> getType();
 
-    void onPerform(@NonNull ServerPlayer player);
+    void onPerform(
+            final @NonNull ServerPlayer                 player
+    );
 
-    void onCancel(@NonNull ServerPlayer player);
+    default void onInterrupt(
+            final @NonNull ServerPlayer                 player
+    ) {}
 
-    default void onFinished(@NonNull ServerPlayer player) { }
-
-    default void onInterrupted(@NonNull ServerPlayer player) { }
-
-    default void onClientPerform(@NonNull Player player) { }
-
-    default void onRegisterPlayerAnimation(
-            @NonNull RegisterPlayerAnimationEvent event,
-            @NonNull Identifier identifier,
-            int level
-    ) { }
-
-    default void onGenerateData(
-            @NonNull Identifier identifier,
-            int level
-    ) { }
-
-    default int duration() {
-        return 0;
+    default boolean isInterruptible(
+            final @NonNull Player                   player
+    ) {
+        return true;
     }
 
+    default void onFinished(
+            final @NonNull ServerPlayer                 player
+    ) { }
+
+    default void onClientPerform(
+            final @NonNull Player                       player
+    ) { }
+
+    default void onRegisterPlayerAnimation(
+            final @NonNull RegisterPlayerAnimationEvent event,
+            final @NonNull Identifier                   identifier,
+            final          int                          level
+    ) { }
+
+    default boolean isFinished(
+            final @NonNull ServerPlayer                 player
+    ) {
+        return true;
+    }
+
+    default void onGenerateData(
+            final @NonNull Identifier                   identifier,
+            final          int                          level
+    ) { }
+
     default boolean immediate() {
-        return this.duration() == 0;
+        return true;
+    }
+
+    default boolean hidden() {
+        return true;
     }
 }
