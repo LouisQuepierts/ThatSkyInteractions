@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.feature.expression.packet.ExpressionControlPacket;
-import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
@@ -85,13 +84,16 @@ public class PlayerExpressionSystem {
         final var attachment = getAttachment(player);
         final var currentId = attachment.getCurrent();
 
-        if (currentId != null) {
-            final var manager = PlayerExpressionManager.getInstance();
-            final var expression = manager.get(currentId);
+        if (currentId == null) {
+            return;
+        }
 
+        final var expression = attachment.getReference().get();
+
+        if (expression != null) {
             attachment.clear();
 
-            if (expression != null && expression.isInterruptible(player)) {
+            if (expression.isInterruptible(player)) {
                 expression.onInterrupt(player);
             }
 
@@ -110,8 +112,7 @@ public class PlayerExpressionSystem {
             return;
         }
 
-        final var manager = PlayerExpressionManager.getInstance();
-        final var expression = manager.get(currentId);
+        final var expression = attachment.getReference().get();
 
         attachment.clear();
 

@@ -17,11 +17,10 @@ import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
 import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.control.PlayerControlSystem;
-import net.quepierts.thatskyinteractions.feature.expression.InteractionReceiverExpression;
-import net.quepierts.thatskyinteractions.feature.expression.InteractionRequesterExpression;
-import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
+import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.InteractionTypes;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -142,6 +141,32 @@ public final class AnimationInteraction implements Interaction {
         this.receiverAnimation      = AUTO.equalsIgnoreCase(this.receiver) ?
                                         identifier.withSuffix(subfix + ".receiver") :
                                         identifier.withSuffix(".receiver");
+
+    }
+
+    @Override
+    public void onAnimationFinished(
+            final @NonNull ServerPlayer                     player,
+            final PlayerAnimationControllerEvent.Finished   event
+    ) {
+
+        if (event.getLayer() != AnimationLayerTypes.DEFAULT.get()) {
+            return;
+        }
+
+        final var attachment    = PlayerInteractionSystem.getInteractionAttachment(player);
+        final var ongoing       = attachment.getOngoing();
+
+        // assert non-null
+
+        final var requester     = ongoing.isRequester();
+        final var animation     = requester ? this.requesterAnimation : this.receiverAnimation;
+
+        if (!event.getAnimation().equals(animation)) {
+            return;
+        }
+
+        PlayerInteractionSystem.finish(player);
 
     }
 

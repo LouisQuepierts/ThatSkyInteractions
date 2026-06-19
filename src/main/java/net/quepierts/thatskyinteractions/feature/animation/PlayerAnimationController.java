@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Avatar;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
@@ -44,6 +45,7 @@ public final class PlayerAnimationController {
     private final ExecutionState                            executionState      = new ExecutionState(64);
     private final TransformF                                root;
 
+    @Getter private final Avatar                            avatar;
     @Getter private final FKController                      fkController;
 
     @Getter private final PlayerMask                        executionMask       = PlayerMask.all();
@@ -59,7 +61,9 @@ public final class PlayerAnimationController {
     @Getter private boolean                                 resolved            = false;
     @Getter private boolean                                 paused              = false;
 
-    public PlayerAnimationController() {
+    public PlayerAnimationController(final @NonNull Avatar avatar) {
+        this.avatar         = avatar;
+
         this.layers         = new Object2ObjectOpenHashMap<>();
         this.running        = new ArrayList<>();
         this.finished       = new ArrayList<>();
@@ -99,10 +103,6 @@ public final class PlayerAnimationController {
             }
         }
 
-        final var manager       = PlayerAnimationManager.getInstance();
-        final var animation     = manager.get(animationId);
-        final var definition    = manager.getDefinition(animationId);
-
         final var pre           = NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Play.Pre(
                                     this,
                                     type,
@@ -112,6 +112,10 @@ public final class PlayerAnimationController {
         if (pre.isCanceled()) {
             return false;
         }
+
+        final var manager       = PlayerAnimationManager.getInstance();
+        final var animation     = manager.get(animationId);
+        final var definition    = manager.getDefinition(animationId);
 
         if (animation == null) {
             log.warn("Animation source not found: {}", animationId);
@@ -272,16 +276,19 @@ public final class PlayerAnimationController {
 
                     if (layer.isFinished()) {
                         this.finished.add(layer);
+
+                        NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Finished(
+                                this,
+                                layer.getType(),
+                                layer.getAnimationId()
+                        ));
                     }
                 }
 
                 if (!this.finished.isEmpty()) {
                     for (final var layer : this.finished) {
                         this.remove(layer);
-                        NeoForge.EVENT_BUS.post(new PlayerAnimationControllerEvent.Finished(
-                                this,
-                                layer.getType()
-                        ));
+                        layer.cleanup();
                     }
 
                     this.finished.clear();

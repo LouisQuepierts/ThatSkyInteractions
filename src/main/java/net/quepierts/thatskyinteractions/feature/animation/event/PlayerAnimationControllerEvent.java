@@ -1,8 +1,8 @@
 package net.quepierts.thatskyinteractions.feature.animation.event;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Avatar;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.quepierts.thatskyinteractions.feature.animation.AnimationLayerType;
@@ -10,11 +10,20 @@ import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationContro
 import org.jspecify.annotations.NonNull;
 
 @Getter
-@RequiredArgsConstructor
 public abstract sealed class PlayerAnimationControllerEvent extends Event {
 
     private final @NonNull PlayerAnimationController        controller;
     private final @NonNull AnimationLayerType               layer;
+    private final @NonNull Avatar                           entity;
+
+    private PlayerAnimationControllerEvent(
+            final @NonNull PlayerAnimationController        controller,
+            final @NonNull AnimationLayerType               layer
+    ) {
+        this.controller                                     = controller;
+        this.layer                                          = layer;
+        this.entity                                         = controller.getAvatar();
+    }
 
     @Getter
     public static abstract sealed class Play extends PlayerAnimationControllerEvent {
@@ -62,13 +71,18 @@ public abstract sealed class PlayerAnimationControllerEvent extends Event {
         }
     }
 
+    @Getter
     public static final class Finished extends PlayerAnimationControllerEvent {
 
+        private final Identifier                            animation;
+
         public Finished(
-                final @NonNull PlayerAnimationController controller,
-                final @NonNull AnimationLayerType           layer
+                final @NonNull PlayerAnimationController    controller,
+                final @NonNull AnimationLayerType           layer,
+                final @NonNull Identifier                   animation
         ) {
             super(controller, layer);
+            this.animation = animation;
         }
 
     }

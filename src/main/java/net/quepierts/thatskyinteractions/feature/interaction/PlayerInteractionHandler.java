@@ -14,6 +14,8 @@ import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeleton
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.sampler.WrappedSampler;
 import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
+import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
+import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
@@ -22,6 +24,8 @@ import net.quepierts.veynir.backend.sampler.SamplingMode;
 import net.quepierts.veynir.core.fsm.FSMParameter;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
+import java.lang.ref.WeakReference;
 
 @Slf4j
 @UtilityClass
@@ -58,18 +62,43 @@ public class PlayerInteractionHandler {
         }
 
         final var attachment    = PlayerInteractionSystem.getInteractionAttachment(player);
-        final var sent          = attachment.getOngoing();
+        final var ongoing       = attachment.getOngoing();
 
-        if (sent == null) {
+        if (ongoing == null) {
             return;
         }
 
-        final var time          = player.level().getGameTime();
+        if (ongoing.isWaiting() && ongoing.isRequester()) {
 
-        if (sent.isExpired(time)) {
+            final var time = player.level().getGameTime();
 
-            PlayerInteractionSystem.cancel(player);
+            if (ongoing.isExpired(time)) {
 
+                PlayerInteractionSystem.cancel(player);
+
+            }
+
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void onAnimationFinished(final PlayerAnimationControllerEvent.Finished event) {
+
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        final var attachment    = PlayerInteractionAttachment.getAttachment(player);
+        final var ongoing       = attachment.getOngoing();
+        if (ongoing == null) {
+            return;
+        }
+
+        final var interaction = ongoing.getInteraction().get();
+
+        if (interaction != null) {
+            interaction.onAnimationFinished(player, event);
         }
 
     }

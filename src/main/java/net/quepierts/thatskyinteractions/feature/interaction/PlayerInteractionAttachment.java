@@ -87,8 +87,8 @@ public final class PlayerInteractionAttachment {
             final @NonNull Player       other
     ) {
 
-        if (this.hasSentRequest() && this.ongoing.getOther().equals(other.getUUID())) {
-            this.ongoing = null;
+        if (this.ongoing != null && this.ongoing.getOther().equals(other.getUUID())) {
+            this.ongoing.accept();
         }
 
     }
@@ -97,11 +97,22 @@ public final class PlayerInteractionAttachment {
             final @NonNull Player       other
     ) {
 
-        this.received.remove(other.getUUID());
-
+        final var request = this.received.get(other.getUUID());
+        if (request != null) {
+            this.ongoing = request;
+            request.accept();
+        }
     }
+
+    public void done() {
+        this.ongoing = null;
+    }
+
     public boolean hasSentRequest() {
-        return this.ongoing != null && this.ongoing.isWaiting();
+        final var request = this.ongoing;
+        return request != null
+                && request.isRequester()
+                && request.isWaiting();
     }
 
     public Collection<InteractionRequest> getReceivedRequests() {

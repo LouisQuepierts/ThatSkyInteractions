@@ -8,6 +8,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 
 @Slf4j
 @UtilityClass
@@ -28,17 +29,13 @@ public class PlayerExpressionHandler {
         }
 
         final var attachment    = PlayerExpressionSystem.getAttachment(player);
-        final var currentId     = attachment.getCurrent();
-
-        if (currentId           == null) {
+        if (attachment.getCurrent() == null) {
             return;
         }
 
-        final var manager       = PlayerExpressionManager.getInstance();
-        final var expression    = manager.get(currentId);
+        final var expression    = attachment.getReference().get();
 
-        if (expression == null
-                || expression.immediate()) {
+        if (expression == null) {
             return;
         }
 
@@ -46,5 +43,28 @@ public class PlayerExpressionHandler {
         if (finished) {
             PlayerExpressionSystem.finish(player);
         }
+    }
+
+    @SubscribeEvent
+    public static void onAnimationFinished(final PlayerAnimationControllerEvent.Finished event) {
+
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        final var attachment    = PlayerExpressionSystem.getAttachment(player);
+
+        if (attachment.getCurrent() == null) {
+            return;
+        }
+
+        final var expression    = attachment.getReference().get();
+
+        if (expression == null) {
+            return;
+        }
+
+        expression.onAnimationFinished(player, event);
+
     }
 }

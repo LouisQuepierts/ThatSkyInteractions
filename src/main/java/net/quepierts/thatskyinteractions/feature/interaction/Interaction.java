@@ -6,6 +6,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
@@ -47,6 +49,12 @@ public interface Interaction {
             final @NonNull  ServerPlayer            receiver
     ) { }
 
+    default boolean isFinished(
+            final @NonNull  Player                  player
+    ) {
+        return true;
+    }
+
     default void onInterrupted(
             final @NonNull  ServerPlayer            requester,
             final @NonNull  ServerPlayer            receiver
@@ -63,16 +71,17 @@ public interface Interaction {
             final          int                          level
     ) { }
 
+    default void onAnimationFinished(
+            final @NonNull ServerPlayer                     player,
+            final PlayerAnimationControllerEvent.Finished   event
+    ) { }
+
     default boolean positional() {
         return true;
     }
 
     default int duration() {
         return 0;
-    }
-
-    default boolean immediate() {
-        return this.duration() == 0;
     }
 
     default boolean is(final @NonNull Interaction other) {

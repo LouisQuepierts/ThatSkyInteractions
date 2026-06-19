@@ -19,6 +19,7 @@ import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.control.PlayerControlSystem;
@@ -117,12 +118,19 @@ public final class AnimationExpression implements Expression {
     }
 
     @Override
-    public boolean isFinished(final @NonNull ServerPlayer player) {
-        final var attachment    = PlayerAnimationSystem.getAnimationData(player);
+    public void onAnimationFinished(
+            final @NonNull ServerPlayer                     player,
+            final PlayerAnimationControllerEvent.Finished   event
+    ) {
 
-        return                  !attachment
-                                .getController()
-                                .isPlaying(AnimationLayerTypes.DEFAULT.get());
+        if (event.getLayer() != AnimationLayerTypes.DEFAULT.get()) {
+            return;
+        }
+
+        if (event.getAnimation().equals(this.animationId)) {
+            PlayerExpressionSystem.finish(player);
+        }
+
     }
 
     @Override

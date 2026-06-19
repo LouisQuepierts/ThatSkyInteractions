@@ -7,6 +7,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
@@ -57,12 +58,17 @@ public interface Expression {
     default boolean isFinished(
             final @NonNull ServerPlayer                 player
     ) {
-        return true;
+        return this.immediate();
     }
 
     default void onGenerateData(
             final @NonNull Identifier                   identifier,
             final          int                          level
+    ) { }
+
+    default void onAnimationFinished(
+            final @NonNull ServerPlayer                     player,
+            final PlayerAnimationControllerEvent.Finished   event
     ) { }
 
     default boolean immediate() {

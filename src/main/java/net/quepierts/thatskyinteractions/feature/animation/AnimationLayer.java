@@ -97,10 +97,6 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
 
         this.animation.update(this.fsmState, delta);
         this.state.progress = this.fsmState.getElapsed();
-
-        if (this.fsmState.isFinished()) {
-            this.cleanup();
-        }
     }
 
     public void update(float partialTicks) {
@@ -207,7 +203,7 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
 
     }
 
-    private void cleanup() {
+    public void cleanup() {
         this.animation      .cleanup(this.fsmState);
         this.playing        = false;
         this.paused         = false;

@@ -41,6 +41,8 @@ public record ClientboundInteractionControlPacket(
                     ClientboundInteractionControlPacket::new
             );
 
+    private static final UUID EMPTY_UUID = new UUID(0, 0);
+
 
     public static ClientboundInteractionControlPacket invite(
             final @NonNull Player       requester,
@@ -72,6 +74,14 @@ public record ClientboundInteractionControlPacket(
         return new ClientboundInteractionControlPacket(
                 send ? Operation.CANCEL_REQ :Operation.CANCEL_REC,
                 uuid,
+                Optional.empty()
+        );
+    }
+
+    public static ClientboundInteractionControlPacket done() {
+        return new ClientboundInteractionControlPacket(
+                Operation.DONE,
+                EMPTY_UUID,
                 Optional.empty()
         );
     }
@@ -140,6 +150,10 @@ public record ClientboundInteractionControlPacket(
                 }
                 break;
             }
+            case DONE: {
+                data.done();
+                break;
+            }
         }
 
     }
@@ -155,7 +169,8 @@ public record ClientboundInteractionControlPacket(
         CANCEL_REQ,
         INVITE_REC,
         ACCEPT_REC,
-        CANCEL_REC;
+        CANCEL_REC,
+        DONE;
 
         static final Operation[] VALUES = values();
 

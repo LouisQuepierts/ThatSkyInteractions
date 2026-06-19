@@ -20,12 +20,6 @@ import org.jspecify.annotations.Nullable;
 @Getter
 public final class PlayerAnimationAttachment {
 
-    public static final Codec<PlayerAnimationAttachment> CODEC
-            = MapCodec.unitCodec(PlayerAnimationAttachment::new);
-
-    public static final StreamCodec<ByteBuf, PlayerAnimationAttachment> STREAM_CODEC
-            = StreamCodecUtils.unit(PlayerAnimationAttachment::new);
-
     private final PlayerAnimationController controller;
     private final Scene                     scene;
 
@@ -35,8 +29,8 @@ public final class PlayerAnimationAttachment {
         return avatar.getData(AttachmentTypes.PLAYER_ANIMATION);
     }
 
-    public PlayerAnimationAttachment() {
-        this.controller = new PlayerAnimationController();
+    public PlayerAnimationAttachment(final @NonNull Avatar avatar) {
+        this.controller = new PlayerAnimationController(avatar);
         this.scene      = new Scene();
     }
 
