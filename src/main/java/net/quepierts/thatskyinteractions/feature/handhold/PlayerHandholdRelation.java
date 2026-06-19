@@ -1,10 +1,16 @@
 package net.quepierts.thatskyinteractions.feature.handhold;
 
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerHandholdRelation {
@@ -18,6 +24,8 @@ public class PlayerHandholdRelation {
     private boolean         holding     = false;
 
     private int             occupied    = 0;
+
+    @Getter
     private Role            role        = Role.NONE;
 
     public PlayerHoldingHand lead(
@@ -147,10 +155,107 @@ public class PlayerHandholdRelation {
         return this.right;
     }
 
+    public @NonNull Serialized serialize() {
+        if (this.role == Role.NONE) {
+            return new Serialized(Role.NONE, Optional.empty(), Optional.empty());
+        }
+
+        return new Serialized(
+                this.role,
+                Optional.ofNullable(this.left != null ? this.left.getUUID() : null),
+                Optional.ofNullable(this.right != null ? this.right.getUUID() : null)
+        );
+    }
+
+    public void deserialize(
+            final @NonNull Serialized   serialized,
+            final @NonNull Level        level
+    ) {
+
+        this.unhold();
+
+        switch (serialized.role) {
+            case LEADER: {
+
+                serialized.left.ifPresent(uuid -> {
+                    var player = level.getPlayerByUUID(uuid);
+                    if (player != null) {
+                        this.lead(player);
+                    }
+                });
+
+                serialized.right.ifPresent(uuid -> {
+                    var player = level.getPlayerByUUID(uuid);
+                    if (player != null) {
+                        this.follow(player, PlayerHoldingHand.LEFT);
+                    }
+                });
+
+                break;
+            }
+            case FOLLOWER: {
+
+                serialized.left.ifPresentOrElse(
+                        uuid -> {
+                            var player = level.getPlayerByUUID(uuid);
+                            if (player != null) {
+                                this.follow(player, PlayerHoldingHand.LEFT);
+                            }
+                        },
+                        () -> serialized.right.ifPresent(uuid -> {
+                            var player = level.getPlayerByUUID(uuid);
+                            if (player != null) {
+                                this.follow(player, PlayerHoldingHand.RIGHT);
+                            }
+                        })
+                );
+
+                break;
+            }
+        }
+
+    }
+
     public enum Role {
         NONE,
         LEADER,
-        FOLLOWER
+        FOLLOWER;
+
+        public static Role from(byte b) {
+            return switch (b) {
+                case 1 -> LEADER;
+                case 2 -> FOLLOWER;
+                default -> NONE;
+            };
+        }
+
+        public byte toByte() {
+            return switch (this) {
+                case LEADER -> 1;
+                case FOLLOWER -> 2;
+                default -> 0;
+            };
+        }
+
+    }
+
+    public record Serialized(
+            @NonNull Role           role,
+            @NonNull Optional<UUID> left,
+            @NonNull Optional<UUID> right
+    ) {
+
+        public static final StreamCodec<ByteBuf, Serialized> STREAM_CODEC
+                = StreamCodec.composite(
+                        ByteBufCodecs.BYTE.map(Role::from, Role::toByte),
+                        Serialized::role,
+                        ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC),
+                        Serialized::left,
+                        ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC),
+                        Serialized::right,
+                        Serialized::new
+                );
+
     }
 
 }

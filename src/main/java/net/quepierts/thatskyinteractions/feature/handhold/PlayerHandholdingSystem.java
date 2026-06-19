@@ -31,6 +31,14 @@ public class PlayerHandholdingSystem {
             final @NonNull ServerPlayer     follower
     ) {
 
+        if (leader.level() != follower.level()) {
+            return false;
+        }
+
+        if (leader.distanceToSqr(follower) > 64 * 64) {
+            return false;
+        }
+
         final var lAttachment       = PlayerHandholdingAttachment.getAttachment(leader);
         final var fAttachment       = PlayerHandholdingAttachment.getAttachment(follower);
 
@@ -42,7 +50,8 @@ public class PlayerHandholdingSystem {
             final var hand = lAttachment.lead(follower);
             fAttachment.follow(leader, hand);
 
-            PacketDistributor.sendToAllPlayers(
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                    leader,
                     ClientboundHandholdPacket.hold(leader, follower)
             );
 

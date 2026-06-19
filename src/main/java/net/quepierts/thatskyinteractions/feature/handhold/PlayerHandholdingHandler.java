@@ -8,8 +8,11 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.handhold.packet.ClientboundSyncHandholdPacket;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
@@ -48,6 +51,24 @@ public class PlayerHandholdingHandler {
                 resolver.follow(right, player, false);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerStartTracking(final PlayerEvent.StartTracking event) {
+
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        if (event.getTarget() instanceof ServerPlayer target) {
+
+            PacketDistributor.sendToPlayer(
+                    player,
+                    ClientboundSyncHandholdPacket.of(target)
+            );
+
+        }
+
     }
 
     private static void follow(
