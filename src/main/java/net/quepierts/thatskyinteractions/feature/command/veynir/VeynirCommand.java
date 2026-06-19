@@ -6,6 +6,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.command.InteractionCommand;
 
 @UtilityClass
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
@@ -18,7 +19,6 @@ public class VeynirCommand {
         dispatcher.register(
                 Commands.literal("veynir")
                         .then(AnimationCommand.command())
-                        .then(InteractionCommand.command())
         );
     }
 

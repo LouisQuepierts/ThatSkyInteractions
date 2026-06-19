@@ -20,6 +20,7 @@ public class TsiCommand {
                         .then(FriendshipCommand.command())
                         .then(HandholdingCommand.command())
                         .then(PreferenceCommand.command())
+                        .then(InteractionCommand.command())
         );
 
         dispatcher.register(

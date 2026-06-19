@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.command.veynir;
+package net.quepierts.thatskyinteractions.feature.command;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -13,7 +13,6 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
-import net.quepierts.thatskyinteractions.feature.command.TsiSuggestions;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionManager;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
