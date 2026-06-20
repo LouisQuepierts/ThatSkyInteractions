@@ -8,9 +8,9 @@ import net.quepierts.thatskyinteractions.infra.Services;
 @UtilityClass
 public class DefaultMinecraftFSM {
 
-    public static final FSMHook             HOOK    = Services.load(TsiFsmHook.class);
+    public static final FSMHook             HOOK        = Services.load(TsiFsmHook.class);
 
-    public static final FiniteStateMachine  SINGLE  = FiniteStateMachine.compiler()
+    public static final FiniteStateMachine  SINGLE      = FiniteStateMachine.compiler()
             .sequence()
 
             .withState("system#enter")
@@ -20,7 +20,7 @@ public class DefaultMinecraftFSM {
             .withHook(HOOK)
             .compile();
 
-    public static final FiniteStateMachine  SEQUENCE = FiniteStateMachine.compiler()
+    public static final FiniteStateMachine  SEQUENCE    = FiniteStateMachine.compiler()
             .sequence()
 
             .withState("system#enter")
@@ -28,6 +28,20 @@ public class DefaultMinecraftFSM {
             .withState("main")
             .withState("exit")
             .withState("system#exit")
+
+            .withHook(HOOK)
+            .compile();
+
+    public static final FiniteStateMachine  CONTINUOUS  = FiniteStateMachine.compiler()
+            .sequence()
+
+            .withState("system#enter")
+            .withState("enter")
+            .withState("main")
+            .withState("exit")
+            .withState("system#exit")
+
+            .withTransition("main", "main")
 
             .withHook(HOOK)
             .compile();

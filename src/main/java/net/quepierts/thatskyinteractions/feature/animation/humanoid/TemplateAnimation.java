@@ -296,6 +296,20 @@ public class TemplateAnimation extends BaseAnimation {
         return animation;
     }
 
+    public static TemplateAnimation continuous(final @NonNull PlayerAnimationDefinition definition) {
+
+        final var animation = template(
+                definition,
+                DefaultMinecraftFSM.CONTINUOUS,
+                DefaultMinecraftAnimationPipeline.HUMANOID_TIMELINE,
+                DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID
+        );
+
+        animation.frozenEnds[3] = true;
+
+        return animation;
+    }
+
     @RequiredArgsConstructor(staticName = "of")
     public static final class ParsingContext {
         final @NonNull FiniteStateMachine           fsm;

@@ -48,6 +48,7 @@ public class PlayerAnimationFactory {
 
         FACTORIES.put("simple", PlayerAnimation::simple);
         FACTORIES.put("sequence", PlayerAnimation::sequence);
+        FACTORIES.put("continuous", PlayerAnimation::continuous);
 
         final var event = new RegisterPlayerAnimationTypeEvent(FACTORIES);
         NeoForge.EVENT_BUS.post(event);

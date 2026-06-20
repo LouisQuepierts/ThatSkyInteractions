@@ -5,7 +5,6 @@ import net.quepierts.veynir.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.feature.animation.HumanoidAnimationState;
 import net.quepierts.veynir.backend.execution.ExecutionState;
-import net.quepierts.veynir.backend.skeleton.pipeline.SkeletonPoseProvider;
 import net.quepierts.veynir.core.fsm.FSMState;
 import net.quepierts.veynir.core.fsm.FiniteStateMachine;
 import org.jspecify.annotations.NonNull;
@@ -18,6 +17,10 @@ public interface PlayerAnimation {
 
     static PlayerAnimation sequence(@NonNull PlayerAnimationDefinition definition) {
         return TemplateAnimation.sequence(definition);
+    }
+
+    static PlayerAnimation continuous(@NonNull PlayerAnimationDefinition definition) {
+        return TemplateAnimation.continuous(definition);
     }
 
     void play(
