@@ -45,7 +45,7 @@ public class ClientCameraSystem {
         CONTROLLER.onScroll((float) event.getScrollDeltaY());
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLocalPlayerTurn(final LocalPlayerTurnEvent event) {
         if (CONTROLLER.isLocked()) {
             return;

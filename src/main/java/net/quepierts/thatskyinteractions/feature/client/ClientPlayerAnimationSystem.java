@@ -53,47 +53,4 @@ public class ClientPlayerAnimationSystem {
         return PlayerAnimationAttachment.getAttachment(Minecraft.getInstance().player);
     }
 
-
-    @UtilityClass
-    @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
-    static final class Handler {
-
-        @SubscribeEvent
-        public static void onLocalPlayerTurn(final LocalPlayerTurnEvent event) {
-            final var player        = event.getPlayer();
-            final var xo            = event.getXo();
-
-            final var data          = PlayerAnimationSystem.getAnimationData(player);
-            final var controller    = data.getController();
-
-            if (!controller.isPlaying()) {
-                return;
-            }
-
-            final var minecraft     = Minecraft.getInstance();
-
-            final var unlock        = controller.isUnlocked(PlayerBone.HEAD);
-            final var firstPerson   = minecraft.options.getCameraType().isFirstPerson();
-
-            if (unlock) {
-                return;
-            }
-
-            if (firstPerson) {
-                event.setCanceled(true);
-                return;
-            }
-
-            final var deltaY        = (float) xo * 0.15f;
-            final var headDiff0     = Mth.abs(Mth.wrapDegrees(player.getYRot() - player.yBodyRot));
-            final var headDiff1     = Mth.abs(Mth.wrapDegrees(player.getYRot() - player.yBodyRot - deltaY));
-            final var maxDiff       = player.isBlocking() ? 14f : 49f;
-
-            if (headDiff0 > maxDiff && headDiff1 < headDiff0) {
-                event.setXo(0.0);
-            }
-        }
-
-    }
-
 }
