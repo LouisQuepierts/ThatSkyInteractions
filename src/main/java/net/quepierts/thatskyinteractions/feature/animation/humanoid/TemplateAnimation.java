@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.quepierts.thatskyinteractions.feature.animation.AnimationResolveContext;
+import net.quepierts.veynir.backend.sampler.WrappedSampler;
 import net.quepierts.veynir.core.fsm.FSMParameter;
 import net.quepierts.veynir.core.skeleton.PoseCache;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
@@ -324,7 +325,31 @@ public class TemplateAnimation extends BaseAnimation {
     @FunctionalInterface
     public interface LinkFallback {
 
-        LinkFallback DEFAULT = (_, _, _, _) -> null;
+        LinkFallback DEFAULT = (getter, fsmParameter, name, index) -> {
+
+
+            switch (name) {
+                case "enter": {
+                    final var next                  = getter.get(index);
+                    fsmParameter.duration()[index]  = 0.25f;
+                    fsmParameter.fadeIn()[index]    = 0.25f;
+                    fsmParameter.fadeOut()[index]   = 0.0f;
+                    return                          WrappedSampler.wrap(next, SamplingMode.FREEZE_START);
+                }
+                case "exit": {
+
+                    final var last                  = getter.get(index - 2);
+                    fsmParameter.duration()[index]  = 0.25f;
+                    fsmParameter.fadeIn()[index]    = 0.0f;
+                    fsmParameter.fadeOut()[index]   = 0.25f;
+                    return                          WrappedSampler.wrap(last, SamplingMode.FREEZE_END);
+
+                }
+            }
+
+            return null;
+
+        };
 
         @Nullable AnimationSampler apply(
                 final @NonNull  Int2ObjectFunction<AnimationSampler>    getter,

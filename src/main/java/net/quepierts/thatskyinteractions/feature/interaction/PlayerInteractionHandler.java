@@ -12,20 +12,17 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
-import net.quepierts.thatskyinteractions.core.animation.sampler.WrappedSampler;
 import net.quepierts.thatskyinteractions.core.interaction.DefaultInteractionFSM;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
-import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
 import net.quepierts.veynir.backend.sampler.AnimationSampler;
 import net.quepierts.veynir.backend.sampler.SamplingMode;
+import net.quepierts.veynir.backend.sampler.WrappedSampler;
 import net.quepierts.veynir.core.fsm.FSMParameter;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-
-import java.lang.ref.WeakReference;
 
 @Slf4j
 @UtilityClass
@@ -156,8 +153,8 @@ public class PlayerInteractionHandler {
     }
 
     private static @Nullable AnimationSampler fallback(
-            final @NonNull Int2ObjectFunction<AnimationSampler> getter,
-            final @NonNull FSMParameter fsmParameter,
+            final @NonNull Int2ObjectFunction<AnimationSampler>     getter,
+            final @NonNull FSMParameter                             fsmParameter,
             final           String                                  name,
             final           int                                     index
     ) {
