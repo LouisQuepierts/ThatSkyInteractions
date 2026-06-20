@@ -1,0 +1,9 @@
+{
+  "icon": "thatskyinteractions:expression/point",
+  "expressions": [
+    {
+      "type": "thatskyinteractions:continuous_animation",
+      "animation": "thatskyinteractions:point_1"
+    }
+  ]
+}

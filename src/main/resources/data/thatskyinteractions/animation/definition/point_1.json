@@ -1,0 +1,17 @@
+{
+  "type": "continuous",
+  "sources": {
+    "enter": {
+      "source": "thatskyinteractions:point.lv1.enter",
+      "fadeIn": 0.25
+    },
+    "main": {
+      "source": "thatskyinteractions:point.lv1.main"
+    },
+    "exit": {
+      "source": "thatskyinteractions:point.lv1.exit",
+      "fadeOut": 0.25
+    }
+  },
+  "override": "thatskyinteractions:modified"
+}
