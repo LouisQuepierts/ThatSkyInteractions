@@ -13,13 +13,9 @@ import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlaye
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.ExpressionsScreen;
 import net.quepierts.thatskyinteractions.feature.client.reference.TsiKeys;
-import net.quepierts.thatskyinteractions.feature.expression.Expression;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
 import net.quepierts.thatskyinteractions.feature.expression.packet.ExpressionRequestPacket;
-import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import org.jspecify.annotations.NonNull;
-
-import java.lang.ref.WeakReference;
 
 @UtilityClass
 public class ClientPlayerExpressionSystem {
@@ -76,9 +72,11 @@ public class ClientPlayerExpressionSystem {
                 return;
             }
 
-            if (expression.isInterruptible(player)) {
+            if (expression.isInterruptible(player, attachment.getState())) {
                 ClientPlayerExpressionSystem.cancel();
             }
+
+            event.setCanceled(true);
 
         }
 

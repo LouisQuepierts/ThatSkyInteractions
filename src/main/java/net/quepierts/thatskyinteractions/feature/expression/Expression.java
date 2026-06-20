@@ -9,10 +9,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
-import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
-import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
+import net.quepierts.thatskyinteractions.feature.expression.runtime.ExpressionState;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public interface Expression {
 
@@ -36,7 +36,8 @@ public interface Expression {
     ) {}
 
     default boolean isInterruptible(
-            final @NonNull Player                   player
+            final @NonNull  Player                      player,
+            final @Nullable ExpressionState             state
     ) {
         return true;
     }
@@ -56,7 +57,8 @@ public interface Expression {
     ) { }
 
     default boolean isFinished(
-            final @NonNull ServerPlayer                 player
+            final @NonNull  Player                       player,
+            final @Nullable ExpressionState              state
     ) {
         return this.immediate();
     }
@@ -67,8 +69,27 @@ public interface Expression {
     ) { }
 
     default void onAnimationFinished(
-            final @NonNull ServerPlayer                     player,
-            final PlayerAnimationControllerEvent.Finished   event
+            final @NonNull  Player                                          player,
+            final @Nullable ExpressionState                                 state,
+            final PlayerAnimationControllerEvent.Finished                   event
+    ) { }
+
+    default void onAnimationTransitionStart(
+            final @NonNull Player                                           player,
+            final @Nullable ExpressionState                                 state,
+            final PlayerAnimationControllerEvent.State.TransitionStart      event
+    ) { }
+
+    default void onAnimationTransitionEnd(
+            final @NonNull Player                                           player,
+            final @Nullable ExpressionState                                 state,
+            final PlayerAnimationControllerEvent.State.TransitionEnd        event
+    ) { }
+
+    default void onAnimationLooped(
+            final @NonNull Player                                           player,
+            final @Nullable ExpressionState                                 state,
+            final PlayerAnimationControllerEvent.State.Loop                 event
     ) { }
 
     default boolean immediate() {
@@ -77,5 +98,9 @@ public interface Expression {
 
     default boolean hidden() {
         return true;
+    }
+
+    default @Nullable ExpressionState createRuntimeData() {
+        return null;
     }
 }

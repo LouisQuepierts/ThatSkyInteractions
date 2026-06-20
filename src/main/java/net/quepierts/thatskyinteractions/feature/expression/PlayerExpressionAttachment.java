@@ -7,6 +7,7 @@ import lombok.Getter;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
+import net.quepierts.thatskyinteractions.feature.expression.runtime.ExpressionState;
 import net.quepierts.thatskyinteractions.feature.network.StreamCodecUtils;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import org.jspecify.annotations.NonNull;
@@ -23,8 +24,12 @@ public final class PlayerExpressionAttachment {
     public static final StreamCodec<ByteBuf, PlayerExpressionAttachment> STREAM_CODEC
             = StreamCodecUtils.unit(PlayerExpressionAttachment::new);
 
-    private WeakReference<Expression>   reference;
-    private Identifier                  current;
+    private static final WeakReference<Expression> NULL
+            = new WeakReference<>(null);
+
+    private @NonNull    WeakReference<Expression>   reference   = NULL;
+    private @Nullable   Identifier                  current;
+    private @Nullable   ExpressionState             state;
 
     public static PlayerExpressionAttachment getAttachment(@NonNull Player player) {
         return player.getData(AttachmentTypes.PLAYER_EXPRESSION);
@@ -36,20 +41,18 @@ public final class PlayerExpressionAttachment {
             final @NonNull Expression   expression,
             final @NonNull Identifier   identifier
     ) {
-        this.current = identifier;
-        this.reference = new WeakReference<>(expression);
+        this.current    = identifier;
+        this.reference  = new WeakReference<>(expression);
+        this.state      = expression.createRuntimeData();
     }
 
     public void clear() {
-        this.current = null;
-        this.reference = null;
+        this.reference  = NULL;
+        this.current    = null;
+        this.state      = null;
     }
 
     public boolean isExpressing() {
         return this.current != null;
-    }
-
-    public @Nullable Identifier getCurrent() {
-        return this.current;
     }
 }

@@ -25,14 +25,6 @@ public class PlayerControlHandler {
             return;
         }
 
-        // todo: migrate
-        final var animationData     = ClientPlayerAnimationSystem.getLocalAnimationData();
-        final var controller        = animationData.getController();
-
-        if (controller.shouldRestrictMotion()) {
-            event.setCanceled(true);
-        }
-
 
     }
 

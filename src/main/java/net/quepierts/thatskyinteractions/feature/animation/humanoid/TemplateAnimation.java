@@ -307,6 +307,8 @@ public class TemplateAnimation extends BaseAnimation {
         );
 
         animation.frozenEnds[3] = true;
+        animation.exitPoints[DefaultMinecraftFSM.CONTINUOUS_ENTER]  = DefaultMinecraftFSM.CONTINUOUS_EXIT;
+        animation.exitPoints[DefaultMinecraftFSM.CONTINUOUS_MAIN]   = DefaultMinecraftFSM.CONTINUOUS_EXIT;
 
         return animation;
     }

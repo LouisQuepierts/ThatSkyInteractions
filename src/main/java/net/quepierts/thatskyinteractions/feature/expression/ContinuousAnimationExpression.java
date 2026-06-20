@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
@@ -32,22 +33,22 @@ import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AnimationExpression implements Expression {
+public final class ContinuousAnimationExpression implements Expression {
 
     public static final String AUTO = "auto";
     private static final Identifier EMPTY = ThatSkyInteractions.location("empty");
 
-    public static final MapCodec<AnimationExpression> MAP_CODEC
+    public static final MapCodec<ContinuousAnimationExpression> MAP_CODEC
             = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                    Codec.STRING.fieldOf("animation").forGetter(AnimationExpression::animation)
-            ).apply(instance, AnimationExpression::new));
+            Codec.STRING.fieldOf("animation").forGetter(ContinuousAnimationExpression::animation)
+    ).apply(instance, ContinuousAnimationExpression::new));
 
-    public static final StreamCodec<ByteBuf, AnimationExpression> STREAM_CODEC
+    public static final StreamCodec<ByteBuf, ContinuousAnimationExpression> STREAM_CODEC
             = StreamCodec.composite(
-                    ByteBufCodecs.STRING_UTF8,
-                    AnimationExpression::animation,
-                    AnimationExpression::new
-            );
+            ByteBufCodecs.STRING_UTF8,
+            ContinuousAnimationExpression::animation,
+            ContinuousAnimationExpression::new
+    );
 
     private final String animation;
 
@@ -55,11 +56,11 @@ public final class AnimationExpression implements Expression {
 
     @Override
     public @NonNull ExpressionType<? extends Expression> getType() {
-        return ExpressionTypes.ANIMATION.get();
+        return ExpressionTypes.CONTINUOUS_ANIMATION.get();
     }
 
     @Override
-    public void onPerform(@NonNull ServerPlayer player) {
+    public void onPerform(final @NonNull ServerPlayer player) {
         PlayerAnimationSystem.play(player, this.animationId);
         PlayerControlSystem.align(player);
     }
@@ -71,10 +72,11 @@ public final class AnimationExpression implements Expression {
 
     @Override
     public boolean isInterruptible(
-            final @NonNull Player           player,
-            final @Nullable ExpressionState state
+            final @NonNull  Player                  player,
+            final @Nullable ExpressionState         state
     ) {
-        return false;
+        return (state instanceof AnimationExpressionState aState)
+                && aState.getStatus() == AnimationExpressionState.Status.RUNNING;
     }
 
     @Override
@@ -88,9 +90,9 @@ public final class AnimationExpression implements Expression {
 
     @Override
     public void onRegisterPlayerAnimation(
-            @NonNull RegisterPlayerAnimationEvent       event,
+            @NonNull RegisterPlayerAnimationEvent event,
             @NonNull Identifier                         identifier,
-                     int                                level
+            int                                level
     ) {
 
         if (!AUTO.equalsIgnoreCase(this.animation)) {
@@ -108,7 +110,7 @@ public final class AnimationExpression implements Expression {
         );
 
         final var definition = new PlayerAnimationDefinition(
-                "sequence",
+                "continuous",
                 "thatskyinteractions:modified",
                 sources,
                 PlayerMask.empty(),
@@ -156,6 +158,33 @@ public final class AnimationExpression implements Expression {
     }
 
     @Override
+    public void onAnimationTransitionStart(
+            final @NonNull  Player                                                  player,
+            final @Nullable ExpressionState                                         state,
+            final           PlayerAnimationControllerEvent.State.TransitionStart    event
+    ) {
+
+        if (!(state instanceof AnimationExpressionState aState)) {
+            return;
+        }
+
+        final var currentState = event.getCurrentState();
+        if (currentState == DefaultMinecraftFSM.CONTINUOUS_MAIN) {
+            aState.setStatus(AnimationExpressionState.Status.RUNNING);
+        } else if (currentState == DefaultMinecraftFSM.CONTINUOUS_EXIT) {
+            aState.setStatus(AnimationExpressionState.Status.TRANSITING);
+        }
+
+    }
+
+    @Override
+    public @NonNull ExpressionState createRuntimeData() {
+        final var state = new AnimationExpressionState();
+        state.setStatus(AnimationExpressionState.Status.TRANSITING);
+        return state;
+    }
+
+    @Override
     public boolean hidden() {
         return false;
     }
@@ -163,11 +192,6 @@ public final class AnimationExpression implements Expression {
     @Override
     public boolean immediate() {
         return false;
-    }
-
-    @Override
-    public @NonNull ExpressionState createRuntimeData() {
-        return new AnimationExpressionState();
     }
 
     private String animation() {

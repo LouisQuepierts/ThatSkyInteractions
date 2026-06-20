@@ -11,10 +11,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.expression.Expression;
-import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionAttachment;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionManager;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
 import org.jspecify.annotations.NonNull;
 
+import java.lang.ref.WeakReference;
 import java.util.UUID;
 
 public record ExpressionControlPacket(
@@ -41,6 +42,10 @@ public record ExpressionControlPacket(
         return new ExpressionControlPacket(Operation.PERFORM, playerUUID, id);
     }
 
+    public static ExpressionControlPacket interrupt(@NonNull UUID playerUUID, @NonNull Identifier id) {
+        return new ExpressionControlPacket(Operation.INTERRUPT, playerUUID, id);
+    }
+
     public static ExpressionControlPacket cancel(@NonNull UUID playerUUID, @NonNull Identifier id) {
         return new ExpressionControlPacket(Operation.CANCEL, playerUUID, id);
     }
@@ -58,7 +63,7 @@ public record ExpressionControlPacket(
             return;
         }
 
-        final var attachment = PlayerExpressionAttachment.getAttachment(target);
+        final var attachment = PlayerExpressionSystem.getAttachment(target);
 
         switch (this.operation()) {
             case PERFORM: {
@@ -70,10 +75,14 @@ public record ExpressionControlPacket(
                 }
                 break;
             }
+            case INTERRUPT: {
+                break;
+            }
             case CANCEL:
-            case FINISHED:
+            case FINISHED: {
                 attachment.clear();
                 break;
+            }
         }
     }
 
@@ -84,6 +93,7 @@ public record ExpressionControlPacket(
 
     public enum Operation {
         PERFORM,
+        INTERRUPT,
         CANCEL,
         FINISHED;
 

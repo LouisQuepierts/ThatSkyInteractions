@@ -56,7 +56,7 @@ public record ExpressionRequestPacket(
                 PlayerExpressionSystem.perform(sender, this.identifier().orElseThrow(), this.level());
                 break;
             case CANCEL:
-                PlayerExpressionSystem.cancel(sender);
+                PlayerExpressionSystem.interrupt(sender);
                 break;
         }
     }

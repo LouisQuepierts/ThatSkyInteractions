@@ -38,6 +38,7 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     private float                           speed = 1.0f;
 
     private float                           alpha;
+    private boolean                         ticked;
     private boolean                         playing;
     private boolean                         resolved;
     private boolean                         paused;
@@ -97,6 +98,8 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
 
         this.animation.update(this.fsmState, delta);
         this.state.progress = this.fsmState.getElapsed();
+
+        this.ticked = true;
     }
 
     public void update(float partialTicks) {
@@ -104,10 +107,15 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
             return;
         }
 
-        this.resolved = false;
-        final var delta = partialTicks * 0.05f;
-        this.state.progress = this.fsmState.getElapsed() + delta;
+        final var delta         = partialTicks * 0.05f;
+        final var newProgress   = this.fsmState.getElapsed() + delta;
 
+        if (newProgress == this.state.progress) {
+            return;
+        }
+
+        this.state.progress = newProgress;
+        this.resolved = false;
         var progress = Math.min(
                 (this.fsmState.getBlendElapsed() + delta) / this.fsmState.getBlendDuration(),
                 1.0f
@@ -204,7 +212,10 @@ public final class AnimationLayer implements Comparable<AnimationLayer> {
     }
 
     public void cleanup() {
-        this.animation      .cleanup(this.fsmState);
+        if (this.animation != null) {
+            this.animation.cleanup(this.fsmState);
+        }
+
         this.playing        = false;
         this.paused         = false;
 

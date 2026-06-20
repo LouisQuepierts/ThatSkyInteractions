@@ -54,6 +54,9 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
             builder.put(id, new Holder(definition));
         }
         this.map = builder.build();
+        for (final var holder : this.map.values()) {
+            holder.initialize();
+        }
 
         log.info("Loaded {} player animations", this.map.size());
     }

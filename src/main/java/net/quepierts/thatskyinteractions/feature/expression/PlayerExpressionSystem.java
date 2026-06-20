@@ -6,7 +6,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.expression.packet.ExpressionControlPacket;
+import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import org.jspecify.annotations.NonNull;
 
 @Slf4j
@@ -32,7 +34,7 @@ public class PlayerExpressionSystem {
         final var attachment = getAttachment(player);
 
         if (attachment.isExpressing()) {
-            cancel(player);
+            interrupt(player);
             return false;
         }
 
@@ -63,7 +65,7 @@ public class PlayerExpressionSystem {
         final var attachment = getAttachment(player);
 
         if (attachment.isExpressing()) {
-            cancel(player);
+            interrupt(player);
             return false;
         }
 
@@ -88,18 +90,33 @@ public class PlayerExpressionSystem {
             return;
         }
 
+        attachment.clear();
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                player,
+                ExpressionControlPacket.cancel(player.getUUID(), currentId)
+        );
+        PlayerAnimationSystem.abort(player, AnimationLayerTypes.DEFAULT.getId());
+    }
+
+    public static void interrupt(@NonNull ServerPlayer player) {
+        final var attachment = getAttachment(player);
+        final var currentId = attachment.getCurrent();
+
+        if (currentId == null) {
+            return;
+        }
+
         final var expression = attachment.getReference().get();
 
-        if (expression != null) {
-            attachment.clear();
+        if (expression == null) {
+            return;
+        }
 
-            if (expression.isInterruptible(player)) {
-                expression.onInterrupt(player);
-            }
-
+        if (expression.isInterruptible(player, attachment.getState())) {
+            expression.onInterrupt(player);
             PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                     player,
-                    ExpressionControlPacket.cancel(player.getUUID(), currentId)
+                    ExpressionControlPacket.interrupt(player.getUUID(), currentId)
             );
         }
     }
