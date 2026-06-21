@@ -35,20 +35,26 @@ public record AlignBodyPacket(
     }
 
     @Override
-    public void handleOnClient(final @NonNull Player player) {
-        final var difference = Mth.degreesDifference(player.yBodyRot, player.getYRot());
+    public void handleOnClient(final @NonNull Player local) {
 
-        PhysicalTweenAttachment.getAttachment(player.level()).tween().to(
-                v -> {
-                    player.yBodyRot = v;
-                    player.yBodyRotO = v;
-                },
-                player.yBodyRot,
-                player.getYHeadRot(),
-                Mth.abs(difference) * 0.01f,
-                TsiInterpolators.DEGREE,
-                Eases.CUBIC_OUT
-        );
+        final var target = local.level().getPlayerByUUID(this.player());
+
+        if (target instanceof Player player) {
+
+            final var difference = Mth.degreesDifference(player.yBodyRot, player.getYHeadRot());
+
+            PhysicalTweenAttachment.getAttachment(player.level()).tween().to(
+                    v -> {
+                        player.yBodyRot = v;
+                        player.yBodyRotO = v;
+                    },
+                    player.yBodyRot,
+                    player.getYHeadRot(),
+                    Mth.abs(difference) * 0.01f,
+                    TsiInterpolators.DEGREE,
+                    Eases.CUBIC_OUT
+            );
+        }
     }
 
     @Override
