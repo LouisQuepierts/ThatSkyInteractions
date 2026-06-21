@@ -46,6 +46,14 @@ public final class InteractionRequesterExpression implements Expression {
     }
 
     @Override
+    public boolean isInterruptible(
+            final @NonNull Player           player,
+            final @Nullable ExpressionState state
+    ) {
+        return false;
+    }
+
+    @Override
     public boolean immediate() {
         return false;
     }
