@@ -9,5 +9,6 @@
       "type": "thatskyinteractions:animation",
       "animation": "thatskyinteractions:bow_2"
     }
-  ]
+  ],
+  "priority": 34
 }

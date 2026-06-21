@@ -11,6 +11,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
+import net.quepierts.thatskyinteractions.feature.data.Order;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
 import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import org.jspecify.annotations.NonNull;
@@ -80,28 +81,30 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
         final var builder1 = ImmutableMap.<Identifier, Expression>builder();
         final var builder2 = ImmutableList.<Identifier>builder();
 
-        for (final var entry : preparations.entrySet()) {
-            final var identifier = entry.getKey();
-            final var set = entry.getValue();
-            final var leveled = set.leveled();
+        Order.sort(
+                preparations,
+                ExpressionSet::priority,
+                (identifier, set) -> {
+                    builder0.put(identifier, set);
+                    builder2.add(identifier);
 
-            builder0.put(identifier, set);
-            builder2.add(identifier);
+                    final var leveled = set.leveled();
 
-            if (!leveled) {
-                final var first = set.expressions().getFirst();
-                first.onGenerateData(identifier, 0);
-                builder1.put(identifier, first);
-            } else {
-                int level = 1;
-                for (final var expression : set.expressions()) {
-                    expression.onGenerateData(identifier, level);
-                    final var id = identifier.withSuffix("_" + level);
-                    builder1.put(id, expression);
-                    level++;
+                    if (!leveled) {
+                        final var first = set.expressions().getFirst();
+                        first.onGenerateData(identifier, 0);
+                        builder1.put(identifier, first);
+                    } else {
+                        int level = 1;
+                        for (final var expression : set.expressions()) {
+                            expression.onGenerateData(identifier, level);
+                            final var id = identifier.withSuffix("_" + level);
+                            builder1.put(id, expression);
+                            level++;
+                        }
+                    }
                 }
-            }
-        }
+        );
 
         NeoForge.EVENT_BUS.post(new RegisterExpressionEvent(builder1::put));
 
