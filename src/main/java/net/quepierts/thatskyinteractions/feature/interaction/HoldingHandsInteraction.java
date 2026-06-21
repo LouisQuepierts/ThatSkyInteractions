@@ -5,12 +5,9 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
-import net.quepierts.thatskyinteractions.feature.expression.InteractionRequesterExpression;
-import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.InteractionTypes;
 import org.jspecify.annotations.NonNull;
@@ -46,7 +43,7 @@ public final class HoldingHandsInteraction implements Interaction {
             final @NonNull ServerPlayer receiver
     ) {
         PlayerAnimationSystem.exit(requester, AnimationLayerTypes.DEFAULT.getId());
-        PlayerHandholdingSystem.hold(requester, receiver);
+        PlayerBondSystem.hold(requester, receiver);
     }
 
     @Override

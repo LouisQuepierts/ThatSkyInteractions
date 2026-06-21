@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.client.handhoding;
+package net.quepierts.thatskyinteractions.feature.client.bond;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
@@ -16,12 +16,12 @@ import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlaye
 
 @UtilityClass
 @EventBusSubscriber(value = Dist.CLIENT, modid = ThatSkyInteractions.MODID)
-public class ClientHandholdingHandler {
+public class ClientBondHandler {
 
     @SubscribeEvent
     public static void onLocalPlayerMove(final LocalPlayerMovedEvent event) {
 
-        if (!ClientHandholdingSystem.isFollowing()) {
+        if (!ClientBondSystem.isFollowing()) {
             return;
         }
 
@@ -31,7 +31,7 @@ public class ClientHandholdingHandler {
             return;
         }
 
-        ClientHandholdingSystem.unhold();
+        ClientBondSystem.unhold();
 
     }
 
@@ -44,7 +44,7 @@ public class ClientHandholdingHandler {
             return;
         }
 
-        final var attachment    = ClientHandholdingSystem.getLocalAttachment();
+        final var attachment    = ClientBondSystem.getLocalAttachment();
         final var relation      = attachment.getRelation();
 
         if (!relation.isHolding()) {
@@ -66,12 +66,12 @@ public class ClientHandholdingHandler {
             event.setSwingHand(true);
             event.setCanceled(true);
 
-            ClientHandholdingSystem.unhold(onMain);
+            ClientBondSystem.unhold(onMain);
         } else if (event.isUseItem() && onOff != null) {
             event.setSwingHand(true);
             event.setCanceled(true);
 
-            ClientHandholdingSystem.unhold(onOff);
+            ClientBondSystem.unhold(onOff);
         }
 
     }
@@ -97,7 +97,7 @@ public class ClientHandholdingHandler {
 
     @SuppressWarnings("DataFlowIssue")
     public static void onCameraAlign(final float partialTicks) {
-        final var attachment    = ClientHandholdingSystem.getLocalAttachment();
+        final var attachment    = ClientBondSystem.getLocalAttachment();
         final var relation      = attachment.getRelation();
 
         final var local         = Minecraft.getInstance().player;
@@ -123,7 +123,7 @@ public class ClientHandholdingHandler {
             return;
         }
 
-        final var attachment    = ClientHandholdingSystem.getLocalAttachment();
+        final var attachment    = ClientBondSystem.getLocalAttachment();
         final var relation      = attachment.getRelation();
         if (!relation.isFollowing()) {
             return;

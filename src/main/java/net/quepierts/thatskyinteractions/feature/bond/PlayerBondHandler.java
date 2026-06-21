@@ -1,9 +1,7 @@
-package net.quepierts.thatskyinteractions.feature.handhold;
+package net.quepierts.thatskyinteractions.feature.bond;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -12,12 +10,11 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.handhold.packet.ClientboundSyncHandholdPacket;
-import org.jspecify.annotations.NonNull;
+import net.quepierts.thatskyinteractions.feature.bond.packet.ClientboundSyncHandholdPacket;
 
 @UtilityClass
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
-public class PlayerHandholdingHandler {
+public class PlayerBondHandler {
 
     private static final Vec3       LEFT    = new Vec3(-1.0, 0.0, -0.2);
     private static final Vec3       RIGHT   = new Vec3(1.0, 0.0, -0.2);
@@ -29,7 +26,7 @@ public class PlayerHandholdingHandler {
             return;
         }
 
-        PlayerHandholdingSystem.unholdAll(player);
+        PlayerBondSystem.unholdAll(player);
 
     }
 
@@ -37,7 +34,7 @@ public class PlayerHandholdingHandler {
     public static void onPlayerTick(final PlayerTickEvent.Pre event) {
         final var player        = event.getEntity();
 
-        final var attachment    = PlayerHandholdingAttachment.getAttachment(player);
+        final var attachment    = PlayerBondAttachment.getAttachment(player);
         final var relation      = attachment.getRelation();
 
         if (relation.isFollowing()) {

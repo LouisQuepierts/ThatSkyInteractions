@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.handhold.packet;
+package net.quepierts.thatskyinteractions.feature.bond.packet;
 
 import dev.anvilcraft.lib.v2.network.packet.IClientboundPacket;
 import dev.anvilcraft.lib.v2.network.packet.IPacket;
@@ -8,8 +8,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdRelation;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerHandholdRelation;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
 import org.jspecify.annotations.NonNull;
 
 public record ClientboundSyncHandholdPacket(
@@ -32,7 +32,7 @@ public record ClientboundSyncHandholdPacket(
     public static ClientboundSyncHandholdPacket of(
             final @NonNull Player player
     ) {
-        final var attachment = PlayerHandholdingSystem.getAttachment(player);
+        final var attachment = PlayerBondSystem.getAttachment(player);
         final var serialize = attachment.getRelation().serialize();
         return new ClientboundSyncHandholdPacket(player.getId(), serialize);
     }
@@ -45,7 +45,7 @@ public record ClientboundSyncHandholdPacket(
             return;
         }
 
-        final var attachment = PlayerHandholdingSystem.getAttachment(target);
+        final var attachment = PlayerBondSystem.getAttachment(target);
         attachment.getRelation().deserialize(this.serialized, level);
 
     }

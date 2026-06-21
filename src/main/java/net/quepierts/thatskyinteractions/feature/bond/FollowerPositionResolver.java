@@ -1,11 +1,10 @@
-package net.quepierts.thatskyinteractions.feature.handhold;
+package net.quepierts.thatskyinteractions.feature.bond;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.quepierts.thatskyinteractions.feature.client.handhoding.ClientHandholdingSystem;
 import org.jspecify.annotations.NonNull;
 
 public final class FollowerPositionResolver {
@@ -25,7 +24,7 @@ public final class FollowerPositionResolver {
     ) {
 
         final var current       = follower.position();
-        final var position      = PlayerHandholdingSystem.computeHandholdPosition(leader, left);
+        final var position      = PlayerBondSystem.computeHandholdPosition(leader, left);
 
         final var distance      = Math.sqrt(current.distanceToSqr(position));
         if (distance < 0.01) {

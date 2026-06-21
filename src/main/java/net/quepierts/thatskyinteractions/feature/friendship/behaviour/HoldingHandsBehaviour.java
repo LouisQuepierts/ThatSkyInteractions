@@ -8,7 +8,7 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.feature.gui.packet.PlayerInteractionUiPacket;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionSystem;
 import org.jspecify.annotations.NonNull;
 
@@ -50,7 +50,7 @@ public final class HoldingHandsBehaviour implements FriendshipBehaviour {
             final @NonNull  FriendshipTreeNode          node,
             final @NonNull  NodeState                   state
     ) {
-        final var handhold = PlayerHandholdingSystem.getAttachment(player);
+        final var handhold = PlayerBondSystem.getAttachment(player);
         return handhold.getRelation().isLeading() ? ICON_UNHOLD : ICON_HOLD;
     }
 }

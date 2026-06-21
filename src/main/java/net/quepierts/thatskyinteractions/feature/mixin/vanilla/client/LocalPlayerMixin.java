@@ -3,7 +3,7 @@ package net.quepierts.thatskyinteractions.feature.mixin.vanilla.client;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.quepierts.thatskyinteractions.feature.client.control.PlayerControlHook;
-import net.quepierts.thatskyinteractions.feature.client.handhoding.ClientHandholdingHandler;
+import net.quepierts.thatskyinteractions.feature.client.bond.ClientBondHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,7 +35,7 @@ public class LocalPlayerMixin {
     )
     private void tsi$aiStep(CallbackInfo ci) {
 
-        ClientHandholdingHandler.afterAiStep((LocalPlayer) (Object) this);
+        ClientBondHandler.afterAiStep((LocalPlayer) (Object) this);
 
     }
 

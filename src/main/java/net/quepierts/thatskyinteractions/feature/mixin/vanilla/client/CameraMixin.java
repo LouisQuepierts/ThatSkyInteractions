@@ -10,9 +10,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
+import net.quepierts.thatskyinteractions.feature.client.bond.ClientBondHandler;
 import net.quepierts.thatskyinteractions.feature.client.control.ClientCameraSystem;
 import net.quepierts.thatskyinteractions.feature.client.control.event.ComputeCameraPositionEvent;
-import net.quepierts.thatskyinteractions.feature.client.handhoding.ClientHandholdingHandler;
 import org.joml.*;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -119,7 +119,7 @@ public abstract class CameraMixin {
         if (this.entity != Minecraft.getInstance().player) {
             return;
         }
-        ClientHandholdingHandler.onCameraAlign(partialTicks);
+        ClientBondHandler.onCameraAlign(partialTicks);
     }
 
 }

@@ -8,7 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
 
 @UtilityClass
 public class HandholdingCommand {
@@ -38,7 +38,7 @@ public class HandholdingCommand {
             return 0;
         }
 
-        if (PlayerHandholdingSystem.hold(player, other)) {
+        if (PlayerBondSystem.hold(player, other)) {
             return 1;
         }
 
@@ -57,7 +57,7 @@ public class HandholdingCommand {
             return 0;
         }
 
-        if (PlayerHandholdingSystem.hold(other, player)) {
+        if (PlayerBondSystem.hold(other, player)) {
             return 1;
         }
 
@@ -77,7 +77,7 @@ public class HandholdingCommand {
             return 0;
         }
 
-        PlayerHandholdingSystem.unhold(player, other);
+        PlayerBondSystem.unhold(player, other);
 
         return 1;
     }
@@ -87,7 +87,7 @@ public class HandholdingCommand {
         final var source        = context.getSource();
         final var player        = source.getPlayerOrException();
 
-        PlayerHandholdingSystem.unholdAll(player);
+        PlayerBondSystem.unholdAll(player);
 
         return 1;
     }

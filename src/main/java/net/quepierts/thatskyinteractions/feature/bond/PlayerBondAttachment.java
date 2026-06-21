@@ -1,17 +1,15 @@
-package net.quepierts.thatskyinteractions.feature.handhold;
+package net.quepierts.thatskyinteractions.feature.bond;
 
 import lombok.Getter;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import org.jspecify.annotations.NonNull;
 
-import java.util.Optional;
 import java.util.UUID;
 
-public final class PlayerHandholdingAttachment {
+public final class PlayerBondAttachment {
 
-    public static PlayerHandholdingAttachment getAttachment(
+    public static PlayerBondAttachment getAttachment(
             final @NonNull Player player
     ) {
         return player.getData(AttachmentTypes.PLAYER_HANDHOLDING);

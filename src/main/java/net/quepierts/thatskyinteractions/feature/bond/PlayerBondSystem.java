@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.handhold;
+package net.quepierts.thatskyinteractions.feature.bond;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.resources.Identifier;
@@ -8,13 +8,13 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.fk.FKAnimation;
-import net.quepierts.thatskyinteractions.feature.handhold.packet.ClientboundHandholdPacket;
+import net.quepierts.thatskyinteractions.feature.bond.packet.ClientboundHandholdPacket;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
-public class PlayerHandholdingSystem {
+public class PlayerBondSystem {
 
     private static final Identifier[] ANIMATIONS = new Identifier[] {
             FKAnimation.LEFT_ARM,
@@ -39,8 +39,8 @@ public class PlayerHandholdingSystem {
             return false;
         }
 
-        final var lAttachment       = PlayerHandholdingAttachment.getAttachment(leader);
-        final var fAttachment       = PlayerHandholdingAttachment.getAttachment(follower);
+        final var lAttachment       = PlayerBondAttachment.getAttachment(leader);
+        final var fAttachment       = PlayerBondAttachment.getAttachment(follower);
 
         final var lRelation         = lAttachment.getRelation();
         final var fRelation         = fAttachment.getRelation();
@@ -71,8 +71,8 @@ public class PlayerHandholdingSystem {
             final @NonNull ServerPlayer     b
     ) {
 
-        final var lAttachment       = PlayerHandholdingAttachment.getAttachment(a);
-        final var fAttachment       = PlayerHandholdingAttachment.getAttachment(b);
+        final var lAttachment       = PlayerBondAttachment.getAttachment(a);
+        final var fAttachment       = PlayerBondAttachment.getAttachment(b);
 
         final var aHand             = lAttachment.unhold(b.getUUID());
         final var bHand             = fAttachment.unhold(a.getUUID());
@@ -90,16 +90,16 @@ public class PlayerHandholdingSystem {
             final @NonNull ServerPlayer     player
     ) {
 
-        final var attachment        = PlayerHandholdingAttachment.getAttachment(player);
+        final var attachment        = PlayerBondAttachment.getAttachment(player);
         final var left              = attachment.getRelation().getLeft();
         final var right             = attachment.getRelation().getRight();
 
         if (left != null) {
-            PlayerHandholdingSystem.unhold(player, (ServerPlayer) left);
+            PlayerBondSystem.unhold(player, (ServerPlayer) left);
         }
 
         if (right != null) {
-            PlayerHandholdingSystem.unhold(player, (ServerPlayer) right);
+            PlayerBondSystem.unhold(player, (ServerPlayer) right);
         }
 
     }
@@ -111,10 +111,10 @@ public class PlayerHandholdingSystem {
         return PlayerUtils.getRelativePositionWorldSpace(leader, -0.2, left ? 1.0 : -1.0);
     }
 
-    public static PlayerHandholdingAttachment getAttachment(
+    public static PlayerBondAttachment getAttachment(
             final @NonNull Player player
     ) {
-        return PlayerHandholdingAttachment.getAttachment(player);
+        return PlayerBondAttachment.getAttachment(player);
     }
 
     private static void play(

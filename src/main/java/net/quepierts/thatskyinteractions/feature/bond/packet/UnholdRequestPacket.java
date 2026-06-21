@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.handhold.packet;
+package net.quepierts.thatskyinteractions.feature.bond.packet;
 
 import dev.anvilcraft.lib.v2.network.packet.IPacket;
 import dev.anvilcraft.lib.v2.network.packet.IServerboundPacket;
@@ -10,7 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
@@ -47,11 +47,11 @@ public record UnholdRequestPacket(
             final var other = player.level().getPlayerByUUID(this.other().get());
 
             if (other instanceof ServerPlayer sp) {
-                PlayerHandholdingSystem.unhold((ServerPlayer) player, sp);
+                PlayerBondSystem.unhold((ServerPlayer) player, sp);
             }
 
         } else {
-            PlayerHandholdingSystem.unholdAll((ServerPlayer) player);
+            PlayerBondSystem.unholdAll((ServerPlayer) player);
         }
 
     }

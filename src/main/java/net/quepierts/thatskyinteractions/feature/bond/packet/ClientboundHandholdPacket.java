@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.handhold.packet;
+package net.quepierts.thatskyinteractions.feature.bond.packet;
 
 import dev.anvilcraft.lib.v2.network.packet.IClientboundPacket;
 import dev.anvilcraft.lib.v2.network.packet.IPacket;
@@ -12,8 +12,8 @@ import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.fk.FKTargetType;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHoldingHand;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerHoldingHand;
 import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
@@ -70,8 +70,8 @@ public record ClientboundHandholdPacket(
                     return;
                 }
 
-                final var lAttachment   = PlayerHandholdingSystem.getAttachment(leader);
-                final var fAttachment   = PlayerHandholdingSystem.getAttachment(follower);
+                final var lAttachment   = PlayerBondSystem.getAttachment(leader);
+                final var fAttachment   = PlayerBondSystem.getAttachment(follower);
 
                 final var hand = lAttachment.lead(follower);
                 fAttachment.follow(leader, hand);
@@ -83,12 +83,12 @@ public record ClientboundHandholdPacket(
             case UNHOLD: {
 
                 if (leader != null) {
-                    final var lAttachment = PlayerHandholdingSystem.getAttachment(leader);
+                    final var lAttachment = PlayerBondSystem.getAttachment(leader);
                     clearFk(leader, lAttachment.unhold(this.follower()));
                 }
 
                 if (follower != null) {
-                    final var fAttachment = PlayerHandholdingSystem.getAttachment(follower);
+                    final var fAttachment = PlayerBondSystem.getAttachment(follower);
                     clearFk(follower, fAttachment.unhold(this.leader()));
                 }
                 break;

@@ -1,4 +1,4 @@
-package net.quepierts.thatskyinteractions.feature.handhold;
+package net.quepierts.thatskyinteractions.feature.bond;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;

@@ -1,15 +1,15 @@
-package net.quepierts.thatskyinteractions.feature.client.handhoding;
+package net.quepierts.thatskyinteractions.feature.client.bond;
 
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingAttachment;
-import net.quepierts.thatskyinteractions.feature.handhold.packet.UnholdRequestPacket;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondAttachment;
+import net.quepierts.thatskyinteractions.feature.bond.packet.UnholdRequestPacket;
 
 @UtilityClass
-public class ClientHandholdingSystem {
+public class ClientBondSystem {
 
     public static void unhold() {
         ClientPacketDistributor.sendToServer(
@@ -38,8 +38,8 @@ public class ClientHandholdingSystem {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public static PlayerHandholdingAttachment getLocalAttachment() {
-        return PlayerHandholdingAttachment.getAttachment(Minecraft.getInstance().player);
+    public static PlayerBondAttachment getLocalAttachment() {
+        return PlayerBondAttachment.getAttachment(Minecraft.getInstance().player);
     }
 
 }

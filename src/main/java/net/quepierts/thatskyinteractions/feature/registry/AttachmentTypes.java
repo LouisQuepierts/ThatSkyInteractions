@@ -4,18 +4,15 @@ import dev.anvilcraft.lib.v2.registrum.util.entry.data.AttachmentEntry;
 import lombok.experimental.UtilityClass;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerPreferenceAttachment;
 import net.quepierts.thatskyinteractions.feature.control.PlayerNavigator;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipAttachment;
-import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingAttachment;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondAttachment;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionAttachment;
 import net.quepierts.thatskyinteractions.feature.interaction.PlayerInteractionAttachment;
-
-import java.util.function.Function;
 
 @UtilityClass
 public class AttachmentTypes {
@@ -67,10 +64,10 @@ public class AttachmentTypes {
             )
             .register();
 
-    public static final AttachmentEntry<PlayerHandholdingAttachment> PLAYER_HANDHOLDING
+    public static final AttachmentEntry<PlayerBondAttachment> PLAYER_HANDHOLDING
             = ThatSkyInteractions.REGISTRUM.attachment(
-                    "player/handhold",
-                    PlayerHandholdingAttachment::new
+                    "player/bone",
+                    PlayerBondAttachment::new
             )
             .register();
 
