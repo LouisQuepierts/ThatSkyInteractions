@@ -98,7 +98,7 @@ public final class AnimationInteraction implements Interaction {
             final @Nullable ServerPlayer                receiver
     ) {
 
-        PlayerAnimationSystem.exit(requester);
+        PlayerAnimationSystem.exit(requester, AnimationLayerTypes.DEFAULT.getId());
 
     }
 

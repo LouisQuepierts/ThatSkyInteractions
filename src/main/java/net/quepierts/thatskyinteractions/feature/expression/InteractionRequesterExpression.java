@@ -32,7 +32,7 @@ public final class InteractionRequesterExpression implements Expression {
     }
 
     @Override
-    public void onInterrupt(@NonNull ServerPlayer player) {
+    public void onCancel(final @NonNull ServerPlayer player) {
         PlayerInteractionSystem.cancel(player);
     }
 

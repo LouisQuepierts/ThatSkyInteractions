@@ -67,7 +67,7 @@ public final class ContinuousAnimationExpression implements Expression {
 
     @Override
     public void onInterrupt(@NonNull ServerPlayer player) {
-        PlayerAnimationSystem.exit(player);
+        PlayerAnimationSystem.exit(player, AnimationLayerTypes.DEFAULT.getId());
     }
 
     @Override

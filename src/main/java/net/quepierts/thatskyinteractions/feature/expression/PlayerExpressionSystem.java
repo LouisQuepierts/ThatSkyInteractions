@@ -142,4 +142,9 @@ public class PlayerExpressionSystem {
                 ExpressionControlPacket.finished(player.getUUID(), currentId)
         );
     }
+
+    public static boolean isPerforming(@NonNull ServerPlayer player) {
+        return PlayerExpressionSystem   .getAttachment(player)
+                                        .isExpressing();
+    }
 }

@@ -146,6 +146,11 @@ public class PlayerInteractionSystem {
             return false;
         }
 
+        if (PlayerExpressionSystem.isPerforming(receiver)) {
+            PlayerExpressionSystem.interrupt(receiver);
+            return false;
+        }
+
         if (interaction.positional()) {
             final var position = PlayerUtils.getRelativePositionWorldSpace(requester, 1.0, 0.0);
 

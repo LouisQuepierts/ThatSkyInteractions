@@ -10,6 +10,7 @@ import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem
 import net.quepierts.thatskyinteractions.feature.expression.InteractionRequesterExpression;
 import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import net.quepierts.thatskyinteractions.feature.handhold.PlayerHandholdingSystem;
+import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.InteractionTypes;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -43,7 +44,7 @@ public final class HoldingHandsInteraction implements Interaction {
             final @NonNull ServerPlayer requester,
             final @NonNull ServerPlayer receiver
     ) {
-        PlayerAnimationSystem.exit(requester);
+        PlayerAnimationSystem.exit(requester, AnimationLayerTypes.DEFAULT.getId());
         PlayerHandholdingSystem.hold(requester, receiver);
     }
 
@@ -52,7 +53,7 @@ public final class HoldingHandsInteraction implements Interaction {
             final @NonNull ServerPlayer requester,
             final @Nullable ServerPlayer receiver
     ) {
-        PlayerAnimationSystem.exit(requester);
+        PlayerAnimationSystem.exit(requester, AnimationLayerTypes.DEFAULT.getId());
     }
 
     @Override

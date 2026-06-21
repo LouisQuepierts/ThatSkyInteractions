@@ -31,9 +31,15 @@ public interface Expression {
             final @NonNull ServerPlayer                 player
     );
 
-    default void onInterrupt(
+    default void onCancel(
             final @NonNull ServerPlayer                 player
     ) {}
+
+    default void onInterrupt(
+            final @NonNull ServerPlayer                 player
+    ) {
+        this.onCancel(player);
+    }
 
     default boolean isInterruptible(
             final @NonNull  Player                      player,
