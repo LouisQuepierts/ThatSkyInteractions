@@ -1,8 +1,11 @@
 package net.quepierts.thatskyinteractions.feature.handhold;
 
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.quepierts.thatskyinteractions.feature.client.handhoding.ClientHandholdingSystem;
 import org.jspecify.annotations.NonNull;
 
 public final class FollowerPositionResolver {
@@ -67,7 +70,26 @@ public final class FollowerPositionResolver {
         }
         this.update(follower.position());
 
+        clampRotation(leader, follower, 1.0f);
+
     }
+
+    public void clampRotation(
+            Entity leader,
+            Entity follower,
+            float partialTick
+    ) {
+        final var leaderYRot    = leader.getYRot(partialTick);
+        final var followerYRot  = follower.getYRot(partialTick);
+
+        follower.setYBodyRot(leaderYRot);
+        float delta = Mth.wrapDegrees(followerYRot - leaderYRot);
+        float targetDelta = Mth.clamp(delta, -45.0F, 45.0F);
+        follower.yRotO += targetDelta - delta;
+        follower.setYRot(follower.getYRot() + targetDelta - delta);
+        follower.setYHeadRot(follower.getYRot());
+    }
+
 
     private void update(final @NonNull Vec3 position) {
         this.x = position.x;

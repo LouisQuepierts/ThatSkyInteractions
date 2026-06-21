@@ -11,6 +11,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
@@ -168,6 +169,11 @@ public final class AnimationInteraction implements Interaction {
 
         PlayerInteractionSystem.finish(player);
 
+    }
+
+    @Override
+    public boolean isFinished(final @NonNull Player player) {
+        return false;
     }
 
     private static void parseRequester(

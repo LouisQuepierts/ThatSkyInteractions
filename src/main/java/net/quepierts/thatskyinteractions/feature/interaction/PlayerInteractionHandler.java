@@ -75,6 +75,11 @@ public class PlayerInteractionHandler {
 
             }
 
+        } else if (ongoing.isRunning()) {
+            final var interaction = ongoing.getInteraction().get();
+            if (interaction != null) {
+                PlayerInteractionSystem.finish(player);
+            }
         }
 
     }

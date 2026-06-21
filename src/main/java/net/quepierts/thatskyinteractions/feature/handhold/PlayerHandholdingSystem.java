@@ -77,11 +77,6 @@ public class PlayerHandholdingSystem {
         final var aHand             = lAttachment.unhold(b.getUUID());
         final var bHand             = fAttachment.unhold(a.getUUID());
 
-        if (aHand == PlayerHoldingHand.NONE
-                || bHand == PlayerHoldingHand.NONE) {
-            return;
-        }
-
         PacketDistributor.sendToAllPlayers(
                 ClientboundHandholdPacket.unhold(a, b)
         );

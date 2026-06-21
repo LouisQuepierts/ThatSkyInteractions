@@ -3,6 +3,7 @@ package net.quepierts.thatskyinteractions.feature.mixin.vanilla.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -11,6 +12,7 @@ import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
 import net.quepierts.thatskyinteractions.feature.client.control.ClientCameraSystem;
 import net.quepierts.thatskyinteractions.feature.client.control.event.ComputeCameraPositionEvent;
+import net.quepierts.thatskyinteractions.feature.client.handhoding.ClientHandholdingHandler;
 import org.joml.*;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -104,6 +106,20 @@ public abstract class CameraMixin {
         NeoForge.EVENT_BUS.post(event);
         original.call(instance, event.getX(), event.getY(), event.getZ());
 
+    }
+
+    @Inject(
+            method = "alignWithEntity",
+            at = @At("HEAD")
+    )
+    private void a4j$alignWithEntity(
+            final float partialTicks,
+            final CallbackInfo ci
+    ) {
+        if (this.entity != Minecraft.getInstance().player) {
+            return;
+        }
+        ClientHandholdingHandler.onCameraAlign(partialTicks);
     }
 
 }

@@ -71,22 +71,4 @@ public class PlayerHandholdingHandler {
 
     }
 
-    private static void follow(
-            final @NonNull  FollowerPositionResolver    resolver,
-            final @NonNull  Player                      leader,
-            final @NonNull  Player                      follower,
-            final           boolean                     left
-    ) {
-        // calculate pos by leader's body rotation
-
-
-        /*follower                .setYBodyRot(yRot);
-        final var delta         = Mth.wrapDegrees(follower.getYRot() - yRot);
-        final var tDelta        = Mth.clamp(delta, -42.0F, 42.0F);
-        follower.yRotO          += tDelta - delta;
-        follower                .setYRot(follower.getYRot() + tDelta - delta);
-        follower                .setYHeadRot(follower.getYRot());*/
-
-    }
-
 }
