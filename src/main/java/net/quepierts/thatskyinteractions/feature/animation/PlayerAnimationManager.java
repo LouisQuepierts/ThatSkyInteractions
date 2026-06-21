@@ -54,9 +54,6 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
             builder.put(id, new Holder(definition));
         }
         this.map = builder.build();
-        for (final var holder : this.map.values()) {
-            holder.initialize();
-        }
 
         log.info("Loaded {} player animations", this.map.size());
     }
@@ -100,23 +97,24 @@ public final class PlayerAnimationManager extends DataSyncManager<PlayerAnimatio
 
         private final PlayerAnimationDefinition definition;
         private PlayerAnimation                 animation;
-        private boolean                         initialized = false;
+
+        private volatile boolean                initialized = false;
 
         public PlayerAnimation get(final Identifier id) {
             if (!this.initialized) {
-                try {
-                    this.initialize();
-                } catch (Exception e) {
-                    log.error("Failed to initialize animation: {}", id);
+                synchronized (this) {
+                    if (!this.initialized) {
+                        try {
+                            this.animation      = PlayerAnimationFactory.create(this.definition);
+                            this.initialized    = true;
+                        } catch (Exception e) {
+                            log.error("Failed to initialize animation: {}", id);
+                        }
+                    }
                 }
             }
 
             return this.animation;
-        }
-
-        private void initialize() {
-            this.initialized    = true;
-            this.animation      = PlayerAnimationFactory.create(this.definition);
         }
 
     }
