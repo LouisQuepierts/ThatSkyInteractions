@@ -242,43 +242,4 @@ public class PlayerInteractionSystem {
 
     }
 
-    public static void finish(
-            final @NonNull ServerPlayer     player
-    ) {
-
-        final var attachment    = PlayerInteractionSystem.getInteractionAttachment(player);
-        final var ongoing       = attachment.getOngoing();
-
-        if (ongoing == null) {
-            return;
-        }
-
-        ongoing.done();
-
-        // check other
-
-        final var uuid          = ongoing.getOther();
-        final var other         = player.level().getPlayerByUUID(uuid);
-
-        if (!(other instanceof ServerPlayer receiver)) {
-            attachment.done();
-            PacketDistributor.sendToPlayer(player, ClientboundInteractionControlPacket.done());
-            return;
-        }
-
-        final var oAttachment   = PlayerInteractionSystem.getInteractionAttachment(receiver);
-        final var oOngoing      = oAttachment.getOngoing();
-
-        if (oOngoing != null && oOngoing.isDone()) {
-
-            attachment.done();
-            oAttachment.done();
-
-            PacketDistributor.sendToPlayer(player, ClientboundInteractionControlPacket.done());
-            PacketDistributor.sendToPlayer(receiver, ClientboundInteractionControlPacket.done());
-
-        }
-
-    }
-
 }

@@ -8,6 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftAnimationPipeline;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftSkeletonPipeline;
@@ -17,6 +18,7 @@ import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimation
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
+import net.quepierts.thatskyinteractions.feature.interaction.packet.ClientboundInteractionControlPacket;
 import net.quepierts.veynir.backend.sampler.AnimationSampler;
 import net.quepierts.veynir.backend.sampler.SamplingMode;
 import net.quepierts.veynir.backend.sampler.WrappedSampler;
@@ -65,20 +67,46 @@ public class PlayerInteractionHandler {
             return;
         }
 
-        if (ongoing.isWaiting() && ongoing.isRequester()) {
 
-            final var time = player.level().getGameTime();
+        switch (ongoing.getState()) {
+            case DONE: {
 
-            if (ongoing.isExpired(time)) {
+                attachment.done();
+                PacketDistributor.sendToPlayer(player, ClientboundInteractionControlPacket.done());
 
-                PlayerInteractionSystem.cancel(player);
+                final var uuid  = ongoing.getOther();
+                final var other = player.level().getPlayerByUUID(uuid);
 
+                if (other instanceof ServerPlayer receiver) {
+                    PlayerInteractionSystem.getInteractionAttachment(receiver).done();
+                    PacketDistributor.sendToPlayer(receiver, ClientboundInteractionControlPacket.done());
+                    return;
+                }
+
+                break;
             }
+            case WAITING: {
 
-        } else if (ongoing.isRunning()) {
-            final var interaction = ongoing.getInteraction().get();
-            if (interaction != null && interaction.isFinished(player)) {
-                PlayerInteractionSystem.finish(player);
+                if (ongoing.isRequester()) {
+                    final var time = player.level().getGameTime();
+
+                    if (ongoing.isExpired(time)) {
+
+                        PlayerInteractionSystem.cancel(player);
+
+                    }
+                }
+
+                break;
+            }
+            case RUNNING: {
+
+                final var interaction = ongoing.getInteraction().get();
+                if (interaction != null && interaction.shouldFinish(player)) {
+                    ongoing.done();
+                }
+
+                break;
             }
         }
 

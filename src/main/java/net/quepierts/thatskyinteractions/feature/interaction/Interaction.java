@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
-import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -49,7 +48,7 @@ public interface Interaction {
             final @NonNull  ServerPlayer            receiver
     ) { }
 
-    default boolean isFinished(
+    default boolean shouldFinish(
             final @NonNull  Player                  player
     ) {
         return true;

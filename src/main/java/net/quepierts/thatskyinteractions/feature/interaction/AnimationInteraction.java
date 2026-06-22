@@ -167,12 +167,12 @@ public final class AnimationInteraction implements Interaction {
             return;
         }
 
-        PlayerInteractionSystem.finish(player);
+        ongoing.done();
 
     }
 
     @Override
-    public boolean isFinished(final @NonNull Player player) {
+    public boolean shouldFinish(final @NonNull Player player) {
         return false;
     }
 
