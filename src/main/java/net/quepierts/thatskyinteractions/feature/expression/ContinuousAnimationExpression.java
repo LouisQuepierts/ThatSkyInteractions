@@ -1,29 +1,20 @@
 package net.quepierts.thatskyinteractions.feature.expression;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.DefaultMinecraftFSM;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerAnimationDefinition;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.core.animation.model.SourceDefinition;
-import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
-import net.quepierts.thatskyinteractions.feature.control.PlayerControlSystem;
 import net.quepierts.thatskyinteractions.feature.expression.runtime.AnimationExpressionState;
 import net.quepierts.thatskyinteractions.feature.expression.runtime.ExpressionState;
-import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.ExpressionTypes;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -32,42 +23,24 @@ import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContinuousAnimationExpression implements Expression {
+public final class ContinuousAnimationExpression extends AbstractAnimationExpression {
 
     public static final String AUTO = "auto";
     private static final Identifier EMPTY = ThatSkyInteractions.location("empty");
 
     public static final MapCodec<ContinuousAnimationExpression> MAP_CODEC
-            = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.STRING.fieldOf("animation").forGetter(ContinuousAnimationExpression::animation)
-    ).apply(instance, ContinuousAnimationExpression::new));
+            = AbstractAnimationExpression.codec(ContinuousAnimationExpression::new);
 
     public static final StreamCodec<ByteBuf, ContinuousAnimationExpression> STREAM_CODEC
-            = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8,
-            ContinuousAnimationExpression::animation,
-            ContinuousAnimationExpression::new
-    );
+            = AbstractAnimationExpression.streamCodec(ContinuousAnimationExpression::new);
 
-    private final String animation;
-
-    private Identifier animationId = EMPTY;
+    ContinuousAnimationExpression(final String animation) {
+        super(animation);
+    }
 
     @Override
     public @NonNull ExpressionType<? extends Expression> getType() {
         return ExpressionTypes.CONTINUOUS_ANIMATION.get();
-    }
-
-    @Override
-    public void onPerform(final @NonNull ServerPlayer player) {
-        PlayerAnimationSystem.play(player, this.animationId);
-        PlayerControlSystem.align(player);
-    }
-
-    @Override
-    public void onInterrupt(@NonNull ServerPlayer player) {
-        PlayerAnimationSystem.exit(player, AnimationLayerTypes.DEFAULT.getId());
     }
 
     @Override
@@ -77,15 +50,6 @@ public final class ContinuousAnimationExpression implements Expression {
     ) {
         return (state instanceof AnimationExpressionState aState)
                 && aState.getStatus() == AnimationExpressionState.Status.RUNNING;
-    }
-
-    @Override
-    public boolean isFinished(
-            final @NonNull  Player                       player,
-            final @Nullable ExpressionState              state
-    ) {
-        return (state instanceof AnimationExpressionState aState)
-                && aState.getStatus() == AnimationExpressionState.Status.FINISHED;
     }
 
     @Override
@@ -124,40 +88,6 @@ public final class ContinuousAnimationExpression implements Expression {
     }
 
     @Override
-    public void onGenerateData(@NonNull Identifier identifier, int level) {
-
-        if (AUTO.equalsIgnoreCase(this.animation)) {
-            this.animationId    = level != 0 ? identifier.withSuffix("_" + level) : identifier;
-        } else {
-            this.animationId    = Identifier.tryParse(this.animation);
-        }
-
-    }
-
-    @Override
-    public void onAnimationFinished(
-            final @NonNull  Player                          player,
-            final @Nullable ExpressionState                 state,
-            final PlayerAnimationControllerEvent.Finished   event
-    ) {
-
-        if (!(state instanceof AnimationExpressionState aState)) {
-            return;
-        }
-
-        if (event.getLayer() != AnimationLayerTypes.DEFAULT.get()) {
-            return;
-        }
-
-        if (event.getAnimation().equals(this.animationId)) {
-
-            aState.setStatus(AnimationExpressionState.Status.FINISHED);
-
-        }
-
-    }
-
-    @Override
     public void onAnimationTransitionStart(
             final @NonNull  Player                                                  player,
             final @Nullable ExpressionState                                         state,
@@ -182,14 +112,5 @@ public final class ContinuousAnimationExpression implements Expression {
         final var state = new AnimationExpressionState();
         state.setStatus(AnimationExpressionState.Status.TRANSITING);
         return state;
-    }
-
-    @Override
-    public boolean immediate() {
-        return false;
-    }
-
-    private String animation() {
-        return this.animation;
     }
 }

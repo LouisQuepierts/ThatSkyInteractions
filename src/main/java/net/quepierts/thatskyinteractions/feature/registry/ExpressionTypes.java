@@ -11,10 +11,10 @@ import net.quepierts.thatskyinteractions.feature.registry.entry.ExpressionTypeEn
 @UtilityClass
 public class ExpressionTypes {
 
-    public static final ExpressionTypeEntry<AnimationExpression> ANIMATION
-            = ExpressionTypes.<AnimationExpression>type("animation")
-            .codec(AnimationExpression.MAP_CODEC)
-            .streamCodec(AnimationExpression.STREAM_CODEC)
+    public static final ExpressionTypeEntry<SequenceAnimationExpression> ANIMATION
+            = ExpressionTypes.<SequenceAnimationExpression>type("animation")
+            .codec(SequenceAnimationExpression.MAP_CODEC)
+            .streamCodec(SequenceAnimationExpression.STREAM_CODEC)
             .register();
 
     public static final ExpressionTypeEntry<ContinuousAnimationExpression> CONTINUOUS_ANIMATION
