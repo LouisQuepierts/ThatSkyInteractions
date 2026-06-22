@@ -18,6 +18,7 @@ import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimation
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationTypeEvent;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.PlayerAnimation;
 import net.quepierts.thatskyinteractions.feature.animation.humanoid.TemplateAnimation;
+import net.quepierts.thatskyinteractions.feature.expression.event.PlayerExpressionEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.ClientboundInteractionControlPacket;
 import net.quepierts.veynir.backend.sampler.AnimationSampler;
 import net.quepierts.veynir.backend.sampler.SamplingMode;
@@ -129,6 +130,30 @@ public class PlayerInteractionHandler {
 
         if (interaction != null) {
             interaction.onAnimationFinished(player, event);
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void onExpressionFinished(final PlayerExpressionEvent.Finished event) {
+
+        if (!(event.getPlayer() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        final var attachment    = PlayerInteractionAttachment.getAttachment(player);
+        final var ongoing       = attachment.getOngoing();
+        if (ongoing == null) {
+            return;
+        }
+
+        final var interaction = ongoing.getInteraction().get();
+
+        if (interaction != null) {
+            interaction.onExpressionFinished(
+                    player,
+                    event.getExpression()
+            );
         }
 
     }

@@ -10,7 +10,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
-public final class DefaultInteractionExpression implements InteractionExpression {
+public class DefaultInteractionExpression implements InteractionExpression {
 
     @Getter
     public final boolean isRequester;
@@ -34,7 +34,7 @@ public final class DefaultInteractionExpression implements InteractionExpression
             final @NonNull  ServerPlayer            player
     ) {
         if (this.isRequester()) {
-            PlayerInteractionSystem.cancel(player);
+            PlayerInteractionSystem.cancel(player, false);
         }
     }
 

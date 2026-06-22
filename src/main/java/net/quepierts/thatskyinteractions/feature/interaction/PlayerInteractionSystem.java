@@ -12,6 +12,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
 import net.quepierts.thatskyinteractions.feature.control.packet.NavigatePacket;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionAttachment;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.ClientboundInteractionControlPacket;
@@ -73,12 +74,16 @@ public class PlayerInteractionSystem {
         final var reqData = PlayerInteractionSystem.getInteractionAttachment(requester);
         final var recData = PlayerInteractionSystem.getInteractionAttachment(receiver);
 
-        if (reqData.hasSentRequest()) {
+        if (reqData.hasSentRequest()) {  // temporary solution
             PlayerInteractionSystem.cancel(requester);
         }
 
         // delegate
-        if (!PlayerExpressionSystem.perform(requester, interaction.getRequesterExpression())) {
+        if (!PlayerExpressionSystem.perform(
+                requester,
+                interaction.getRequesterExpression(),
+                0
+        )) {
             return false;
         }
 
@@ -196,7 +201,14 @@ public class PlayerInteractionSystem {
     }
 
     public static void cancel(
-            final @NonNull ServerPlayer requester
+            final @NonNull ServerPlayer     requester
+    ) {
+        PlayerInteractionSystem.cancel(requester, true);
+    }
+
+    public static void cancel(
+            final @NonNull  ServerPlayer    requester,
+            final           boolean         immediate
     ) {
         final var reqData   = PlayerInteractionSystem.getInteractionAttachment(requester);
         final var sent      = reqData.getOngoing();
@@ -239,6 +251,15 @@ public class PlayerInteractionSystem {
             );
 
             NeoForge.EVENT_BUS.post(new PlayerInteractionEvent.Cancel(requester, other, type));
+        }
+
+        if (immediate) {
+            final var attachment = PlayerExpressionSystem.getAttachment(requester);
+            final var expression = attachment.getReference().get();
+
+            if (expression != null) {
+                PlayerExpressionSystem.cancel(requester);
+            }
         }
 
     }

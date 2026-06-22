@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -21,6 +22,9 @@ import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.control.PlayerControlSystem;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
+import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
+import net.quepierts.thatskyinteractions.feature.interaction.expression.AnimationInteractionExpression;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.registry.InteractionTypes;
 import org.jspecify.annotations.NonNull;
@@ -31,7 +35,7 @@ import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AnimationInteraction implements Interaction {
+public final class AnimationInteraction implements Interaction, Expressional {
 
     public  static final String     AUTO    = "auto";
     private static final Identifier EMPTY   = ThatSkyInteractions.location("empty");
@@ -54,6 +58,11 @@ public final class AnimationInteraction implements Interaction {
     private final String        requester;
     private final String        receiver;
 
+    @Getter
+    private Identifier          requesterExpression = DEFAULT_EXPRESSION_REQUESTER;
+    @Getter
+    private Identifier          receiverExpression  = DEFAULT_EXPRESSION_RECEIVER;
+
     private Identifier          requesterAnimation  = EMPTY;
     private Identifier          receiverAnimation   = EMPTY;
 
@@ -66,13 +75,7 @@ public final class AnimationInteraction implements Interaction {
     public void onInvite(
             final @NonNull ServerPlayer                 requester,
             final @NonNull ServerPlayer                 receiver
-    ) {
-        PlayerAnimationSystem.play(
-                requester,
-                this.requesterAnimation
-        );
-        PlayerControlSystem.align(requester);
-    }
+    ) { }
 
     @Override
     public void onAccepted(
@@ -80,13 +83,7 @@ public final class AnimationInteraction implements Interaction {
             final @NonNull ServerPlayer                 receiver
     ) {
 
-        PlayerControlSystem.align(receiver);
-        PlayerAnimationSystem.play(
-                receiver,
-                this.receiverAnimation
-        );
-
-        PlayerAnimationSystem.signal(
+        PlayerExpressionSystem.signal(
                 requester,
                 DefaultInteractionFSM.REQUESTER_ACCEPT
         );
@@ -97,13 +94,9 @@ public final class AnimationInteraction implements Interaction {
     public void onCancel(
             final @NonNull  ServerPlayer                requester,
             final @Nullable ServerPlayer                receiver
-    ) {
+    ) { }
 
-        PlayerAnimationSystem.exit(requester, AnimationLayerTypes.DEFAULT.getId());
-
-    }
-
-    @Override
+    @Override // todo: delegate by expression in future
     public void onRegisterPlayerAnimation(
             final @NonNull RegisterPlayerAnimationEvent event,
             final @NonNull Identifier                   identifier,
@@ -116,7 +109,7 @@ public final class AnimationInteraction implements Interaction {
                 event,
                 typename,
                 this.requesterAnimation,
-                AUTO.equalsIgnoreCase(this.receiver)
+                AUTO.equalsIgnoreCase(this.requester)
         );
 
         parseReceiver(
@@ -135,7 +128,7 @@ public final class AnimationInteraction implements Interaction {
     ) {
         final var subfix = level != 0 ? ("_" + level) : "";
 
-        this.requesterAnimation      = AUTO.equalsIgnoreCase(this.receiver) ?
+        this.requesterAnimation      = AUTO.equalsIgnoreCase(this.requester) ?
                                         identifier.withSuffix(subfix + ".requester") :
                                         identifier.withSuffix(".receiver");
 
@@ -143,27 +136,49 @@ public final class AnimationInteraction implements Interaction {
                                         identifier.withSuffix(subfix + ".receiver") :
                                         identifier.withSuffix(".receiver");
 
+        final var path  = (identifier.getPath() + subfix);
+        this.requesterExpression    = identifier.withPath("interaction/" + path + ".requester");
+        this.receiverExpression     = identifier.withPath("interaction/" + path + ".receiver");
+
     }
 
     @Override
-    public void onAnimationFinished(
-            final @NonNull ServerPlayer                     player,
-            final PlayerAnimationControllerEvent.Finished   event
+    public void onRegisterExpression(
+            final @NonNull  RegisterExpressionEvent     event,
+            final @NonNull  Identifier                  identifier,
+            final           int                         level
     ) {
-
-        if (event.getLayer() != AnimationLayerTypes.DEFAULT.get()) {
-            return;
+        if (this.requesterExpression != DEFAULT_EXPRESSION_REQUESTER) {
+            event.register(this.requesterExpression, new AnimationInteractionExpression(
+                    this.requesterAnimation,
+                    true,
+                    false
+            ));
         }
 
-        final var attachment    = PlayerInteractionSystem.getInteractionAttachment(player);
-        final var ongoing       = attachment.getOngoing();
+        if (this.receiverExpression != DEFAULT_EXPRESSION_RECEIVER) {
+            event.register(this.receiverExpression, new AnimationInteractionExpression(
+                    this.receiverAnimation,
+                    false,
+                    true
+            ));
+        }
+    }
 
-        // assert non-null
+    @Override
+    public void onExpressionFinished(
+            final @NonNull ServerPlayer     player,
+            final @NonNull Identifier       expression
+    ) {
+        final var attachment                = PlayerInteractionSystem.getInteractionAttachment(player);
+        final var ongoing                   = attachment.getOngoing();
 
-        final var requester     = ongoing.isRequester();
-        final var animation     = requester ? this.requesterAnimation : this.receiverAnimation;
-
-        if (!event.getAnimation().equals(animation)) {
+        final var requester                 = ongoing.isRequester();
+        final var match                     = requester
+                                            ? this.requesterExpression
+                                            : this.receiverExpression;
+        
+        if (!expression.equals(match)) {
             return;
         }
 
@@ -265,5 +280,4 @@ public final class AnimationInteraction implements Interaction {
     private String receiver() {
         return this.receiver;
     }
-
 }

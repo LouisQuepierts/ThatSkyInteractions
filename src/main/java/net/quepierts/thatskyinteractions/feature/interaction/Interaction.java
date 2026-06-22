@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
+import net.quepierts.thatskyinteractions.feature.expression.event.PlayerExpressionEvent;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -80,6 +81,11 @@ public interface Interaction {
     default void onAnimationFinished(
             final @NonNull ServerPlayer                     player,
             final PlayerAnimationControllerEvent.Finished   event
+    ) { }
+
+    default void onExpressionFinished(
+            final @NonNull ServerPlayer                     player,
+            final @NonNull Identifier                       expression
     ) { }
 
     default boolean positional() {
