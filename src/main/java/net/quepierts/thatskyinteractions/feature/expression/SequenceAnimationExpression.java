@@ -72,9 +72,4 @@ public final class SequenceAnimationExpression extends AbstractAnimationExpressi
 
         event.register(identifier, definition);
     }
-
-    @Override
-    public @NonNull ExpressionState createRuntimeData() {
-        return new AnimationExpressionState();
-    }
 }

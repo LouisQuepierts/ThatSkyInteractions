@@ -100,7 +100,7 @@ public interface Expression {
     ) { }
 
     default void onSignal(
-            final @NonNull  Player                                          player,
+            final @NonNull  ServerPlayer                                    player,
             final @Nullable ExpressionState                                 state,
             final           int                                             signal
     ) { }

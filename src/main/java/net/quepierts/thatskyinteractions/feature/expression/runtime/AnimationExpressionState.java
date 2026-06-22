@@ -6,6 +6,7 @@ import lombok.*;
 public class AnimationExpressionState implements ExpressionState {
 
     private Status  status = Status.RUNNING;
+    private int     fsm;
 
     public enum Status {
 

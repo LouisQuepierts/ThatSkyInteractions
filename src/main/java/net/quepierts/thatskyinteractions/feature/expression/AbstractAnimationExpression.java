@@ -77,8 +77,8 @@ public abstract class AbstractAnimationExpression implements Expression {
             final @NonNull Player player,
             final @Nullable ExpressionState state
     ) {
-        return (state instanceof AnimationExpressionState aState)
-                && aState.getStatus() == AnimationExpressionState.Status.FINISHED;
+        return (state != null)
+                && ((AnimationExpressionState) state).getStatus() == AnimationExpressionState.Status.FINISHED;
     }
 
     @Override
@@ -99,7 +99,7 @@ public abstract class AbstractAnimationExpression implements Expression {
             final PlayerAnimationControllerEvent.Finished   event
     ) {
 
-        if (!(state instanceof AnimationExpressionState aState)) {
+        if (state == null) {
             return;
         }
 
@@ -109,10 +109,15 @@ public abstract class AbstractAnimationExpression implements Expression {
 
         if (event.getAnimation().equals(this.animationId)) {
 
-            aState.setStatus(AnimationExpressionState.Status.FINISHED);
+            ((AnimationExpressionState) state).setStatus(AnimationExpressionState.Status.FINISHED);
 
         }
 
+    }
+
+    @Override
+    public @NonNull ExpressionState createRuntimeData() {
+        return new AnimationExpressionState();
     }
 
     @Override

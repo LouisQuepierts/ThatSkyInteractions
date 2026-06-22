@@ -48,8 +48,8 @@ public final class ContinuousAnimationExpression extends AbstractAnimationExpres
             final @NonNull  Player                  player,
             final @Nullable ExpressionState         state
     ) {
-        return (state instanceof AnimationExpressionState aState)
-                && aState.getStatus() == AnimationExpressionState.Status.RUNNING;
+        return (state != null)
+                && ((AnimationExpressionState) state).getStatus() == AnimationExpressionState.Status.RUNNING;
     }
 
     @Override
@@ -94,15 +94,15 @@ public final class ContinuousAnimationExpression extends AbstractAnimationExpres
             final           PlayerAnimationControllerEvent.State.TransitionStart    event
     ) {
 
-        if (!(state instanceof AnimationExpressionState aState)) {
+        if (state == null) {
             return;
         }
 
         final var currentState = event.getCurrentState();
         if (currentState == DefaultMinecraftFSM.CONTINUOUS_MAIN) {
-            aState.setStatus(AnimationExpressionState.Status.RUNNING);
+            ((AnimationExpressionState) state).setStatus(AnimationExpressionState.Status.RUNNING);
         } else if (currentState == DefaultMinecraftFSM.CONTINUOUS_EXIT) {
-            aState.setStatus(AnimationExpressionState.Status.TRANSITING);
+            ((AnimationExpressionState) state).setStatus(AnimationExpressionState.Status.TRANSITING);
         }
 
     }
