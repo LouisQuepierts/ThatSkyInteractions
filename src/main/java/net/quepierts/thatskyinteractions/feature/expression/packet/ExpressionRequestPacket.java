@@ -53,7 +53,7 @@ public record ExpressionRequestPacket(
 
         switch (this.operation()) {
             case PERFORM:
-                PlayerExpressionSystem.perform(sender, this.identifier().orElseThrow(), this.level());
+                PlayerExpressionSystem.enqueue(sender, this.identifier().orElseThrow(), this.level());
                 break;
             case CANCEL:
                 PlayerExpressionSystem.interrupt(sender);

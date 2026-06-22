@@ -18,8 +18,10 @@ import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlaye
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
 import net.quepierts.thatskyinteractions.feature.client.gui.screen.ExpressionsScreen;
 import net.quepierts.thatskyinteractions.feature.client.reference.TsiKeys;
+import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionAttachment;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
 import net.quepierts.thatskyinteractions.feature.expression.packet.ExpressionRequestPacket;
+import net.quepierts.thatskyinteractions.feature.expression.runtime.ExpressionState;
 import org.jspecify.annotations.NonNull;
 
 @UtilityClass
@@ -65,53 +67,99 @@ public class ClientPlayerExpressionSystem {
 
             final var player            = event.getPlayer();
             final var attachment        = PlayerExpressionSystem.getAttachment(player);
-
-            if (!attachment.isExpressing()) {
-                return;
-            }
-
             final var reference         = attachment.getReference();
             final var expression        = reference.get();
 
-            if (expression == null) {
+            if (expression              == null) {
                 return;
             }
 
-            if (expression.isInterruptible(player, attachment.getState())) {
+            final var state             = attachment.getState();
+            if (expression              .isInterruptible(player, state)) {
+
                 ClientPlayerExpressionSystem.cancel();
+
             }
 
-            event.setCanceled(true);
+            if (expression              .isRestrictMotion(player, state)) {
+
+                event.setCanceled(true);
+
+            }
 
         }
 
         @SubscribeEvent(priority = EventPriority.LOWEST)
         public static void onLocalPlayerTurn(final LocalPlayerTurnEvent event) {
-            final var player        = event.getPlayer();
-            final var xo            = event.getXo();
+            final var player            = event.getPlayer();
+            final var xo                = event.getXo();
 
-            final var attachment    = PlayerExpressionSystem.getAttachment(player);
+            final var attachment        = PlayerExpressionSystem.getAttachment(player);
+            final var reference         = attachment.getReference();
+            final var expression        = reference.get();
 
-            if (!attachment.isExpressing()) {
+            if (expression              == null) {
                 return;
             }
 
-            final var minecraft     = Minecraft.getInstance();
-            final var firstPerson   = minecraft.options.getCameraType().isFirstPerson();
+            final var state             = attachment.getState();
+
+            if (!expression             .isRestrictCamera(player, state)) {
+                return;
+            }
+
+            final var minecraft         = Minecraft.getInstance();
+            final var firstPerson       = minecraft.options
+                                        .getCameraType()
+                                        .isFirstPerson();
 
             if (firstPerson) {
-                event.setCanceled(true);
+
+                event                   .setCanceled(true);
+                return;
+
+            }
+
+            final var deltaY            = (float) xo * 0.15f;
+            final var headDiff0         = Mth.abs(Mth.wrapDegrees(player.getYRot() - player.yBodyRot));
+            final var headDiff1         = Mth.abs(Mth.wrapDegrees(player.getYRot() - player.yBodyRot - deltaY));
+            final var maxDiff           = player.isBlocking() ? 14f : 49f;
+
+            if (    headDiff0           > maxDiff       &&
+                    headDiff1           < headDiff0
+            ) {
+
+                event                   .setXo(0.0);
+
+            }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerClick(final InputEvent.InteractionKeyMappingTriggered event) {
+
+            final var player            = Minecraft.getInstance().player;
+
+            if (player                  == null) { // just for in case
                 return;
             }
 
-            final var deltaY        = (float) xo * 0.15f;
-            final var headDiff0     = Mth.abs(Mth.wrapDegrees(player.getYRot() - player.yBodyRot));
-            final var headDiff1     = Mth.abs(Mth.wrapDegrees(player.getYRot() - player.yBodyRot - deltaY));
-            final var maxDiff       = player.isBlocking() ? 14f : 49f;
+            final var attachment        = PlayerExpressionSystem.getAttachment(player);
+            final var reference         = attachment.getReference();
+            final var expression        = reference.get();
 
-            if (headDiff0 > maxDiff && headDiff1 < headDiff0) {
-                event.setXo(0.0);
+            if (expression              == null) {
+                return;
             }
+
+            final var hand              = event.getHand();
+            final var state             = attachment.getState();
+
+            if (expression              .isRestrictInput(player, hand, state)) {
+
+                event                   .setCanceled(true);
+
+            }
+
         }
 
     }

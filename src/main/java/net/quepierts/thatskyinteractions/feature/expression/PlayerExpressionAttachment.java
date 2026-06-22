@@ -3,6 +3,8 @@ package net.quepierts.thatskyinteractions.feature.expression;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.PriorityQueue;
+import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import lombok.Getter;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
@@ -27,6 +29,8 @@ public final class PlayerExpressionAttachment {
     private static final WeakReference<Expression> NULL
             = new WeakReference<>(null);
 
+    private @Nullable   Pending                     pending;
+
     private @NonNull    WeakReference<Expression>   reference   = NULL;
     private @Nullable   Identifier                  current;
     private @Nullable   ExpressionState             state;
@@ -36,6 +40,25 @@ public final class PlayerExpressionAttachment {
     }
 
     public PlayerExpressionAttachment() { }
+
+    public void enqueue(
+            final @NonNull Identifier   identifier
+    ) {
+        this.enqueue(identifier, 0);
+    }
+
+    public void enqueue(
+            final @NonNull Identifier   identifier,
+            final          int          level
+    ) {
+        this.pending = Pending.of(identifier, level);
+    }
+
+    public @Nullable Pending dequeue() {
+        final var pending = this.pending;
+        this.pending = null;
+        return pending;
+    }
 
     public void start(
             final @NonNull Expression   expression,
@@ -54,5 +77,29 @@ public final class PlayerExpressionAttachment {
 
     public boolean isExpressing() {
         return this.current != null;
+    }
+
+    public record Pending(
+            @NonNull Identifier identifier,
+                     int        level
+    ) {
+
+        private static Pending of(
+                @NonNull Identifier identifier
+        ) {
+            return new Pending(identifier, 0);
+        }
+
+        private static Pending of(
+                @NonNull Identifier identifier,
+                         int        level
+        ) {
+            return new Pending(identifier, level);
+        }
+
+        public boolean leveled() {
+            return this.level >= 0;
+        }
+
     }
 }

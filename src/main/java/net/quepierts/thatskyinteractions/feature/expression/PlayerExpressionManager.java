@@ -67,6 +67,11 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
     }
 
     public @Nullable Expression get(@NonNull Identifier identifier, int level) {
+
+        if (level == 0) {
+            return this.expressions.get(identifier);
+        }
+
         final var set = this.sets.get(identifier);
         return set != null ? set.expressions().get(level - 1) : null;
     }

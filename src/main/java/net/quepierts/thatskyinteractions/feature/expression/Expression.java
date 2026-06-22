@@ -6,6 +6,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
@@ -28,50 +29,50 @@ public interface Expression {
     @NonNull ExpressionType<? extends Expression> getType();
 
     void onPerform(
-            final @NonNull ServerPlayer                 player
+            final @NonNull ServerPlayer                                     player
     );
 
     default void onCancel(
-            final @NonNull ServerPlayer                 player
+            final @NonNull ServerPlayer                                     player
     ) {}
 
     default void onInterrupt(
-            final @NonNull ServerPlayer                 player
+            final @NonNull ServerPlayer                                     player
     ) {
         this.onCancel(player);
     }
 
     default boolean isInterruptible(
-            final @NonNull  Player                      player,
-            final @Nullable ExpressionState             state
+            final @NonNull  Player                                          player,
+            final @Nullable ExpressionState                                 state
     ) {
         return true;
     }
 
     default void onFinished(
-            final @NonNull ServerPlayer                 player
+            final @NonNull ServerPlayer                                     player
     ) { }
 
     default void onClientPerform(
-            final @NonNull Player                       player
-    ) { }
-
-    default void onRegisterPlayerAnimation(
-            final @NonNull RegisterPlayerAnimationEvent event,
-            final @NonNull Identifier                   identifier,
-            final          int                          level
+            final @NonNull Player                                           player
     ) { }
 
     default boolean isFinished(
-            final @NonNull  Player                       player,
-            final @Nullable ExpressionState              state
+            final @NonNull  Player                                          player,
+            final @Nullable ExpressionState                                 state
     ) {
         return this.immediate();
     }
 
+    default void onRegisterPlayerAnimation(
+            final @NonNull RegisterPlayerAnimationEvent                     event,
+            final @NonNull Identifier                                       identifier,
+            final          int                                              level
+    ) { }
+
     default void onGenerateData(
-            final @NonNull Identifier                   identifier,
-            final          int                          level
+            final @NonNull Identifier                                       identifier,
+            final          int                                              level
     ) { }
 
     default void onAnimationFinished(
@@ -81,22 +82,44 @@ public interface Expression {
     ) { }
 
     default void onAnimationTransitionStart(
-            final @NonNull Player                                           player,
+            final @NonNull  Player                                          player,
             final @Nullable ExpressionState                                 state,
             final PlayerAnimationControllerEvent.State.TransitionStart      event
     ) { }
 
     default void onAnimationTransitionEnd(
-            final @NonNull Player                                           player,
+            final @NonNull  Player                                          player,
             final @Nullable ExpressionState                                 state,
             final PlayerAnimationControllerEvent.State.TransitionEnd        event
     ) { }
 
     default void onAnimationLooped(
-            final @NonNull Player                                           player,
+            final @NonNull  Player                                          player,
             final @Nullable ExpressionState                                 state,
             final PlayerAnimationControllerEvent.State.Loop                 event
     ) { }
+
+    default boolean isRestrictMotion(
+            final @NonNull  Player                                          player,
+            final @Nullable ExpressionState                                 state
+    ) {
+        return true;
+    }
+
+    default boolean isRestrictCamera(
+            final @NonNull  Player                                          player,
+            final @Nullable ExpressionState                                 state
+    ) {
+        return true;
+    }
+
+    default boolean isRestrictInput(
+            final @NonNull  Player                                          player,
+            final @NonNull  InteractionHand                                 hand,
+            final @Nullable ExpressionState                                 state
+    ) {
+        return true;
+    }
 
     default boolean immediate() {
         return true;

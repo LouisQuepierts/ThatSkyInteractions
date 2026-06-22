@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.expression;
 
+import it.unimi.dsi.fastutil.PriorityQueue;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,6 +37,19 @@ public class PlayerExpressionHandler {
         final var expression    = attachment.getReference().get();
 
         if (expression == null) {
+
+            final var pending   = attachment.dequeue();
+
+            if (pending == null) {
+                return;
+            }
+
+            if (pending.leveled()) {
+                PlayerExpressionSystem.perform(player, pending.identifier(), pending.level());
+            } else {
+                PlayerExpressionSystem.perform(player, pending.identifier());
+            }
+
             return;
         }
 
