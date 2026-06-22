@@ -2,7 +2,6 @@ package net.quepierts.thatskyinteractions.feature.interaction;
 
 import lombok.*;
 import net.minecraft.resources.Identifier;
-import net.quepierts.thatskyinteractions.feature.expression.InteractionRequesterExpression;
 
 import java.lang.ref.WeakReference;
 import java.util.UUID;

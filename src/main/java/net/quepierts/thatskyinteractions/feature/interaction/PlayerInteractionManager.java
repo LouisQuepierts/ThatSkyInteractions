@@ -10,7 +10,8 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
-import net.quepierts.thatskyinteractions.feature.expression.InteractionRequesterExpression;
+import net.quepierts.thatskyinteractions.feature.interaction.expression.InteractionReceiverExpression;
+import net.quepierts.thatskyinteractions.feature.interaction.expression.InteractionRequesterExpression;
 import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -73,8 +74,33 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionS
     @SubscribeEvent
     public static void onRegisterExpression(final RegisterExpressionEvent event) {
 
+        for (final var entry : instance.sets.entrySet()) {
+
+            final var key       = entry.getKey();
+            final var value     = entry.getValue();
+
+            final var leveled   = value.leveled();
+
+            var level           = leveled ? 1 : 0;
+            for (final var interaction : value.interactions()) {
+
+                if (interaction instanceof Expressional expressional) {
+
+                    expressional.onRegisterExpression(
+                            event,
+                            key,
+                            level
+                    );
+
+                }
+
+                level ++;
+
+            }
+        }
+
         event.register(PlayerInteractionSystem.EXPRESSION_REQUESTER,    InteractionRequesterExpression.INSTANCE);
-        event.register(PlayerInteractionSystem.EXPRESSION_RECEIVER,     InteractionRequesterExpression.INSTANCE);
+        event.register(PlayerInteractionSystem.EXPRESSION_RECEIVER,     InteractionReceiverExpression.INSTANCE);
 
     }
 

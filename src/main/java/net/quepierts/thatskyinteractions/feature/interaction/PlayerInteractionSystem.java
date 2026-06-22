@@ -10,14 +10,13 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
 import net.quepierts.thatskyinteractions.feature.control.packet.NavigatePacket;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
 import net.quepierts.thatskyinteractions.feature.interaction.packet.ClientboundInteractionControlPacket;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
 import org.jspecify.annotations.NonNull;
-
-import java.util.UUID;
 
 @Slf4j
 @UtilityClass
@@ -49,6 +48,10 @@ public class PlayerInteractionSystem {
     ) {
 
         if (requester.is(receiver)) {
+            return false;
+        }
+
+        if (PlayerBondSystem.isBondedWith(requester, receiver)) { // temporary solution
             return false;
         }
 
