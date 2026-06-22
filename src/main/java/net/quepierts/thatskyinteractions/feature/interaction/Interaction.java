@@ -86,10 +86,6 @@ public interface Interaction {
         return true;
     }
 
-    default int duration() {
-        return 0;
-    }
-
     default boolean is(final @NonNull Interaction other) {
         return this == other;
     }

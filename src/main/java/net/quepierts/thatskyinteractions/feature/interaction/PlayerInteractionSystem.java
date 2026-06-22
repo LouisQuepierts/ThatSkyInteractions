@@ -112,6 +112,10 @@ public class PlayerInteractionSystem {
             return false;
         }
 
+        if (PlayerBondSystem.isBondedWith(requester, receiver)) { // temporary solution
+            return false;
+        }
+
         final var reqData = PlayerInteractionSystem.getInteractionAttachment(requester);
         final var recData = PlayerInteractionSystem.getInteractionAttachment(receiver);
 
