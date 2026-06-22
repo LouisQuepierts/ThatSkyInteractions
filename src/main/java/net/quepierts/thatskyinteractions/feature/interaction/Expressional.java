@@ -7,10 +7,10 @@ import org.jspecify.annotations.NonNull;
 // todo: delegate to PlayerExpressionSystem
 public interface Expressional {
 
-    default void onRegisterExpression(
+    void onRegisterExpression(
             final @NonNull RegisterExpressionEvent      event,
             final @NonNull Identifier                   identifier,
             final          int                          level
-    ) { }
+    );
 
 }

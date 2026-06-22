@@ -13,7 +13,6 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
 import org.jspecify.annotations.NonNull;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 public record ExpressionRequestPacket(
