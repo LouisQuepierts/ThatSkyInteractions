@@ -98,7 +98,7 @@ public final class PlayerExpressionAttachment {
         }
 
         public boolean leveled() {
-            return this.level >= 0;
+            return this.level > 0;
         }
 
     }

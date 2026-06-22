@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.expression.event.PlayerExpressionEvent;
 import net.quepierts.thatskyinteractions.feature.expression.packet.ExpressionControlPacket;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import org.jspecify.annotations.NonNull;
@@ -42,7 +44,13 @@ public class PlayerExpressionSystem {
             return false;
         }
 
+        if (NeoForge.EVENT_BUS.post(new PlayerExpressionEvent.Enqueue.Pre(player, expressionId, level)).isCanceled()) {
+            return false;
+        }
+
         attachment.enqueue(expressionId, level);
+
+        NeoForge.EVENT_BUS.post(new PlayerExpressionEvent.Enqueue.Post(player, expressionId, level));
 
         return true;
 
@@ -66,6 +74,10 @@ public class PlayerExpressionSystem {
             return false;
         }
 
+        if (NeoForge.EVENT_BUS.post(new PlayerExpressionEvent.Perform.Pre(player, expressionId, level)).isCanceled()) {
+            return false;
+        }
+
         if (!expression.immediate()) {
             attachment.start(expression, expressionId);
         }
@@ -75,6 +87,8 @@ public class PlayerExpressionSystem {
                 player,
                 ExpressionControlPacket.perform(player.getUUID(), expressionId, level)
         );
+
+        NeoForge.EVENT_BUS.post(new PlayerExpressionEvent.Perform.Post(player, expressionId, level));
 
         return true;
     }
@@ -122,6 +136,8 @@ public class PlayerExpressionSystem {
                     player,
                     ExpressionControlPacket.interrupt(player.getUUID(), currentId)
             );
+
+            NeoForge.EVENT_BUS.post(new PlayerExpressionEvent.Interrupt(player, currentId));
 
             return 1;
         }

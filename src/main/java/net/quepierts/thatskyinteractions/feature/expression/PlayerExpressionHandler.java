@@ -1,18 +1,16 @@
 package net.quepierts.thatskyinteractions.feature.expression;
 
-import it.unimi.dsi.fastutil.PriorityQueue;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
+import net.quepierts.thatskyinteractions.feature.expression.event.PlayerExpressionEvent;
 
 @Slf4j
 @UtilityClass
@@ -55,6 +53,7 @@ public class PlayerExpressionHandler {
 
         final var finished      = expression.isFinished(player, attachment.getState());
         if (finished) {
+            NeoForge.EVENT_BUS.post(new PlayerExpressionEvent.Finished(player, attachment.getCurrent()));
             PlayerExpressionSystem.finish(player);
         }
     }

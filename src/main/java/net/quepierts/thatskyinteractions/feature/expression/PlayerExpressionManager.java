@@ -32,6 +32,7 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
 
     private Map<Identifier, ExpressionSet>  sets        = Map.of();
     private List<Identifier>                byOrdinal   = List.of();
+    private Map<Identifier, Expression>     generated   = Map.of();
     private Map<Identifier, Expression>     expressions = Map.of();
 
     PlayerExpressionManager() {
@@ -60,6 +61,12 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
                 level++;
             }
         }
+
+        for (final var entry : instance.generated.entrySet()) {
+            final var key = entry.getKey();
+            final var value = entry.getValue();
+            value.onRegisterPlayerAnimation(event, key, 0);
+        }
     }
 
     public @Nullable Expression get(@NonNull Identifier identifier) {
@@ -85,6 +92,7 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
         final var builder0 = ImmutableMap.<Identifier, ExpressionSet>builder();
         final var builder1 = ImmutableMap.<Identifier, Expression>builder();
         final var builder2 = ImmutableList.<Identifier>builder();
+        final var builder3 = ImmutableMap.<Identifier, Expression>builder();
 
         Order.sort(
                 preparations,
@@ -111,11 +119,17 @@ public final class PlayerExpressionManager extends DataSyncManager<ExpressionSet
                 }
         );
 
-        NeoForge.EVENT_BUS.post(new RegisterExpressionEvent(builder1::put));
+        NeoForge.EVENT_BUS.post(new RegisterExpressionEvent((key, value) -> {
+            builder1.put(key, value);
+            builder3.put(key, value);
 
-        this.sets = builder0.build();
-        this.byOrdinal = builder2.build();
-        this.expressions = builder1.build();
+            value.onGenerateData(key, 0);
+        }));
+
+        this.sets           = builder0.build();
+        this.expressions    = builder1.build();
+        this.byOrdinal      = builder2.build();
+        this.generated      = builder3.build();
 
         log.info("Loaded {} expression sets", this.sets.size());
         log.info("Loaded {} expressions", this.expressions.size());
