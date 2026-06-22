@@ -128,7 +128,7 @@ public class PlayerHandholdRelation {
     public boolean isHolding(
             final @NonNull Player   player
     ) {
-        return this.left == player || this.right == player;
+        return player.is(this.left) || player.is(this.right);
     }
 
     public boolean isFullyHolding() {

@@ -104,6 +104,17 @@ public class PlayerBondSystem {
 
     }
 
+    public static boolean isBondedWith(
+            final @NonNull Player           a,
+            final @NonNull Player           b
+    ) {
+
+        final var attachment = PlayerBondSystem.getAttachment(a);
+
+        return attachment.getRelation().isHolding(b);
+
+    }
+
     public static Vec3 computeHandholdPosition(
             final @NonNull Player           leader,
             final          boolean          left
