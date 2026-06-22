@@ -25,12 +25,6 @@ public class PlayerInteractionSystem {
     public static final String ANIMATION_TYPE_REQUESTER = "interaction.requester";
     public static final String ANIMATION_TYPE_RECEIVER  = "interaction.receiver";
 
-    public static final Identifier EXPRESSION_REQUESTER
-            = ThatSkyInteractions.location("interaction.requester");
-
-    public static final Identifier EXPRESSION_RECEIVER
-            = ThatSkyInteractions.location("interaction.receiver");
-
     public static PlayerInteractionAttachment getInteractionAttachment(
             final @NonNull Player player
     ) {
@@ -84,7 +78,7 @@ public class PlayerInteractionSystem {
         }
 
         // delegate
-        if (!PlayerExpressionSystem.perform(requester, EXPRESSION_REQUESTER)) {
+        if (!PlayerExpressionSystem.perform(requester, interaction.getRequesterExpression())) {
             return false;
         }
 
@@ -172,7 +166,7 @@ public class PlayerInteractionSystem {
             receiver.lookAt(EntityAnchorArgument.Anchor.EYES, requester.getEyePosition());
         }
 
-        if (!PlayerExpressionSystem.perform(receiver, EXPRESSION_RECEIVER)) {
+        if (!PlayerExpressionSystem.perform(receiver, interaction.getReceiverExpression())) {
             return false;
         }
 

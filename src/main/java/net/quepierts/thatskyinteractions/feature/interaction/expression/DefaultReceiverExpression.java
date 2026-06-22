@@ -13,29 +13,24 @@ import net.quepierts.thatskyinteractions.feature.registry.ExpressionTypes;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public final class InteractionRequesterExpression implements Expression {
+public final class DefaultReceiverExpression implements Expression {
 
-    public static final InteractionRequesterExpression INSTANCE
-            = new InteractionRequesterExpression();
+    public static final DefaultReceiverExpression INSTANCE
+            = new DefaultReceiverExpression();
 
-    public static final MapCodec<InteractionRequesterExpression> MAP_CODEC
+    public static final MapCodec<DefaultReceiverExpression> MAP_CODEC
             = MapCodec.unit(INSTANCE);
 
-    public static final StreamCodec<ByteBuf, InteractionRequesterExpression> STREAM_CODEC
+    public static final StreamCodec<ByteBuf, DefaultReceiverExpression> STREAM_CODEC
             = StreamCodec.unit(INSTANCE);
 
     @Override
     public @NonNull ExpressionType<? extends Expression> getType() {
-        return ExpressionTypes.INTERACTION_REQUESTER.get();
+        return ExpressionTypes.INTERACTION_RECEIVER.get();
     }
 
     @Override
     public void onPerform(@NonNull ServerPlayer player) {
-    }
-
-    @Override
-    public void onCancel(final @NonNull ServerPlayer player) {
-        PlayerInteractionSystem.cancel(player);
     }
 
     @Override

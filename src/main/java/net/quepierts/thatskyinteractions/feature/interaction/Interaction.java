@@ -7,9 +7,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.event.PlayerAnimationControllerEvent;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
-import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -17,6 +17,12 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Supplier;
 
 public interface Interaction {
+
+    Identifier DEFAULT_EXPRESSION_REQUESTER
+            = ThatSkyInteractions.location("interaction.requester");
+
+    Identifier DEFAULT_EXPRESSION_RECEIVER
+            = ThatSkyInteractions.location("interaction.receiver");
 
     Codec<Interaction> CODEC
             = TsiRegistries.INTERACTION_TYPE
@@ -94,6 +100,14 @@ public interface Interaction {
 
     default <E extends Interaction> boolean is(final @NonNull Supplier<InteractionType<E>> supplier) {
         return this.getType() == supplier.get();
+    }
+
+    default @NonNull Identifier getRequesterExpression() {
+        return DEFAULT_EXPRESSION_REQUESTER;
+    }
+
+    default @NonNull Identifier getReceiverExpression() {
+        return DEFAULT_EXPRESSION_RECEIVER;
     }
 
 }

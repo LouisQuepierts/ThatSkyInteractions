@@ -10,8 +10,8 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.event.RegisterPlayerAnimationEvent;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncManager;
 import net.quepierts.thatskyinteractions.feature.data.event.RegisterSyncManagerEvent;
-import net.quepierts.thatskyinteractions.feature.interaction.expression.InteractionReceiverExpression;
-import net.quepierts.thatskyinteractions.feature.interaction.expression.InteractionRequesterExpression;
+import net.quepierts.thatskyinteractions.feature.interaction.expression.DefaultReceiverExpression;
+import net.quepierts.thatskyinteractions.feature.interaction.expression.DefaultRequesterExpression;
 import net.quepierts.thatskyinteractions.feature.expression.event.RegisterExpressionEvent;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -99,8 +99,8 @@ public final class PlayerInteractionManager extends DataSyncManager<InteractionS
             }
         }
 
-        event.register(PlayerInteractionSystem.EXPRESSION_REQUESTER,    InteractionRequesterExpression.INSTANCE);
-        event.register(PlayerInteractionSystem.EXPRESSION_RECEIVER,     InteractionReceiverExpression.INSTANCE);
+        event.register(Interaction.DEFAULT_EXPRESSION_REQUESTER,    DefaultRequesterExpression.INSTANCE);
+        event.register(Interaction.DEFAULT_EXPRESSION_RECEIVER,     DefaultReceiverExpression.INSTANCE);
 
     }
 

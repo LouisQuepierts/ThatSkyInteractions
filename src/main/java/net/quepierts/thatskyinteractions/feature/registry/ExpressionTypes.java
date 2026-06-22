@@ -3,8 +3,8 @@ package net.quepierts.thatskyinteractions.feature.registry;
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.expression.*;
-import net.quepierts.thatskyinteractions.feature.interaction.expression.InteractionReceiverExpression;
-import net.quepierts.thatskyinteractions.feature.interaction.expression.InteractionRequesterExpression;
+import net.quepierts.thatskyinteractions.feature.interaction.expression.DefaultReceiverExpression;
+import net.quepierts.thatskyinteractions.feature.interaction.expression.DefaultRequesterExpression;
 import net.quepierts.thatskyinteractions.feature.registry.builer.ExpressionTypeBuilder;
 import net.quepierts.thatskyinteractions.feature.registry.entry.ExpressionTypeEntry;
 
@@ -23,16 +23,16 @@ public class ExpressionTypes {
             .streamCodec(ContinuousAnimationExpression.STREAM_CODEC)
             .register();
 
-    public static final ExpressionTypeEntry<InteractionRequesterExpression> INTERACTION_REQUESTER
-            = ExpressionTypes.<InteractionRequesterExpression>type("interaction_requester")
-            .codec(InteractionRequesterExpression.MAP_CODEC)
-            .streamCodec(InteractionRequesterExpression.STREAM_CODEC)
+    public static final ExpressionTypeEntry<DefaultRequesterExpression> INTERACTION_REQUESTER
+            = ExpressionTypes.<DefaultRequesterExpression>type("interaction_requester")
+            .codec(DefaultRequesterExpression.MAP_CODEC)
+            .streamCodec(DefaultRequesterExpression.STREAM_CODEC)
             .register();
 
-    public static final ExpressionTypeEntry<InteractionReceiverExpression> INTERACTION_RECEIVER
-            = ExpressionTypes.<InteractionReceiverExpression>type("interaction_receiver")
-            .codec(InteractionReceiverExpression.MAP_CODEC)
-            .streamCodec(InteractionReceiverExpression.STREAM_CODEC)
+    public static final ExpressionTypeEntry<DefaultReceiverExpression> INTERACTION_RECEIVER
+            = ExpressionTypes.<DefaultReceiverExpression>type("interaction_receiver")
+            .codec(DefaultReceiverExpression.MAP_CODEC)
+            .streamCodec(DefaultReceiverExpression.STREAM_CODEC)
             .register();
 
     public static void register() { }
