@@ -133,8 +133,10 @@ public final class PlayerAnimationController {
                 this.executionMask
         );
 
-        this.running.add(layer);
-        this.running.sort(AnimationLayer::compareTo);
+        if (!this.running.contains(layer)) {
+            this.running.add(layer);
+            this.running.sort(AnimationLayer::compareTo);
+        }
         this.setupApplyArray();
 
         this.playing            = true;
