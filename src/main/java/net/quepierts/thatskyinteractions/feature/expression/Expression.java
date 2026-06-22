@@ -99,6 +99,12 @@ public interface Expression {
             final PlayerAnimationControllerEvent.State.Loop                 event
     ) { }
 
+    default void onSignal(
+            final @NonNull  Player                                          player,
+            final @Nullable ExpressionState                                 state,
+            final           int                                             signal
+    ) { }
+
     default boolean isRestrictMotion(
             final @NonNull  Player                                          player,
             final @Nullable ExpressionState                                 state

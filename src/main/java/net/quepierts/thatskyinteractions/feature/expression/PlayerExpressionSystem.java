@@ -151,6 +151,22 @@ public class PlayerExpressionSystem {
         );
     }
 
+    public static void signal(
+            final @NonNull  ServerPlayer        player,
+                            int                 signal
+    ) {
+        final var attachment = getAttachment(player);
+        final var expression = attachment.getReference().get();
+
+        if (expression != null) {
+            expression.onSignal(
+                    player,
+                    attachment.getState(),
+                    signal
+            );
+        }
+    }
+
     public static boolean isPerforming(@NonNull ServerPlayer player) {
         return PlayerExpressionSystem   .getAttachment(player)
                                         .isExpressing();
