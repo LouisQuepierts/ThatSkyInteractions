@@ -185,11 +185,6 @@ public final class ContinuousAnimationExpression implements Expression {
     }
 
     @Override
-    public boolean hidden() {
-        return false;
-    }
-
-    @Override
     public boolean immediate() {
         return false;
     }

@@ -131,10 +131,6 @@ public interface Expression {
         return true;
     }
 
-    default boolean hidden() {
-        return true;
-    }
-
     default @Nullable ExpressionState createRuntimeData() {
         return null;
     }

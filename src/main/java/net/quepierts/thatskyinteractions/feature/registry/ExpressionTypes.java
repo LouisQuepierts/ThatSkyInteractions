@@ -3,6 +3,8 @@ package net.quepierts.thatskyinteractions.feature.registry;
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.expression.*;
+import net.quepierts.thatskyinteractions.feature.interaction.expression.InteractionReceiverExpression;
+import net.quepierts.thatskyinteractions.feature.interaction.expression.InteractionRequesterExpression;
 import net.quepierts.thatskyinteractions.feature.registry.builer.ExpressionTypeBuilder;
 import net.quepierts.thatskyinteractions.feature.registry.entry.ExpressionTypeEntry;
 

@@ -156,11 +156,6 @@ public final class AnimationExpression implements Expression {
     }
 
     @Override
-    public boolean hidden() {
-        return false;
-    }
-
-    @Override
     public boolean immediate() {
         return false;
     }
