@@ -74,9 +74,9 @@ public final class FollowerPositionResolver {
     }
 
     public void clampRotation(
-            Entity leader,
-            Entity follower,
-            float partialTick
+            Player      leader,
+            Player      follower,
+            float       partialTick
     ) {
         final var leaderYRot    = leader.getYRot(partialTick);
         final var followerYRot  = follower.getYRot(partialTick);

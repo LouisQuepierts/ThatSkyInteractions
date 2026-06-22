@@ -106,11 +106,14 @@ public class ClientBondHandler {
             return;
         }
 
-        if (relation.getLeft() != null) {
-            attachment.getResolver().clampRotation(relation.getLeft(), local, partialTicks);
-        } else if (relation.getRight() != null) {
-            attachment.getResolver().clampRotation(relation.getRight(), local, partialTicks);
-        }
+        attachment              .getResolver()
+                                .clampRotation(
+                                        relation.getLeft() != null
+                                                ? relation.getLeft()
+                                                : relation.getRight(),
+                                        local,
+                                        partialTicks
+                                );
     }
 
 //    @SubscribeEvent

@@ -31,7 +31,7 @@ public class PlayerBondHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(final PlayerTickEvent.Pre event) {
+    public static void onPlayerTick(final PlayerTickEvent.Post event) {
         final var player        = event.getEntity();
 
         final var attachment    = PlayerBondAttachment.getAttachment(player);
