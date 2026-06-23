@@ -99,59 +99,71 @@ public class PlayerAnimationHook {
 
         final var firstPerson = minecraft.options.getCameraType().isFirstPerson();
 
-        // todo: WIP, still have errors
-        if (firstPerson) {
-            if (controller.isUnlocked(PlayerBone.HEAD)) {
-                return false;
-            }
-
-            controller.update(partialTicks);
-
-            final var renderer = minecraft.getEntityRenderDispatcher().getPlayerRenderer(player);
-            final var adaptor = ((EntityModelExtension) renderer.getModel()).a4j$GetModelAdaptor();
-
-            onSetupAnimation(controller, adaptor);
-
-            final var root = controller.getRootTransform();
-            final var head = adaptor.getSkeleton()
-                    .get("head")
-                    .part();
-
-            if (head == null) {
-                return false;
-            }
-
-            final var alpha = controller.getRootAlpha();
-            var a           = alpha * 0.0625f;
-            var position    = new Vector3f(
-                    root.getTx(),
-                    root.getTy(),
-                    root.getTz()
-            );
-
-            var rootRotation = new Quaternionf(
-                    root.getRx(),
-                    root.getRy(),
-                    root.getRz(),
-                    root.getRw()
-            ).getEulerAnglesZYX(new Vector3f());
-
-            var xRot = player.getXRot();
-            var rotation = rootRotation.add(
-                    head.xRot(),
-                    head.yRot(),
-                    -head.zRot()
-            ).mul(Mth.RAD_TO_DEG).sub(xRot, 0, 0).mul(alpha);
-            ioRotation.add(rotation);
-            position.add(
-                    head.x(),
-                    head.y(),
-                    head.z()
-            );
-
-            position.mul(a, -a, a);
-            ioPosition.add(position);
+        // todo: WIP, still have errors on rotation
+        // todo: add part locator in animation controller, for further utilization
+        if (!firstPerson) {
+            return false;
         }
+
+        if (controller.isUnlocked(PlayerBone.HEAD)) {
+            return false;
+        }
+
+        controller.update(partialTicks);
+
+        final var renderer = minecraft.getEntityRenderDispatcher().getPlayerRenderer(player);
+        final var adaptor = ((EntityModelExtension) renderer.getModel()).a4j$GetModelAdaptor();
+
+        onSetupAnimation(controller, adaptor);
+
+        final var root = controller.getRootTransform();
+        final var head = adaptor.getSkeleton()
+                .get(1) // normally, head is the second bone: idx == 1
+                .part();
+
+        if (head == null) {
+            return false;
+        }
+
+        final var alpha     = controller.getRootAlpha();
+
+        final var vector    = new Vector3f();
+
+        final var rootRot   = new Quaternionf(
+                                root.getRx(),
+                                root.getRy(),
+                                root.getRz(),
+                                root.getRw()
+                            );
+
+        final var factor    = 0.0625f * 0.9375f;
+        final var blend     = alpha * factor;
+        final var eyeHeight = entity.getEyeHeight() * 16.0f;
+        final var yBodyRot  = entity.getPreciseBodyRotation(partialTicks);
+        final var position  = new Matrix4f()
+                            .rotateY((180F - yBodyRot) * Mth.DEG_TO_RAD)
+                            .scale(-blend, -blend, blend)
+                            .translate(root.getTx(), root.getTy() + eyeHeight, root.getTz())
+                            .rotate(rootRot)
+                            .translate(head.x(), head.y() - eyeHeight, head.z())
+                            .transformPosition(vector);
+
+        ioPosition          .add(position);
+
+        var xRot            = player.getXRot(partialTicks);
+        var yRot            = Mth.wrapDegrees(player.getYRot(partialTicks) - yBodyRot);
+        var rotation        = rootRot
+                            .rotateYXZ(
+                                head.yRot(),
+                                head.xRot(),
+                                -head.zRot()
+                             )
+                            .getEulerAnglesYXZ(vector)
+                            .mul(Mth.RAD_TO_DEG)
+                            .sub(xRot, yRot, 0)
+                            .mul(alpha);
+
+        ioRotation          .add(rotation);
 
         return true;
     }
