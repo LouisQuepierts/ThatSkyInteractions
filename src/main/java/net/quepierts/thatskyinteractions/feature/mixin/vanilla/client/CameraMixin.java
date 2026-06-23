@@ -12,6 +12,7 @@ import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem
 import net.quepierts.thatskyinteractions.feature.client.animation.PlayerAnimationHook;
 import net.quepierts.thatskyinteractions.feature.client.bond.ClientBondHandler;
 import net.quepierts.thatskyinteractions.feature.client.control.ClientCameraSystem;
+import net.quepierts.thatskyinteractions.feature.client.control.event.CameraAlignEvent;
 import net.quepierts.thatskyinteractions.feature.client.control.event.ComputeCameraPositionEvent;
 import org.joml.*;
 import org.jspecify.annotations.Nullable;
@@ -119,7 +120,9 @@ public abstract class CameraMixin {
         if (this.entity != Minecraft.getInstance().player) {
             return;
         }
-        ClientBondHandler.onCameraAlign(partialTicks);
+
+        final var event = new CameraAlignEvent(Minecraft.getInstance().player, partialTicks);
+        NeoForge.EVENT_BUS.post(event);
     }
 
 }

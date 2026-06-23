@@ -12,6 +12,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.client.control.event.CameraAlignEvent;
 import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerMovedEvent;
 
 @UtilityClass
@@ -76,8 +77,9 @@ public class ClientBondHandler {
 
     }
 
+    @SubscribeEvent
     @SuppressWarnings("DataFlowIssue")
-    public static void onCameraAlign(final float partialTicks) {
+    public static void onCameraAlign(final CameraAlignEvent event) {
         final var attachment    = ClientBondSystem.getLocalAttachment();
         final var relation      = attachment.getHandhold();
 
@@ -93,7 +95,7 @@ public class ClientBondHandler {
                                                 ? relation.getLeft()
                                                 : relation.getRight(),
                                         local,
-                                        partialTicks
+                                        event.getPartialTick()
                                 );
     }
 

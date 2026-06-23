@@ -13,6 +13,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
+import net.quepierts.thatskyinteractions.feature.client.control.event.CameraAlignEvent;
 import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerMovedEvent;
 import net.quepierts.thatskyinteractions.feature.client.control.event.LocalPlayerTurnEvent;
 import net.quepierts.thatskyinteractions.feature.client.gui.ScreenLoader;
@@ -92,7 +93,6 @@ public class ClientPlayerExpressionSystem {
         @SubscribeEvent(priority = EventPriority.LOWEST)
         public static void onLocalPlayerTurn(final LocalPlayerTurnEvent event) {
             final var player            = event.getPlayer();
-            final var xo                = event.getXo();
 
             final var attachment        = PlayerExpressionSystem.getAttachment(player);
             final var reference         = attachment.getReference();
@@ -114,24 +114,48 @@ public class ClientPlayerExpressionSystem {
                                         .isFirstPerson();
 
             if (firstPerson) {
+                event.setCanceled(true);
+            }
+        }
 
-                event                   .setCanceled(true);
+        @SubscribeEvent
+        public static void onCameraAlign(final CameraAlignEvent event) {
+
+            final var player            = event.getEntity();
+
+            final var attachment        = PlayerExpressionSystem.getAttachment(player);
+            final var reference         = attachment.getReference();
+            final var expression        = reference.get();
+
+            if (expression              == null) {
                 return;
-
             }
 
-            final var deltaY            = (float) xo * 0.15f;
-            final var headDiff0         = Mth.abs(Mth.wrapDegrees(player.getYRot() - player.yBodyRot));
-            final var headDiff1         = Mth.abs(Mth.wrapDegrees(player.getYRot() - player.yBodyRot - deltaY));
-            final var maxDiff           = player.isBlocking() ? 14f : 49f;
+            final var state             = attachment.getState();
 
-            if (    headDiff0           > maxDiff       &&
-                    headDiff1           < headDiff0
-            ) {
-
-                event                   .setXo(0.0);
-
+            if (!expression             .isRestrictCamera(player, state)) {
+                return;
             }
+
+            final var minecraft         = Minecraft.getInstance();
+            final var firstPerson       = minecraft.options
+                    .getCameraType()
+                    .isFirstPerson();
+
+            if (!firstPerson) {
+
+                final var partialTick   = event.getPartialTick();
+                final var target        = player.getPreciseBodyRotation(partialTick);
+
+                final var current       = player.getYRot(partialTick);
+
+                float delta             = Mth.wrapDegrees(current - target);
+                float targetDelta       = Mth.clamp(delta, -45.0F, 45.0F);
+                player.yRotO            += targetDelta - delta;
+                player                  .setYRot(player.getYRot() + targetDelta - delta);
+                player                  .setYHeadRot(player.getYRot());
+            }
+
         }
 
         @SubscribeEvent
@@ -157,6 +181,7 @@ public class ClientPlayerExpressionSystem {
             if (expression              .isRestrictInput(player, hand, state)) {
 
                 event                   .setCanceled(true);
+                event                   .setSwingHand(false);
 
             }
 

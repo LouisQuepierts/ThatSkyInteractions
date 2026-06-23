@@ -18,7 +18,11 @@ public class PlayerControlHook {
     ) {
 
         final var moveVector    = input.getMoveVector();
-        final var moved         = moveVector.x != 0.0 || moveVector.y != 0.0;
+        final var presses       = input.keyPresses;
+        final var moved         = moveVector.x != 0.0
+                                || moveVector.y != 0.0
+                                || presses.jump()
+                                || presses.shift();
 
         if (!moved) {
             return;
