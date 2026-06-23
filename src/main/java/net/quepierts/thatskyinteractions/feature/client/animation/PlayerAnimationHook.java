@@ -151,6 +151,8 @@ public class PlayerAnimationHook {
         ioPosition          .add(position);
 
         var xRot            = player.getXRot(partialTicks);
+
+        // todo: fix the rotation
         var yRot            = Mth.wrapDegrees(player.getYRot(partialTicks) - yBodyRot);
         var rotation        = rootRot
                             .rotateYXZ(
@@ -160,7 +162,7 @@ public class PlayerAnimationHook {
                              )
                             .getEulerAnglesYXZ(vector)
                             .mul(Mth.RAD_TO_DEG)
-                            .sub(xRot, yRot, 0)
+                            .sub(xRot, 0, 0)
                             .mul(alpha);
 
         ioRotation          .add(rotation);
