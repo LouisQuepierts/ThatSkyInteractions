@@ -64,7 +64,7 @@ public class EntityMixin {
 
     @Inject(
             method = "stopRiding",
-            at = @At("HEAD")
+            at = @At("TAIL")
     )
     private void tsi$onStopRiding(
             final CallbackInfo ci

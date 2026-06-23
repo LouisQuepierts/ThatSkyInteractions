@@ -16,8 +16,17 @@ import net.quepierts.thatskyinteractions.feature.bond.packet.ClientboundSyncHand
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
 public class PlayerBondHandler {
 
-    private static final Vec3       LEFT    = new Vec3(-1.0, 0.0, -0.2);
-    private static final Vec3       RIGHT   = new Vec3(1.0, 0.0, -0.2);
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
+
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        PlayerBondSystem.unholdAll(player);
+        PlayerBondSystem.unRide(player);
+        PlayerBondSystem.unCarry(player);
+    }
 
     @SubscribeEvent
     public static void onPlayerLeave(final EntityLeaveLevelEvent event) {
@@ -29,7 +38,6 @@ public class PlayerBondHandler {
         PlayerBondSystem.unholdAll(player);
         PlayerBondSystem.unRide(player);
         PlayerBondSystem.unCarry(player);
-
     }
 
     @SubscribeEvent

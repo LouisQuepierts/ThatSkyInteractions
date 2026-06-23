@@ -205,10 +205,10 @@ public class PlayerBondSystem {
 
         final var carrier       = relation.getCarrier();
         relation.unRide();
+        PlayerAnimationSystem.abort(player);
 
         if (player.getVehicle() == carrier) {
             player.stopRiding();
-            PlayerAnimationSystem.abort(player);
         }
 
         if (!(carrier instanceof ServerPlayer)) {
