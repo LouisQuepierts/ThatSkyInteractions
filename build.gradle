@@ -24,13 +24,7 @@ sourceSets.main.resources {
     exclude("src/generated/**/.cache") // datagen cache files
 }
 
-boolean isSnapshot = true;
-
-if (isSnapshot) {
-    version = "${libs.versions.minecraft.get()}-${mod_version}-SNAPSHOT";
-} else {
-    version = "${libs.versions.minecraft.get()}-${mod_version}}"
-}
+version = "${libs.versions.minecraft.get()}-${mod_version}"
 
 group = mod_group_id
 
