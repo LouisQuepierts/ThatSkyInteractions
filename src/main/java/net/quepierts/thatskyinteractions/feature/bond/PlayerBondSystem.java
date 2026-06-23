@@ -8,6 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.fk.FKAnimation;
+import net.quepierts.thatskyinteractions.feature.bond.packet.ClientboundCarryPacket;
 import net.quepierts.thatskyinteractions.feature.bond.packet.ClientboundHandholdPacket;
 import net.quepierts.thatskyinteractions.feature.registry.AnimationLayerTypes;
 import net.quepierts.thatskyinteractions.feature.utils.PlayerUtils;
@@ -42,8 +43,8 @@ public class PlayerBondSystem {
         final var lAttachment       = PlayerBondAttachment.getAttachment(leader);
         final var fAttachment       = PlayerBondAttachment.getAttachment(follower);
 
-        final var lRelation         = lAttachment.getRelation();
-        final var fRelation         = fAttachment.getRelation();
+        final var lRelation         = lAttachment.getHandhold();
+        final var fRelation         = fAttachment.getHandhold();
 
         if (lRelation.canLead(follower) && fRelation.canFollow(leader)) {
 
@@ -55,8 +56,8 @@ public class PlayerBondSystem {
                     ClientboundHandholdPacket.hold(leader, follower)
             );
 
-            play(leader, hand);
-            play(follower, hand.opposite());
+            playHoldingHand(leader, hand);
+            playHoldingHand(follower, hand.opposite());
 
             return true;
 
@@ -81,8 +82,8 @@ public class PlayerBondSystem {
                 ClientboundHandholdPacket.unhold(a, b)
         );
 
-        exit(a, aHand);
-        exit(b, bHand);
+        exitHoldingHand(a, aHand);
+        exitHoldingHand(b, bHand);
 
     }
 
@@ -91,8 +92,8 @@ public class PlayerBondSystem {
     ) {
 
         final var attachment        = PlayerBondAttachment.getAttachment(player);
-        final var left              = attachment.getRelation().getLeft();
-        final var right             = attachment.getRelation().getRight();
+        final var left              = attachment.getHandhold().getLeft();
+        final var right             = attachment.getHandhold().getRight();
 
         if (left != null) {
             PlayerBondSystem.unhold(player, (ServerPlayer) left);
@@ -104,6 +105,134 @@ public class PlayerBondSystem {
 
     }
 
+    public static boolean carry(
+            final @NonNull ServerPlayer     carrier,
+            final @NonNull ServerPlayer     rider
+    ) {
+
+        if (carrier == rider) {
+            return false;
+        }
+
+        if (carrier.level() != rider.level()) {
+            return false;
+        }
+
+        if (rider.distanceToSqr(rider) > 64 * 64) {
+            return false;
+        }
+
+        final var cAttachment   = PlayerBondAttachment.getAttachment(carrier);
+        final var rAttachment   = PlayerBondAttachment.getAttachment(rider);
+
+        final var cRelation     = cAttachment.getCarry();
+        final var rRelation     = rAttachment.getCarry();
+
+        if (cRelation.canCarry(rider) && rRelation.canRide(carrier) && rider.getVehicle() == null) {
+            cRelation.carry(rider);
+            rRelation.ride(carrier);
+
+            rider.startRiding(carrier, true, true);
+
+            PacketDistributor.sendToPlayer(
+                    carrier,
+                    ClientboundCarryPacket.carry(rider)
+            );
+
+            PacketDistributor.sendToPlayer(
+                    rider,
+                    ClientboundCarryPacket.ride(carrier)
+            );
+
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public static void unCarry(
+            final @NonNull ServerPlayer     player
+    ) {
+
+        final var attachment    = PlayerBondSystem.getAttachment(player);
+        final var relation      = attachment.getCarry();
+
+        if (!relation.isCarrying()) {
+            return;
+        }
+
+        final var carried       = relation.getCarried();
+        relation.unCarry();
+
+        if (!(carried instanceof ServerPlayer)) {
+            return;
+        }
+
+        PacketDistributor.sendToPlayer(
+                player,
+                ClientboundCarryPacket.stopCarry(carried)
+        );
+
+        final var cRelation     = PlayerBondSystem.getAttachment(carried).getCarry();
+        if (cRelation.getCarrier() != player) {
+            return;
+        }
+
+        PacketDistributor.sendToPlayer(
+                (ServerPlayer) carried,
+                ClientboundCarryPacket.stopRide(player)
+        );
+
+        cRelation.unRide();
+
+        if (carried.getVehicle() == player) {
+            carried.stopRiding();
+            PlayerAnimationSystem.abort(carried);
+        }
+
+    }
+
+    public static void unRide(
+            final @NonNull ServerPlayer     player
+    ) {
+        final var attachment    = PlayerBondSystem.getAttachment(player);
+        final var relation      = attachment.getCarry();
+
+        if (!relation.isBeingCarried()) {
+            return;
+        }
+
+        final var carrier       = relation.getCarrier();
+        relation.unRide();
+
+        if (player.getVehicle() == carrier) {
+            player.stopRiding();
+            PlayerAnimationSystem.abort(player);
+        }
+
+        if (!(carrier instanceof ServerPlayer)) {
+            return;
+        }
+
+        PacketDistributor.sendToPlayer(
+                player,
+                ClientboundCarryPacket.stopRide(carrier)
+        );
+
+        final var cRelation     = PlayerBondSystem.getAttachment(carrier).getCarry();
+        if (cRelation.getCarried() != player) {
+            return;
+        }
+        cRelation.unCarry();
+
+        PacketDistributor.sendToPlayer(
+                (ServerPlayer) carrier,
+                ClientboundCarryPacket.stopCarry(player)
+        );
+
+    }
+
     public static boolean isBondedWith(
             final @NonNull Player           a,
             final @NonNull Player           b
@@ -111,7 +240,9 @@ public class PlayerBondSystem {
 
         final var attachment = PlayerBondSystem.getAttachment(a);
 
-        return attachment.getRelation().isHolding(b);
+        return attachment.getHandhold().isHolding(b)
+                || a == b.getVehicle()
+                || b == a.getVehicle();
 
     }
 
@@ -128,7 +259,7 @@ public class PlayerBondSystem {
         return PlayerBondAttachment.getAttachment(player);
     }
 
-    private static void play(
+    private static void playHoldingHand(
             final @NonNull ServerPlayer                     player,
             final PlayerHoldingHand hand
     ) {
@@ -146,7 +277,7 @@ public class PlayerBondSystem {
 
     }
 
-    private static void exit(
+    private static void exitHoldingHand(
             final @NonNull ServerPlayer                     player,
             final PlayerHoldingHand hand
     ) {

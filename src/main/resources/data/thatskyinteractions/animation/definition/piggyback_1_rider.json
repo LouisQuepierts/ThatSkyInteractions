@@ -1,0 +1,15 @@
+{
+  "type": "continuous",
+  "sources": {
+    "enter": {
+      "source": "thatskyinteractions:piggyback.lv1.accept",
+      "fadeIn": 0.25,
+      "namespace": "receiver"
+    },
+    "main": {
+      "source": "thatskyinteractions:piggyback.lv1.riding",
+      "namespace": "receiver"
+    }
+  },
+  "override": "thatskyinteractions:modified"
+}

@@ -2,10 +2,7 @@ package net.quepierts.thatskyinteractions.feature.registry;
 
 import lombok.experimental.UtilityClass;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.interaction.AnimationInteraction;
-import net.quepierts.thatskyinteractions.feature.interaction.HoldingHandsInteraction;
-import net.quepierts.thatskyinteractions.feature.interaction.Interaction;
-import net.quepierts.thatskyinteractions.feature.interaction.UnlockInteraction;
+import net.quepierts.thatskyinteractions.feature.interaction.*;
 import net.quepierts.thatskyinteractions.feature.registry.builer.InteractionTypeBuilder;
 import net.quepierts.thatskyinteractions.feature.registry.entry.InteractionTypeEntry;
 
@@ -28,6 +25,12 @@ public class InteractionTypes {
             = InteractionTypes.<HoldingHandsInteraction>type("holding_hands")
             .codec(HoldingHandsInteraction.MAP_CODEC)
             .streamCodec(HoldingHandsInteraction.STREAM_CODEC)
+            .register();
+
+    public static final InteractionTypeEntry<CarryInteraction> CARRY
+            = InteractionTypes.<CarryInteraction>type("carry")
+            .codec(CarryInteraction.MAP_CODEC)
+            .streamCodec(CarryInteraction.STREAM_CODEC)
             .register();
 
     public static void register() { }

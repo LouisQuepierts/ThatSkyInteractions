@@ -1,0 +1,29 @@
+{
+  "type": "interaction.requester",
+  "sources": {
+    "invite": {
+      "source": "thatskyinteractions:piggyback.invite",
+      "fadeIn": 0.25,
+      "namespace": "requester"
+    },
+    "waiting": {
+      "source": "thatskyinteractions:piggyback.waiting",
+      "namespace": "requester"
+    },
+    "cancel": {
+      "source": "thatskyinteractions:piggyback.exit",
+      "fadeOut": 0.25,
+      "namespace": "requester"
+    },
+    "main": {
+      "source": "thatskyinteractions:piggyback.waiting",
+      "namespace": "requester"
+    },
+    "exit": {
+      "source": "thatskyinteractions:piggyback.exit",
+      "fadeOut": 0.25,
+      "namespace": "requester"
+    }
+  },
+  "override": "thatskyinteractions:modified"
+}

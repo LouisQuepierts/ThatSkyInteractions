@@ -29,14 +29,4 @@ public class LocalPlayerMixin {
 
     }
 
-    @Inject(
-            method = "aiStep",
-            at = @At("TAIL")
-    )
-    private void tsi$aiStep(CallbackInfo ci) {
-
-        ClientBondHandler.afterAiStep((LocalPlayer) (Object) this);
-
-    }
-
 }

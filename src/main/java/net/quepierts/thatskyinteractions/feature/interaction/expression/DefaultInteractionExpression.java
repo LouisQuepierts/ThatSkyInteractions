@@ -52,7 +52,7 @@ public class DefaultInteractionExpression implements InteractionExpression {
             final @NonNull  Player                  player,
             final @Nullable ExpressionState         state
     ) {
-        return false;
+        return true;
     }
 
     @Override

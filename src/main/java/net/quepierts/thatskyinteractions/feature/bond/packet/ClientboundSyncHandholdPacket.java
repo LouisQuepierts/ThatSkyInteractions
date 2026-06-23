@@ -33,7 +33,7 @@ public record ClientboundSyncHandholdPacket(
             final @NonNull Player player
     ) {
         final var attachment = PlayerBondSystem.getAttachment(player);
-        final var serialize = attachment.getRelation().serialize();
+        final var serialize = attachment.getHandhold().serialize();
         return new ClientboundSyncHandholdPacket(player.getId(), serialize);
     }
 
@@ -46,7 +46,7 @@ public record ClientboundSyncHandholdPacket(
         }
 
         final var attachment = PlayerBondSystem.getAttachment(target);
-        attachment.getRelation().deserialize(this.serialized, level);
+        attachment.getHandhold().deserialize(this.serialized, level);
 
     }
 

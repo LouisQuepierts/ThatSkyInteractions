@@ -35,7 +35,7 @@ public final class FollowerPositionResolver {
         if (this.counter > 60) {
             // force update
 
-            follower            .setPos(position);
+            follower            .teleportTo(position.x, position.y, position.z);
             this                .update(position);
             this.counter        = -1;
             return;
@@ -69,8 +69,6 @@ public final class FollowerPositionResolver {
         }
         this.update(follower.position());
 
-        clampRotation(leader, follower, 1.0f);
-
     }
 
     public void clampRotation(
@@ -81,7 +79,7 @@ public final class FollowerPositionResolver {
         final var leaderYRot    = leader.getYRot(partialTick);
         final var followerYRot  = follower.getYRot(partialTick);
 
-        follower.setYBodyRot(leaderYRot);
+        follower.setYBodyRot(leader.yBodyRot);
         float delta = Mth.wrapDegrees(followerYRot - leaderYRot);
         float targetDelta = Mth.clamp(delta, -45.0F, 45.0F);
         follower.yRotO += targetDelta - delta;

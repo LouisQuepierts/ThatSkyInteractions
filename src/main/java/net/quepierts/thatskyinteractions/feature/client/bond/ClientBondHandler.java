@@ -45,7 +45,7 @@ public class ClientBondHandler {
         }
 
         final var attachment    = ClientBondSystem.getLocalAttachment();
-        final var relation      = attachment.getRelation();
+        final var relation      = attachment.getHandhold();
 
         if (!relation.isHolding()) {
             return;
@@ -76,29 +76,10 @@ public class ClientBondHandler {
 
     }
 
-    public static void afterAiStep(Player follower) {
-
-        /*final var attachment    = ClientHandholdingSystem.getLocalAttachment();
-        final var relation      = attachment.getRelation();
-        if (!relation.isFollowing()) {
-            return;
-        }
-
-        final var leader        = relation.getLeader();
-
-        final var tYRot         = leader.yBodyRot;
-        final var dRot          = Mth.wrapDegrees(follower.yBodyRot - tYRot);
-
-        follower.setYRot(follower.getYRot() - dRot);
-        follower.setYHeadRot(follower.getYHeadRot() - dRot);
-        follower.yBodyRot -= dRot;*/
-
-    }
-
     @SuppressWarnings("DataFlowIssue")
     public static void onCameraAlign(final float partialTicks) {
         final var attachment    = ClientBondSystem.getLocalAttachment();
-        final var relation      = attachment.getRelation();
+        final var relation      = attachment.getHandhold();
 
         final var local         = Minecraft.getInstance().player;
 
@@ -114,34 +95,6 @@ public class ClientBondHandler {
                                         local,
                                         partialTicks
                                 );
-    }
-
-//    @SubscribeEvent
-    public static void onClientTick(final ClientTickEvent.Pre event) {
-
-        final var minecraft     = Minecraft.getInstance();
-        final var player        = minecraft.player;
-
-        if (player == null) {
-            return;
-        }
-
-        final var attachment    = ClientBondSystem.getLocalAttachment();
-        final var relation      = attachment.getRelation();
-        if (!relation.isFollowing()) {
-            return;
-        }
-
-        final var follower      = player;
-        final var leader        = relation.getLeader();
-        final var yRot          = leader.yBodyRot;
-
-        follower                .setYBodyRot(yRot);
-        final var delta         = Mth.wrapDegrees(follower.getYRot() - yRot);
-        final var tDelta        = Mth.clamp(delta, -42.0F, 42.0F);
-        follower.yRotO          += tDelta - delta;
-        follower                .setYRot(follower.getYRot() + tDelta - delta);
-        follower                .setYHeadRot(follower.getYRot());
     }
 
 }

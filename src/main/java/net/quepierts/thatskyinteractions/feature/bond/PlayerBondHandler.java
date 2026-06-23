@@ -27,20 +27,23 @@ public class PlayerBondHandler {
         }
 
         PlayerBondSystem.unholdAll(player);
+        PlayerBondSystem.unRide(player);
+        PlayerBondSystem.unCarry(player);
 
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(final PlayerTickEvent.Post event) {
+    public static void beforePlayerTick(final PlayerTickEvent.Pre event) {
+
         final var player        = event.getEntity();
 
         final var attachment    = PlayerBondAttachment.getAttachment(player);
-        final var relation      = attachment.getRelation();
+        final var handhold      = attachment.getHandhold();
+        final var resolver      = attachment.getResolver();
 
-        if (relation.isFollowing()) {
-            final var left          = relation.getLeft();
-            final var right         = relation.getRight();
-            final var resolver      = attachment.getResolver();
+        if (handhold.isFollowing()) {
+            final var left          = handhold.getLeft();
+            final var right         = handhold.getRight();
 
             if (left != null) {
                 resolver.follow(left, player, true);
@@ -48,6 +51,33 @@ public class PlayerBondHandler {
                 resolver.follow(right, player, false);
             }
         }
+
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(final PlayerTickEvent.Post event) {
+
+        final var player        = event.getEntity();
+
+        final var attachment    = PlayerBondAttachment.getAttachment(player);
+        final var handhold      = attachment.getHandhold();
+        final var carry         = attachment.getCarry();
+        final var resolver      = attachment.getResolver();
+
+        if (handhold.isFollowing()) {
+            final var leader    = handhold.getLeader();
+
+            if (leader != null) {
+                resolver.clampRotation(leader, player, 1.0f);
+            }
+        } else if (carry.isBeingCarried()) {
+            final var carrier   = carry.getCarrier();
+
+            if (carrier != null) {
+                resolver.clampRotation(carrier, player, 1.0f);
+            }
+        }
+
     }
 
     @SubscribeEvent
@@ -67,5 +97,6 @@ public class PlayerBondHandler {
         }
 
     }
+
 
 }

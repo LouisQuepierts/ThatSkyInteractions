@@ -51,6 +51,6 @@ public final class HoldingHandsBehaviour implements FriendshipBehaviour {
             final @NonNull  NodeState                   state
     ) {
         final var handhold = PlayerBondSystem.getAttachment(player);
-        return handhold.getRelation().isLeading() ? ICON_UNHOLD : ICON_HOLD;
+        return handhold.getHandhold().isLeading() ? ICON_UNHOLD : ICON_HOLD;
     }
 }

@@ -97,7 +97,8 @@
     "bear_hug_1": {
       "type": "thatskyinteractions:interaction",
       "price": 8,
-      "middle": "bear_hug_2",
+      "left": "bear_hug_2",
+      "middle": "piggyback_1",
       "metadata": {
         "interaction": "thatskyinteractions:bear_hug",
         "level": "1"
@@ -108,6 +109,23 @@
       "price": 12,
       "metadata": {
         "interaction": "thatskyinteractions:bear_hug",
+        "level": "2"
+      }
+    },
+    "piggyback_1": {
+      "type": "thatskyinteractions:interaction",
+      "price": 16,
+      "left": "piggyback_2",
+      "metadata": {
+        "interaction": "thatskyinteractions:piggyback",
+        "level": "1"
+      }
+    },
+    "piggyback_2": {
+      "type": "thatskyinteractions:interaction",
+      "price": 24,
+      "metadata": {
+        "interaction": "thatskyinteractions:piggyback",
         "level": "2"
       }
     }

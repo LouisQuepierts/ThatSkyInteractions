@@ -1,0 +1,15 @@
+{
+  "icon": "thatskyinteractions:interaction/piggyback",
+  "interactions": [
+    {
+      "type": "thatskyinteractions:carry",
+      "requester": "thatskyinteractions:piggyback_request",
+      "receiver": "thatskyinteractions:piggyback_1_rider"
+    },
+    {
+      "type": "thatskyinteractions:carry",
+      "requester": "thatskyinteractions:piggyback_request",
+      "receiver": "thatskyinteractions:piggyback_2_rider"
+    }
+  ]
+}

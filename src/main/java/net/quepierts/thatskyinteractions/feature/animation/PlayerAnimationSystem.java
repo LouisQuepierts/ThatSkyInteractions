@@ -24,7 +24,7 @@ import org.jspecify.annotations.NonNull;
 public class PlayerAnimationSystem {
 
     public static final PlayerMask LOWER_BODY
-            = PlayerMask.of(PlayerBone.ROOT, PlayerBone.LEFT_LEG, PlayerBone.RIGHT_LEG)
+            = PlayerMask.of(/*PlayerBone.ROOT, */PlayerBone.LEFT_LEG, PlayerBone.RIGHT_LEG)
                         .toImmutable();
 
     public static PlayerAnimationAttachment getAnimationData(final @NonNull Avatar entity) {

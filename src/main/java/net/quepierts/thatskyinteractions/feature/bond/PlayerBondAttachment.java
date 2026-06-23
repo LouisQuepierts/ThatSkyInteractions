@@ -16,7 +16,10 @@ public final class PlayerBondAttachment {
     }
 
     @Getter
-    private final PlayerHandholdRelation    relation    = new PlayerHandholdRelation();
+    private final PlayerHandholdRelation    handhold    = new PlayerHandholdRelation();
+
+    @Getter
+    private final PlayerCarryRelation       carry       = new PlayerCarryRelation();
 
     @Getter
     private final FollowerPositionResolver  resolver    = new FollowerPositionResolver();
@@ -24,7 +27,7 @@ public final class PlayerBondAttachment {
     public PlayerHoldingHand lead(
             final @NonNull Player   follower
     ) {
-        var hand = this.relation.lead(follower);
+        var hand = this.handhold.lead(follower);
         if (hand != PlayerHoldingHand.NONE) {
             this.resolver.reset();
         }
@@ -35,7 +38,7 @@ public final class PlayerBondAttachment {
             final @NonNull Player           leader,
             final @NonNull PlayerHoldingHand leaderHand
     ) {
-        if (this.relation.follow(leader, leaderHand)) {
+        if (this.handhold.follow(leader, leaderHand)) {
             this.resolver.reset();
             return true;
         }
@@ -45,7 +48,7 @@ public final class PlayerBondAttachment {
     public PlayerHoldingHand unhold(
             final @NonNull UUID             other
     ) {
-        var hand = this.relation.unhold(other);
+        var hand = this.handhold.unhold(other);
         if (hand != PlayerHoldingHand.NONE) {
             this.resolver.reset();
         }
@@ -53,7 +56,7 @@ public final class PlayerBondAttachment {
     }
 
     public void unhold() {
-        this.relation.unhold();
+        this.handhold.unhold();
     }
 
 }

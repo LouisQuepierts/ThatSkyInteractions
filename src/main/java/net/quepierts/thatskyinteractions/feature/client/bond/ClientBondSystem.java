@@ -26,15 +26,15 @@ public class ClientBondSystem {
     }
 
     public static boolean isFollowing() {
-        return getLocalAttachment().getRelation().isFollowing();
+        return getLocalAttachment().getHandhold().isFollowing();
     }
 
     public static boolean isLeading() {
-        return getLocalAttachment().getRelation().isLeading();
+        return getLocalAttachment().getHandhold().isLeading();
     }
 
     public static boolean isHolding() {
-        return getLocalAttachment().getRelation().isHolding();
+        return getLocalAttachment().getHandhold().isHolding();
     }
 
     @SuppressWarnings("DataFlowIssue")
