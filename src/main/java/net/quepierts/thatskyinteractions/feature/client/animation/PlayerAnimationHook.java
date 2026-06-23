@@ -31,15 +31,12 @@ public class PlayerAnimationHook {
             return;
         }
 
-//        final var current = controller.getCurrent();
         if (controller.isTicked() && !controller.isResolved()) {
             controller.resolve(adaptor.link(DefaultMinecraftSkeletonPipeline.MODIFIED_HUMANOID));
         }
 
         if (controller.isResolved()) {
             controller.apply(adaptor);
-//            adaptor.setAlpha(current.getAlpha());
-//            adaptor.accept(current.getCache());
         }
     }
 
