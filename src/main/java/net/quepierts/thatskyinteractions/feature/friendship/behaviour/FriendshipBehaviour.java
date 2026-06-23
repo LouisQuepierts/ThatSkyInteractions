@@ -1,10 +1,14 @@
 package net.quepierts.thatskyinteractions.feature.friendship.behaviour;
 
+import com.mojang.serialization.Codec;
 import lombok.experimental.UtilityClass;
 import net.minecraft.data.AtlasIds;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -12,9 +16,17 @@ import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.model.Currency;
+import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jspecify.annotations.NonNull;
 
 public interface FriendshipBehaviour {
+
+    Codec<FriendshipBehaviour> CODEC
+            = TsiRegistries.FRIENDSHIP_BEHAVIOUR
+            .byNameCodec();
+
+    StreamCodec<RegistryFriendlyByteBuf, FriendshipBehaviour> STREAM_CODEC
+            = ByteBufCodecs.registry(TsiRegistries.Keys.FRIENDSHIP_BEHAVIOUR);
 
     @NonNull Identifier DEFAULT_ICON    = ThatSkyInteractions.location("none");
 
