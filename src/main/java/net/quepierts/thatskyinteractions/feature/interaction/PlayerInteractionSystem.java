@@ -5,13 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
 import net.quepierts.thatskyinteractions.feature.control.packet.NavigatePacket;
+import net.quepierts.thatskyinteractions.feature.control.packet.SyncYawPacket;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionAttachment;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerExpressionSystem;
 import net.quepierts.thatskyinteractions.feature.interaction.event.PlayerInteractionEvent;
@@ -158,11 +161,11 @@ public class PlayerInteractionSystem {
         }
 
         if (interaction.positional()) {
-            final var position = PlayerUtils.getRelativePositionWorldSpace(requester, 1.0, 0.0);
+            final var position      = PlayerUtils.getRelativePositionWorldSpace(requester, 1.0, 0.0);
+            final var lookTarget    = EntityAnchorArgument.Anchor.EYES.apply(requester);
+
 
             if (!force && receiver.distanceToSqr(position) > 1e-3) {
-
-                final var lookTarget = EntityAnchorArgument.Anchor.EYES.apply(requester);
 
                 PacketDistributor.sendToPlayer(
                         receiver,
@@ -171,8 +174,20 @@ public class PlayerInteractionSystem {
                 return false;
             }
 
-            receiver.teleportTo(position.x, position.y, position.z);
-            receiver.lookAt(EntityAnchorArgument.Anchor.EYES, requester.getEyePosition());
+            receiver                .teleportTo(position.x, position.y, position.z);
+
+            final var from          = EntityAnchorArgument.Anchor.EYES.apply(receiver);
+            double xd               = lookTarget.x - from.x;
+            double zd               = lookTarget.z - from.z;
+            float yaw               = Mth.wrapDegrees((float)(Mth.atan2(zd, xd) * (double)180.0F / (double)(float)Math.PI) - 90.0F);
+
+            receiver                .setYRot(yaw);
+            receiver                .setYHeadRot(receiver.getYRot());
+
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                    receiver,
+                    SyncYawPacket.of(receiver)
+            );
         }
 
         if (!PlayerExpressionSystem.perform(receiver, interaction.getReceiverExpression())) {

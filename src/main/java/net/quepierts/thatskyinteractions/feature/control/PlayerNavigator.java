@@ -77,7 +77,8 @@ public final class PlayerNavigator {
             @NonNull Vec3 lookTarget
     ) {
 
-        if (this.player.distanceToSqr(walkTarget) > RANGE2) {
+        final var d2    = this.player.distanceToSqr(walkTarget);
+        if (d2 > RANGE2) {
             return;
         }
 
@@ -88,6 +89,10 @@ public final class PlayerNavigator {
         this.timeout    = TIMEOUT;
         this.walkTarget = walkTarget;
         this.lookTarget = lookTarget;
+
+        if (d2 < 4) {
+            FSM.event(this.state, STATE_NAVIGATING);
+        }
 
     }
 
