@@ -26,7 +26,7 @@ public class FriendshipCommand {
             return Suggestions.empty();
         }
         final var player    = source.getPlayerOrException();
-        final var other     = EntityArgument.getPlayer(context, "other");
+        final var other     = EntityArgument.getPlayer(context, "carrier");
 
         final var attachment = PlayerFriendshipAttachment.getAttachment(player);
         if (!attachment.has(other)) {
@@ -40,14 +40,14 @@ public class FriendshipCommand {
     static LiteralArgumentBuilder<CommandSourceStack> command() {
         return Commands.literal("friendship")
                 .then(Commands.literal("unlock")
-                        .then(Commands.argument("other", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
+                        .then(Commands.argument("carrier", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
                                 .then(Commands.argument("node", StringArgumentType.word()).suggests(NODES)
                                         .executes(FriendshipCommand::unlock))))
                 .then(Commands.literal("reset")
-                        .then(Commands.argument("other", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
+                        .then(Commands.argument("carrier", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
                                 .executes(FriendshipCommand::reset)))
                 .then(Commands.literal("complete")
-                        .then(Commands.argument("other", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
+                        .then(Commands.argument("carrier", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
                                 .executes(FriendshipCommand::complete)))
                 .then(Commands.literal("drop")
                         .executes(FriendshipCommand::drop));
@@ -58,7 +58,7 @@ public class FriendshipCommand {
         final var source        = context.getSource();
         final var player        = source.getPlayerOrException();
 
-        final var other         = EntityArgument.getPlayer(context, "other");
+        final var other         = EntityArgument.getPlayer(context, "carrier");
 
         if (player.is(other)) {
             source.sendFailure(Component.translatable("command.thatskyinteractions.friendship.self"));
@@ -92,7 +92,7 @@ public class FriendshipCommand {
         final var source        = context.getSource();
         final var player        = source.getPlayerOrException();
 
-        final var other         = EntityArgument.getPlayer(context, "other");
+        final var other         = EntityArgument.getPlayer(context, "carrier");
 
         if (player.is(other)) {
             source.sendFailure(Component.translatable("command.thatskyinteractions.friendship.self"));
@@ -112,7 +112,7 @@ public class FriendshipCommand {
         final var source        = context.getSource();
         final var player        = source.getPlayerOrException();
 
-        final var other         = EntityArgument.getPlayer(context, "other");
+        final var other         = EntityArgument.getPlayer(context, "carrier");
 
         if (player.is(other)) {
             source.sendFailure(Component.translatable("command.thatskyinteractions.friendship.self"));

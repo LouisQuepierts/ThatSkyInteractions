@@ -8,33 +8,40 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.bond.PlayerHandholdRelation;
 import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerCarryRelation;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerHandholdRelation;
 import org.jspecify.annotations.NonNull;
 
-public record ClientboundSyncHandholdPacket(
+public record ClientboundSyncBondPacket(
         int                                 id,
-        PlayerHandholdRelation.Serialized   serialized
+        PlayerCarryRelation.Serialized      carry,
+        PlayerHandholdRelation.Serialized   handhold
 ) implements IClientboundPacket {
 
-    public static final Type<ClientboundSyncHandholdPacket> TYPE
-            = IPacket.type(ThatSkyInteractions.location("handhold/sync"));
+    public static final Type<ClientboundSyncBondPacket> TYPE
+            = IPacket.type(ThatSkyInteractions.location("bond/sync"));
 
-    public static final StreamCodec<ByteBuf, ClientboundSyncHandholdPacket> STREAM_CODEC
+    public static final StreamCodec<ByteBuf, ClientboundSyncBondPacket> STREAM_CODEC
             = StreamCodec.composite(
-                    ByteBufCodecs.INT,
-                    ClientboundSyncHandholdPacket::id,
+                    ByteBufCodecs.VAR_INT,
+                    ClientboundSyncBondPacket::id,
+                    PlayerCarryRelation.Serialized.STREAM_CODEC,
+                    ClientboundSyncBondPacket::carry,
                     PlayerHandholdRelation.Serialized.STREAM_CODEC,
-                    ClientboundSyncHandholdPacket::serialized,
-                    ClientboundSyncHandholdPacket::new
+                    ClientboundSyncBondPacket::handhold,
+                    ClientboundSyncBondPacket::new
             );
 
-    public static ClientboundSyncHandholdPacket of(
+    public static ClientboundSyncBondPacket of(
             final @NonNull Player player
     ) {
         final var attachment = PlayerBondSystem.getAttachment(player);
-        final var serialize = attachment.getHandhold().serialize();
-        return new ClientboundSyncHandholdPacket(player.getId(), serialize);
+        return new ClientboundSyncBondPacket(
+                player.getId(),
+                attachment.getCarry().serialize(),
+                attachment.getHandhold().serialize()
+        );
     }
 
     @Override
@@ -46,7 +53,10 @@ public record ClientboundSyncHandholdPacket(
         }
 
         final var attachment = PlayerBondSystem.getAttachment(target);
-        attachment.getHandhold().deserialize(this.serialized, level);
+        attachment.getCarry().deserialize(this.carry, level);
+        attachment.getHandhold().deserialize(this.handhold, level);
+
+        target.refreshDimensions();
 
     }
 

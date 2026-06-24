@@ -2,15 +2,17 @@ package net.quepierts.thatskyinteractions.feature.bond;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.bond.packet.ClientboundSyncHandholdPacket;
+import net.quepierts.thatskyinteractions.feature.bond.packet.ClientboundSyncBondPacket;
+import net.quepierts.thatskyinteractions.feature.control.AvatarDimensions;
+import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 
 @UtilityClass
 @EventBusSubscriber(modid = ThatSkyInteractions.MODID)
@@ -99,9 +101,26 @@ public class PlayerBondHandler {
 
             PacketDistributor.sendToPlayer(
                     player,
-                    ClientboundSyncHandholdPacket.of(target)
+                    ClientboundSyncBondPacket.of(target)
             );
 
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void onEntitySize(final EntityEvent.Size event) {
+
+        final var self          = event.getEntity();
+        final var attachment    = self.getExistingDataOrNull(AttachmentTypes.PLAYER_BOUND);
+
+        if (attachment == null) {
+            return;
+        }
+
+        final var relation = attachment.getCarry();
+        if (relation.isBeingCarried()) {
+            event.setNewSize(AvatarDimensions.RIDING_DIMENSIONS);
         }
 
     }

@@ -240,7 +240,7 @@ public class PlayerInteractionSystem {
         final var type      = reqData.getOngoing().getType();
 
         // change order
-        // if other is not online, requester still can cancel the invite
+        // if carrier is not online, requester still can cancel the invite
         reqData.cancelSent();
 
         PacketDistributor.sendToPlayer(

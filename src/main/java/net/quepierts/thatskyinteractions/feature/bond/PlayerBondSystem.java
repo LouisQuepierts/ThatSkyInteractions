@@ -134,14 +134,9 @@ public class PlayerBondSystem {
 
             rider.startRiding(carrier, true, true);
 
-            PacketDistributor.sendToPlayer(
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                     carrier,
-                    ClientboundCarryPacket.carry(rider)
-            );
-
-            PacketDistributor.sendToPlayer(
-                    rider,
-                    ClientboundCarryPacket.ride(carrier)
+                    ClientboundCarryPacket.carry(carrier, rider)
             );
 
             return true;
@@ -169,20 +164,15 @@ public class PlayerBondSystem {
             return;
         }
 
-        PacketDistributor.sendToPlayer(
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 player,
-                ClientboundCarryPacket.stopCarry(carried)
+                ClientboundCarryPacket.stop(player, carried)
         );
 
         final var cRelation     = PlayerBondSystem.getAttachment(carried).getCarry();
         if (cRelation.getCarrier() != player) {
             return;
         }
-
-        PacketDistributor.sendToPlayer(
-                (ServerPlayer) carried,
-                ClientboundCarryPacket.stopRide(player)
-        );
 
         cRelation.unRide();
 
@@ -215,9 +205,9 @@ public class PlayerBondSystem {
             return;
         }
 
-        PacketDistributor.sendToPlayer(
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 player,
-                ClientboundCarryPacket.stopRide(carrier)
+                ClientboundCarryPacket.stop(carrier, player)
         );
 
         final var cRelation     = PlayerBondSystem.getAttachment(carrier).getCarry();
@@ -225,11 +215,6 @@ public class PlayerBondSystem {
             return;
         }
         cRelation.unCarry();
-
-        PacketDistributor.sendToPlayer(
-                (ServerPlayer) carrier,
-                ClientboundCarryPacket.stopCarry(player)
-        );
 
     }
 
@@ -241,8 +226,8 @@ public class PlayerBondSystem {
         final var attachment = PlayerBondSystem.getAttachment(a);
 
         return attachment.getHandhold().isHolding(b)
-                || a == b.getVehicle()
-                || b == a.getVehicle();
+                || attachment.getCarry().isCarrying()
+                || attachment.getCarry().isBeingCarried();
 
     }
 

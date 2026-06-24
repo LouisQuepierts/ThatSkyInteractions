@@ -9,14 +9,15 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
+import net.quepierts.thatskyinteractions.feature.bond.PlayerBondAttachment;
 import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
 
 public record ClientboundCarryPacket(
         Operation       operation,
-        UUID            other
+        UUID            carrier,
+        UUID            rider
 ) implements IClientboundPacket {
 
     public static final Type<ClientboundCarryPacket> TYPE
@@ -30,90 +31,69 @@ public record ClientboundCarryPacket(
                     ),
                     ClientboundCarryPacket::operation,
                     UUIDUtil.STREAM_CODEC,
-                    ClientboundCarryPacket::other,
+                    ClientboundCarryPacket::carrier,
+                    UUIDUtil.STREAM_CODEC,
+                    ClientboundCarryPacket::rider,
                     ClientboundCarryPacket::new
             );
 
     public static ClientboundCarryPacket carry(
-            final @NonNull Player other
+            final @NonNull Player carrier,
+            final @NonNull Player rider
     ) {
-        return new ClientboundCarryPacket(Operation.CARRY, other.getUUID());
+        return new ClientboundCarryPacket(Operation.CARRY, carrier.getUUID(), rider.getUUID());
     }
 
-    public static ClientboundCarryPacket ride(
-            final @NonNull Player other
+    public static ClientboundCarryPacket stop(
+            final @NonNull Player carrier,
+            final @NonNull Player rider
     ) {
-        return new ClientboundCarryPacket(Operation.RIDE, other.getUUID());
-    }
-
-    public static ClientboundCarryPacket stopCarry(
-            final @NonNull Player other
-    ) {
-        return new ClientboundCarryPacket(Operation.STOP_CARRY, other.getUUID());
-    }
-
-    public static ClientboundCarryPacket stopRide(
-            final @NonNull Player other
-    ) {
-        return new ClientboundCarryPacket(Operation.STOP_RIDE, other.getUUID());
+        return new ClientboundCarryPacket(Operation.STOP, carrier.getUUID(), rider.getUUID());
     }
 
 
     @Override
     public void handleOnClient(final @NonNull Player player) {
 
-        final var level     = player.level();
-        final var other     = level.getPlayerByUUID(this.other);
+        final var level         = player.level();
+        
+        final var carrier       = level.getPlayerByUUID(this.carrier());
+        final var rider         = level.getPlayerByUUID(this.rider());
+        
+
 
         switch (this.operation()) {
 
             case CARRY: {
-                if (other != null) {
 
-                    final var attachment    = PlayerBondSystem.getAttachment(player);
-                    final var relation      = attachment.getCarry();
-
-                    relation.carry(other);
-                    other.startRiding(player, true, false);
-
+                if (carrier == null || rider == null) {
+                    return;
                 }
-                break;
-            }
 
-            case RIDE: {
-                if (other != null) {
+                final var cRelation     = PlayerBondAttachment.getAttachment(carrier).getCarry();
+                final var rRelation     = PlayerBondAttachment.getAttachment(rider).getCarry();
 
-                    final var attachment    = PlayerBondSystem.getAttachment(player);
-                    final var relation      = attachment.getCarry();
+                cRelation.carry(rider);
+                rRelation.ride(carrier);
 
-                    relation.ride(other);
-                    player.startRiding(other, true, false);
-
-                }
-                break;
-            }
-
-            case STOP_CARRY: {
-
-                final var attachment    = PlayerBondSystem.getAttachment(player);
-                final var relation      = attachment.getCarry();
-
-                relation.unCarry();
-                if (other != null && other.getVehicle() == player) {
-                    other.stopRiding();
-                }
+                rider.startRiding(carrier, true, false);
+                rider.refreshDimensions();
 
                 break;
             }
 
-            case STOP_RIDE: {
+            case STOP: {
 
-                final var attachment    = PlayerBondSystem.getAttachment(player);
-                final var relation      = attachment.getCarry();
+                if (carrier != null) {
+                    final var cRelation     = PlayerBondAttachment.getAttachment(carrier).getCarry();
+                    cRelation.unCarry();
+                }
 
-                relation.unRide();
-                if (player.getVehicle() == other) {
-                    player.stopRiding();
+                if (rider != null) {
+                    final var rRelation     = PlayerBondAttachment.getAttachment(rider).getCarry();
+                    rRelation.unRide();
+                    rider.stopRiding();
+                    rider.refreshDimensions();
                 }
 
                 break;
@@ -130,9 +110,7 @@ public record ClientboundCarryPacket(
 
     public enum Operation {
         CARRY,
-        RIDE,
-        STOP_CARRY,
-        STOP_RIDE;
+        STOP;
 
         private static final Operation[] VALUES = values();
 

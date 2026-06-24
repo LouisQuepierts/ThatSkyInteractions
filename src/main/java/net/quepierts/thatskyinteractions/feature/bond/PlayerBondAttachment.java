@@ -12,7 +12,7 @@ public final class PlayerBondAttachment {
     public static PlayerBondAttachment getAttachment(
             final @NonNull Player player
     ) {
-        return player.getData(AttachmentTypes.PLAYER_HANDHOLDING);
+        return player.getData(AttachmentTypes.PLAYER_BOUND);
     }
 
     @Getter

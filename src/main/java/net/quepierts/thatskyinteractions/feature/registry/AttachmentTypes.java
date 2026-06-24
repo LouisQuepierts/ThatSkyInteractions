@@ -64,9 +64,9 @@ public class AttachmentTypes {
             )
             .register();
 
-    public static final AttachmentEntry<PlayerBondAttachment> PLAYER_HANDHOLDING
+    public static final AttachmentEntry<PlayerBondAttachment> PLAYER_BOUND
             = ThatSkyInteractions.REGISTRUM.attachment(
-                    "player/bone",
+                    "player/bond",
                     PlayerBondAttachment::new
             )
             .register();

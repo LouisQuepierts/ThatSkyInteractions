@@ -16,14 +16,14 @@ public class HandholdingCommand {
     static LiteralArgumentBuilder<CommandSourceStack> command() {
         return Commands.literal("handholding")
                 .then(Commands.literal("lead")
-                        .then(Commands.argument("other", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
+                        .then(Commands.argument("carrier", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
                                 .executes(HandholdingCommand::lead)))
                 .then(Commands.literal("follow")
-                        .then(Commands.argument("other", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
+                        .then(Commands.argument("carrier", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
                                 .executes(HandholdingCommand::follow)))
                 .then(Commands.literal("unhold")
                         .executes(HandholdingCommand::unholdAll)
-                        .then(Commands.argument("other", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
+                        .then(Commands.argument("carrier", EntityArgument.player()).suggests(TsiSuggestions.OTHERS)
                                 .executes(HandholdingCommand::unhold)));
     }
 
@@ -31,7 +31,7 @@ public class HandholdingCommand {
 
         final var source        = context.getSource();
         final var player        = source.getPlayerOrException();
-        final var other         = EntityArgument.getPlayer(context, "other");
+        final var other         = EntityArgument.getPlayer(context, "carrier");
 
         if (other.is(player)) {
             source.sendFailure(Component.translatable("command.thatskyinteractions.handholding.lead.self"));
@@ -50,7 +50,7 @@ public class HandholdingCommand {
 
         final var source        = context.getSource();
         final var player        = source.getPlayerOrException();
-        final var other         = EntityArgument.getPlayer(context, "other");
+        final var other         = EntityArgument.getPlayer(context, "carrier");
 
         if (other.is(player)) {
             source.sendFailure(Component.translatable("command.thatskyinteractions.handholding.follow.self"));
@@ -70,7 +70,7 @@ public class HandholdingCommand {
 
         final var source        = context.getSource();
         final var player        = source.getPlayerOrException();
-        final var other         = EntityArgument.getPlayer(context, "other");
+        final var other         = EntityArgument.getPlayer(context, "carrier");
 
         if (other.is(player)) {
             source.sendFailure(Component.translatable("command.thatskyinteractions.handholding.unhold.self"));
