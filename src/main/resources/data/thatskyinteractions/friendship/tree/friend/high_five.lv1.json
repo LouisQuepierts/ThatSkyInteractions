@@ -1,0 +1,9 @@
+{
+  "parent": "thatskyinteractions:friend/holding_hands",
+  "behaviour": "thatskyinteractions:interaction",
+  "metadata": {
+    "interaction": "thatskyinteractions:high_five",
+    "level": "1"
+  },
+  "price": 1
+}

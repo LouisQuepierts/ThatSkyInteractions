@@ -25,7 +25,7 @@ import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.Vis
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonRenderOps;
 import net.quepierts.thatskyinteractions.feature.client.gui.component.visual.button.ButtonVisualNodes;
 import net.quepierts.thatskyinteractions.feature.client.gui.controller.FriendshipScreenController;
-import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.feature.friendship.PlayerFriendshipSystem;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviour;
 import net.quepierts.thatskyinteractions.feature.friendship.behaviour.FriendshipBehaviourFactory;

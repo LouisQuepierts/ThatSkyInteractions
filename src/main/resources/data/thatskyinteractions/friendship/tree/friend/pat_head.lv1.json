@@ -1,0 +1,9 @@
+{
+  "parent": "thatskyinteractions:friend/double_five.lv1",
+  "behaviour": "thatskyinteractions:interaction",
+  "metadata": {
+    "interaction": "thatskyinteractions:pat_head",
+    "level": "1"
+  },
+  "price": 6
+}

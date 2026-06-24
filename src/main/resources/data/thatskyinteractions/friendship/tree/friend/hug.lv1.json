@@ -1,0 +1,11 @@
+{
+  "parent": "thatskyinteractions:friend/high_five.lv1",
+  "branch": "left",
+
+  "behaviour": "thatskyinteractions:interaction",
+  "metadata": {
+    "interaction": "thatskyinteractions:hug",
+    "level": "1"
+  },
+  "price": 2
+}

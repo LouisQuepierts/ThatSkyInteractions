@@ -1,0 +1,8 @@
+{
+  "parent": "thatskyinteractions:friend/high_five.lv1",
+  "behaviour": "thatskyinteractions:lock",
+  "price": {
+    "amount": 1,
+    "currency": "ascended_candle"
+  }
+}

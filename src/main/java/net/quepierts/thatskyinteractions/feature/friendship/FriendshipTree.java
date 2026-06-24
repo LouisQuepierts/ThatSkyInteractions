@@ -5,8 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.Identifier;
+import net.quepierts.thatskyinteractions.core.friendship.model.Branch;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeDefinition;
-import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
 import net.quepierts.veynir.core.util.ArrayIterator;
 import net.quepierts.veynir.core.util.LocationLookup;
 import org.jspecify.annotations.NonNull;
@@ -14,10 +14,10 @@ import org.jspecify.annotations.NonNull;
 import java.util.Arrays;
 import java.util.Iterator;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class FriendshipTree implements Iterable<FriendshipTreeNode> {
 
-    public static FriendshipTree of(final @NonNull FriendshipTreeDefinition definition) {
+    /*public static FriendshipTree of(final @NonNull FriendshipTreeDefinition definition) {
 
         final var nodes             = definition.nodes();
         final var size              = nodes.size();
@@ -26,11 +26,11 @@ public final class FriendshipTree implements Iterable<FriendshipTreeNode> {
         final var parents           = new int[size];
         final var levels            = new int[size];
         final var ordinal           = new FriendshipTreeNode[size];
-        final var branches          = new FriendshipTreeNode.Branch[size];
+        final var branches          = new Branch[size];
 
         Arrays.fill(parents, -1);
         Arrays.fill(levels, 0);
-        Arrays.fill(branches, FriendshipTreeNode.Branch.MIDDLE);
+        Arrays.fill(branches, Branch.MIDDLE);
 
         final var queue             = new ObjectArrayFIFOQueue<String>();
         queue                       .enqueue(definition.root());
@@ -49,7 +49,7 @@ public final class FriendshipTree implements Iterable<FriendshipTreeNode> {
             final var hasLeft       = !node.left().isEmpty();
             final var hasRight      = !node.right().isEmpty();
 
-            if (branches[read] != FriendshipTreeNode.Branch.MIDDLE && (hasLeft || hasRight)) {
+            if (branches[read] != Branch.MIDDLE && (hasLeft || hasRight)) {
                 throw new IllegalArgumentException("Node " + name + " is not on middle branch.");
             }
 
@@ -61,7 +61,7 @@ public final class FriendshipTree implements Iterable<FriendshipTreeNode> {
                 left                = ++ write;
                 parents[left]       = read;
                 levels[left]        = levels[read] + 1;
-                branches[left]      = FriendshipTreeNode.Branch.LEFT;
+                branches[left]      = Branch.LEFT;
                 queue.enqueue(node.left());
             }
 
@@ -76,7 +76,7 @@ public final class FriendshipTree implements Iterable<FriendshipTreeNode> {
                 right               = ++ write;
                 parents[right]      = read;
                 levels[right]       = levels[read] + 1;
-                branches[right]     = FriendshipTreeNode.Branch.RIGHT;
+                branches[right]     = Branch.RIGHT;
                 queue.enqueue(node.right());
             }
 
@@ -101,7 +101,7 @@ public final class FriendshipTree implements Iterable<FriendshipTreeNode> {
                 ordinal,
                 levels[size - 1] + 1
         );
-    }
+    }*/
 
     @Getter
     private final LocationLookup        lookup;

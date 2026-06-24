@@ -33,6 +33,7 @@ public class TsiRegistries {
 
     public static final Registry<FriendshipBehaviour> FRIENDSHIP_BEHAVIOUR
             = new RegistryBuilder<>(Keys.FRIENDSHIP_BEHAVIOUR)
+            .sync(true)
             .create();
 
     public static void register() { }

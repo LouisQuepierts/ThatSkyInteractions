@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import net.quepierts.thatskyinteractions.core.model.Currency;
 import net.quepierts.thatskyinteractions.feature.gui.packet.PlayerInteractionUiPacket;

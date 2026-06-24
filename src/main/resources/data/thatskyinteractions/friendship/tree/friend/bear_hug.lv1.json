@@ -1,0 +1,9 @@
+{
+  "parent": "thatskyinteractions:friend/piggyback.lv1",
+  "behaviour": "thatskyinteractions:interaction",
+  "metadata": {
+    "interaction": "thatskyinteractions:bear_hug",
+    "level": "1"
+  },
+  "price": 12
+}

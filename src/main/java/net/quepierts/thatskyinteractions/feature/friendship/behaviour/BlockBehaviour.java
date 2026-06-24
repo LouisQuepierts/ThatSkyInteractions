@@ -6,7 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
-import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeNode;
+import net.quepierts.thatskyinteractions.feature.friendship.FriendshipTreeNode;
 import net.quepierts.thatskyinteractions.core.friendship.model.NodeState;
 import org.jspecify.annotations.NonNull;
 

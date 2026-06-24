@@ -1,0 +1,9 @@
+{
+  "parent": "thatskyinteractions:friend/lock.no2",
+  "behaviour": "thatskyinteractions:interaction",
+  "metadata": {
+    "interaction": "thatskyinteractions:piggyback",
+    "level": "1"
+  },
+  "price": 6
+}

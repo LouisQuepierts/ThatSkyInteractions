@@ -1,0 +1,10 @@
+{
+  "parent": "thatskyinteractions:friend/bear_hug.lv1",
+  "branch": "left",
+  "behaviour": "thatskyinteractions:interaction",
+  "metadata": {
+    "interaction": "thatskyinteractions:bear_hug",
+    "level": "2"
+  },
+  "price": 14
+}

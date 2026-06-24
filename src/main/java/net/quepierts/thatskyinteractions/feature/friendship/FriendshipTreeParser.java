@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.quepierts.thatskyinteractions.core.friendship.model.Branch;
 import net.quepierts.thatskyinteractions.core.friendship.model.Cost;
 import net.quepierts.thatskyinteractions.core.friendship.model.FriendshipTreeDefinition;
 import net.quepierts.thatskyinteractions.core.friendship.model.TreeNodeDefinition;
@@ -31,24 +32,6 @@ public class FriendshipTreeParser {
                     )
             );
 
-    public static final Codec<TreeNodeDefinition> NODE_CODEC
-            = RecordCodecBuilder.create(instance -> instance.group(
-                    Codec.STRING.optionalFieldOf("left", "").forGetter(TreeNodeDefinition::left),
-                    Codec.STRING.optionalFieldOf("middle", "").forGetter(TreeNodeDefinition::middle),
-                    Codec.STRING.optionalFieldOf("right", "").forGetter(TreeNodeDefinition::right),
-                    Codec.STRING.fieldOf("type").forGetter(TreeNodeDefinition::type),
-                    COST_CODEC.optionalFieldOf("price", Cost.FREE).forGetter(TreeNodeDefinition::cost),
-                    Codec.unboundedMap(
-                            Codec.STRING, Codec.STRING
-                    ).optionalFieldOf("metadata", Map.of()).forGetter(TreeNodeDefinition::metadata)
-            ).apply(instance, TreeNodeDefinition::new));
-
-    public static final Codec<FriendshipTreeDefinition> TREE_CODEC
-            = RecordCodecBuilder.create(instance -> instance.group(
-                    Codec.unboundedMap(Codec.STRING, NODE_CODEC).fieldOf("nodes").forGetter(FriendshipTreeDefinition::nodes),
-                    Codec.STRING.fieldOf("root").forGetter(FriendshipTreeDefinition::root)
-            ).apply(instance, FriendshipTreeDefinition::new));
-
     public static final StreamCodec<ByteBuf, Cost> COST_STREAM_CODEC
             = StreamCodec.composite(
                     ByteBufCodecs.VAR_INT.map(
@@ -61,38 +44,13 @@ public class FriendshipTreeParser {
                     Cost::new
             );
 
-    public static final StreamCodec<ByteBuf, TreeNodeDefinition> NODE_STREAM_CODEC
-            = StreamCodec.composite(
-                    ByteBufCodecs.STRING_UTF8,
-                    TreeNodeDefinition::left,
-                    ByteBufCodecs.STRING_UTF8,
-                    TreeNodeDefinition::middle,
-                    ByteBufCodecs.STRING_UTF8,
-                    TreeNodeDefinition::right,
-                    ByteBufCodecs.STRING_UTF8,
-                    TreeNodeDefinition::type,
-                    COST_STREAM_CODEC,
-                    TreeNodeDefinition::cost,
-                    ByteBufCodecs.map(
-                            HashMap::new,
-                            ByteBufCodecs.STRING_UTF8,
-                            ByteBufCodecs.STRING_UTF8
-                    ),
-                    TreeNodeDefinition::metadata,
-                    TreeNodeDefinition::new
+    public static final Codec<Branch> BRANCH_CODEC
+            = Codec.STRING.xmap(
+                    Branch::fromName,
+                    Branch::toName
             );
 
-    public static final StreamCodec<ByteBuf, FriendshipTreeDefinition> TREE_STREAM_CODEC
-            = StreamCodec.composite(
-                    ByteBufCodecs.map(
-                            HashMap::new,
-                            ByteBufCodecs.STRING_UTF8,
-                            NODE_STREAM_CODEC
-                    ),
-                    FriendshipTreeDefinition::nodes,
-                    ByteBufCodecs.STRING_UTF8,
-                    FriendshipTreeDefinition::root,
-                    FriendshipTreeDefinition::new
-            );
+    public static final StreamCodec<ByteBuf, Branch> BRANCH_STREAM_CODEC
+            = ByteBufCodecs.BYTE.map(Branch::fromByte, Branch::toByte);
 
 }

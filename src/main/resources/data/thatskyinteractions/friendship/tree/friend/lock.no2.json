@@ -1,0 +1,8 @@
+{
+  "parent": "thatskyinteractions:friend/pat_head.lv1",
+  "behaviour": "thatskyinteractions:lock",
+  "price": {
+    "amount": 5,
+    "currency": "ascended_candle"
+  }
+}

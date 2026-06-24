@@ -1,0 +1,11 @@
+{
+  "parent": "thatskyinteractions:friend/pat_head.lv1",
+  "branch": "left",
+
+  "behaviour": "thatskyinteractions:interaction",
+  "metadata": {
+    "interaction": "thatskyinteractions:pat_head",
+    "level": "2"
+  },
+  "price": 8
+}
