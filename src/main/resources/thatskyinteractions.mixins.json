@@ -21,6 +21,7 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "vanilla.EntityMixin"
+    "vanilla.EntityMixin",
+    "vanilla.LivingEntityMixin"
   ]
 }

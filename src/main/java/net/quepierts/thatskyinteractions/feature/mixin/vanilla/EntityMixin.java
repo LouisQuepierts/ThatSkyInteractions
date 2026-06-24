@@ -1,15 +1,14 @@
 package net.quepierts.thatskyinteractions.feature.mixin.vanilla;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.NeoForge;
-import net.quepierts.thatskyinteractions.feature.bond.PlayerBondSystem;
 import net.quepierts.thatskyinteractions.feature.control.event.EntityTurnEvent;
 import net.quepierts.veynir.core.misc.Generic;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,6 +26,9 @@ public abstract class EntityMixin implements IAttachmentHolder {
 
     @Shadow
     public abstract void refreshDimensions();
+
+    @Shadow
+    private @Nullable Entity vehicle;
 
     @Inject(
             method = "turn",
@@ -120,20 +122,5 @@ public abstract class EntityMixin implements IAttachmentHolder {
         ci.cancel();
 
     }*/
-
-    @Inject(
-            method = "stopRiding",
-            at = @At("TAIL")
-    )
-    private void tsi$onStopRiding(
-            final CallbackInfo ci
-    ) {
-
-        if ((Object) this instanceof ServerPlayer self) {
-            PlayerBondSystem.unRide(self);
-            self.refreshDimensions();
-        }
-
-    }
 
 }
