@@ -45,6 +45,6 @@ public class ExpressionButton extends Button {
     }
 
     public int getSelected() {
-        return (this.levels == 0 ? 0 : (this.counter / 80) % this.levels) + 1;
+        return (this.levels == 0 ? 0 : (this.counter / 40) % this.levels) + 1;
     }
 }

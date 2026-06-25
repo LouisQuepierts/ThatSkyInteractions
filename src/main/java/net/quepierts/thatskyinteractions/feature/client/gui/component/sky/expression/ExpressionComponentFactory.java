@@ -1,6 +1,7 @@
 package net.quepierts.thatskyinteractions.feature.client.gui.component.sky.expression;
 
 import dev.anvilcraft.lib.v2.rendering.sdf.SdfGraphics;
+import dev.anvilcraft.lib.v2.rendering.sdf.SdfParameters;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -32,6 +33,14 @@ import org.jspecify.annotations.NonNull;
 
 @UtilityClass
 public class ExpressionComponentFactory {
+
+    public static final SdfParameters PARAM_CIRCLE
+            = SdfGraphics.getInstance()
+            .reset()
+            .center(true)
+            .circle(0, 0, 1)
+            .fill()
+            .share();
 
     public static Pane createExpressions(
             final @NonNull TweenScope tween,
@@ -194,27 +203,26 @@ public class ExpressionComponentFactory {
                 final var press     = control.getAttribute(Button.ATTRIBUTE_PRESS_TRANSITION);
                 final var pressed   = press.getTarget();
 
-                final var top       = -12 - press.getValue() * 4f;
+                final var top       = -12 + press.getValue();
                 final var width     = levels * 4 - 2;
-                final var left      = (width) / -2f;
+                final var left      = (width) / -2f + 1;
 
                 if (pressed) {
-                    final var scale = 1.0f + press.getValue() * 0.25f;
+                    final var scale = 1.0f + press.getValue() * 0.75f;
                     graphics.pose().scale(scale, scale);
                 }
 
                 graphics.pose().translate(left, top);
 
+                final var sdf       = SdfGraphics.getInstance();
+                final var colorDef  = colors.argb(0xff, 0x80, 0x80, 0x80);
+
                 for (var i = 0; i < levels; i++) {
-                    graphics.original().fill(
-                            i * 4,
-                            0,
-                            i * 4 + 2,
-                            2,
-                            pressed && i == selected
-                                    ? colors.argb(0xff, 0xff, 0xfe, 0xe0)
-                                    : colors.argb(0xff, 0x80, 0x80, 0x80)
-                    );
+                    sdf     .color(pressed && i == selected
+                                ? colors.argb(0xff, 0xff, 0xfe, 0xe0)
+                                : colorDef
+                            )
+                            .draw(graphics.original(), PARAM_CIRCLE, i * 4, 0);
                 }
             }
         } : VisualNode.EMPTY;
