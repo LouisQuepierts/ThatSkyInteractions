@@ -142,20 +142,21 @@ public class ClientPlayerExpressionSystem {
                     .getCameraType()
                     .isFirstPerson();
 
-            if (!firstPerson) {
+            final var partialTick       = event.getPartialTick();
+            final var target            = player.getPreciseBodyRotation(partialTick);
+            final var current           = player.getYRot(partialTick);
 
-                final var partialTick   = event.getPartialTick();
-                final var target        = player.getPreciseBodyRotation(partialTick);
+            if (firstPerson) {
+                player.setYRot(target);
+                player.setYHeadRot(player.getYRot());
+            } else {
+                final var delta         = Mth.wrapDegrees(current - target);
+                final var actual        = (Mth.clamp(delta, -45.0F, 45.0F) - delta);
 
-                final var current       = player.getYRot(partialTick);
-
-                float delta             = Mth.wrapDegrees(current - target);
-                float targetDelta       = Mth.clamp(delta, -45.0F, 45.0F);
-                player.yRotO            += targetDelta - delta;
-                player                  .setYRot(player.getYRot() + targetDelta - delta);
-                player                  .setYHeadRot(player.getYRot());
+                player.yRotO += actual;
+                player.setYRot(player.getYRot() + actual);
+                player.setYHeadRot(player.getYRot());
             }
-
         }
 
         @SubscribeEvent

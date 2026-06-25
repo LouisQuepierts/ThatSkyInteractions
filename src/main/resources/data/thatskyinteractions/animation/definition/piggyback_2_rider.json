@@ -12,7 +12,7 @@
     },
     "exit": {
       "source": "thatskyinteractions:piggyback.lv2.exit",
-      "fadeOut": 0.125,
+      "fadeOut": 0.25,
       "namespace": "receiver"
     }
   },
