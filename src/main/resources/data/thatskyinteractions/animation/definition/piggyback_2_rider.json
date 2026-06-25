@@ -9,6 +9,11 @@
     "main": {
       "source": "thatskyinteractions:piggyback.lv2.riding",
       "namespace": "receiver"
+    },
+    "exit": {
+      "source": "thatskyinteractions:piggyback.lv2.exit",
+      "fadeOut": 0.125,
+      "namespace": "receiver"
     }
   },
   "override": "thatskyinteractions:modified"
