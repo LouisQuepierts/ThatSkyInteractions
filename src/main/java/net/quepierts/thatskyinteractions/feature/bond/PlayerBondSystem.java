@@ -195,7 +195,7 @@ public class PlayerBondSystem {
 
         final var carrier       = relation.getCarrier();
         relation.unRide();
-        PlayerAnimationSystem.abort(player);
+        PlayerAnimationSystem.exit(player);
 
         if (player.getVehicle() == carrier) {
             player.stopRiding();
