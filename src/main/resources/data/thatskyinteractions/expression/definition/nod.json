@@ -1,0 +1,10 @@
+{
+  "icon": "thatskyinteractions:expression/nod",
+  "expressions": [
+    {
+      "type": "thatskyinteractions:animation",
+      "animation": "thatskyinteractions:nod_1"
+    }
+  ],
+  "priority": 6
+}

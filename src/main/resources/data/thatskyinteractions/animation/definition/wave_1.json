@@ -1,7 +1,7 @@
 {
   "sources": {
     "main": {
-      "source": "thatskyinteractions:wave.main",
+      "source": "thatskyinteractions:wave.lv1",
       "fadeIn": 0.25,
       "fadeOut": 0.25
     }
