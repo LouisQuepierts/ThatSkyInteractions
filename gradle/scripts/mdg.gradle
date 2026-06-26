@@ -15,6 +15,7 @@ neoForge {
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            gameDirectory = this.mkdir(this.file('runs/client'))
         }
 
         renderDocClient {
@@ -25,18 +26,21 @@ neoForge {
             jvmArgument("-javaagent:" + rdcLoaderPath)
             jvmArgument("--enable-preview")
             jvmArgument("--enable-native-access=ALL-UNNAMED")
+            gameDirectory = this.mkdir(this.file('runs/client'))
         }
 
         client_b {
             client()
             programArguments.addAll "--username", "Dev1"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            gameDirectory = this.mkdir(this.file('runs/client'))
         }
 
         server {
             server()
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            gameDirectory = this.mkdir(this.file('runs/server'))
         }
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
@@ -49,6 +53,7 @@ neoForge {
 
         data {
             clientData()
+            gameDirectory = this.mkdir(this.file('runs/data'))
 
             // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
             // gameDirectory = project.file('run-data')
