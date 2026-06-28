@@ -3,7 +3,8 @@ package net.quepierts.thatskyinteractions.feature.animation;
 import lombok.experimental.UtilityClass;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -15,6 +16,7 @@ import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
 import net.quepierts.thatskyinteractions.feature.animation.packet.ClientboundAnimationControlPacket;
 import net.quepierts.thatskyinteractions.feature.animation.packet.AnimationSignalPacket;
 import net.quepierts.thatskyinteractions.feature.animation.packet.ClientboundSyncAnimationControllerPacket;
+import net.quepierts.thatskyinteractions.feature.registry.TsiEntityTags;
 import net.quepierts.thatskyinteractions.feature.registry.TsiRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
@@ -27,14 +29,22 @@ public class PlayerAnimationSystem {
             = PlayerMask.of(/*PlayerBone.ROOT, */PlayerBone.LEFT_LEG, PlayerBone.RIGHT_LEG)
                         .toImmutable();
 
-    public static PlayerAnimationAttachment getAnimationData(final @NonNull Avatar entity) {
+    public static PlayerAnimationAttachment getAnimationData(final @NonNull LivingEntity entity) {
         return PlayerAnimationAttachment.getAttachment(entity);
     }
 
+    public static @Nullable PlayerAnimationAttachment getExistingAttachment(final @NonNull Entity entity) {
+        return PlayerAnimationAttachment.getExistingAttachment(entity);
+    }
+
     public static void play(
-            final @NonNull  Avatar          avatar,
+            final @NonNull  LivingEntity    avatar,
             final @NonNull  Identifier      animation
     ) {
+
+        if (PlayerAnimationSystem.isNotAnimatable(avatar)) {
+            return;
+        }
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 avatar,
@@ -46,13 +56,17 @@ public class PlayerAnimationSystem {
     }
 
     public static void play(
-            final @NonNull  Avatar          avatar,
+            final @NonNull  LivingEntity    avatar,
             final @NonNull  Identifier      animation,
             final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
             play(avatar, animation);
+            return;
+        }
+
+        if (PlayerAnimationSystem.isNotAnimatable(avatar)) {
             return;
         }
 
@@ -75,26 +89,37 @@ public class PlayerAnimationSystem {
     }
 
     public static void abort(
-            final @NonNull  Avatar          avatar
+            final @NonNull LivingEntity     avatar
     ) {
+
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
+            return;
+        }
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 avatar,
                 ClientboundAnimationControlPacket.abort(avatar)
         );
 
-        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
         attachment.getController().abort();
 
     }
 
     public static void abort(
-            final @NonNull  Avatar          avatar,
+            final @NonNull  LivingEntity    avatar,
             final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
             abort(avatar);
+            return;
+        }
+
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
             return;
         }
 
@@ -111,32 +136,42 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.abort(avatar, layer)
         );
 
-        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
         attachment.getController().abort(layerType);
 
     }
 
     public static void exit(
-            final @NonNull Avatar           avatar
+            final @NonNull LivingEntity     avatar
     ) {
+
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
+            return;
+        }
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 avatar,
                 ClientboundAnimationControlPacket.exit(avatar)
         );
 
-        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
         attachment.getController().exit();
 
     }
 
     public static void exit(
-            final @NonNull  Avatar          avatar,
+            final @NonNull  LivingEntity    avatar,
             final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
             exit(avatar);
+            return;
+        }
+
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
             return;
         }
 
@@ -153,34 +188,44 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.exit(avatar, layer)
         );
 
-        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
         attachment.getController().exit(layerType);
 
     }
 
     public static void pause(
-            final @NonNull  Avatar          avatar
+            final @NonNull LivingEntity     avatar
     ) {
+
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
+            return;
+        }
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 avatar,
                 ClientboundAnimationControlPacket.pause(avatar)
         );
 
-        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
         attachment.getController().pause();
 
     }
 
     public static void pause(
-            final @NonNull  Avatar          avatar,
+            final @NonNull  LivingEntity    avatar,
             final @Nullable Identifier      layer
     ) {
-
         if (layer == null) {
             pause(avatar);
             return;
         }
+
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
+            return;
+        }
+
 
         final var layerType     = TsiRegistries.ANIMATION_LAYER_TYPE
                                 .getOptional(layer)
@@ -195,29 +240,41 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.pause(avatar, layer)
         );
 
-        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
         attachment.getController().pause(layerType);
 
     }
 
     public static void resume(
-            @NonNull Avatar         avatar
+            final @NonNull LivingEntity     avatar
     ) {
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
+            return;
+        }
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 avatar,
                 ClientboundAnimationControlPacket.resume(avatar)
         );
 
+        attachment.getController().resume();
+
     }
 
     public static void resume(
-            final @NonNull  Avatar          avatar,
+            final @NonNull  LivingEntity    avatar,
             final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
             resume(avatar);
+            return;
+        }
+
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
             return;
         }
 
@@ -234,19 +291,24 @@ public class PlayerAnimationSystem {
                 ClientboundAnimationControlPacket.resume(avatar, layer)
         );
 
-        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
         attachment.getController().resume(layerType);
 
     }
 
     public static void event(
-            final @NonNull  Avatar          avatar,
+            final @NonNull  LivingEntity    avatar,
             final @NonNull  String          event,
             final @Nullable Identifier      layer
     ) {
 
         if (layer == null) {
             event(avatar, event);
+            return;
+        }
+
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
             return;
         }
 
@@ -259,15 +321,19 @@ public class PlayerAnimationSystem {
                 )
         );
 
-        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
         attachment.getController().event(event);
 
     }
 
     public static void event(
-            @NonNull Avatar         avatar,
+            @NonNull LivingEntity   avatar,
             @NonNull String         event
     ) {
+        final var attachment = PlayerAnimationSystem.getExistingAttachment(avatar);
+
+        if (attachment == null) {
+            return;
+        }
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(
                 avatar,
@@ -277,7 +343,6 @@ public class PlayerAnimationSystem {
                 )
         );
 
-        final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
         attachment.getController().event(event);
 
     }
@@ -304,15 +369,14 @@ public class PlayerAnimationSystem {
     @SubscribeEvent
     public static void onPlayerTick(final EntityTickEvent.Pre event) {
         final var entity        = event.getEntity();
+        final var attachment    = PlayerAnimationSystem.getExistingAttachment(entity);
 
-        if (!(entity instanceof Avatar avatar)) {
+        if (attachment == null) {
             return;
         }
 
-        final var data          = PlayerAnimationSystem.getAnimationData(avatar);
-
-        final var controller    = data.getController();
-        final var sitting       = avatar.getVehicle() != null;
+        final var controller    = attachment.getController();
+        final var sitting       = entity.getVehicle() != null;
         final var executionMask = controller.getExecutionMask();
 
         if (sitting) {
@@ -331,13 +395,26 @@ public class PlayerAnimationSystem {
             return;
         }
 
-        if (event.getTarget() instanceof Avatar avatar) {
+        LivingEntity entity;
+        if ((entity = PlayerAnimationSystem.tryParseAnimatable(event.getEntity())) != null) {
 
             PacketDistributor.sendToPlayer(
                     player,
-                    ClientboundSyncAnimationControllerPacket.of(avatar)
+                    ClientboundSyncAnimationControllerPacket.of(entity)
             );
 
         }
+    }
+
+    public static boolean isAnimatable(final @NonNull LivingEntity entity) {
+        return entity.is(TsiEntityTags.ANIMATABLE_HUMANOID);
+    }
+
+    public static boolean isNotAnimatable(final @NonNull LivingEntity entity) {
+        return !entity.is(TsiEntityTags.ANIMATABLE_HUMANOID);
+    }
+
+    public static @Nullable LivingEntity tryParseAnimatable(final @Nullable Entity entity) {
+        return (entity instanceof LivingEntity living && isAnimatable(living)) ? living : null;
     }
 }

@@ -11,6 +11,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerMask;
@@ -45,7 +46,7 @@ public final class PlayerAnimationController {
     private final ExecutionState                            executionState      = new ExecutionState(64);
     private final TransformF                                root;
 
-    @Getter private final Avatar                            avatar;
+    @Getter private final LivingEntity                      entity;
     @Getter private final FKController                      fkController;
 
     @Getter private final PlayerMask                        executionMask       = PlayerMask.all();
@@ -61,8 +62,8 @@ public final class PlayerAnimationController {
     @Getter private boolean                                 resolved            = false;
     @Getter private boolean                                 paused              = false;
 
-    public PlayerAnimationController(final @NonNull Avatar avatar) {
-        this.avatar         = avatar;
+    public PlayerAnimationController(final @NonNull LivingEntity entity) {
+        this.entity         = entity;
 
         this.layers         = new Object2ObjectOpenHashMap<>();
         this.running        = new ArrayList<>();

@@ -7,8 +7,8 @@
   "client": [
     "vanilla.client.CameraMixin",
     "vanilla.client.ClientHookMixin",
+    "vanilla.client.EntityRendererMixin",
     "vanilla.client.GameRendererMixin",
-    "vanilla.client.LivingEntityRendererMixin",
     "vanilla.client.LocalPlayerMixin",
     "vanilla.client.ModelFeatureRendererMixin",
     "vanilla.client.MouseHandlerMixin",

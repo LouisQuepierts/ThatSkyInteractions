@@ -1,0 +1,14 @@
+{
+  "values": [
+    "minecraft:player",
+    "minecraft:mannequin",
+    {
+      "id": "easy_npc:humanoid",
+      "required": false
+    },
+    {
+      "id": "easy_npc:humanoid_slim",
+      "required": false
+    }
+  ]
+}

@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions;
 
 import dev.anvilcraft.lib.v2.config.ConfigManager;
 import dev.anvilcraft.lib.v2.registrum.Registrum;
+import dev.anvilcraft.lib.v2.registrum.providers.ProviderType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.resources.Identifier;
@@ -9,6 +10,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.quepierts.thatskyinteractions.datagen.TsiEntityTagsProvider;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationFactory;
 import net.quepierts.thatskyinteractions.feature.config.TsiServerConfig;
 import net.quepierts.thatskyinteractions.feature.data.DataSyncSystem;
@@ -35,6 +37,8 @@ public class ThatSkyInteractions {
 
         AttachmentTypes.register();
         modBus.register(this);
+
+        this.setupDataGeneration();
     }
 
     public static Identifier location(String path) {
@@ -47,5 +51,9 @@ public class ThatSkyInteractions {
             PlayerAnimationFactory.register();
             DataSyncSystem.register();
         });
+    }
+
+    private void setupDataGeneration() {
+        REGISTRUM.addDataGenerator(ProviderType.ENTITY_TAGS, TsiEntityTagsProvider::provide);
     }
 }

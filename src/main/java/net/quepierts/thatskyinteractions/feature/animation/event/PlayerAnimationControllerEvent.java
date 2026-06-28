@@ -2,7 +2,7 @@ package net.quepierts.thatskyinteractions.feature.animation.event;
 
 import lombok.Getter;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.quepierts.thatskyinteractions.feature.animation.AnimationLayerType;
@@ -14,7 +14,7 @@ public abstract sealed class PlayerAnimationControllerEvent extends Event {
 
     private final @NonNull PlayerAnimationController        controller;
     private final @NonNull AnimationLayerType               layer;
-    private final @NonNull Avatar                           entity;
+    private final @NonNull LivingEntity                     entity;
 
     private PlayerAnimationControllerEvent(
             final @NonNull PlayerAnimationController        controller,
@@ -22,7 +22,7 @@ public abstract sealed class PlayerAnimationControllerEvent extends Event {
     ) {
         this.controller                                     = controller;
         this.layer                                          = layer;
-        this.entity                                         = controller.getAvatar();
+        this.entity                                         = controller.getEntity();
     }
 
     @Getter

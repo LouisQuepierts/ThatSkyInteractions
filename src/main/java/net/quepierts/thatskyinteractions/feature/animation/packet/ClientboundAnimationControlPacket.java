@@ -8,6 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
@@ -42,8 +43,8 @@ public record ClientboundAnimationControlPacket(
     );
 
     public static ClientboundAnimationControlPacket play(
-            @NonNull Avatar     player,
-            @NonNull Identifier animation
+            @NonNull LivingEntity   player,
+            @NonNull Identifier     animation
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.PLAY,
@@ -54,9 +55,9 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket play(
-            @NonNull Avatar     player,
-            @NonNull Identifier animation,
-            @NonNull Identifier layer
+            @NonNull LivingEntity   player,
+            @NonNull Identifier     animation,
+            @NonNull Identifier     layer
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.PLAY,
@@ -67,7 +68,7 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket abort(
-            @NonNull Avatar     player
+            @NonNull LivingEntity   player
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.ABORT,
@@ -78,8 +79,8 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket abort(
-            @NonNull Avatar     player,
-            @NonNull Identifier layer
+            @NonNull LivingEntity   player,
+            @NonNull Identifier     layer
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.ABORT,
@@ -90,7 +91,7 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket exit(
-            @NonNull Avatar     player
+            @NonNull LivingEntity   player
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.EXIT,
@@ -101,8 +102,8 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket exit(
-            @NonNull Avatar     player,
-            @NonNull Identifier layer
+            @NonNull LivingEntity   player,
+            @NonNull Identifier     layer
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.EXIT,
@@ -113,7 +114,7 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket pause(
-            @NonNull Avatar    player
+            @NonNull LivingEntity   player
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.PAUSE,
@@ -124,8 +125,8 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket pause(
-            @NonNull Avatar     player,
-            @NonNull Identifier layer
+            @NonNull LivingEntity   player,
+            @NonNull Identifier     layer
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.PAUSE,
@@ -136,7 +137,7 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket resume(
-            @NonNull Avatar     player
+            @NonNull LivingEntity   player
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.RESUME,
@@ -147,7 +148,7 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket resume(
-            @NonNull Avatar     player,
+            @NonNull LivingEntity   player,
             @NonNull Identifier layer
     ) {
         return new ClientboundAnimationControlPacket(
@@ -159,8 +160,8 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket event(
-            @NonNull Avatar     player,
-            @NonNull String     event
+            @NonNull LivingEntity   player,
+            @NonNull String         event
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.EVENT,
@@ -171,9 +172,9 @@ public record ClientboundAnimationControlPacket(
     }
 
     public static ClientboundAnimationControlPacket event(
-            @NonNull Avatar     player,
-            @NonNull String     event,
-            @NonNull Identifier layer
+            @NonNull LivingEntity   player,
+            @NonNull String         event,
+            @NonNull Identifier     layer
     ) {
         return new ClientboundAnimationControlPacket(
                 Operation.EVENT,
@@ -188,7 +189,8 @@ public record ClientboundAnimationControlPacket(
         final var level     = player.level();
         final var target    = level.getEntity(this.id());
 
-        if (!(target instanceof Avatar avatar)) {
+        LivingEntity avatar;
+        if ((avatar = PlayerAnimationSystem.tryParseAnimatable(target)) == null) {
             return;
         }
 

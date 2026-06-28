@@ -3,8 +3,10 @@ package net.quepierts.thatskyinteractions.feature.registry;
 import dev.anvilcraft.lib.v2.registrum.util.entry.data.AttachmentEntry;
 import lombok.experimental.UtilityClass;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
+import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationSystem;
 import net.quepierts.thatskyinteractions.feature.animation.tween.PhysicalTweenAttachment;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationAttachment;
 import net.quepierts.thatskyinteractions.feature.expression.PlayerPreferenceAttachment;
@@ -21,10 +23,11 @@ public class AttachmentTypes {
             = ThatSkyInteractions.REGISTRUM.attachment(
             "player/animation",
             holder -> {
-                if (!(holder instanceof Avatar avatar)) {
-                    throw new IllegalArgumentException("PlayerAnimation can only attach on Avatars!");
+                if (!(holder instanceof LivingEntity entity)
+                        || PlayerAnimationSystem.isNotAnimatable(entity)) {
+                    throw new IllegalArgumentException("PlayerAnimation can only attach on Animatable LivingEntity!");
                 }
-                return new PlayerAnimationAttachment(avatar);
+                return new PlayerAnimationAttachment(entity);
             }
     ).register();
 

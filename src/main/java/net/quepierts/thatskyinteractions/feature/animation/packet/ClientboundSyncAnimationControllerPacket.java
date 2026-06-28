@@ -7,6 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.quepierts.thatskyinteractions.ThatSkyInteractions;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationController;
@@ -31,26 +32,26 @@ public record ClientboundSyncAnimationControllerPacket(
             );
 
     public static ClientboundSyncAnimationControllerPacket of(
-            final @NonNull Avatar   avatar
+            final @NonNull LivingEntity     entity
     ) {
         return new ClientboundSyncAnimationControllerPacket(
-                avatar.getId(),
-                PlayerAnimationSystem.getAnimationData(avatar).getController().serialize()
+                entity.getId(),
+                PlayerAnimationSystem.getAnimationData(entity).getController().serialize()
         );
     }
 
     @Override
     public void handleOnClient(final @NonNull Player player) {
 
-        final var entity = player.level().getEntity(this.id());
+        final var entity        = player.level().getEntity(this.id());
+        final var animatable    = PlayerAnimationSystem.tryParseAnimatable(entity);
+        if (animatable != null) {
 
-        if (entity instanceof Avatar avatar) {
-
-            final var attachment = PlayerAnimationSystem.getAnimationData(avatar);
+            final var attachment = PlayerAnimationSystem.getAnimationData(animatable);
             attachment.getController().deserialize(this.serialized());
 
             // just for in case
-            avatar.yBodyRot = avatar.getYRot();
+            animatable.yBodyRot = animatable.getYRot();
 
         }
 

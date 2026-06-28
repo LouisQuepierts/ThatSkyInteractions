@@ -117,8 +117,9 @@ public final class AnimationCommand {
         var name        = IdentifierArgument.getId(ctx, "animation");
         var entities    = resolveTargets(ctx, targets);
         for (var e : entities) {
-            if (e instanceof Avatar avatar) {
-                PlayerAnimationSystem.play(avatar, name, layer);
+            final var animatable = PlayerAnimationSystem.tryParseAnimatable(e);
+            if (animatable != null) {
+                PlayerAnimationSystem.play(animatable, name, layer);
             }
         }
         

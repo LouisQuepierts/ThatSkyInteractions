@@ -1,16 +1,9 @@
 package net.quepierts.thatskyinteractions.feature.animation;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.entity.Avatar;
-import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.quepierts.thatskyinteractions.core.scene.Scene;
-import net.quepierts.thatskyinteractions.feature.network.StreamCodecUtils;
 import net.quepierts.thatskyinteractions.feature.registry.AttachmentTypes;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -24,18 +17,24 @@ public final class PlayerAnimationAttachment {
     private final Scene                     scene;
 
     public static PlayerAnimationAttachment getAttachment(
-            final @NonNull Avatar   avatar
+            final @NonNull LivingEntity avatar
     ) {
         return avatar.getData(AttachmentTypes.PLAYER_ANIMATION);
     }
 
-    public PlayerAnimationAttachment(final @NonNull Avatar avatar) {
+    public static @Nullable PlayerAnimationAttachment getExistingAttachment(
+            final @NonNull Entity       entity
+    ) {
+        return entity.getExistingDataOrNull(AttachmentTypes.PLAYER_ANIMATION);
+    }
+
+    public PlayerAnimationAttachment(final @NonNull LivingEntity avatar) {
         this.controller = new PlayerAnimationController(avatar);
         this.scene      = new Scene();
     }
 
     public void setupScene(
-            final @NonNull Avatar   avatar
+            final @NonNull LivingEntity   avatar
     ) {
         final var position = new Vector3f(
                 (float) avatar.getX(),
