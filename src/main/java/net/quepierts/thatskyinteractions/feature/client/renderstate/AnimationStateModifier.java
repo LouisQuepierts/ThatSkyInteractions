@@ -2,6 +2,7 @@ package net.quepierts.thatskyinteractions.feature.client.renderstate;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.quepierts.thatskyinteractions.feature.animation.PlayerAnimationController;
@@ -18,7 +19,7 @@ public class AnimationStateModifier {
 
     public void accept(
             final @NonNull LivingEntity         animatable,
-            final @NonNull AvatarRenderState    renderState
+            final @NonNull HumanoidRenderState  renderState
     ) {
         final var data          = PlayerAnimationSystem.getAnimationData(animatable);
         final var controller    = data.getController();

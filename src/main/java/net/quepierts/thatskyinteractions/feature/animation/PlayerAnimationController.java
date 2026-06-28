@@ -6,11 +6,10 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
 import net.quepierts.thatskyinteractions.core.animation.model.PlayerBone;
@@ -511,7 +510,7 @@ public final class PlayerAnimationController {
     }
 
     public void setupToLocal(
-            final AvatarRenderState     state
+            final HumanoidRenderState   state
     ) {
         final var scale = 0.9375F;
         this.toLocal.identity()
@@ -590,7 +589,7 @@ public final class PlayerAnimationController {
     }
 
     public record Serialized(
-            List<AnimationLayer.Serialized>                  layers,
+            List<AnimationLayer.Serialized>                 layers,
             int                                             last,
             boolean                                         playing,
             boolean                                         paused

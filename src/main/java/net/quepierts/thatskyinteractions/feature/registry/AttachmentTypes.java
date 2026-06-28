@@ -23,9 +23,8 @@ public class AttachmentTypes {
             = ThatSkyInteractions.REGISTRUM.attachment(
             "player/animation",
             holder -> {
-                if (!(holder instanceof LivingEntity entity)
-                        || PlayerAnimationSystem.isNotAnimatable(entity)) {
-                    throw new IllegalArgumentException("PlayerAnimation can only attach on Animatable LivingEntity!");
+                if (!(holder instanceof LivingEntity entity)) {
+                    throw new IllegalArgumentException("PlayerAnimation can only attach on LivingEntity!");
                 }
                 return new PlayerAnimationAttachment(entity);
             }
