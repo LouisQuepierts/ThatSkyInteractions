@@ -105,6 +105,24 @@ public class PlayerBondSystem {
 
     }
 
+    public static void unholdAsFollower(
+            final @NonNull  ServerPlayer                    player
+    ) {
+        final var attachment    = PlayerBondSystem.getAttachment(player);
+        final var relation      = attachment.getHandhold();
+
+        if (!relation.isFollowing()) {
+            return;
+        }
+
+        final var leader        = relation.getLeader();
+
+        if (leader != null) {
+            PlayerBondSystem.unhold(player, (ServerPlayer) leader);
+        }
+
+    }
+
     public static boolean carry(
             final @NonNull ServerPlayer     carrier,
             final @NonNull ServerPlayer     rider
@@ -264,7 +282,7 @@ public class PlayerBondSystem {
 
     private static void exitHoldingHand(
             final @NonNull ServerPlayer                     player,
-            final PlayerHoldingHand hand
+            final PlayerHoldingHand                         hand
     ) {
         if (hand == PlayerHoldingHand.NONE) {
             return;
@@ -275,5 +293,4 @@ public class PlayerBondSystem {
                 LAYERS[hand.ordinal()]
         );
     }
-
 }

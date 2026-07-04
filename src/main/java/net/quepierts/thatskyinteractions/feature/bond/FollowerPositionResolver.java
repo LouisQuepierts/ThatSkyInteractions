@@ -1,5 +1,6 @@
 package net.quepierts.thatskyinteractions.feature.bond;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
@@ -85,6 +86,14 @@ public final class FollowerPositionResolver {
         follower.yRotO += targetDelta - delta;
         follower.setYRot(follower.getYRot() + targetDelta - delta);
         follower.setYHeadRot(follower.getYRot());
+    }
+
+    public boolean shouldUnhold(
+            final @NonNull Player   leader,
+            final @NonNull Player   follower
+    ) {
+        final var d2 = 64 * 64;
+        return leader.distanceToSqr(follower) > d2;
     }
 
 

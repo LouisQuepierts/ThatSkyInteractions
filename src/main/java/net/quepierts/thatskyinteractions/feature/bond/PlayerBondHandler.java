@@ -2,10 +2,12 @@ package net.quepierts.thatskyinteractions.feature.bond;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -51,16 +53,27 @@ public class PlayerBondHandler {
         final var handhold      = attachment.getHandhold();
         final var resolver      = attachment.getResolver();
 
-        if (handhold.isFollowing()) {
-            final var left          = handhold.getLeft();
-            final var right         = handhold.getRight();
-
-            if (left != null) {
-                resolver.follow(left, player, true);
-            } else if (right != null) {
-                resolver.follow(right, player, false);
-            }
+        if (!handhold.isFollowing()) {
+            return;
         }
+
+        final var leader        = handhold.getLeader();
+
+        if (leader == null) {
+            return;
+        }
+
+        if (resolver.shouldUnhold(leader, player)) {
+
+            if (!player.level().isClientSide()) {
+                PlayerBondSystem.unhold((ServerPlayer) player, (ServerPlayer) leader);
+            }
+
+            return;
+        }
+
+        final var leftHand      = leader == handhold.getLeft();
+        resolver.follow(leader, player, leftHand);
 
     }
 
@@ -122,6 +135,19 @@ public class PlayerBondHandler {
         if (relation.isBeingCarried()) {
             event.setNewSize(AvatarDimensions.RIDING_DIMENSIONS);
         }
+
+    }
+
+    @SubscribeEvent
+    public static void onEntityMount(final EntityMountEvent event) {
+
+        final var entity = event.getEntity();
+
+        if (!(entity instanceof ServerPlayer player)) {
+            return;
+        }
+
+        PlayerBondSystem.unholdAll(player);
 
     }
 
